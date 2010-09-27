@@ -1,0 +1,14 @@
+C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFSTest\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFSTest\bin\Debug\OLECFSTest.dll
+C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFSTest\bin\Debug\OLECFSTest.pdb
+C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFSTest\bin\Debug\OLECompoundFileStorage.dll
+C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFSTest\bin\Debug\OLECompoundFileStorage.pdb
+C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFSTest\obj\Debug\OLECFSTest.dll
+C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFSTest\obj\Debug\OLECFSTest.pdb
+C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFS\OLECFSTest\bin\Debug\OLECFSTest.dll
+C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFS\OLECFSTest\bin\Debug\OLECFSTest.pdb
+C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFS\OLECFSTest\bin\Debug\OLECompoundFileStorage.dll
+C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFS\OLECFSTest\bin\Debug\OLECompoundFileStorage.pdb
+C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFS\OLECFSTest\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFS\OLECFSTest\obj\Debug\OLECFSTest.dll
+C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFS\OLECFSTest\obj\Debug\OLECFSTest.pdb
