@@ -1,5 +1,0 @@
-C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFS\OLECompoundFileStorage\bin\Debug\OLECompoundFileStorage.dll
-C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFS\OLECompoundFileStorage\bin\Debug\OLECompoundFileStorage.pdb
-C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFS\OLECompoundFileStorage\obj\Debug\ResolveAssemblyReference.cache
-C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFS\OLECompoundFileStorage\obj\Debug\OLECompoundFileStorage.dll
-C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\OLECFS\OLECompoundFileStorage\obj\Debug\OLECompoundFileStorage.pdb
