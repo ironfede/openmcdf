@@ -236,6 +236,48 @@ namespace OLECompoundFileStorage
             }
         }
 
+        private void FreeChain(List<Sector> sectorChain)
+        {
+            byte[] ZEROED_SECTOR = new byte[Sector.SECTOR_SIZE];
+
+            List<Sector> FAT
+                = GetSectorChain(-1, SectorType.FAT);
+
+            List<Sector> miniStream
+                = GetSectorChain(RootEntry.StartSetc, SectorType.Normal);
+
+            StreamView FATView
+                = new StreamView(FAT, Sector.SECTOR_SIZE, FAT.Count * Sector.SECTOR_SIZE);
+
+            StreamView streamView
+                = new StreamView(sectorChain, Sector.SECTOR_SIZE, sectorChain.Count * Sector.SECTOR_SIZE);
+
+            // Set updated/new sectors within the ministream
+            for (int i = 0; i < sectorChain.Count; i++)
+            {
+                Sector s = sectorChain[i];
+
+                if (s.IsAllocated)
+                {
+                    // Overwrite
+                    streamView.Seek(Sector.SECTOR_SIZE * s.Id, SeekOrigin.Begin);
+                    streamView.Write(ZEROED_SECTOR, 0, Sector.SECTOR_SIZE);
+                }
+            }
+
+            // Update FAT
+            for (int i = 0; i < sectorChain.Count - 1; i++)
+            {
+                Int32 currentId = sectorChain[i].Id;
+                Int32 nextId = sectorChain[i + 1].Id;
+
+                AssureLength(FATView, Math.Max(currentId * SIZE_OF_SID, nextId * SIZE_OF_SID));
+
+                FATView.Seek(currentId * 4, SeekOrigin.Begin);
+                FATView.Write(BitConverter.GetBytes(Sector.FREESECT), 0, 4);
+            }
+        }
+
         private void FreeMiniChain(List<Sector> sectorChain)
         {
 
@@ -1141,6 +1183,12 @@ namespace OLECompoundFileStorage
                 List<Sector> miniChain
                     = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Mini);
                 FreeMiniChain(miniChain);
+            }
+            else
+            {
+                List<Sector> chain
+                    = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Normal);
+                FreeChain(chain);
             }
 
             // Update the SIDs of the entries following the (tobe)removed one.

@@ -39,7 +39,7 @@ namespace OLECompoundFileStorage
 
     public class DirectoryEntry : IComparable, IDirectoryEntry
     {
-        
+
         private int sid = -1;
         public int SID
         {
@@ -73,7 +73,7 @@ namespace OLECompoundFileStorage
         {
             if (entryName != null && entryName.Length > 0)
             {
-                return Encoding.Unicode.GetString(entryName).Remove(this.nameLength / 2);
+                return Encoding.Unicode.GetString(entryName).Remove((this.nameLength - 1) / 2);
             }
             else
                 return String.Empty;

@@ -14,7 +14,7 @@ namespace OLECFSTest
     [TestClass]
     public class CFSTorageTest
     {
-        const String OUTPUT_DIR = "C:\\TestOutputFiles\\";
+        //const String OUTPUT_DIR = "C:\\TestOutputFiles\\";
 
         public CFSTorageTest()
         {
@@ -88,7 +88,7 @@ namespace OLECFSTest
             Assert.IsNotNull(st);
             Assert.AreEqual(STORAGE_NAME, st.Name, false);
 
-            cf.Save("C:\\ProvaData.cfs");
+            cf.Save(TestContext.TestDir + "\\ProvaData.cfs");
             cf.Close();
         }
 
@@ -129,7 +129,7 @@ namespace OLECFSTest
         [TestMethod]
         public void Test_VISIT_STORAGE()
         {
-            const String FILENAME = "C:\\testVisiting.xls";
+            String FILENAME = TestContext.TestDir + "\\testVisiting.xls";
 
             // Remove...
             if (File.Exists(FILENAME))
@@ -156,7 +156,7 @@ namespace OLECFSTest
 
             CompoundFile cf = new CompoundFile(FILENAME);
 
-            FileStream output = new FileStream("C:\\reportVisit.txt", FileMode.Create);
+            FileStream output = new FileStream(TestContext.TestDir + "\\reportVisit.txt", FileMode.Create);
             TextWriter sw = new StreamWriter(output);
 
             Console.SetOut(sw);
@@ -172,19 +172,33 @@ namespace OLECFSTest
             sw.Close();
         }
 
-        //[TestMethod]
-        //public void Test_DELETE_DIRECTORY()
-        //{
-        //    const String FILENAME = "MultipleStorage.cfs";
-        //    CompoundFile cf = new CompoundFile(FILENAME);
+        [TestMethod]
+        public void Test_DELETE_DIRECTORY()
+        {
+            String FILENAME = "MultipleStorage.cfs";
+            CompoundFile cf = new CompoundFile(FILENAME);
 
-        //    CFStorage st = cf.RootStorage.GetStorage("MyStorage");
-        //    st.DeleteStream("MyStream");
+            CFStorage st = cf.RootStorage.GetStorage("MyStorage");
+            //st.DeleteStream("MyStream");
 
-        //    cf.Save(OUTPUT_DIR + "MultipleStorageREMOVED.cfs");
+            //cf.Save(OUTPUT_DIR + "MultipleStorageREMOVED.cfs");
+            st.Delete("AnotherStorage", typeof(CFStorage));
 
-        //    cf.Close();
-        //}
+
+            cf.Close();
+        }
+
+        [TestMethod]
+        public void Test_DELETE_STREAM()
+        {
+            String FILENAME = "MySecondMegaStream.cfs";
+            CompoundFile cf = new CompoundFile(FILENAME);
+
+
+            cf.RootStorage.Delete("MySecondStream", typeof(CFStream));
+
+            cf.Close();
+        }
 
         [TestMethod]
         public void Test_CHECK_DISPOSED_()

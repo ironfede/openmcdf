@@ -47,7 +47,7 @@ namespace OLECompoundFileStorage
 
         #region IDirectoryEntry Members
 
-        protected DirectoryEntry dirEntry;
+        internal IDirectoryEntry dirEntry;
 
         int IDirectoryEntry.Child
         {

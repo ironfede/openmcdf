@@ -83,7 +83,7 @@ namespace OLECompoundFileStorage
             if (dirEntry == null || dirEntry.SID < 0)
                 throw new CFSException("Attempting to create a CFStorage using an unitialized directory");
 
-            this.dirEntry = dirEntry as DirectoryEntry;
+            this.dirEntry = dirEntry;
         }
 
 
@@ -280,20 +280,38 @@ namespace OLECompoundFileStorage
             if (foundObj.StgType == StgType.STGTY_ROOT)
                 throw new CFSException("Root storage cannot be removed");
 
-            // Remove item from children tree
-            this.Children.Remove(foundObj);
+            switch (foundObj.StgType)
+            {
+                case StgType.STGTY_STORAGE:
+                    
+                    CFStorage temp = new CFStorage(this.CompoundFile,foundObj);
+                    
+                    foreach (IDirectoryEntry de in temp.Children)
+                    {
+                        temp.Delete(de.Name, de.GetType());
+                    }
 
-            // Synchronize tree with directory entries
-            this.CompoundFile.RefreshIterative(this.Children.Root);
+                    break;
 
-            // Rethread the root of siblings tree...
-            if (this.Children.Root != null)
-                this.dirEntry.Child = this.Children.Root.Value.SID;
-            else
-                this.dirEntry.Child = DirectoryEntry.NOSTREAM;
+                case StgType.STGTY_STREAM:
 
-            // Remove directory entry
-            this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);
+                    // Remove item from children tree
+                    this.Children.Remove(foundObj);
+
+                    // Synchronize tree with directory entries
+                    this.CompoundFile.RefreshIterative(this.Children.Root);
+
+                    // Rethread the root of siblings tree...
+                    if (this.Children.Root != null)
+                        this.dirEntry.Child = this.Children.Root.Value.SID;
+                    else
+                        this.dirEntry.Child = DirectoryEntry.NOSTREAM;
+
+                    // Remove directory entry
+                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);
+
+                    break;
+            }
 
             //// Refresh recursively all SIDs (invariant for tree sorting)
             //VisitedEntryAction action = delegate(CFSItem target)
