@@ -291,6 +291,22 @@ namespace OLECompoundFileStorage
                         temp.Delete(de.Name, de.GetType());
                     }
 
+                    // Remove item from children tree
+                    this.Children.Remove(foundObj);
+
+                    // Synchronize tree with directory entries
+                    this.CompoundFile.RefreshIterative(this.Children.Root);
+
+                    // Rethread the root of siblings tree...
+                    if (this.Children.Root != null)
+                        this.dirEntry.Child = this.Children.Root.Value.SID;
+                    else
+                        this.dirEntry.Child = DirectoryEntry.NOSTREAM;
+
+                    // ...and now remove directory (storage) entry
+                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);
+
+
                     break;
 
                 case StgType.STGTY_STREAM:
