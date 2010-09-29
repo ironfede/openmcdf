@@ -184,7 +184,8 @@ namespace OLECFSTest
             //cf.Save(OUTPUT_DIR + "MultipleStorageREMOVED.cfs");
             st.Delete("AnotherStorage", typeof(CFStorage));
 
-
+            cf.Save("MultipleStorage_Delete.cfs");
+            
             cf.Close();
         }
 
