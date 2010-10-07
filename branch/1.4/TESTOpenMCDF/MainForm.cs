@@ -65,7 +65,7 @@ namespace StructuredStorageExplorer
 
         private void AddNodes(TreeNode node, CFStorage cfs)
         {
-            VisitedEntryAction va = delegate(CFSItem target)
+            VisitedEntryAction va = delegate(CFItem target)
             {
                 TreeNode temp = node.Nodes.Add(target.Name, target.Name + (target is CFStorage ? "" : " (" + target.Size + " bytes )"));
 
