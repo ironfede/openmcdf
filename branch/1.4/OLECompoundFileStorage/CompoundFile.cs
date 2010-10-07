@@ -243,9 +243,6 @@ namespace OLECompoundFileStorage
             List<Sector> FAT
                 = GetSectorChain(-1, SectorType.FAT);
 
-            List<Sector> miniStream
-                = GetSectorChain(RootEntry.StartSetc, SectorType.Normal);
-
             StreamView FATView
                 = new StreamView(FAT, Sector.SECTOR_SIZE, FAT.Count * Sector.SECTOR_SIZE);
 
@@ -256,13 +253,7 @@ namespace OLECompoundFileStorage
             for (int i = 0; i < sectorChain.Count; i++)
             {
                 Sector s = sectorChain[i];
-
-                if (s.IsAllocated)
-                {
-                    // Overwrite
-                    streamView.Seek(Sector.SECTOR_SIZE * s.Id, SeekOrigin.Begin);
-                    streamView.Write(ZEROED_SECTOR, 0, Sector.SECTOR_SIZE);
-                }
+                s.Data = ZEROED_SECTOR;
             }
 
             // Update FAT
@@ -1191,25 +1182,27 @@ namespace OLECompoundFileStorage
                 FreeChain(chain);
             }
 
-            // Update the SIDs of the entries following the (tobe)removed one.
-            // This update will NOT invalidate sorting 
-            for (int i = 0; i < directoryEntries.Count; i++)
-            {
-                if (directoryEntries[i].SID > sid)
-                    directoryEntries[i].SID--;
+            directoryEntries[sid].StgType = StgType.STGTY_INVALID;
+           
+            //// Update the SIDs of the entries following the (tobe)removed one.
+            //// This update will NOT invalidate sorting 
+            //for (int i = 0; i < directoryEntries.Count; i++)
+            //{
+            //    if (directoryEntries[i].SID > sid)
+            //        directoryEntries[i].SID--;
 
-                if (directoryEntries[i].Child > sid)
-                    directoryEntries[i].Child--;
+            //    if (directoryEntries[i].Child > sid)
+            //        directoryEntries[i].Child--;
 
-                if (directoryEntries[i].LeftSibling > sid)
-                    directoryEntries[i].LeftSibling--;
+            //    if (directoryEntries[i].LeftSibling > sid)
+            //        directoryEntries[i].LeftSibling--;
 
-                if (directoryEntries[i].RightSibling > sid)
-                    directoryEntries[i].RightSibling--;
-            }
+            //    if (directoryEntries[i].RightSibling > sid)
+            //        directoryEntries[i].RightSibling--;
+            //}
 
-            // Remove phisically the entry
-            this.directoryEntries.RemoveAt(sid);
+            //// Remove phisically the entry
+            //this.directoryEntries.RemoveAt(sid);
         }
 
         #region IDisposable Members

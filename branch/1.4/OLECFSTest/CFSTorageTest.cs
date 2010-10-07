@@ -175,7 +175,7 @@ namespace OLECFSTest
         [TestMethod]
         public void Test_DELETE_DIRECTORY()
         {
-            String FILENAME = "MultipleStorage.cfs";
+            String FILENAME = "MultipleStorage2.cfs";
             CompoundFile cf = new CompoundFile(FILENAME);
 
             CFStorage st = cf.RootStorage.GetStorage("MyStorage");
@@ -185,19 +185,23 @@ namespace OLECFSTest
             st.Delete("AnotherStorage", typeof(CFStorage));
 
             cf.Save("MultipleStorage_Delete.cfs");
-            
+
             cf.Close();
         }
 
         [TestMethod]
         public void Test_DELETE_STREAM()
         {
-            String FILENAME = "MySecondMegaStream.cfs";
+            String FILENAME = "MultipleStorage2.cfs";
             CompoundFile cf = new CompoundFile(FILENAME);
 
+            CFStorage found = null;
+            VisitedEntryAction action = delegate(CFSItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; };
+            cf.RootStorage.VisitEntries(action, true);
+           
+            found.Delete("Another2Stream", typeof(CFStream));
 
-            cf.RootStorage.Delete("MySecondStream", typeof(CFStream));
-
+            cf.Save("MultipleDeleteStream");
             cf.Close();
         }
 
