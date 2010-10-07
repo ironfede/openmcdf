@@ -161,7 +161,7 @@ namespace OLECFSTest
 
             Console.SetOut(sw);
 
-            VisitedEntryAction va = delegate(CFSItem target)
+            VisitedEntryAction va = delegate(CFItem target)
             {
                 sw.WriteLine(target.Name);
             };
@@ -196,7 +196,7 @@ namespace OLECFSTest
             CompoundFile cf = new CompoundFile(FILENAME);
 
             CFStorage found = null;
-            VisitedEntryAction action = delegate(CFSItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; };
+            VisitedEntryAction action = delegate(CFItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; };
             cf.RootStorage.VisitEntries(action, true);
            
             found.Delete("Another2Stream", typeof(CFStream));
@@ -221,7 +221,7 @@ namespace OLECFSTest
             }
             catch (Exception ex)
             {
-                Assert.IsTrue(ex is CFSException);
+                Assert.IsTrue(ex is CFException);
             }
         }
     }

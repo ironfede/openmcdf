@@ -129,7 +129,7 @@ namespace OLECFSTest
         public void Test_WRITE_MINISTREAM_READ_REWRITE_STREAM()
         {
             const int BIGGER_SIZE = 350;
-            const int SMALLER_SIZE = 290;
+            //const int SMALLER_SIZE = 290;
             const int MEGA_SIZE = 18000000;
 
             byte[] ba = GetBuffer(BIGGER_SIZE, 10);
