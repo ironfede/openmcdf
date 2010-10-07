@@ -36,8 +36,8 @@ namespace OLECompoundFileStorage
 
     /// <summary>
     /// Standard Microsoft&#169; Compound File implementation.
-    /// It is also known as OLE/COM structured storage, version 3.
-    /// Contains a hierarchy of storage and stream objects allowing
+    /// It is also known as OLE/COM structured storage 
+    /// and contains a hierarchy of storage and stream objects providing
     /// efficent storage of multiple kinds of documents in a single file.
     /// </summary>
     public class CompoundFile : IDisposable
@@ -68,12 +68,31 @@ namespace OLECompoundFileStorage
 
         private Header header;
 
-        private int nDirSectors = 0;
+        //private int nDirSectors = 0;
 
 
         /// <summary>
         /// Create a new, blank, compound file.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// 
+        ///     byte[] b = new byte[10000];
+        ///     for (int i = 0; i &lt; 10000; i++)
+        ///     {
+        ///         b[i % 120] = (byte)i;
+        ///     }
+        ///
+        ///     CompoundFile cf = new CompoundFile();
+        ///     CFStream myStream = cf.RootStorage.AddStream("MyStream");
+        ///
+        ///     Assert.IsNotNull(myStream);
+        ///     myStream.SetData(b);
+        ///     cf.Save("MyCompoundFile.cfs");
+        ///     cf.Close();
+        ///     
+        /// </code>
+        /// </example>
         public CompoundFile()
         {
             this.header = new Header();
@@ -93,6 +112,21 @@ namespace OLECompoundFileStorage
         /// Load an existing compound file
         /// </summary>
         /// <param name="fileName">Compound file to read from</param>
+        /// <example>
+        /// <code>
+        /// //A xls file should have a Workbook stream
+        /// String filename = "report.xls";
+        ///
+        /// CompoundFile cf = new CompoundFile(filename);
+        /// CFStream foundStream = cf.RootStorage.GetStream("Workbook");
+        ///
+        /// byte[] temp = foundStream.GetData();
+        ///
+        /// Assert.IsNotNull(temp);
+        ///
+        /// cf.Close();
+        /// </code>
+        /// </example>
         public CompoundFile(String fileName)
         {
             LoadFile(fileName);
@@ -123,6 +157,10 @@ namespace OLECompoundFileStorage
                 = new CFStorage(this, directoryEntries[0]);
         }
 
+        /// <summary>
+        /// Return true if this compound file has been 
+        /// loaded from an existing file.
+        /// </summary>
         public bool IsFileMapped
         {
             get { return fileReader != null; }
@@ -620,8 +658,6 @@ namespace OLECompoundFileStorage
 
                     return result;
 
-                    break;
-
                 case SectorType.FAT:
 
                     List<Sector> difatSectors = GetSectorChain(-1, SectorType.DIFAT);
@@ -954,7 +990,7 @@ namespace OLECompoundFileStorage
         public void Save(String fileName)
         {
             if (_disposed)
-                throw new CFSException("Compound File closed: cannot save data");
+                throw new CFException("Compound File closed: cannot save data");
 
 
             FileStream fs = new FileStream(fileName, FileMode.Create);
@@ -992,7 +1028,7 @@ namespace OLECompoundFileStorage
         public void Save(Stream stream)
         {
             if (_disposed)
-                throw new CFSException("Compound File closed: cannot save data");
+                throw new CFException("Compound File closed: cannot save data");
 
             Stream tempStream = null;
 
@@ -1100,7 +1136,7 @@ namespace OLECompoundFileStorage
         {
 
             if (_disposed)
-                throw new CFSException("Compound File closed: cannot access data");
+                throw new CFException("Compound File closed: cannot access data");
 
             byte[] result = null;
 
@@ -1166,7 +1202,7 @@ namespace OLECompoundFileStorage
         internal void RemoveDirectoryEntry(int sid)
         {
             if (sid >= directoryEntries.Count)
-                throw new CFSException("Invalid SID of the directory entry to remove");
+                throw new CFException("Invalid SID of the directory entry to remove");
 
             // Clear the associated stream (or ministream)
             if (directoryEntries[sid].Size < 4096)

@@ -24,14 +24,13 @@ namespace OLECompoundFileStorage
 {
 
     /// <summary>
-    /// OLE structured storage Stream Object. 
+    /// OLE structured storage <see cref="T:OLECompoundFileStorage.CFStream">stream</see> Object
     /// It is contained inside a Storage object in a file-directory
     /// relationship and indexed by its name.
     /// </summary>
-    public class CFStream : CFSItem
+    public class CFStream : CFItem
     {
         
-
         //private CFStream()
         //{
         //    this.dirEntry = new DirectoryEntry(StgType.STGTY_STREAM);
@@ -50,7 +49,7 @@ namespace OLECompoundFileStorage
             : base(sectorManager)
         {
             if (dirEntry == null || dirEntry.SID < 0)
-                throw new CFSException("Attempting to add a CFStream using an unitialized directory");
+                throw new CFException("Attempting to add a CFStream using an unitialized directory");
 
             this.dirEntry = dirEntry as DirectoryEntry;
         }

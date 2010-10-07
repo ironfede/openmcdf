@@ -88,10 +88,10 @@ namespace OLECompoundFileStorage
                 entryName.Contains(@"!")
 
                 )
-                throw new CFSException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
+                throw new CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
 
             if (entryName.Length > 31)
-                throw new CFSException("Entry name MUST be smaller than 31 characters");
+                throw new CFException("Entry name MUST be smaller than 31 characters");
 
 
 

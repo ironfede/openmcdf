@@ -256,7 +256,7 @@ namespace OLECompoundFileStorage
         private void CheckVersion()
         {
             if(this.majorVersion!= SUPPORTED_VERSION)
-                throw  new CFSFileFormatException("Unsupported version. OLECFS only supports Compound Files with major version equal to 3 ");
+                throw  new CFFileFormatException("Unsupported version. OLECFS only supports Compound Files with major version equal to 3 ");
         }
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace OLECompoundFileStorage
             for (int i = 0; i<headerSignature.Length;i++)
             {
                 if (headerSignature[i] != OLE_CFS_SIGNATURE[i])
-                    throw new CFSFileFormatException("Invalid OLE structured storage file");
+                    throw new CFFileFormatException("Invalid OLE structured storage file");
             }
         }
     }

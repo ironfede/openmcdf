@@ -38,10 +38,10 @@ namespace OLECompoundFileStorage
         public StreamView(List<Sector> sectorChain, int sectorSize)
         {
             if (sectorChain == null)
-                throw new CFSException("Sector Chain cannot be null");
+                throw new CFException("Sector Chain cannot be null");
 
             if (sectorSize <= 0)
-                throw new CFSException("Sector size must be greater than zero");
+                throw new CFException("Sector size must be greater than zero");
 
             this.sectorChain = sectorChain;
             this.sectorSize = sectorSize;
