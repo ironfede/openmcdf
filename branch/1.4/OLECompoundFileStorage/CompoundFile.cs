@@ -1194,11 +1194,6 @@ namespace OLECompoundFileStorage
         }
 
 
-        public void Close()
-        {
-            ((IDisposable)this).Dispose();
-        }
-
         internal void RemoveDirectoryEntry(int sid)
         {
             if (sid >= directoryEntries.Count)
@@ -1241,6 +1236,11 @@ namespace OLECompoundFileStorage
             //this.directoryEntries.RemoveAt(sid);
         }
 
+        public void Close()
+        {
+            ((IDisposable)this).Dispose();
+        }
+
         #region IDisposable Members
 
         private bool _disposed = false;
@@ -1260,7 +1260,7 @@ namespace OLECompoundFileStorage
         /// only unmanagd resources are released.
         /// </summary>
         /// <param name="disposing">If true, method has been called from User code, if false it's been called from .net runtime</param>
-        protected void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             try
             {

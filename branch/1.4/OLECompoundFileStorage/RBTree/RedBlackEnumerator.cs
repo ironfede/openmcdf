@@ -1,12 +1,13 @@
-///<summary>
-/// The RedBlackEnumerator class returns the keys or data objects of the treap in
-/// sorted order. 
-///</summary>
+
 using System;
 using System.Collections;
 	
 namespace RBTree
 {
+    ///<summary>
+    /// The RedBlackEnumerator class returns the keys or data objects of the treap in
+    /// sorted order. 
+    ///</summary>
 	public class RedBlackEnumerator
 	{
 		// the treap uses the stack to order the nodes

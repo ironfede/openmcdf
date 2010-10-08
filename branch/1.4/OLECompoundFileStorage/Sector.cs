@@ -23,7 +23,7 @@ using System.Collections.Specialized;
 
 namespace OLECompoundFileStorage
 {
-    public enum SectorType
+    internal enum SectorType
     {
         Normal, Mini, FAT, DIFAT
     }
@@ -64,7 +64,7 @@ namespace OLECompoundFileStorage
 
         private SectorType type;
 
-        public SectorType Type
+        internal SectorType Type
         {
             get { return type; }
             set { type = value; }
