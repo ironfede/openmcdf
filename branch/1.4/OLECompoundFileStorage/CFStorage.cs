@@ -25,6 +25,27 @@ namespace OLECompoundFileStorage
     /// Action to apply to  visited items in the OLE structured storage
     /// </summary>
     /// <param name="item">Currently visited item</param>
+    /// <example>
+    /// <code>
+    /// 
+    /// //We assume that xls file should be a valid OLE compound file
+    /// const String STORAGE_NAME = "report.xls";
+    /// CompoundFile cf = new CompoundFile(STORAGE_NAME);
+    ///
+    /// FileStream output = new FileStream("LogEntries.txt", FileMode.Create);
+    /// TextWriter tw = new StreamWriter(output);
+    ///
+    /// VisitedEntryAction va = delegate(CFItem item)
+    /// {
+    ///     tw.WriteLine(item.Name);
+    /// };
+    ///
+    /// cf.RootStorage.VisitEntries(va, true);
+    ///
+    /// tw.Close();
+    ///
+    /// </code>
+    /// </example>
     public delegate void VisitedEntryAction(CFItem item);
 
     /// <summary>
@@ -174,10 +195,22 @@ namespace OLECompoundFileStorage
 
 
         /// <summary>
-        /// Create a new child storage "directory" inside this storage.
+        /// Create new child storage "directory" inside the current storage.
         /// </summary>
-        /// <param name="storageName">The new Storage name</param>
-        /// <returns>The new Storage reference</returns>
+        /// <param name="storageName">The new storage name</param>
+        /// <returns>Reference to the new <see cref="T:OLECompoundFileStorage.CFStorage">storage</see> </returns>
+        /// <example>
+        /// <code>
+        /// 
+        /// CompoundFile cf = new CompoundFile();
+        ///
+        /// CFStorage st = cf.RootStorage.AddStorage("NameOfStorage");
+        /// cf.Save("NewFileName.cfs");
+        /// 
+        /// cf.Close();
+        ///
+        /// </code>
+        /// </example>
         public CFStorage AddStorage(String storageName)
         {
             CheckDisposed();

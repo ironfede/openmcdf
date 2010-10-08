@@ -92,6 +92,26 @@ namespace OLECFSTest
             cf.Close();
         }
 
+        [TestMethod]
+        public void Test_VISIT_ENTRIES()
+        {
+            const String STORAGE_NAME = "report.xls";
+            CompoundFile cf = new CompoundFile(STORAGE_NAME);
+
+            FileStream output = new FileStream("LogEntries.txt", FileMode.Create);
+            TextWriter tw = new StreamWriter(output);
+
+            VisitedEntryAction va = delegate(CFItem item)
+            {
+                tw.WriteLine(item.Name);
+            };
+
+            cf.RootStorage.VisitEntries(va, true);
+
+            tw.Close();
+
+        }
+
         //[TestMethod]
         //public void Test_OPEN_STORAGE_THUMBSDB()
         //{
@@ -102,12 +122,12 @@ namespace OLECFSTest
         //    TextWriter tw = new StreamWriter(output);
         //    Console.SetOut(tw);
 
-        //    VisitedEntryAction va = delegate(CFSItem item)
+        //    VisitedEntryAction va = delegate(CFItem item)
         //    {
         //        CFStream stream = item as CFStream;
         //        if (stream != null)
         //        {
-        //            FileStream fs = new FileStream("C:\\Documents and Settings\\blaseotf\\My Documents\\My Pictures\\" + item.Name+".jpg", FileMode.Create);
+        //            FileStream fs = new FileStream("C:\\Documents and Settings\\blaseotf\\My Documents\\My Pictures\\" + item.Name + ".jpg", FileMode.Create);
 
         //            BinaryWriter bw = new BinaryWriter(fs);
         //            byte[] b = stream.GetData();

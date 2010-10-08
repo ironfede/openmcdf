@@ -23,7 +23,8 @@
     <MissingTags>Summary, AutoDocumentCtors</MissingTags>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\OLECompoundFileStorage\bin\Debug\OLECompoundFileStorage.dll" />
-<DocumentationSource sourceFile="..\OLECompoundFileStorage\bin\Debug\OLECompoundFileStorage.XML" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\OLECompoundFileStorage\bin\Debug\OLECompoundFileStorage.XML" />
+    </DocumentationSources>
     <FeedbackEMailAddress>ironfede%40users.sourceforge.net</FeedbackEMailAddress>
     <BuildLogFile>
     </BuildLogFile>
@@ -39,7 +40,9 @@
     <Language>en-US</Language>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="BinaryTrees" isDocumented="False" xmlns="" />
-<NamespaceSummaryItem name="RBTree" isDocumented="False" xmlns="" /></NamespaceSummaries>
+      <NamespaceSummaryItem name="RBTree" isDocumented="False" xmlns="" />
+    </NamespaceSummaries>
+    <VisibleItems>InheritedMembers, InheritedFrameworkMembers</VisibleItems>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->
