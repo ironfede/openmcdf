@@ -22,16 +22,37 @@ using BinaryTrees;
 namespace OLECompoundFileStorage
 {
     /// <summary>
-    /// Action to apply to items visited in the OLE structured storage
+    /// Action to apply to  visited items in the OLE structured storage
     /// </summary>
     /// <param name="item">Currently visited item</param>
-    public delegate void VisitedEntryAction(CFSItem item);
+    /// <example>
+    /// <code>
+    /// 
+    /// //We assume that xls file should be a valid OLE compound file
+    /// const String STORAGE_NAME = "report.xls";
+    /// CompoundFile cf = new CompoundFile(STORAGE_NAME);
+    ///
+    /// FileStream output = new FileStream("LogEntries.txt", FileMode.Create);
+    /// TextWriter tw = new StreamWriter(output);
+    ///
+    /// VisitedEntryAction va = delegate(CFItem item)
+    /// {
+    ///     tw.WriteLine(item.Name);
+    /// };
+    ///
+    /// cf.RootStorage.VisitEntries(va, true);
+    ///
+    /// tw.Close();
+    ///
+    /// </code>
+    /// </example>
+    public delegate void VisitedEntryAction(CFItem item);
 
     /// <summary>
     /// Storage entity that acts like a logic container for streams
     /// or substorages in a compound file.
     /// </summary>
-    public class CFStorage : CFSItem
+    public class CFStorage : CFItem
     {
         private BinarySearchTree<IDirectoryEntry> children = null;
 
@@ -81,9 +102,9 @@ namespace OLECompoundFileStorage
             : base(compFile)
         {
             if (dirEntry == null || dirEntry.SID < 0)
-                throw new CFSException("Attempting to create a CFStorage using an unitialized directory");
+                throw new CFException("Attempting to create a CFStorage using an unitialized directory");
 
-            this.dirEntry = dirEntry as DirectoryEntry;
+            this.dirEntry = dirEntry;
         }
 
 
@@ -93,7 +114,7 @@ namespace OLECompoundFileStorage
         }
 
         /// <summary>
-        /// Create a new child stream inside this storage.
+        /// Create a new child stream inside the current <see cref="T:OLECompoundFileStorage.CFStorage">storage</see>
         /// </summary>
         /// <param name="streamName">The new stream name</param>
         /// <returns>The new <see cref="T:OLECompoundFileStorage.CFStream">stream</see> reference</returns>
@@ -103,7 +124,7 @@ namespace OLECompoundFileStorage
             CheckDisposed();
 
             if (String.IsNullOrEmpty(streamName))
-                throw new CFSException("Stream name cannot be null or empty");
+                throw new CFException("Stream name cannot be null or empty");
 
             // Add new Stream directory entry
             IDirectoryEntry cfo = new CFStream(this.CompoundFile);
@@ -122,8 +143,10 @@ namespace OLECompoundFileStorage
         /// <summary>
         /// Get a named <see cref="T:OLECompoundFileStorage.CFStream">stream</see> contained in the current one if existing, null otherwise.
         /// </summary>
+        /// <exception cref="T:OLECompoundFileStorage.CFItemNotFound"></exception>
         /// <param name="streamName">Name of the stream to look for</param>
         /// <returns>A stream reference if existing, null otherwise</returns>
+        
         public CFStream GetStream(String streamName)
         {
             CheckDisposed();
@@ -143,7 +166,7 @@ namespace OLECompoundFileStorage
             }
             else
             {
-                return null;
+                throw new CFItemNotFound("Cannot find item [" + streamName + "] within the current storage");
             }
         }
 
@@ -166,22 +189,34 @@ namespace OLECompoundFileStorage
             }
             else
             {
-                return null;
+                throw new CFItemNotFound("Cannot find item [" + storageName + "] within the current storage");
             }
         }
 
 
         /// <summary>
-        /// Create a new child storage "directory" inside this storage.
+        /// Create new child storage "directory" inside the current storage.
         /// </summary>
-        /// <param name="storageName">The new Storage name</param>
-        /// <returns>The new Storage reference</returns>
+        /// <param name="storageName">The new storage name</param>
+        /// <returns>Reference to the new <see cref="T:OLECompoundFileStorage.CFStorage">storage</see> </returns>
+        /// <example>
+        /// <code>
+        /// 
+        /// CompoundFile cf = new CompoundFile();
+        ///
+        /// CFStorage st = cf.RootStorage.AddStorage("NameOfStorage");
+        /// cf.Save("NewFileName.cfs");
+        /// 
+        /// cf.Close();
+        ///
+        /// </code>
+        /// </example>
         public CFStorage AddStorage(String storageName)
         {
             CheckDisposed();
 
             if (String.IsNullOrEmpty(storageName))
-                throw new CFSException("Stream name cannot be null or empty");
+                throw new CFException("Stream name cannot be null or empty");
 
             // Add new Storage directory entry
             CFStorage cfo = new CFStorage(this.CompoundFile);
@@ -230,7 +265,7 @@ namespace OLECompoundFileStorage
                 internalAction =
                     delegate(BinaryTreeNode<IDirectoryEntry> targetNode)
                     {
-                        action(targetNode.Value as CFSItem);
+                        action(targetNode.Value as CFItem);
 
                         if (targetNode.Value.Child != DirectoryEntry.NOSTREAM)
                             subStorages.Add(targetNode);
@@ -272,28 +307,62 @@ namespace OLECompoundFileStorage
             this.Children.TryFind(dto, out foundObj);
 
             if (foundObj == null)
-                throw new CFSException("Entry named [" + entryName + "] not found");
+                throw new CFException("Entry named [" + entryName + "] not found");
 
             if (foundObj.GetType() != typeCheck)
-                throw new CFSException("Entry named [" + entryName + "] has not the correct type");
+                throw new CFException("Entry named [" + entryName + "] has not the correct type");
 
             if (foundObj.StgType == StgType.STGTY_ROOT)
-                throw new CFSException("Root storage cannot be removed");
+                throw new CFException("Root storage cannot be removed");
 
-            // Remove item from children tree
-            this.Children.Remove(foundObj);
+            switch (foundObj.StgType)
+            {
+                case StgType.STGTY_STORAGE:
 
-            // Synchronize tree with directory entries
-            this.CompoundFile.RefreshIterative(this.Children.Root);
+                    CFStorage temp = new CFStorage(this.CompoundFile, foundObj);
 
-            // Rethread the root of siblings tree...
-            if (this.Children.Root != null)
-                this.dirEntry.Child = this.Children.Root.Value.SID;
-            else
-                this.dirEntry.Child = DirectoryEntry.NOSTREAM;
+                    foreach (IDirectoryEntry de in temp.Children)
+                    {
+                        temp.Delete(de.Name, de.GetType());
+                    }
 
-            // Remove directory entry
-            this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);
+                    // Remove item from children tree
+                    this.Children.Remove(foundObj);
+
+                    // Synchronize tree with directory entries
+                    this.CompoundFile.RefreshIterative(this.Children.Root);
+
+                    // Rethread the root of siblings tree...
+                    if (this.Children.Root != null)
+                        this.dirEntry.Child = this.Children.Root.Value.SID;
+                    else
+                        this.dirEntry.Child = DirectoryEntry.NOSTREAM;
+
+                    // ...and now remove directory (storage) entry
+                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);
+
+
+                    break;
+
+                case StgType.STGTY_STREAM:
+
+                    // Remove item from children tree
+                    this.Children.Remove(foundObj);
+
+                    // Synchronize tree with directory entries
+                    this.CompoundFile.RefreshIterative(this.Children.Root);
+
+                    // Rethread the root of siblings tree...
+                    if (this.Children.Root != null)
+                        this.dirEntry.Child = this.Children.Root.Value.SID;
+                    else
+                        this.dirEntry.Child = DirectoryEntry.NOSTREAM;
+
+                    // Remove directory entry
+                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);
+
+                    break;
+            }
 
             //// Refresh recursively all SIDs (invariant for tree sorting)
             //VisitedEntryAction action = delegate(CFSItem target)

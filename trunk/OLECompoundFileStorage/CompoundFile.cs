@@ -36,8 +36,8 @@ namespace OLECompoundFileStorage
 
     /// <summary>
     /// Standard Microsoft&#169; Compound File implementation.
-    /// It is also known as OLE/COM structured storage, version 3.
-    /// Contains a hierarchy of storage and stream objects allowing
+    /// It is also known as OLE/COM structured storage 
+    /// and contains a hierarchy of storage and stream objects providing
     /// efficent storage of multiple kinds of documents in a single file.
     /// </summary>
     public class CompoundFile : IDisposable
@@ -68,12 +68,31 @@ namespace OLECompoundFileStorage
 
         private Header header;
 
-        private int nDirSectors = 0;
+        //private int nDirSectors = 0;
 
 
         /// <summary>
         /// Create a new, blank, compound file.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// 
+        ///     byte[] b = new byte[10000];
+        ///     for (int i = 0; i &lt; 10000; i++)
+        ///     {
+        ///         b[i % 120] = (byte)i;
+        ///     }
+        ///
+        ///     CompoundFile cf = new CompoundFile();
+        ///     CFStream myStream = cf.RootStorage.AddStream("MyStream");
+        ///
+        ///     Assert.IsNotNull(myStream);
+        ///     myStream.SetData(b);
+        ///     cf.Save("MyCompoundFile.cfs");
+        ///     cf.Close();
+        ///     
+        /// </code>
+        /// </example>
         public CompoundFile()
         {
             this.header = new Header();
@@ -93,6 +112,21 @@ namespace OLECompoundFileStorage
         /// Load an existing compound file
         /// </summary>
         /// <param name="fileName">Compound file to read from</param>
+        /// <example>
+        /// <code>
+        /// //A xls file should have a Workbook stream
+        /// String filename = "report.xls";
+        ///
+        /// CompoundFile cf = new CompoundFile(filename);
+        /// CFStream foundStream = cf.RootStorage.GetStream("Workbook");
+        ///
+        /// byte[] temp = foundStream.GetData();
+        ///
+        /// Assert.IsNotNull(temp);
+        ///
+        /// cf.Close();
+        /// </code>
+        /// </example>
         public CompoundFile(String fileName)
         {
             LoadFile(fileName);
@@ -123,6 +157,10 @@ namespace OLECompoundFileStorage
                 = new CFStorage(this, directoryEntries[0]);
         }
 
+        /// <summary>
+        /// Return true if this compound file has been 
+        /// loaded from an existing file.
+        /// </summary>
         public bool IsFileMapped
         {
             get { return fileReader != null; }
@@ -233,6 +271,39 @@ namespace OLECompoundFileStorage
                 ((IDirectoryEntry)this.rootStorage).StartSetc = miniStream[0].Id;
                 header.MiniFATSectorsNumber = (uint)miniFAT.Count;
                 header.FirstMiniFATSectorID = miniFAT[0].Id;
+            }
+        }
+
+        private void FreeChain(List<Sector> sectorChain)
+        {
+            byte[] ZEROED_SECTOR = new byte[Sector.SECTOR_SIZE];
+
+            List<Sector> FAT
+                = GetSectorChain(-1, SectorType.FAT);
+
+            StreamView FATView
+                = new StreamView(FAT, Sector.SECTOR_SIZE, FAT.Count * Sector.SECTOR_SIZE);
+
+            StreamView streamView
+                = new StreamView(sectorChain, Sector.SECTOR_SIZE, sectorChain.Count * Sector.SECTOR_SIZE);
+
+            // Set updated/new sectors within the ministream
+            for (int i = 0; i < sectorChain.Count; i++)
+            {
+                Sector s = sectorChain[i];
+                s.Data = ZEROED_SECTOR;
+            }
+
+            // Update FAT
+            for (int i = 0; i < sectorChain.Count - 1; i++)
+            {
+                Int32 currentId = sectorChain[i].Id;
+                Int32 nextId = sectorChain[i + 1].Id;
+
+                AssureLength(FATView, Math.Max(currentId * SIZE_OF_SID, nextId * SIZE_OF_SID));
+
+                FATView.Seek(currentId * 4, SeekOrigin.Begin);
+                FATView.Write(BitConverter.GetBytes(Sector.FREESECT), 0, 4);
             }
         }
 
@@ -587,8 +658,6 @@ namespace OLECompoundFileStorage
 
                     return result;
 
-                    break;
-
                 case SectorType.FAT:
 
                     List<Sector> difatSectors = GetSectorChain(-1, SectorType.DIFAT);
@@ -921,7 +990,7 @@ namespace OLECompoundFileStorage
         public void Save(String fileName)
         {
             if (_disposed)
-                throw new CFSException("Compound File closed: cannot save data");
+                throw new CFException("Compound File closed: cannot save data");
 
 
             FileStream fs = new FileStream(fileName, FileMode.Create);
@@ -959,7 +1028,7 @@ namespace OLECompoundFileStorage
         public void Save(Stream stream)
         {
             if (_disposed)
-                throw new CFSException("Compound File closed: cannot save data");
+                throw new CFException("Compound File closed: cannot save data");
 
             Stream tempStream = null;
 
@@ -1067,7 +1136,7 @@ namespace OLECompoundFileStorage
         {
 
             if (_disposed)
-                throw new CFSException("Compound File closed: cannot access data");
+                throw new CFException("Compound File closed: cannot access data");
 
             byte[] result = null;
 
@@ -1125,15 +1194,10 @@ namespace OLECompoundFileStorage
         }
 
 
-        public void Close()
-        {
-            ((IDisposable)this).Dispose();
-        }
-
         internal void RemoveDirectoryEntry(int sid)
         {
             if (sid >= directoryEntries.Count)
-                throw new CFSException("Invalid SID of the directory entry to remove");
+                throw new CFException("Invalid SID of the directory entry to remove");
 
             // Clear the associated stream (or ministream)
             if (directoryEntries[sid].Size < 4096)
@@ -1142,26 +1206,39 @@ namespace OLECompoundFileStorage
                     = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Mini);
                 FreeMiniChain(miniChain);
             }
-
-            // Update the SIDs of the entries following the (tobe)removed one.
-            // This update will NOT invalidate sorting 
-            for (int i = 0; i < directoryEntries.Count; i++)
+            else
             {
-                if (directoryEntries[i].SID > sid)
-                    directoryEntries[i].SID--;
-
-                if (directoryEntries[i].Child > sid)
-                    directoryEntries[i].Child--;
-
-                if (directoryEntries[i].LeftSibling > sid)
-                    directoryEntries[i].LeftSibling--;
-
-                if (directoryEntries[i].RightSibling > sid)
-                    directoryEntries[i].RightSibling--;
+                List<Sector> chain
+                    = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Normal);
+                FreeChain(chain);
             }
 
-            // Remove phisically the entry
-            this.directoryEntries.RemoveAt(sid);
+            directoryEntries[sid].StgType = StgType.STGTY_INVALID;
+           
+            //// Update the SIDs of the entries following the (tobe)removed one.
+            //// This update will NOT invalidate sorting 
+            //for (int i = 0; i < directoryEntries.Count; i++)
+            //{
+            //    if (directoryEntries[i].SID > sid)
+            //        directoryEntries[i].SID--;
+
+            //    if (directoryEntries[i].Child > sid)
+            //        directoryEntries[i].Child--;
+
+            //    if (directoryEntries[i].LeftSibling > sid)
+            //        directoryEntries[i].LeftSibling--;
+
+            //    if (directoryEntries[i].RightSibling > sid)
+            //        directoryEntries[i].RightSibling--;
+            //}
+
+            //// Remove phisically the entry
+            //this.directoryEntries.RemoveAt(sid);
+        }
+
+        public void Close()
+        {
+            ((IDisposable)this).Dispose();
         }
 
         #region IDisposable Members
@@ -1183,7 +1260,7 @@ namespace OLECompoundFileStorage
         /// only unmanagd resources are released.
         /// </summary>
         /// <param name="disposing">If true, method has been called from User code, if false it's been called from .net runtime</param>
-        protected void Dispose(bool disposing)
+        protected virtual void Dispose(bool disposing)
         {
             try
             {

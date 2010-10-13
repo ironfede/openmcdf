@@ -23,15 +23,15 @@ namespace OLECompoundFileStorage
     /// <summary>
     /// OpenMCDF base exception.
     /// </summary>
-    public class CFSException : Exception
+    public class CFException : Exception
     {
-        public CFSException(string message)
+        public CFException(string message)
             : base(message, null)
         {
 
         }
 
-        public CFSException(string message, Exception innerException)
+        public CFException(string message, Exception innerException)
             : base(message, innerException)
         {
 
@@ -39,20 +39,40 @@ namespace OLECompoundFileStorage
 
     }
 
-    public class CFSFileFormatException : CFSException
+    public class CFFileFormatException : CFException
     {
         
-        public CFSFileFormatException(string message)
+        public CFFileFormatException(string message)
             : base(message, null)
         {
             
         }
 
-        public CFSFileFormatException(string message, Exception innerException)
+        public CFFileFormatException(string message, Exception innerException)
             : base(message, innerException)
         {
 
         }
 
     }
+
+    public class CFItemNotFound : CFException
+    {
+
+        public CFItemNotFound(string message)
+            : base(message, null)
+        {
+
+        }
+
+        public CFItemNotFound(string message, Exception innerException)
+            : base(message, innerException)
+        {
+
+        }
+
+    }
+
+
+
 }

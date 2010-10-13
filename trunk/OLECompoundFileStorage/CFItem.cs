@@ -25,7 +25,7 @@ namespace OLECompoundFileStorage
     /// <summary>
     /// Abstract base class for Structured Storage entities
     /// </summary>
-    public abstract class CFSItem : IDirectoryEntry, IComparable
+    public abstract class CFItem : IDirectoryEntry, IComparable
     {
         private CompoundFile compoundFile;
 
@@ -37,17 +37,17 @@ namespace OLECompoundFileStorage
         protected void CheckDisposed()
         {
             if (compoundFile.IsClosed)
-                throw new CFSException("Owner Compound file has been closed and owned items have been invalidated");
+                throw new CFException("Owner Compound file has been closed and owned items have been invalidated");
         }
 
-        public CFSItem(CompoundFile compoundFile)
+        protected CFItem(CompoundFile compoundFile)
         {
             this.compoundFile = compoundFile;
         }
 
         #region IDirectoryEntry Members
 
-        protected DirectoryEntry dirEntry;
+        internal IDirectoryEntry dirEntry;
 
         int IDirectoryEntry.Child
         {
@@ -304,6 +304,10 @@ namespace OLECompoundFileStorage
         /// <summary>
         /// Return true if item is Storage
         /// </summary>
+        /// <remarks>
+        /// This check doesn't use reflection or runtime type information
+        /// and doesn't suffer related performance penalties.
+        /// </remarks>
         public bool IsStorage
         {
             get
@@ -315,6 +319,10 @@ namespace OLECompoundFileStorage
         /// <summary>
         /// Return true if item is a Stream
         /// </summary>
+        /// <remarks>
+        /// This check doesn't use reflection or runtime type information
+        /// and doesn't suffer related performance penalties.
+        /// </remarks>
         public bool IsStream
         {
             get
@@ -326,6 +334,10 @@ namespace OLECompoundFileStorage
         /// <summary>
         /// Return true if item is the Root Storage
         /// </summary>
+        /// <remarks>
+        /// This check doesn't use reflection or runtime type information
+        /// and doesn't suffer related performance penalties.
+        /// </remarks>
         public bool IsRoot
         {
             get
@@ -335,7 +347,7 @@ namespace OLECompoundFileStorage
         }
 
         /// <summary>
-        /// Get/Set the Creation Date of the Item
+        /// Get/Set the Creation Date of the current item
         /// </summary>
         public DateTime CreationDate
         {
@@ -351,7 +363,7 @@ namespace OLECompoundFileStorage
         }
 
         /// <summary>
-        /// Get/Set the Modify Date of the Item
+        /// Get/Set the Modify Date of the current item
         /// </summary>
         public DateTime ModifyDate
         {

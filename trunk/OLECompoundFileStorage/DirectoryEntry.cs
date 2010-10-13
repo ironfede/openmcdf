@@ -39,7 +39,7 @@ namespace OLECompoundFileStorage
 
     public class DirectoryEntry : IComparable, IDirectoryEntry
     {
-        
+
         private int sid = -1;
         public int SID
         {
@@ -73,7 +73,7 @@ namespace OLECompoundFileStorage
         {
             if (entryName != null && entryName.Length > 0)
             {
-                return Encoding.Unicode.GetString(entryName).Remove(this.nameLength / 2);
+                return Encoding.Unicode.GetString(entryName).Remove((this.nameLength - 1) / 2);
             }
             else
                 return String.Empty;
@@ -88,10 +88,10 @@ namespace OLECompoundFileStorage
                 entryName.Contains(@"!")
 
                 )
-                throw new CFSException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
+                throw new CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
 
             if (entryName.Length > 31)
-                throw new CFSException("Entry name MUST be smaller than 31 characters");
+                throw new CFException("Entry name MUST be smaller than 31 characters");
 
 
 

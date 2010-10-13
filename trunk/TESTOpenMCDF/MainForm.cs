@@ -25,6 +25,7 @@ namespace StructuredStorageExplorer
             //Load images for icons from resx
             Image folderImage = (Image)Properties.Resources.ResourceManager.GetObject("storage");
             Image streamImage = (Image)Properties.Resources.ResourceManager.GetObject("stream");
+
             treeView1.ImageList = new ImageList();
             treeView1.ImageList.Images.Add(folderImage);
             treeView1.ImageList.Images.Add(streamImage);
@@ -63,9 +64,14 @@ namespace StructuredStorageExplorer
             }
         }
 
+        /// <summary>
+        /// Recursive addition of tree nodes foreach child of current item in the storage
+        /// </summary>
+        /// <param name="node">Current TreeNode</param>
+        /// <param name="cfs">Current storage associated with node</param>
         private void AddNodes(TreeNode node, CFStorage cfs)
         {
-            VisitedEntryAction va = delegate(CFSItem target)
+            VisitedEntryAction va = delegate(CFItem target)
             {
                 TreeNode temp = node.Nodes.Add(target.Name, target.Name + (target is CFStorage ? "" : " (" + target.Size + " bytes )"));
 
@@ -141,6 +147,7 @@ namespace StructuredStorageExplorer
                     cf = new CompoundFile(openFileDialog1.FileName);
                     CFStorage r = cf.RootStorage;
 
+                    //Navigate into the storage, following path parts
                     for (int i = 1; i < pathParts.Length - 1; i++)
                     {
                         r = r.GetStorage(pathParts[i]);

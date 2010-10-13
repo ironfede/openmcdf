@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\OLECompoundFileStorage.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\OLECompoundFileStorage.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -42,8 +44,10 @@
     <Compile Include="BinaryTree\Node.cs" />
     <Compile Include="BinaryTree\NodeList.cs" />
     <Compile Include="BinaryTree\TraversalMethods.cs" />
-    <Compile Include="CFSException.cs" />
-    <Compile Include="CFSItem.cs" />
+    <Compile Include="BSTree.cs" />
+    <Compile Include="BSTreeNode.cs" />
+    <Compile Include="CFException.cs" />
+    <Compile Include="CFItem.cs" />
     <Compile Include="CFStorage.cs" />
     <Compile Include="DirectoryEntry.cs" />
     <Compile Include="Header.cs" />

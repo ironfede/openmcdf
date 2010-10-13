@@ -129,7 +129,7 @@ namespace OLECFSTest
         public void Test_WRITE_MINISTREAM_READ_REWRITE_STREAM()
         {
             const int BIGGER_SIZE = 350;
-            const int SMALLER_SIZE = 290;
+            //const int SMALLER_SIZE = 290;
             const int MEGA_SIZE = 18000000;
 
             byte[] ba = GetBuffer(BIGGER_SIZE, 10);
@@ -172,23 +172,23 @@ namespace OLECFSTest
             myStream5.SetData(ba5);
             Assert.IsTrue(myStream5.Size == BIGGER_SIZE);
 
-            cfa.Save(TestContext.TestDir + "WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs");
+            cfa.Save(TestContext.TestDir + "\\WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs");
 
             cfa.Close();
 
             // Now get the second stream and rewrite it smaller
             byte[] bb = GetBuffer(MEGA_SIZE);
-            CompoundFile cfb = new CompoundFile(TestContext.TestDir + "WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs");
+            CompoundFile cfb = new CompoundFile(TestContext.TestDir + "\\WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs");
             CFStream myStreamB = cfb.RootStorage.GetStream("MySecondStream");
             Assert.IsNotNull(myStreamB);
             myStreamB.SetData(bb);
             Assert.IsTrue(myStreamB.Size == MEGA_SIZE);
 
             byte[] bufferB = myStreamB.GetData();
-            cfb.Save(TestContext.TestDir + "WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
+            cfb.Save(TestContext.TestDir + "\\WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
             cfb.Close();
 
-            CompoundFile cfc = new CompoundFile(TestContext.TestDir + "WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
+            CompoundFile cfc = new CompoundFile(TestContext.TestDir + "\\WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
             CFStream myStreamC = cfc.RootStorage.GetStream("MySecondStream");
             Assert.IsTrue(myStreamC.Size == MEGA_SIZE, "DATA SIZE FAILED");
 

@@ -14,7 +14,7 @@ namespace OLECFSTest
     [TestClass]
     public class CFSTorageTest
     {
-        const String OUTPUT_DIR = "C:\\TestOutputFiles\\";
+        //const String OUTPUT_DIR = "C:\\TestOutputFiles\\";
 
         public CFSTorageTest()
         {
@@ -88,8 +88,28 @@ namespace OLECFSTest
             Assert.IsNotNull(st);
             Assert.AreEqual(STORAGE_NAME, st.Name, false);
 
-            cf.Save("C:\\ProvaData.cfs");
+            cf.Save(TestContext.TestDir + "\\ProvaData.cfs");
             cf.Close();
+        }
+
+        [TestMethod]
+        public void Test_VISIT_ENTRIES()
+        {
+            const String STORAGE_NAME = "report.xls";
+            CompoundFile cf = new CompoundFile(STORAGE_NAME);
+
+            FileStream output = new FileStream("LogEntries.txt", FileMode.Create);
+            TextWriter tw = new StreamWriter(output);
+
+            VisitedEntryAction va = delegate(CFItem item)
+            {
+                tw.WriteLine(item.Name);
+            };
+
+            cf.RootStorage.VisitEntries(va, true);
+
+            tw.Close();
+
         }
 
         //[TestMethod]
@@ -102,12 +122,12 @@ namespace OLECFSTest
         //    TextWriter tw = new StreamWriter(output);
         //    Console.SetOut(tw);
 
-        //    VisitedEntryAction va = delegate(CFSItem item)
+        //    VisitedEntryAction va = delegate(CFItem item)
         //    {
         //        CFStream stream = item as CFStream;
         //        if (stream != null)
         //        {
-        //            FileStream fs = new FileStream("C:\\Documents and Settings\\blaseotf\\My Documents\\My Pictures\\" + item.Name+".jpg", FileMode.Create);
+        //            FileStream fs = new FileStream("C:\\Documents and Settings\\blaseotf\\My Documents\\My Pictures\\" + item.Name + ".jpg", FileMode.Create);
 
         //            BinaryWriter bw = new BinaryWriter(fs);
         //            byte[] b = stream.GetData();
@@ -129,7 +149,7 @@ namespace OLECFSTest
         [TestMethod]
         public void Test_VISIT_STORAGE()
         {
-            const String FILENAME = "C:\\testVisiting.xls";
+            String FILENAME = TestContext.TestDir + "\\testVisiting.xls";
 
             // Remove...
             if (File.Exists(FILENAME))
@@ -156,12 +176,12 @@ namespace OLECFSTest
 
             CompoundFile cf = new CompoundFile(FILENAME);
 
-            FileStream output = new FileStream("C:\\reportVisit.txt", FileMode.Create);
+            FileStream output = new FileStream(TestContext.TestDir + "\\reportVisit.txt", FileMode.Create);
             TextWriter sw = new StreamWriter(output);
 
             Console.SetOut(sw);
 
-            VisitedEntryAction va = delegate(CFSItem target)
+            VisitedEntryAction va = delegate(CFItem target)
             {
                 sw.WriteLine(target.Name);
             };
@@ -172,19 +192,38 @@ namespace OLECFSTest
             sw.Close();
         }
 
-        //[TestMethod]
-        //public void Test_DELETE_DIRECTORY()
-        //{
-        //    const String FILENAME = "MultipleStorage.cfs";
-        //    CompoundFile cf = new CompoundFile(FILENAME);
+        [TestMethod]
+        public void Test_DELETE_DIRECTORY()
+        {
+            String FILENAME = "MultipleStorage2.cfs";
+            CompoundFile cf = new CompoundFile(FILENAME);
 
-        //    CFStorage st = cf.RootStorage.GetStorage("MyStorage");
-        //    st.DeleteStream("MyStream");
+            CFStorage st = cf.RootStorage.GetStorage("MyStorage");
+            //st.DeleteStream("MyStream");
 
-        //    cf.Save(OUTPUT_DIR + "MultipleStorageREMOVED.cfs");
+            //cf.Save(OUTPUT_DIR + "MultipleStorageREMOVED.cfs");
+            st.Delete("AnotherStorage", typeof(CFStorage));
 
-        //    cf.Close();
-        //}
+            cf.Save("MultipleStorage_Delete.cfs");
+
+            cf.Close();
+        }
+
+        [TestMethod]
+        public void Test_DELETE_STREAM()
+        {
+            String FILENAME = "MultipleStorage2.cfs";
+            CompoundFile cf = new CompoundFile(FILENAME);
+
+            CFStorage found = null;
+            VisitedEntryAction action = delegate(CFItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; };
+            cf.RootStorage.VisitEntries(action, true);
+           
+            found.Delete("Another2Stream", typeof(CFStream));
+
+            cf.Save("MultipleDeleteStream");
+            cf.Close();
+        }
 
         [TestMethod]
         public void Test_CHECK_DISPOSED_()
@@ -202,7 +241,7 @@ namespace OLECFSTest
             }
             catch (Exception ex)
             {
-                Assert.IsTrue(ex is CFSException);
+                Assert.IsTrue(ex is CFException);
             }
         }
     }
