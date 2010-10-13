@@ -37,7 +37,7 @@ namespace OLECompoundFileStorage
         BLACK = 1
     }
 
-    public class DirectoryEntry : IComparable, IDirectoryEntry
+    internal class DirectoryEntry : BSTreeNode<DirectoryEntry>, IDirectoryEntry 
     {
 
         private int sid = -1;
@@ -349,5 +349,33 @@ namespace OLECompoundFileStorage
             get { return GetEntryName(); }
         }
 
+
+        public override void CopyTo(DirectoryEntry dstObj)
+        {
+            dstObj.child = this.child;
+            
+            dstObj.entryName = new byte[64];
+            this.entryName.CopyTo(entryName, 0);
+            
+            dstObj.modifyDate = new byte[8];
+            this.modifyDate.CopyTo(dstObj.modifyDate, 0);
+
+            dstObj.creationDate = new byte[8];
+            this.creationDate.CopyTo(dstObj.creationDate, 0);
+
+            dstObj.leftSibling = this.leftSibling;
+            dstObj.nameLength = this.nameLength;
+            dstObj.rightSibling = this.rightSibling;
+            dstObj.sid = this.sid;
+            dstObj.size = this.size;
+            dstObj.startSetc = this.startSetc;
+            dstObj.stateBits = this.stateBits;
+            dstObj.stgColor = this.stgColor;
+            dstObj.stgType = this.stgType;
+            dstObj.storageCLSID = new Guid(this.storageCLSID.ToByteArray());
+            
+            
+            
+        }
     }
 }

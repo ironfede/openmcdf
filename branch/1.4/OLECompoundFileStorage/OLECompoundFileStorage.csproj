@@ -50,6 +50,7 @@
     <Compile Include="CFItem.cs" />
     <Compile Include="CFStorage.cs" />
     <Compile Include="DirectoryEntry.cs" />
+    <Compile Include="DirectoryTree.cs" />
     <Compile Include="Header.cs" />
     <Compile Include="CFStream.cs" />
     <Compile Include="IDirectoryEntry.cs" />
