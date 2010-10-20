@@ -23,16 +23,16 @@ using System.Collections;
 
 namespace OLECompoundFileStorage
 {
-    internal class DirEntryComparer : IComparer<IDirectoryEntry>
-    {
-        public int Compare(IDirectoryEntry x, IDirectoryEntry y)
-        {
-            // X CompareTo Y : X > Y --> 1 ; X < Y  --> -1
-            return (x.CompareTo(y));
+    //internal class DirEntryComparer : IComparer<IDirectoryEntry>
+    //{
+    //    public int Compare(IDirectoryEntry x, IDirectoryEntry y)
+    //    {
+    //        // X CompareTo Y : X > Y --> 1 ; X < Y  --> -1
+    //        return (x.CompareTo(y));
 
-            //Compare X < Y --> -1
-        }
-    }
+    //        //Compare X < Y --> -1
+    //    }
+    //}
 
     /// <summary>
     /// Standard Microsoft&#169; Compound File implementation.
@@ -803,7 +803,7 @@ namespace OLECompoundFileStorage
             return result;
         }
 
-        private IDirectoryEntry rootStorage;
+        private DirectoryEntry rootStorage;
 
         public CFStorage RootStorage
         {
@@ -813,7 +813,7 @@ namespace OLECompoundFileStorage
             }
         }
 
-        internal void AddDirectoryEntry(IDirectoryEntry de)
+        internal void AddDirectoryEntry(DirectoryEntry de)
         {
             directoryEntries.Add(de);
             de.SID = directoryEntries.Count - 1;
@@ -844,22 +844,27 @@ namespace OLECompoundFileStorage
             }
         }
 
-        internal BinarySearchTree<IDirectoryEntry> GetChildrenTree(int sid)
+        internal DirectoryTree GetChildrenTree(int sid)
         {
-            BinarySearchTree<IDirectoryEntry> bst
-                = new BinarySearchTree<IDirectoryEntry>(new DirEntryComparer());
+            //BinarySearchTree<IDirectoryEntry> bst
+            //    = new BinarySearchTree<IDirectoryEntry>(new DirEntryComparer());
 
-            // Load children from their original tree.
-            DoLoadChildren(bst, directoryEntries[sid]);
+            //// Load children from their original tree.
+            //DoLoadChildren(bst, directoryEntries[sid]);
 
-            // Rebuild of (Red)-Black tree of entry children.
-            bst.VisitTreeInOrder(RefreshSIDs);
+            //// Rebuild of (Red)-Black tree of entry children.
+            //bst.VisitTreeInOrder(RefreshSIDs);
+
+            Directory root = directoryEntries[sid];
+            DirectoryTree dt = new DirectoryTree();
+            
 
             return bst;
         }
 
-        private void DoLoadChildren(BinarySearchTree<IDirectoryEntry> bst, IDirectoryEntry de)
+        private void DoLoadChildren(DirectoryEntry de)
         {
+
             if (de.Child != DirectoryEntry.NOSTREAM)
             {
                 if (directoryEntries[de.Child].StgType == StgType.STGTY_STREAM)
@@ -948,7 +953,7 @@ namespace OLECompoundFileStorage
             }
         }
 
-        internal void RefreshIterative(BinaryTreeNode<IDirectoryEntry> node)
+        internal void RefreshIterative(BinaryTreeNode<DirectoryEntry> node)
         {
             if (node == null) return;
             RefreshSIDs(node);
@@ -966,7 +971,7 @@ namespace OLECompoundFileStorage
 
             ((CFStorage)rootStorage).Children.VisitTreeInOrder(new NodeAction<IDirectoryEntry>(RefreshIterative));
 
-            foreach (IDirectoryEntry di in directoryEntries)
+            foreach (DirectoryEntry di in directoryEntries)
             {
                 di.Write(bw);
             }
@@ -1071,12 +1076,12 @@ namespace OLECompoundFileStorage
             }
         }
 
-        internal void SetData(IDirectoryEntry directoryEntry, Byte[] buffer)
+        internal void SetData(DirectoryEntry directoryEntry, Byte[] buffer)
         {
             SetStreamData(directoryEntry, buffer);
         }
 
-        private void SetStreamData(IDirectoryEntry directoryEntry, Byte[] buffer)
+        private void SetStreamData(DirectoryEntry directoryEntry, Byte[] buffer)
         {
             SectorType _st = SectorType.Normal;
             int _sectorSize = Sector.SECTOR_SIZE;
@@ -1140,9 +1145,9 @@ namespace OLECompoundFileStorage
 
             byte[] result = null;
 
-            IDirectoryEntry de = cFStream as IDirectoryEntry;
+            DirectoryEntry de = cFStream as DirectoryEntry;
 
-            IDirectoryEntry root = directoryEntries[0];
+            DirectoryEntry root = directoryEntries[0];
 
             if (de.Size <= header.MinSizeStandardStream)
             {
@@ -1305,8 +1310,8 @@ namespace OLECompoundFileStorage
             }
         }
 
-        private List<IDirectoryEntry> directoryEntries
-            = new List<IDirectoryEntry>();
+        private List<DirectoryEntry> directoryEntries
+            = new List<DirectoryEntry>();
 
         //internal List<IDirectoryEntry> DirectoryEntries
         //{
@@ -1314,7 +1319,7 @@ namespace OLECompoundFileStorage
         //}
 
 
-        internal IDirectoryEntry RootEntry
+        internal DirectoryEntry RootEntry
         {
             get
             {

@@ -30,7 +30,7 @@ namespace OLECompoundFileStorage
     /// </summary>
     public class CFStream : CFItem
     {
-        
+
         //private CFStream()
         //{
         //    this.dirEntry = new DirectoryEntry(StgType.STGTY_STREAM);
@@ -38,21 +38,20 @@ namespace OLECompoundFileStorage
         //}
 
         internal CFStream(CompoundFile sectorManager)
-            : base(sectorManager)
+            : base(sectorManager, StgType.STGTY_STREAM)
         {
-            this.dirEntry = new DirectoryEntry(StgType.STGTY_STREAM);
             sectorManager.AddDirectoryEntry(this);
-            this.dirEntry.StgColor = StgColor.BLACK;
+            this.StgColor = StgColor.BLACK;
         }
 
-        internal CFStream(CompoundFile sectorManager, IDirectoryEntry dirEntry)
-            : base(sectorManager)
-        {
-            if (dirEntry == null || dirEntry.SID < 0)
-                throw new CFException("Attempting to add a CFStream using an unitialized directory");
+        //internal CFStream(CompoundFile sectorManager, DirectoryEntry dirEntry)
+        //    : base(sectorManager, StgType.STGTY_STREAM)
+        //{
+        //    if (dirEntry == null || dirEntry.SID < 0)
+        //        throw new CFException("Attempting to add a CFStream using an unitialized directory");
 
-            this.dirEntry = dirEntry as DirectoryEntry;
-        }
+        //    this.dirEntry = dirEntry as DirectoryEntry;
+        //}
 
         /// <summary>
         /// Set the data associated with the stream object
@@ -91,7 +90,7 @@ namespace OLECompoundFileStorage
                 input.Seek(0, SeekOrigin.Begin);
             }
 
-            input.Read(buffer,0,(int)input.Length);
+            input.Read(buffer, 0, (int)input.Length);
             this.SetData(buffer);
         }
     }

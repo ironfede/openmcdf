@@ -37,7 +37,7 @@ namespace OLECompoundFileStorage
         BLACK = 1
     }
 
-    internal class DirectoryEntry : BSTreeNode<DirectoryEntry>, IDirectoryEntry 
+    public class DirectoryEntry : BSTreeNode<DirectoryEntry>
     {
 
         private int sid = -1;
@@ -192,7 +192,7 @@ namespace OLECompoundFileStorage
 
         private byte[] creationDate = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-        public byte[] CreationDate
+        public byte[] CreationDateBytes
         {
             get
             {
@@ -206,7 +206,7 @@ namespace OLECompoundFileStorage
 
         private byte[] modifyDate = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-        public byte[] ModifyDate
+        public byte[] ModifyDateBytes
         {
             get
             {
@@ -243,28 +243,27 @@ namespace OLECompoundFileStorage
             }
         }
 
-
-        public int CompareTo(object other)
+        public override int CompareTo(DirectoryEntry other)
         {
             const int THIS_IS_GREATER = 1;
             const int OTHER_IS_GREATER = -1;
 
-            if ((other as IDirectoryEntry) == null)
+            if (other == null)
                 throw new Exception();
 
-            IDirectoryEntry otherDir = (IDirectoryEntry)other;
-            if (this.NameLength > otherDir.NameLength)
+
+            if (this.NameLength > other.NameLength)
             {
                 return THIS_IS_GREATER;
             }
-            else if (this.NameLength < otherDir.NameLength)
+            else if (this.NameLength < other.NameLength)
             {
                 return OTHER_IS_GREATER;
             }
             else
             {
                 String thisName = Encoding.Unicode.GetString(this.EntryName).ToUpper();
-                String otherName = Encoding.Unicode.GetString(otherDir.EntryName).ToUpper();
+                String otherName = Encoding.Unicode.GetString(other.EntryName).ToUpper();
 
                 for (int z = 0; z < thisName.Length; z++)
                 {
@@ -279,7 +278,9 @@ namespace OLECompoundFileStorage
             }
 
             //   return String.Compare(Encoding.Unicode.GetString(this.EntryName).ToUpper(), Encoding.Unicode.GetString(other.EntryName).ToUpper());
+
         }
+
 
 
         public void Write(BinaryWriter bw)
@@ -353,10 +354,10 @@ namespace OLECompoundFileStorage
         public override void CopyTo(DirectoryEntry dstObj)
         {
             dstObj.child = this.child;
-            
+
             dstObj.entryName = new byte[64];
             this.entryName.CopyTo(entryName, 0);
-            
+
             dstObj.modifyDate = new byte[8];
             this.modifyDate.CopyTo(dstObj.modifyDate, 0);
 
@@ -373,9 +374,6 @@ namespace OLECompoundFileStorage
             dstObj.stgColor = this.stgColor;
             dstObj.stgType = this.stgType;
             dstObj.storageCLSID = new Guid(this.storageCLSID.ToByteArray());
-            
-            
-            
         }
     }
 }

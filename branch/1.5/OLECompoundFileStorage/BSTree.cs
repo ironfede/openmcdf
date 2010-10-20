@@ -153,39 +153,41 @@ namespace OLECompoundFileStorage
             }
             else // two children ***
             {
-                enumeratorList.Clear();
-                GetSubtree(item.Right);
+                List<T> result = GetSubTree(item.Right);
 
-                if (enumeratorList.Count > 0) //lesser one of right subtree
+                if (result.Count > 0) //lesser one of right subtree
                 {
-                    enumeratorList[0].CopyTo(item);
-                    Remove(enumeratorList[0]);
+                    result[0].CopyTo(item);
+                    Remove(result[0]);
                 }
                 else
                 {
-                    enumeratorList[0].CopyTo(item);
-                    Remove(enumeratorList[0]);
+                    result[0].CopyTo(item);
+                    Remove(result[0]);
                 }
 
                 return true;
             }
-
-
-            return false;
         }
 
+        public static List<T> GetSubTree(BSTreeNode<T> ptr)
+        {
+            List<T> result = new List<T>();
 
-        private List<T> enumeratorList = new List<T>();
+            DoGetSubtree(ptr, result);
 
-        private void GetSubtree(BSTreeNode<T> ptr)
+            return result;
+        }
+
+        private static void DoGetSubtree(BSTreeNode<T> ptr, List<T> result)
         {
             if (ptr.Left != null)
-                GetSubtree(ptr.Left);
+                DoGetSubtree(ptr.Left, result);
 
-            enumeratorList.Add(ptr as T);
+            result.Add(ptr as T);
 
             if (ptr.Right != null)
-                GetSubtree(ptr.Right);
+                DoGetSubtree(ptr.Right, result);
 
         }
 
@@ -193,12 +195,8 @@ namespace OLECompoundFileStorage
         {
             BSTreeNode<T> ptr = _root;
 
-            enumeratorList.Clear();
 
-            GetSubtree(_root);
-
-            return enumeratorList.GetEnumerator();
-
+            return GetSubTree(ptr).GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()

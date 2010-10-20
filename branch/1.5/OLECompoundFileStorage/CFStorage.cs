@@ -54,9 +54,9 @@ namespace OLECompoundFileStorage
     /// </summary>
     public class CFStorage : CFItem
     {
-        private BinarySearchTree<IDirectoryEntry> children = null;
+        private DirectoryTree children = null;
 
-        internal BinarySearchTree<IDirectoryEntry> Children
+        internal DirectoryTree Children
         {
             get
             {
@@ -64,7 +64,7 @@ namespace OLECompoundFileStorage
                 {
                     if (this.CompoundFile.IsFileMapped)
                     {
-                        children = LoadChildren(this.dirEntry.SID);
+                        children = LoadChildren(this.SID);
                     }
                     else
                     {
@@ -108,7 +108,7 @@ namespace OLECompoundFileStorage
         }
 
 
-        private BinarySearchTree<IDirectoryEntry> LoadChildren(int SID)
+        private DirectoryTree LoadChildren(int SID)
         {
             return this.CompoundFile.GetChildrenTree(SID);
         }
