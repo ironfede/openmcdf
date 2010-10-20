@@ -28,7 +28,7 @@ namespace OLECompoundFileStorage
         Normal, Mini, FAT, DIFAT
     }
 
-    public class Sector
+    internal class Sector
     {
         public static int SECTOR_SIZE = 512;
         public static int MINISECTOR_SIZE = 64;

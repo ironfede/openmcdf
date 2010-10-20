@@ -27,7 +27,7 @@ namespace OLECompoundFileStorage
     /// <summary>
     /// Stream decorator for a Sector or miniSector chain
     /// </summary>
-    public class StreamView : Stream
+    internal class StreamView : Stream
     {
         private int sectorSize = Sector.SECTOR_SIZE;
 

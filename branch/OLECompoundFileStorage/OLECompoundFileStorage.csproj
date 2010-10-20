@@ -44,8 +44,6 @@
     <Compile Include="BinaryTree\Node.cs" />
     <Compile Include="BinaryTree\NodeList.cs" />
     <Compile Include="BinaryTree\TraversalMethods.cs" />
-    <Compile Include="BSTree.cs" />
-    <Compile Include="BSTreeNode.cs" />
     <Compile Include="CFException.cs" />
     <Compile Include="CFItem.cs" />
     <Compile Include="CFStorage.cs" />
