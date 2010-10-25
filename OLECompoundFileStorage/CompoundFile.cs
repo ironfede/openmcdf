@@ -1144,7 +1144,7 @@ namespace OLECompoundFileStorage
 
             IDirectoryEntry root = directoryEntries[0];
 
-            if (de.Size <= header.MinSizeStandardStream)
+            if (de.Size < header.MinSizeStandardStream)
             {
 
                 StreamView miniView
