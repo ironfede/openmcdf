@@ -109,7 +109,7 @@ namespace OLECompoundFileStorage
         }
 
         /// <summary>
-        /// Load an existing compound file
+        /// Load an existing compound file.
         /// </summary>
         /// <param name="fileName">Compound file to read from</param>
         /// <example>
@@ -127,9 +127,39 @@ namespace OLECompoundFileStorage
         /// cf.Close();
         /// </code>
         /// </example>
+        /// <remarks>
+        /// File will be open in read-only mode: it has to be saved
+        /// with a different filename.
+        /// You have to provide a wrapping implementation
+        /// in order to remove/substitute an existing file.
+        /// </remarks>
         public CompoundFile(String fileName)
         {
             LoadFile(fileName);
+        }
+
+        /// <summary>
+        /// Load an existing compound file from a stream.
+        /// </summary>
+        /// <param name="fileName">Streamed compound file</param>
+        /// <example>
+        /// <code>
+        /// //A xls file should have a Workbook stream
+        /// String filename = "report.xls";
+        ///
+        /// CompoundFile cf = new CompoundFile(filename);
+        /// CFStream foundStream = cf.RootStorage.GetStream("Workbook");
+        ///
+        /// byte[] temp = foundStream.GetData();
+        ///
+        /// Assert.IsNotNull(temp);
+        ///
+        /// cf.Close();
+        /// </code>
+        /// </example>
+        public CompoundFile(Stream stream)
+        {
+            LoadStream(stream);
         }
 
         private void LoadFile(String fileName)
@@ -143,6 +173,46 @@ namespace OLECompoundFileStorage
             header.Read(fileReader);
 
             int n_sector = Ceiling((double)((fs.Length - Sector.SECTOR_SIZE) / Sector.SECTOR_SIZE));
+
+            sectors = new ArrayList(n_sector);
+
+            for (int i = 0; i < n_sector; i++)
+            {
+                sectors.Add(null);
+            }
+
+            LoadDirectories();
+
+            this.rootStorage
+                = new CFStorage(this, directoryEntries[0]);
+        }
+
+        private void LoadStream(Stream stream)
+        {
+            this.header = new Header();
+            //this.directory = new Directory();
+
+            Stream temp = null;
+
+            if (stream.CanSeek)
+            {
+                temp = stream;
+            }
+            else
+            {
+                byte[] buffer = new byte[stream.Length];
+                stream.Read(buffer, 0, buffer.Length);
+                MemoryStream ms = new MemoryStream(buffer);
+                temp = ms;
+            }
+
+            temp.Seek(0, SeekOrigin.Begin);
+
+            fileReader = new BinaryReader(temp);
+
+            header.Read(fileReader);
+
+            int n_sector = Ceiling((double)((temp.Length - Sector.SECTOR_SIZE) / Sector.SECTOR_SIZE));
 
             sectors = new ArrayList(n_sector);
 
@@ -805,6 +875,31 @@ namespace OLECompoundFileStorage
 
         private IDirectoryEntry rootStorage;
 
+        /// <summary>
+        /// The entry point object that represents the 
+        /// root of the structures tree to get or set storage or
+        /// stream data.
+        /// <example>
+        /// <code>
+        /// 
+        ///    //Create a compound file
+        ///    string FILENAME = "MyFileName.cfs";
+        ///    CompoundFile ncf = new CompoundFile();
+        ///
+        ///    CFStorage l1 = ncf.RootStorage.AddStorage("Storage Level 1");
+        ///
+        ///    l1.AddStream("l1ns1");
+        ///    l1.AddStream("l1ns2");
+        ///    l1.AddStream("l1ns3");
+        ///    CFStorage l2 = l1.AddStorage("Storage Level 2");
+        ///    l2.AddStream("l2ns1");
+        ///    l2.AddStream("l2ns2");
+        ///
+        ///    ncf.Save(FILENAME);
+        ///    ncf.Close();
+        /// </code>
+        /// </example>
+        /// </summary>
         public CFStorage RootStorage
         {
             get
@@ -987,6 +1082,11 @@ namespace OLECompoundFileStorage
             bw.Close();
         }
 
+
+        /// <summary>
+        /// Saves the in-memory image of Compound File to a file.
+        /// </summary>
+        /// <param name="fileName">File name to write the compound file to</param>
         public void Save(String fileName)
         {
             if (_disposed)
@@ -1025,6 +1125,14 @@ namespace OLECompoundFileStorage
             bw.Close();
         }
 
+        /// <summary>
+        /// Saves the in-memory image of Compound File to a stream.
+        /// <remarks>
+        /// A non-seekable media (like a network stream) induces a 
+        /// slightly performance penalty.
+        /// </remarks>
+        /// </summary>
+        /// <param name="stream">The stream to save compound File to</param>
         public void Save(Stream stream)
         {
             if (_disposed)
@@ -1217,7 +1325,7 @@ namespace OLECompoundFileStorage
             }
 
             directoryEntries[sid].StgType = StgType.STGTY_INVALID;
-           
+
             //// Update the SIDs of the entries following the (tobe)removed one.
             //// This update will NOT invalidate sorting 
             //for (int i = 0; i < directoryEntries.Count; i++)
@@ -1239,6 +1347,36 @@ namespace OLECompoundFileStorage
             //this.directoryEntries.RemoveAt(sid);
         }
 
+        /// <summary>
+        /// Close the Compound File object <see cref="T:OLECompoundFileStorage.CompoundFile">CompoundFile</see> and
+        /// free all associated resources (e.g. open file handle and allocated memory).
+        /// <remarks>
+        /// When the <see cref="T:OLECompoundFileStorage.CompoundFile.Close()">Close</see> method is called,
+        /// all the associated stream and storage objects are invalidated:
+        /// any operation invoked on them will produce a <see cref="T:OLECompoundFileStorage.CFDisposedException">CFDisposedException</see>.
+        /// </remarks>
+        /// </summary>
+        /// <example>
+        /// <code>
+        ///    const String FILENAME = "CompoundFile.cfs";
+        ///    CompoundFile cf = new CompoundFile(FILENAME);
+        ///
+        ///    CFStorage st = cf.RootStorage.GetStorage("MyStorage");
+        ///    cf.Close();
+        ///
+        ///    try
+        ///    {
+        ///        byte[] temp = st.GetStream("MyStream").GetData();
+        ///        
+        ///        // The following line will fail because back-end object has been closed
+        ///        Assert.Fail("Stream without media");
+        ///    }
+        ///    catch (Exception ex)
+        ///    {
+        ///        Assert.IsTrue(ex is CFDisposedException);
+        ///    }
+        /// </code>
+        /// </example>
         public void Close()
         {
             ((IDisposable)this).Dispose();
@@ -1356,24 +1494,24 @@ namespace OLECompoundFileStorage
         //    }
         //}
 
-        public void Write(System.IO.BinaryWriter bw)
-        {
-            int dirSectNumber = 0;
+        //public void Write(System.IO.BinaryWriter bw)
+        //{
+        //    int dirSectNumber = 0;
 
-            foreach (DirectoryEntry dirEntry in directoryEntries)
-            {
-                dirEntry.Write(bw);
-                dirSectNumber++;
-            }
+        //    foreach (DirectoryEntry dirEntry in directoryEntries)
+        //    {
+        //        dirEntry.Write(bw);
+        //        dirSectNumber++;
+        //    }
 
-            // Padding with FREESECT
-            while (dirSectNumber++ % 512 != 0)
-            {
-                for (int i = 0; i < 31; i++)
-                    bw.Write(Sector.FREESECT);
+        //    // Padding with FREESECT
+        //    while (dirSectNumber++ % 512 != 0)
+        //    {
+        //        for (int i = 0; i < 31; i++)
+        //            bw.Write(Sector.FREESECT);
 
-                dirSectNumber++;
-            }
-        }
+        //        dirSectNumber++;
+        //    }
+        //}
     }
 }

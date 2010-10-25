@@ -39,6 +39,23 @@ namespace OLECompoundFileStorage
 
     }
 
+    public class CFDisposedException : InvalidOperationException
+    {
+
+        public CFDisposedException(string message)
+            : base(message, null)
+        {
+
+        }
+
+        public CFDisposedException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+
+        }
+
+    }
+
     public class CFFileFormatException : CFException
     {
         
