@@ -39,6 +39,11 @@ namespace OLECompoundFileStorage
 
     }
 
+    /// <summary>
+    /// Exception raised when a data setter/getter method is invoked
+    /// on a stream or storage object after the disposal of the owner
+    /// compound file object.
+    /// </summary>
     public class CFDisposedException : InvalidOperationException
     {
 
@@ -56,6 +61,10 @@ namespace OLECompoundFileStorage
 
     }
 
+    /// <summary>
+    /// Exception raised when opening a file with invalid header
+    /// or not supported COM/OLE Structured storage version.
+    /// </summary>
     public class CFFileFormatException : CFException
     {
         
@@ -73,6 +82,10 @@ namespace OLECompoundFileStorage
 
     }
 
+    /// <summary>
+    /// Exception raised when a named stream or a storage object
+    /// are not found in a parent storage.
+    /// </summary>
     public class CFItemNotFound : CFException
     {
 

@@ -77,8 +77,10 @@ namespace OLECompoundFileStorage
         ///     byte[] buffer = st.GetData();
         /// </code>
         /// </example>
-        
-        /// <returns></returns>
+        /// <returns>Array of byte containing stream data</returns>
+        /// <exception cref="T:OLECompoundFileStorage.CFDisposedException">
+        /// Raised when the owner compound file has been closed.
+        /// </exception>
         public Byte[] GetData()
         {
             CheckDisposed();

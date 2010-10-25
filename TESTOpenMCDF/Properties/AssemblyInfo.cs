@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("StucturedStorageExplorer")]
 [assembly: AssemblyDescription("COM/OLE Stuctured Storage Viewer - Sample application for OpenMCDF component.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("-")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("StucturedStorageExplorer")]
-[assembly: AssemblyCopyright("Copyright © Federico Blaseotto, 2010")]
+[assembly: AssemblyCopyright("Copyright 2010 © Federico Blaseotto")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,4 +32,4 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.2.*")]
+[assembly: AssemblyVersion("1.4.*")]
