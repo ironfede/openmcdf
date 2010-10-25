@@ -37,7 +37,7 @@ namespace OLECompoundFileStorage
         protected void CheckDisposed()
         {
             if (compoundFile.IsClosed)
-                throw new CFException("Owner Compound file has been closed and owned items have been invalidated");
+                throw new CFDisposedException("Owner Compound file has been closed and owned items have been invalidated");
         }
 
         protected CFItem(CompoundFile compoundFile)

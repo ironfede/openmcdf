@@ -241,7 +241,7 @@ namespace OLECFSTest
             }
             catch (Exception ex)
             {
-                Assert.IsTrue(ex is CFException);
+                Assert.IsTrue(ex is CFDisposedException);
             }
         }
     }

@@ -120,7 +120,6 @@ namespace OLECompoundFileStorage
         /// <returns>The new <see cref="T:OLECompoundFileStorage.CFStream">stream</see> reference</returns>
         public CFStream AddStream(String streamName)
         {
-
             CheckDisposed();
 
             if (String.IsNullOrEmpty(streamName))
@@ -140,13 +139,16 @@ namespace OLECompoundFileStorage
             return cfo as CFStream;
         }
 
+
         /// <summary>
-        /// Get a named <see cref="T:OLECompoundFileStorage.CFStream">stream</see> contained in the current one if existing, null otherwise.
+        /// Get a named <see cref="T:OLECompoundFileStorage.CFStream">stream</see> contained in the current storage if existing.
         /// </summary>
-        /// <exception cref="T:OLECompoundFileStorage.CFItemNotFound"></exception>
         /// <param name="streamName">Name of the stream to look for</param>
-        /// <returns>A stream reference if existing, null otherwise</returns>
-        
+        /// <returns>A stream reference if existing</returns>
+        /// <exception cref="T:OLECompoundFileStorage.CFItemNotFound">
+        /// If no entry with the given name can be found in direct children of the current
+        /// storage, a CFItemNotFound exception is raised.
+        /// </exception>
         public CFStream GetStream(String streamName)
         {
             CheckDisposed();
@@ -171,10 +173,14 @@ namespace OLECompoundFileStorage
         }
 
         /// <summary>
-        /// Get a named storage contained in the current one if existing, null otherwise.
+        /// Get a named storage contained in the current one if existing.
         /// </summary>
         /// <param name="storageName">Name of the storage to look for</param>
-        /// <returns>A storage reference if existing, null otherwise</returns>
+        /// <returns>A storage reference if existing.</returns>
+        /// <exception cref="T:OLECompoundFileStorage.CFItemNotFound">
+        /// If no entry with the given name can be found in direct children of the current
+        /// storage, a CFItemNotFound exception is raised.
+        /// </exception>
         public CFStorage GetStorage(String storageName)
         {
             CheckDisposed();

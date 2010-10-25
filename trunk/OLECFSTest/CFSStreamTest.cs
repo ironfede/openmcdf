@@ -166,8 +166,8 @@ namespace OLECFSTest
         {
             const int SIZE = 15388609; //Incredible condition of 'resonance' between FAT and DIFAT sec number
             //const int SIZE = 15345665; // 64 -> 65 NOT working
-            byte[] b = GetBuffer(SIZE, 0);
-
+            //byte[] b = GetBuffer(SIZE, 0);
+            byte[] b = new byte[] { 0x0, 0x1, 0x2, 0x3 };
             CompoundFile cf = new CompoundFile();
             CFStream myStream = cf.RootStorage.AddStream("MyStream");
             Assert.IsNotNull(myStream);
@@ -360,6 +360,20 @@ namespace OLECFSTest
 
         }
 
+
+        [TestMethod]
+        public void Test_INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS_STREAM()
+        {
+
+            Random r = new Random();
+
+            for (int i = r.Next(1, 100); i < 1024 * 1024 * 70; i = i << 1)
+            {
+                SingleWriteReadMatchingSTREAMED(i + r.Next(0, 3));
+            }
+
+        }
+
         private void SingleWriteReadMatching(int size)
         {
 
@@ -379,6 +393,31 @@ namespace OLECFSTest
             cf.Close();
 
             CompoundFile cf2 = new CompoundFile(filename);
+            CFStorage st2 = cf2.RootStorage.GetStorage("MyStorage");
+            CFStream sm2 = st2.GetStream("MyStream");
+
+            Assert.IsNotNull(sm2);
+            Assert.IsTrue(sm2.Size == size);
+            Assert.IsTrue(CompareBuffer(sm2.GetData(), b));
+
+            cf2.Close();
+        }
+
+        private void SingleWriteReadMatchingSTREAMED(int size)
+        {
+            MemoryStream ms = new MemoryStream(size);
+
+            CompoundFile cf = new CompoundFile();
+            CFStorage st = cf.RootStorage.AddStorage("MyStorage");
+            CFStream sm = st.AddStream("MyStream");
+
+            byte[] b = GetBuffer(size);
+
+            sm.SetData(b);
+            cf.Save(ms);
+            cf.Close();
+
+            CompoundFile cf2 = new CompoundFile(ms);
             CFStorage st2 = cf2.RootStorage.GetStorage("MyStorage");
             CFStream sm2 = st2.GetStream("MyStream");
 

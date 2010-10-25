@@ -31,12 +31,6 @@ namespace OLECompoundFileStorage
     public class CFStream : CFItem
     {
         
-        //private CFStream()
-        //{
-        //    this.dirEntry = new DirectoryEntry(StgType.STGTY_STREAM);
-        //    this.dirEntry.StgColor = StgColor.BLACK;
-        //}
-
         internal CFStream(CompoundFile sectorManager)
             : base(sectorManager)
         {
@@ -55,8 +49,16 @@ namespace OLECompoundFileStorage
         }
 
         /// <summary>
-        /// Set the data associated with the stream object
+        /// Set the data associated with the stream object.
         /// </summary>
+        /// <example>
+        /// <code>
+        ///    byte[] b = new byte[]{0x0,0x1,0x2,0x3};
+        ///    CompoundFile cf = new CompoundFile();
+        ///    CFStream myStream = cf.RootStorage.AddStream("MyStream");
+        ///    myStream.SetData(b);
+        /// </code>
+        /// </example>
         /// <param name="data">Data bytes to write to this stream</param>
         public void SetData(Byte[] data)
         {
@@ -66,8 +68,16 @@ namespace OLECompoundFileStorage
         }
 
         /// <summary>
-        /// Get the data associated with the stream object
+        /// Get the data associated with the stream object.
         /// </summary>
+        /// <example>
+        /// <code>
+        ///     CompoundFile cf2 = new CompoundFile("AFileName.cfs");
+        ///     CFStream st = cf2.RootStorage.GetStream("MyStream");
+        ///     byte[] buffer = st.GetData();
+        /// </code>
+        /// </example>
+        
         /// <returns></returns>
         public Byte[] GetData()
         {
