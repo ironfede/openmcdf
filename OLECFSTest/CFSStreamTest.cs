@@ -95,6 +95,71 @@ namespace OLECFSTest
             myStream.SetData(b);
         }
 
+        [TestMethod]
+        public void Test_ZERO_LENGTH_WRITE_STREAM()
+        {
+            byte[] b = new byte[0];
+
+            CompoundFile cf = new CompoundFile();
+            CFStream myStream = cf.RootStorage.AddStream("MyStream");
+
+            Assert.IsNotNull(myStream);
+
+            try
+            {
+                myStream.SetData(b);
+            }
+            catch
+            {
+                Assert.Fail("Failed setting zero length stream");
+            }
+
+            cf.Save("ZERO_LENGTH_STREAM.cfs");
+            cf.Close();
+        }
+
+        [TestMethod]
+        public void Test_ZERO_LENGTH_RE_WRITE_STREAM()
+        {
+            byte[] b = new byte[0];
+
+            CompoundFile cf = new CompoundFile();
+            CFStream myStream = cf.RootStorage.AddStream("MyStream");
+
+            Assert.IsNotNull(myStream);
+
+            try
+            {
+                myStream.SetData(b);
+            }
+            catch
+            {
+                Assert.Fail("Failed setting zero length stream");
+            }
+
+            cf.Save("ZERO_LENGTH_STREAM_RE.cfs");
+            cf.Close();
+
+            CompoundFile cfo = new CompoundFile("ZERO_LENGTH_STREAM_RE.cfs");
+            CFStream oStream = cfo.RootStorage.GetStream("MyStream");
+
+            Assert.IsNotNull(oStream);
+            try
+            {
+                oStream.SetData(GetBuffer(30));
+                cfo.Save("ZERO_LENGTH_STREAM_RE2.cfs");
+            }
+            catch
+            {
+                Assert.Fail("Failed re-writing zero length stream");
+            }
+            finally
+            {
+                cfo.Close();
+            }
+
+        }
+
 
         [TestMethod]
         public void Test_WRITE_STREAM_WITH_DIFAT()
