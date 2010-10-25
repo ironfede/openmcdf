@@ -1078,6 +1078,9 @@ namespace OLECompoundFileStorage
 
         private void SetStreamData(IDirectoryEntry directoryEntry, Byte[] buffer)
         {
+            //Quick and dirty :-)
+            if (buffer.Length == 0) return;
+
             SectorType _st = SectorType.Normal;
             int _sectorSize = Sector.SECTOR_SIZE;
 
