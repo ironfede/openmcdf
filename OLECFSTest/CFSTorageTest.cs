@@ -202,7 +202,7 @@ namespace OLECFSTest
             //st.DeleteStream("MyStream");
 
             //cf.Save(OUTPUT_DIR + "MultipleStorageREMOVED.cfs");
-            st.Delete("AnotherStorage", typeof(CFStorage));
+            st.Delete("AnotherStorage");
 
             cf.Save("MultipleStorage_Delete.cfs");
 
@@ -219,9 +219,25 @@ namespace OLECFSTest
             VisitedEntryAction action = delegate(CFItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; };
             cf.RootStorage.VisitEntries(action, true);
            
-            found.Delete("Another2Stream", typeof(CFStream));
+            found.Delete("Another2Stream");
 
             cf.Save("MultipleDeleteStream");
+            cf.Close();
+        }
+
+        [TestMethod]
+        public void Test_DELETE_STREAM2()
+        {
+            String FILENAME = @"C:\Documents and Settings\blaseotf\Desktop\RELAZIONE PIANO CARATTERIZZAZIONE ARGINI.doc";
+            CompoundFile cf = new CompoundFile(FILENAME);
+
+            //CFStorage found = null;
+            //VisitedEntryAction action = delegate(CFItem item) { if (item.Name == "Data") found = item as CFStorage; };
+            //cf.RootStorage.VisitEntries(action, true);
+
+            cf.RootStorage.Delete("Data");
+
+            cf.Save(@"C:\Documents and Settings\blaseotf\Desktop\RELAZIONE PIANO CARATTERIZZAZIONE ARGINI2222.doc");
             cf.Close();
         }
 

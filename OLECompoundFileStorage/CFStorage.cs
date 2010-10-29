@@ -300,7 +300,7 @@ namespace OLECompoundFileStorage
         //    Delete(name, typeof(CFStorage));
         //}
 
-        internal void Delete(String entryName, Type typeCheck)
+        public void Delete(String entryName)
         {
             CheckDisposed();
 
@@ -315,8 +315,8 @@ namespace OLECompoundFileStorage
             if (foundObj == null)
                 throw new CFException("Entry named [" + entryName + "] not found");
 
-            if (foundObj.GetType() != typeCheck)
-                throw new CFException("Entry named [" + entryName + "] has not the correct type");
+            //if (foundObj.GetType() != typeCheck)
+            //    throw new CFException("Entry named [" + entryName + "] has not the correct type");
 
             if (foundObj.StgType == StgType.STGTY_ROOT)
                 throw new CFException("Root storage cannot be removed");
@@ -329,7 +329,7 @@ namespace OLECompoundFileStorage
 
                     foreach (IDirectoryEntry de in temp.Children)
                     {
-                        temp.Delete(de.Name, de.GetType());
+                        temp.Delete(de.Name);
                     }
 
                     // Remove item from children tree
