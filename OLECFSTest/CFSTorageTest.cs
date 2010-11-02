@@ -225,21 +225,7 @@ namespace OLECFSTest
             cf.Close();
         }
 
-        [TestMethod]
-        public void Test_DELETE_STREAM2()
-        {
-            String FILENAME = @"C:\Documents and Settings\blaseotf\Desktop\RELAZIONE PIANO CARATTERIZZAZIONE ARGINI.doc";
-            CompoundFile cf = new CompoundFile(FILENAME);
-
-            //CFStorage found = null;
-            //VisitedEntryAction action = delegate(CFItem item) { if (item.Name == "Data") found = item as CFStorage; };
-            //cf.RootStorage.VisitEntries(action, true);
-
-            cf.RootStorage.Delete("Data");
-
-            cf.Save(@"C:\Documents and Settings\blaseotf\Desktop\RELAZIONE PIANO CARATTERIZZAZIONE ARGINI2222.doc");
-            cf.Close();
-        }
+        
 
         [TestMethod]
         public void Test_CHECK_DISPOSED_()

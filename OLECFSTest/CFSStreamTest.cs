@@ -166,8 +166,8 @@ namespace OLECFSTest
         {
             const int SIZE = 15388609; //Incredible condition of 'resonance' between FAT and DIFAT sec number
             //const int SIZE = 15345665; // 64 -> 65 NOT working
-            //byte[] b = GetBuffer(SIZE, 0);
-            byte[] b = new byte[] { 0x0, 0x1, 0x2, 0x3 };
+            byte[] b = GetBuffer(SIZE, 0);
+            
             CompoundFile cf = new CompoundFile();
             CFStream myStream = cf.RootStorage.AddStream("MyStream");
             Assert.IsNotNull(myStream);
