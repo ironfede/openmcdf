@@ -31,7 +31,7 @@ namespace StructuredStorageExplorer
             treeView1.ImageList.Images.Add(streamImage);
         }
 
-        private MemoryStream inMemoryFileImage;
+        private byte[] inMemoryFileImage;
 
         private void btnOpenFile_Click(object sender, EventArgs e)
         {
@@ -44,8 +44,9 @@ namespace StructuredStorageExplorer
                     MemoryStream ms = new MemoryStream(bre.ReadBytes((int)fs.Length));
                     fs.Flush();
                     fs.Close();
-                    inMemoryFileImage = ms;
-                    
+                    inMemoryFileImage = ms.ToArray();
+                    ms.Close();
+
                     LoadFile();
                 }
                 catch
@@ -67,7 +68,7 @@ namespace StructuredStorageExplorer
             {
                 //Load file
 
-                cf = new CompoundFile(inMemoryFileImage);
+                cf = new CompoundFile(new MemoryStream(inMemoryFileImage));
 
                 TreeNode root = null;
                 root = treeView1.Nodes.Add("Root Entry", "Root");
@@ -79,12 +80,17 @@ namespace StructuredStorageExplorer
             {
                 treeView1.Nodes.Clear();
                 MessageBox.Show("Internal error: " + ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+
+
+                inMemoryFileImage = null;
             }
             finally
             {
                 if (cf != null)
                     cf.Close();
             }
+
         }
 
         /// <summary>
@@ -220,7 +226,7 @@ namespace StructuredStorageExplorer
             CompoundFile cf = null;
             try
             {
-                cf = new CompoundFile(openFileDialog1.FileName);
+                cf = new CompoundFile(new MemoryStream(inMemoryFileImage));
                 CFStorage r = cf.RootStorage;
 
                 //Navigate into the storage, following path parts
@@ -234,7 +240,8 @@ namespace StructuredStorageExplorer
                 MemoryStream ms = new MemoryStream();
                 cf.Save(ms);
                 cf.Close();
-                inMemoryFileImage = ms;
+                inMemoryFileImage = ms.ToArray();
+                ms.Close();
 
                 LoadFile();
 
@@ -246,6 +253,18 @@ namespace StructuredStorageExplorer
             {
                 //cf.Close();
             }
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                CompoundFile cf = new CompoundFile(new MemoryStream(inMemoryFileImage));
+                cf.Save(saveFileDialog1.FileName);
+                cf.Close();
+                
+            }
+
         }
     }
 }
