@@ -1323,8 +1323,10 @@ namespace OLECompoundFileStorage
                     = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Normal);
                 FreeChain(chain);
             }
+            Random r =new Random();
 
-            directoryEntries[sid].StgType = StgType.STGTY_INVALID;
+            directoryEntries[sid].SetEntryName("_DELETED_NAME_" + r.Next(short.MaxValue).ToString());
+            //directoryEntries[sid].StgType = StgType.STGTY_INVALID;
 
             //// Update the SIDs of the entries following the (tobe)removed one.
             //// This update will NOT invalidate sorting 
