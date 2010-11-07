@@ -54,7 +54,7 @@ namespace OleCompoundFileStorage
     /// </summary>
     public class CFStorage : CFItem
     {
-        private BinarySearchTree<IDirectoryEntry> children = null;
+        private BinarySearchTree<IDirectoryEntry> children;
 
         internal BinarySearchTree<IDirectoryEntry> Children
         {
@@ -90,8 +90,8 @@ namespace OleCompoundFileStorage
         internal CFStorage(CompoundFile compFile)
             : base(compFile)
         {
-            this.dirEntry = new DirectoryEntry(StgType.STGTY_STORAGE);
-            this.dirEntry.StgColor = StgColor.BLACK;
+            this.dirEntry = new DirectoryEntry(StgType.StgStorage);
+            this.dirEntry.StgColor = StgColor.Black;
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace OleCompoundFileStorage
         {
             CheckDisposed();
 
-            DirectoryEntry de = new DirectoryEntry(StgType.STGTY_STREAM);
+            DirectoryEntry de = new DirectoryEntry(StgType.StgStream);
             de.SetEntryName(streamName);
 
             //if (children == null)
@@ -163,7 +163,7 @@ namespace OleCompoundFileStorage
             //}
 
             IDirectoryEntry outDe = null;
-            if (Children.TryFind(de, out outDe) && outDe.StgType == StgType.STGTY_STREAM)
+            if (Children.TryFind(de, out outDe) && outDe.StgType == StgType.StgStream)
             {
                 return outDe as CFStream;
             }
@@ -186,11 +186,11 @@ namespace OleCompoundFileStorage
         {
             CheckDisposed();
 
-            DirectoryEntry de = new DirectoryEntry(StgType.STGTY_STORAGE);
+            DirectoryEntry de = new DirectoryEntry(StgType.StgStorage);
             de.SetEntryName(storageName);
 
             IDirectoryEntry outDe = null;
-            if (Children.TryFind(de, out outDe) && outDe.StgType == StgType.STGTY_STORAGE)
+            if (Children.TryFind(de, out outDe) && outDe.StgType == StgType.StgStorage)
             {
                 return outDe as CFStorage;
             }
@@ -253,7 +253,7 @@ namespace OleCompoundFileStorage
         //}
 
 
-        private NodeAction<IDirectoryEntry> internalAction = null;
+        private NodeAction<IDirectoryEntry> internalAction;
 
         /// <summary>
         /// Visit all entities contained in the storage applying a user provided action
@@ -317,7 +317,7 @@ namespace OleCompoundFileStorage
             CheckDisposed();
 
             // Find entry to delete
-            IDirectoryEntry dto = new DirectoryEntry(StgType.STGTY_INVALID);
+            IDirectoryEntry dto = new DirectoryEntry(StgType.StgInvalid);
             dto.SetEntryName(entryName);
 
             IDirectoryEntry foundObj = null;
@@ -330,12 +330,12 @@ namespace OleCompoundFileStorage
             //if (foundObj.GetType() != typeCheck)
             //    throw new CFException("Entry named [" + entryName + "] has not the correct type");
 
-            if (foundObj.StgType == StgType.STGTY_ROOT)
+            if (foundObj.StgType == StgType.StgRoot)
                 throw new CFException("Root storage cannot be removed");
 
             switch (foundObj.StgType)
             {
-                case StgType.STGTY_STORAGE:
+                case StgType.StgStorage:
 
                     CFStorage temp = new CFStorage(this.CompoundFile, foundObj);
 
@@ -362,7 +362,7 @@ namespace OleCompoundFileStorage
 
                     break;
 
-                case StgType.STGTY_STREAM:
+                case StgType.StgStream:
 
                     // Remove item from children tree
                     this.Children.Remove(foundObj);

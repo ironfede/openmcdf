@@ -122,7 +122,7 @@ namespace OleCompoundFileStorage
         }
 
         //52 4 Not used
-        private uint unUsed2 = 0;
+        private uint unUsed2;
 
         public uint UnUsed2
         {
@@ -154,7 +154,7 @@ namespace OleCompoundFileStorage
         }
 
         //64 4 Total number of sectors used for the short-sector allocation table (➜6.2)
-        private uint miniFATSectorsNumber = 0;
+        private uint miniFATSectorsNumber;
 
         public uint MiniFATSectorsNumber
         {
@@ -173,7 +173,7 @@ namespace OleCompoundFileStorage
         }
 
         //72 4 Total number of sectors used for the master sector allocation table (➜5.1)
-        private uint difatSectorsNumber = 0;
+        private uint difatSectorsNumber;
 
         public uint DIFATSectorsNumber
         {

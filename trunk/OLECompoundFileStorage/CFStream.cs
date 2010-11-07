@@ -34,9 +34,9 @@ namespace OleCompoundFileStorage
         internal CFStream(CompoundFile sectorManager)
             : base(sectorManager)
         {
-            this.dirEntry = new DirectoryEntry(StgType.STGTY_STREAM);
+            this.dirEntry = new DirectoryEntry(StgType.StgStream);
             sectorManager.AddDirectoryEntry(this);
-            this.dirEntry.StgColor = StgColor.BLACK;
+            this.dirEntry.StgColor = StgColor.Black;
         }
 
         internal CFStream(CompoundFile sectorManager, IDirectoryEntry dirEntry)

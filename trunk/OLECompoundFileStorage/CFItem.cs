@@ -261,6 +261,39 @@ namespace OleCompoundFileStorage
 
         #endregion
 
+        public static bool operator ==(CFItem leftItem, CFItem rightItem)
+        {
+            // If both are null, or both are same instance, return true.
+            if (System.Object.ReferenceEquals(leftItem, rightItem))
+            {
+                return true;
+            }
+
+            // If one is null, but not both, return false.
+            if (((object)leftItem == null) || ((object)rightItem == null))
+            {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return leftItem.CompareTo(rightItem) == 0;
+        }
+
+        public static bool operator !=(CFItem leftItem, CFItem rightItem)
+        {
+            return !(leftItem == rightItem);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return this.CompareTo(obj) == 0;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.dirEntry.GetEntryName().GetHashCode();
+        }
+
         /// <summary>
         /// Entity Name
         /// </summary>
@@ -312,7 +345,7 @@ namespace OleCompoundFileStorage
         {
             get
             {
-                return this.dirEntry.StgType == StgType.STGTY_STORAGE;
+                return this.dirEntry.StgType == StgType.StgStorage;
             }
         }
 
@@ -327,7 +360,7 @@ namespace OleCompoundFileStorage
         {
             get
             {
-                return this.dirEntry.StgType == StgType.STGTY_STREAM;
+                return this.dirEntry.StgType == StgType.StgStream;
             }
         }
 
@@ -342,7 +375,7 @@ namespace OleCompoundFileStorage
         {
             get
             {
-                return this.dirEntry.StgType == StgType.STGTY_ROOT;
+                return this.dirEntry.StgType == StgType.StgRoot;
             }
         }
 
