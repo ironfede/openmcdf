@@ -5,7 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
-using OLECompoundFileStorage;
+using OleCompoundFileStorage;
 using System.IO;
 using System.Resources;
 using System.Globalization;

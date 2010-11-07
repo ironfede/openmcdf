@@ -20,7 +20,7 @@ using BinaryTrees;
 */
 
 
-namespace OLECompoundFileStorage
+namespace OleCompoundFileStorage
 {
     /// <summary>
     /// Abstract base class for Structured Storage entities

@@ -18,7 +18,7 @@ using System.Text;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OLECompoundFileStorage
+namespace OleCompoundFileStorage
 {
     /// <summary>
     /// OpenMCDF base exception.
@@ -67,11 +67,11 @@ namespace OLECompoundFileStorage
     /// </summary>
     public class CFFileFormatException : CFException
     {
-        
+
         public CFFileFormatException(string message)
             : base(message, null)
         {
-            
+
         }
 
         public CFFileFormatException(string message, Exception innerException)
@@ -88,6 +88,11 @@ namespace OLECompoundFileStorage
     /// </summary>
     public class CFItemNotFound : CFException
     {
+
+        public CFItemNotFound()
+            : base("Entry not found")
+        {
+        }
 
         public CFItemNotFound(string message)
             : base(message, null)

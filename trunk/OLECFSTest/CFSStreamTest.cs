@@ -3,10 +3,10 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OLECompoundFileStorage;
+using OleCompoundFileStorage;
 using System.IO;
 
-namespace OLECFSTest
+namespace OleCfsTest
 {
     /// <summary>
     /// Summary description for UnitTest1

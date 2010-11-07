@@ -20,7 +20,7 @@ using BinaryTrees;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OLECompoundFileStorage
+namespace OleCompoundFileStorage
 {
 
     /// <summary>
