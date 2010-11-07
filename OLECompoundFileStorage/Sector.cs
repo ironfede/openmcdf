@@ -38,7 +38,7 @@ namespace OleCompoundFileStorage
         public const int FATSECT = unchecked((int)0xFFFFFFFD);
         public const int DIFSECT = unchecked((int)0xFFFFFFFC);
 
-        private bool isAllocated = false;
+        private bool isAllocated; //false
         public bool IsAllocated
         {
             get { return isAllocated; }

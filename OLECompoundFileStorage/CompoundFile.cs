@@ -62,7 +62,7 @@ namespace OleCompoundFileStorage
         /// </summary>
         private const int SIZE_OF_SID = 4;
 
-        private BinaryReader fileReader = null;
+        private BinaryReader fileReader;
 
         private ArrayList sectors = new ArrayList();
 
@@ -102,8 +102,8 @@ namespace OleCompoundFileStorage
             rootStorage = new CFStorage(this);
 
             rootStorage.SetEntryName("Root Entry");
-            rootStorage.StgType = StgType.STGTY_ROOT;
-            rootStorage.StgColor = StgColor.BLACK;
+            rootStorage.StgType = StgType.StgRoot;
+            rootStorage.StgColor = StgColor.Black;
 
             this.AddDirectoryEntry(rootStorage);
         }
@@ -354,8 +354,8 @@ namespace OleCompoundFileStorage
             StreamView FATView
                 = new StreamView(FAT, Sector.SECTOR_SIZE, FAT.Count * Sector.SECTOR_SIZE);
 
-            StreamView streamView
-                = new StreamView(sectorChain, Sector.SECTOR_SIZE, sectorChain.Count * Sector.SECTOR_SIZE);
+            //StreamView streamView
+            //    = new StreamView(sectorChain, Sector.SECTOR_SIZE, sectorChain.Count * Sector.SECTOR_SIZE);
 
             // Set updated/new sectors within the ministream
             for (int i = 0; i < sectorChain.Count; i++)
@@ -657,7 +657,7 @@ namespace OleCompoundFileStorage
         /// </summary>
         /// <param name="streamView">StreamView decorator for a sector chain</param>
         /// <param name="length">Amount of bytes to check for</param>
-        private void AssureLength(StreamView streamView, int length)
+        private static void AssureLength(StreamView streamView, int length)
         {
             if (streamView != null && streamView.Length < length)
             {
@@ -833,7 +833,7 @@ namespace OleCompoundFileStorage
                     StreamView miniFATView = new StreamView(miniFAT, Sector.SECTOR_SIZE, header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE);
                     StreamView miniStreamView = new StreamView(miniStream, Sector.SECTOR_SIZE, rootStorage.Size);
 
-                    List<Sector> miniSectorChain = new List<Sector>();
+                    //List<Sector> miniSectorChain = new List<Sector>();
 
                     //int secOffset = secID / (Sector.SECTOR_SIZE / Sector.MINISECTOR_SIZE);
 
@@ -957,7 +957,7 @@ namespace OleCompoundFileStorage
         {
             if (de.Child != DirectoryEntry.NOSTREAM)
             {
-                if (directoryEntries[de.Child].StgType == StgType.STGTY_STREAM)
+                if (directoryEntries[de.Child].StgType == StgType.StgStream)
                     bst.Add(new CFStream(this, directoryEntries[de.Child]));
                 else
                 {
@@ -988,7 +988,7 @@ namespace OleCompoundFileStorage
                 DoLoadSiblings(bst, directoryEntries[de.LeftSibling]);
             }
 
-            if (directoryEntries[de.SID].StgType == StgType.STGTY_STREAM)
+            if (directoryEntries[de.SID].StgType == StgType.StgStream)
                 bst.Add(new CFStream(this, directoryEntries[de.SID]));
             else
             {
@@ -1030,15 +1030,15 @@ namespace OleCompoundFileStorage
                 = new BinaryReader(new StreamView(directoryChain, Sector.SECTOR_SIZE, directoryChain.Count * Sector.SECTOR_SIZE));
 
             DirectoryEntry de
-                = new DirectoryEntry(StgType.STGTY_INVALID);
+                = new DirectoryEntry(StgType.StgInvalid);
 
             de.Read(dirReader);
 
-            while (de.StgType != StgType.STGTY_INVALID)
+            while (de.StgType != StgType.StgInvalid)
             {
                 this.AddDirectoryEntry(de);
 
-                de = new DirectoryEntry(StgType.STGTY_INVALID);
+                de = new DirectoryEntry(StgType.StgInvalid);
                 de.Read(dirReader);
             }
         }
@@ -1070,7 +1070,7 @@ namespace OleCompoundFileStorage
 
             while (delta % 4 != 0)
             {
-                DirectoryEntry dummy = new DirectoryEntry(StgType.STGTY_INVALID);
+                DirectoryEntry dummy = new DirectoryEntry(StgType.StgInvalid);
                 dummy.Write(bw);
                 delta++;
             }
@@ -1253,7 +1253,7 @@ namespace OleCompoundFileStorage
 
             IDirectoryEntry de = cFStream as IDirectoryEntry;
 
-            IDirectoryEntry root = directoryEntries[0];
+            //IDirectoryEntry root = directoryEntries[0];
 
             if (de.Size < header.MinSizeStandardStream)
             {
@@ -1281,28 +1281,28 @@ namespace OleCompoundFileStorage
             return result;
         }
 
-        private int Ceiling(double d)
+        private static int Ceiling(double d)
         {
             return (int)Math.Ceiling(d);
         }
 
-        private int LowSaturation(int i)
+        private static int LowSaturation(int i)
         {
             return i > 0 ? i : 0;
         }
 
-        private int FindMaxID(List<Sector> sectorChain)
-        {
-            int temp = Sector.ENDOFCHAIN;
+        //private int FindMaxID(List<Sector> sectorChain)
+        //{
+        //    int temp = Sector.ENDOFCHAIN;
 
-            foreach (Sector s in sectorChain)
-            {
-                if (s.Id > temp)
-                    temp = s.Id;
-            }
+        //    foreach (Sector s in sectorChain)
+        //    {
+        //        if (s.Id > temp)
+        //            temp = s.Id;
+        //    }
 
-            return temp;
-        }
+        //    return temp;
+        //}
 
 
         internal void RemoveDirectoryEntry(int sid)
@@ -1323,7 +1323,7 @@ namespace OleCompoundFileStorage
                     = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Normal);
                 FreeChain(chain);
             }
-            Random r =new Random();
+            Random r = new Random();
 
             directoryEntries[sid].SetEntryName("_DELETED_NAME_" + r.Next(short.MaxValue).ToString());
             //directoryEntries[sid].StgType = StgType.STGTY_INVALID;
@@ -1386,7 +1386,7 @@ namespace OleCompoundFileStorage
 
         #region IDisposable Members
 
-        private bool _disposed = false;
+        private bool _disposed;//false
 
         void IDisposable.Dispose()
         {

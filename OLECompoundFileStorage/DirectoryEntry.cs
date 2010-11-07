@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Globalization;
 
 /*
      The contents of this file are subject to the Mozilla Public License
@@ -21,20 +22,20 @@ using System.IO;
 
 namespace OleCompoundFileStorage
 {
-    public enum StgType : byte
+    public enum StgType : int
     {
-        STGTY_INVALID = 0,
-        STGTY_STORAGE = 1,
-        STGTY_STREAM = 2,
-        STGTY_LOCKBYTES = 3,
-        STGTY_PROPERTY = 4,
-        STGTY_ROOT = 5
+        StgInvalid = 0,
+        StgStorage = 1,
+        StgStream = 2,
+        StgLockbytes = 3,
+        StgProperty = 4,
+        StgRoot = 5
     }
 
-    public enum StgColor : byte
+    public enum StgColor : int
     {
-        RED = 0,
-        BLACK = 1
+        Red = 0,
+        Black = 1
     }
 
     public class DirectoryEntry : IComparable, IDirectoryEntry
@@ -47,7 +48,7 @@ namespace OleCompoundFileStorage
             set { sid = value; }
         }
 
-        public static Int32 NOSTREAM
+        internal static Int32 NOSTREAM
             = unchecked((int)0xFFFFFFFF);
 
         public DirectoryEntry(StgType stgType)
@@ -107,7 +108,7 @@ namespace OleCompoundFileStorage
 
         }
 
-        private ushort nameLength = 0;
+        private ushort nameLength;
         public ushort NameLength
         {
             get
@@ -120,7 +121,7 @@ namespace OleCompoundFileStorage
             }
         }
 
-        private StgType stgType = StgType.STGTY_INVALID;
+        private StgType stgType = StgType.StgInvalid;
         public StgType StgType
         {
             get
@@ -132,7 +133,7 @@ namespace OleCompoundFileStorage
                 stgType = value;
             }
         }
-        private StgColor stgColor = StgColor.BLACK;
+        private StgColor stgColor = StgColor.Black;
         public StgColor StgColor
         {
             get
@@ -182,7 +183,7 @@ namespace OleCompoundFileStorage
         }
 
 
-        private Int32 stateBits = 0x0000;
+        private Int32 stateBits;
 
         public Int32 StateBits
         {
@@ -244,15 +245,15 @@ namespace OleCompoundFileStorage
         }
 
 
-        public int CompareTo(object other)
+        public int CompareTo(object obj)
         {
             const int THIS_IS_GREATER = 1;
             const int OTHER_IS_GREATER = -1;
+            IDirectoryEntry otherDir = obj as IDirectoryEntry;
+            
+            if (otherDir == null)
+                throw new CFException("Invalid casting: compared object does not implement IDirectorEntry interface");
 
-            if ((other as IDirectoryEntry) == null)
-                throw new Exception();
-
-            IDirectoryEntry otherDir = (IDirectoryEntry)other;
             if (this.NameLength > otherDir.NameLength)
             {
                 return THIS_IS_GREATER;
@@ -263,8 +264,8 @@ namespace OleCompoundFileStorage
             }
             else
             {
-                String thisName = Encoding.Unicode.GetString(this.EntryName).ToUpper();
-                String otherName = Encoding.Unicode.GetString(otherDir.EntryName).ToUpper();
+                String thisName = Encoding.Unicode.GetString(this.EntryName).ToUpper(CultureInfo.InvariantCulture);
+                String otherName = Encoding.Unicode.GetString(otherDir.EntryName).ToUpper(CultureInfo.InvariantCulture);
 
                 for (int z = 0; z < thisName.Length; z++)
                 {
@@ -281,6 +282,32 @@ namespace OleCompoundFileStorage
             //   return String.Compare(Encoding.Unicode.GetString(this.EntryName).ToUpper(), Encoding.Unicode.GetString(other.EntryName).ToUpper());
         }
 
+        public override bool Equals(object obj)
+        {
+            return this.CompareTo(obj) == 0;
+        }
+
+        /// <summary>
+        /// FNV hash, short for Fowler/Noll/Vo
+        /// </summary>
+        /// <param name="buffer"></param>
+        /// <returns>(not warranted) unique hash for byte array</returns>
+        private static ulong fnv_hash(byte[] buffer)
+        {
+
+            ulong h = 2166136261;
+            int i;
+
+            for (i = 0; i < buffer.Length; i++)
+                h = (h * 16777619) ^ buffer[i];
+
+            return h;
+        }
+
+        public override int GetHashCode()
+        {
+            return (int)fnv_hash(this.entryName);
+        }
 
         public void Write(BinaryWriter bw)
         {
@@ -331,7 +358,7 @@ namespace OleCompoundFileStorage
             entryName = br.ReadBytes(64);
             nameLength = br.ReadUInt16();
             stgType = (StgType)br.ReadByte();
-            byte b = br.ReadByte();
+            br.ReadByte();//Ignore color, only black tree
             //stgColor = (StgColor)br.ReadByte();
             leftSibling = br.ReadInt32();
             rightSibling = br.ReadInt32();
