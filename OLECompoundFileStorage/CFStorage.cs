@@ -19,7 +19,7 @@ using BinaryTrees;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OLECompoundFileStorage
+namespace OleCompoundFileStorage
 {
     /// <summary>
     /// Action to apply to  visited items in the OLE structured storage
@@ -60,6 +60,7 @@ namespace OLECompoundFileStorage
         {
             get
             {
+                // Lazy loading of children tree.
                 if (children == null)
                 {
                     if (this.CompoundFile.IsFileMapped)
@@ -300,6 +301,17 @@ namespace OLECompoundFileStorage
         //    Delete(name, typeof(CFStorage));
         //}
 
+        /// <summary>
+        /// Remove (logically) an entry from the current storage and compound file.
+        /// </summary>
+        /// <param name="entryName">Entry to delete</param>
+        /// <remarks>
+        /// Entry name is overwritten with a '_DELETED_NAME_[random]'
+        /// string and associated contents are overwritten with zeros.
+        /// Data is NOT recoverable.
+        /// If phisical deletion is required it's suggested to create a new
+        /// compound file and inject in it the old structure using items traversal.
+        /// </remarks>
         public void Delete(String entryName)
         {
             CheckDisposed();

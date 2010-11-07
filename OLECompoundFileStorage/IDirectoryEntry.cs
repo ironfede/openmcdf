@@ -16,7 +16,7 @@
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OLECompoundFileStorage
+namespace OleCompoundFileStorage
 {
     internal interface IDirectoryEntry : IComparable
     {

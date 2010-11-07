@@ -77,9 +77,9 @@
     <Content Include="img\storage.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OLECompoundFileStorage\OLECompoundFileStorage.csproj">
+    <ProjectReference Include="..\OLECompoundFileStorage\OleCompoundFileStorage.csproj">
       <Project>{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}</Project>
-      <Name>OLECompoundFileStorage</Name>
+      <Name>OleCompoundFileStorage</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

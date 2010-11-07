@@ -7,8 +7,8 @@
     <ProjectGuid>{FD339266-8842-40B4-9230-F8E84FC42AC2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OLECFSTest</RootNamespace>
-    <AssemblyName>OLECFSTest</AssemblyName>
+    <RootNamespace>OleCfsTest</RootNamespace>
+    <AssemblyName>OleCfsTest</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -46,9 +46,9 @@
     <Content Include="AuthoringTests.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OLECompoundFileStorage\OLECompoundFileStorage.csproj">
+    <ProjectReference Include="..\OLECompoundFileStorage\OleCompoundFileStorage.csproj">
       <Project>{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}</Project>
-      <Name>OLECompoundFileStorage</Name>
+      <Name>OleCompoundFileStorage</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

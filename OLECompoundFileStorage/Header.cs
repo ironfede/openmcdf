@@ -19,7 +19,7 @@ using System.IO;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OLECompoundFileStorage
+namespace OleCompoundFileStorage
 {
     internal class Header
     {

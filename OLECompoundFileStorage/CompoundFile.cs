@@ -21,7 +21,7 @@ using System.Collections;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OLECompoundFileStorage
+namespace OleCompoundFileStorage
 {
     internal class DirEntryComparer : IComparer<IDirectoryEntry>
     {
@@ -1311,7 +1311,7 @@ namespace OLECompoundFileStorage
                 throw new CFException("Invalid SID of the directory entry to remove");
 
             // Clear the associated stream (or ministream)
-            if (directoryEntries[sid].Size < 4096)
+            if (directoryEntries[sid].Size < header.MinSizeStandardStream)
             {
                 List<Sector> miniChain
                     = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Mini);

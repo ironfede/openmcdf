@@ -21,7 +21,7 @@ using System.Collections.Specialized;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OLECompoundFileStorage
+namespace OleCompoundFileStorage
 {
     internal enum SectorType
     {
@@ -93,12 +93,30 @@ namespace OLECompoundFileStorage
             }
         }
 
-        private byte[] data = new byte[SECTOR_SIZE];
+        private byte[] data;
 
         public byte[] Data
         {
-            get { return data; }
+            get
+            {
+                if (data == null)
+                    data = new byte[SECTOR_SIZE];
+
+                return data;
+            }
+
             set { data = value; }
+        }
+
+        public void FillData(byte b)
+        {
+            if (data != null)
+            {
+                for (int i = 0; i < data.Length; i++)
+                {
+                    data[i] = b;
+                }
+            }
         }
 
         public static Sector LoadSector(int secID, BinaryReader reader, int size)

@@ -22,7 +22,7 @@ using System.Diagnostics;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OLECompoundFileStorage
+namespace OleCompoundFileStorage
 {
     /// <summary>
     /// Stream decorator for a Sector or miniSector chain
@@ -31,7 +31,7 @@ namespace OLECompoundFileStorage
     {
         private int sectorSize = Sector.SECTOR_SIZE;
 
-        private long position = 0;
+        private long position;
 
         private List<Sector> sectorChain;
 
@@ -50,7 +50,7 @@ namespace OLECompoundFileStorage
         public StreamView(List<Sector> sectorChain, int sectorSize, long length)
             : this(sectorChain, sectorSize)
         {
-            SetLength(length);
+            adjustLength(length);
         }
 
         public List<Sector> BaseSectorChain
@@ -78,7 +78,7 @@ namespace OLECompoundFileStorage
 
         }
 
-        private long length = 0;
+        private long length;
 
         public override long Length
         {
@@ -98,7 +98,7 @@ namespace OLECompoundFileStorage
             set
             {
                 if (position > length - 1)
-                    throw new ArgumentOutOfRangeException("Position must be lesser than Length");
+                    throw new ArgumentOutOfRangeException("value");
 
                 position = value;
             }
@@ -202,7 +202,7 @@ namespace OLECompoundFileStorage
             return position;
         }
 
-        public override void SetLength(long value)
+        private void adjustLength(long value)
         {
             this.length = value;
 
@@ -245,6 +245,11 @@ namespace OLECompoundFileStorage
                 //    sectorChain.RemoveAt(sectorChain.Count - 1);
                 //}
             }
+        }
+
+        public override void SetLength(long value)
+        {
+            adjustLength(value);
         }
 
         public override void Write(byte[] buffer, int offset, int count)

@@ -8,8 +8,8 @@
     <ProjectGuid>{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OLECompoundFileStorage</RootNamespace>
-    <AssemblyName>OLECompoundFileStorage</AssemblyName>
+    <RootNamespace>OleCompoundFileStorage</RootNamespace>
+    <AssemblyName>OleCompoundFileStorage</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\OLECompoundFileStorage.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\OleCompoundFileStorage.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,7 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\OLECompoundFileStorage.XML</DocumentationFile>
+    <DocumentationFile>bin\Release\OleCompoundFileStorage.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
