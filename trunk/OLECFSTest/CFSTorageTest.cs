@@ -88,7 +88,7 @@ namespace OleCfsTest
             Assert.IsNotNull(st);
             Assert.AreEqual(STORAGE_NAME, st.Name, false);
 
-            cf.Save(TestContext.TestDir + "\\ProvaData.cfs");
+            cf.Save("ProvaData.cfs");
             cf.Close();
         }
 
@@ -149,7 +149,7 @@ namespace OleCfsTest
         [TestMethod]
         public void Test_VISIT_STORAGE()
         {
-            String FILENAME = TestContext.TestDir + "\\testVisiting.xls";
+            String FILENAME = "testVisiting.xls";
 
             // Remove...
             if (File.Exists(FILENAME))
@@ -176,7 +176,7 @@ namespace OleCfsTest
 
             CompoundFile cf = new CompoundFile(FILENAME);
 
-            FileStream output = new FileStream(TestContext.TestDir + "\\reportVisit.txt", FileMode.Create);
+            FileStream output = new FileStream("reportVisit.txt", FileMode.Create);
             TextWriter sw = new StreamWriter(output);
 
             Console.SetOut(sw);
