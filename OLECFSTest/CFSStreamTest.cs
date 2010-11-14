@@ -173,11 +173,11 @@ namespace OleCfsTest
             Assert.IsNotNull(myStream);
             myStream.SetData(b);
 
-            cf.Save(TestContext.TestDir + "WRITE_STREAM_WITH_DIFAT.cfs");
+            cf.Save("WRITE_STREAM_WITH_DIFAT.cfs");
             cf.Close();
 
 
-            CompoundFile cf2 = new CompoundFile(TestContext.TestDir + "WRITE_STREAM_WITH_DIFAT.cfs");
+            CompoundFile cf2 = new CompoundFile("WRITE_STREAM_WITH_DIFAT.cfs");
             CFStream st = cf2.RootStorage.GetStream("MyStream");
 
             Assert.IsNotNull(cf2);
@@ -237,23 +237,23 @@ namespace OleCfsTest
             myStream5.SetData(ba5);
             Assert.IsTrue(myStream5.Size == BIGGER_SIZE);
 
-            cfa.Save(TestContext.TestDir + "\\WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs");
+            cfa.Save("WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs");
 
             cfa.Close();
 
             // Now get the second stream and rewrite it smaller
             byte[] bb = GetBuffer(MEGA_SIZE);
-            CompoundFile cfb = new CompoundFile(TestContext.TestDir + "\\WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs");
+            CompoundFile cfb = new CompoundFile("WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs");
             CFStream myStreamB = cfb.RootStorage.GetStream("MySecondStream");
             Assert.IsNotNull(myStreamB);
             myStreamB.SetData(bb);
             Assert.IsTrue(myStreamB.Size == MEGA_SIZE);
 
             byte[] bufferB = myStreamB.GetData();
-            cfb.Save(TestContext.TestDir + "\\WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
+            cfb.Save("WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
             cfb.Close();
 
-            CompoundFile cfc = new CompoundFile(TestContext.TestDir + "\\WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
+            CompoundFile cfc = new CompoundFile("WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
             CFStream myStreamC = cfc.RootStorage.GetStream("MySecondStream");
             Assert.IsTrue(myStreamC.Size == MEGA_SIZE, "DATA SIZE FAILED");
 
@@ -292,7 +292,7 @@ namespace OleCfsTest
             byte[] b = new byte[foundStream.Size];
             foundStream.SetData(b);
 
-            cf.Save(TestContext.TestDir + "RE_WRITE_SMALLER_MINI_STREAM.xls");
+            cf.Save("RE_WRITE_SMALLER_MINI_STREAM.xls");
             cf.Close();
         }
 
@@ -377,7 +377,7 @@ namespace OleCfsTest
         private void SingleWriteReadMatching(int size)
         {
 
-            String filename = TestContext.TestDir + "INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS.cfs";
+            String filename = "INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS.cfs";
 
             if (File.Exists(filename))
                 File.Delete(filename);
