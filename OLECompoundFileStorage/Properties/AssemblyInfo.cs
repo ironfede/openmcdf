@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Federico Blaseotto")]
 [assembly: AssemblyProduct("OLECompoundFileStorage")]
-[assembly: AssemblyCopyright("2010 © Federico Blaseotto")]
+[assembly: AssemblyCopyright("Copyright © Federico Blaseotto 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
