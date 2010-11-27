@@ -160,10 +160,10 @@ namespace OleCfsTest
             CompoundFile ncf = new CompoundFile();
 
             CFStorage l1 = ncf.RootStorage.AddStorage("Storage Level 1");
-
             l1.AddStream("l1ns1");
             l1.AddStream("l1ns2");
             l1.AddStream("l1ns3");
+
             CFStorage l2 = l1.AddStorage("Storage Level 2");
             l2.AddStream("l2ns1");
             l2.AddStream("l2ns2");
@@ -199,9 +199,9 @@ namespace OleCfsTest
             CompoundFile cf = new CompoundFile(FILENAME);
 
             CFStorage st = cf.RootStorage.GetStorage("MyStorage");
-            //st.DeleteStream("MyStream");
 
-            //cf.Save(OUTPUT_DIR + "MultipleStorageREMOVED.cfs");
+            Assert.IsNotNull(st);
+
             st.Delete("AnotherStorage");
 
             cf.Save("MultipleStorage_Delete.cfs");
@@ -218,7 +218,9 @@ namespace OleCfsTest
             CFStorage found = null;
             VisitedEntryAction action = delegate(CFItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; };
             cf.RootStorage.VisitEntries(action, true);
-           
+
+            Assert.IsNotNull(found);
+
             found.Delete("Another2Stream");
 
             cf.Save("MultipleDeleteStream");

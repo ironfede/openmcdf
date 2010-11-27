@@ -486,7 +486,7 @@ namespace OleCompoundFileStorage
             fatStream.Seek(sectorChain[sectorChain.Count - 1].Id * 4, SeekOrigin.Begin);
             fatStream.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
 
-            SetDIFATSectorChain(fatStream.BaseSectorChain);
+            //SetDIFATSectorChain(fatStream.BaseSectorChain);
 
             // Merge chain to CFS
             SetDIFATSectorChain(fatStream.BaseSectorChain);
@@ -541,7 +541,7 @@ namespace OleCompoundFileStorage
                 header.FATSectorsNumber++;
                 nCurrentSectors++;
 
-                //... now, adding a FAT sector may induce DIFAT sectors to increase by one
+                //... so, adding a FAT sector may induce DIFAT sectors to increase by one
                 // and consequently this may induce ANOTHER FAT sector (TO-THINK: Could this condition occure ?)
                 if (nDIFATSectors * DIFAT_SECTOR_FAT_ENTRIES_COUNT <
                     (header.FATSectorsNumber > HEADER_DIFAT_ENTRIES_COUNT ?

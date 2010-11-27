@@ -29,6 +29,8 @@ namespace StructuredStorageExplorer
             treeView1.ImageList = new ImageList();
             treeView1.ImageList.Images.Add(folderImage);
             treeView1.ImageList.Images.Add(streamImage);
+
+            saveAsToolStripMenuItem.Enabled = false;
         }
 
         private byte[] inMemoryFileImage;
@@ -39,15 +41,8 @@ namespace StructuredStorageExplorer
             {
                 try
                 {
-                    FileStream fs = new FileStream(openFileDialog1.FileName, FileMode.Open, FileAccess.Read);
-                    BinaryReader bre = new BinaryReader(fs);
-                    MemoryStream ms = new MemoryStream(bre.ReadBytes((int)fs.Length));
-                    fs.Flush();
-                    fs.Close();
-                    inMemoryFileImage = ms.ToArray();
-                    ms.Close();
-
-                    LoadFile();
+                    OpenFile(openFileDialog1.FileName);
+                    saveAsToolStripMenuItem.Enabled = true;
                 }
                 catch
                 {
@@ -58,7 +53,21 @@ namespace StructuredStorageExplorer
             }
         }
 
-        private void LoadFile()
+        private void OpenFile(string fileName)
+        {
+            FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+            BinaryReader bre = new BinaryReader(fs);
+            MemoryStream ms = new MemoryStream(bre.ReadBytes((int)fs.Length));
+            fs.Flush();
+            fs.Close();
+            inMemoryFileImage = ms.ToArray();
+            ms.Close();
+
+            LoadFromMemory();
+            tbFileName.Text = openFileDialog1.FileName;
+        }
+
+        private void LoadFromMemory()
         {
             treeView1.Nodes.Clear();
 
@@ -210,16 +219,19 @@ namespace StructuredStorageExplorer
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //No export if storage
-            if (treeView1.SelectedNode == null || treeView1.SelectedNode.ImageIndex < 1)
-            {
-                MessageBox.Show("Only stream data can be exported", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //if (treeView1.SelectedNode == null || treeView1.SelectedNode.ImageIndex < 1)
+            //{
+            //    MessageBox.Show("Only stream data can be exported", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
-                return;
-            }
+            //    return;
+            //}
 
             //Remove size indicator from node path
+            string path = treeView1.SelectedNode.FullPath;
             int index = treeView1.SelectedNode.FullPath.IndexOf(" (", 0);
-            string path = treeView1.SelectedNode.FullPath.Remove(index);
+
+            if (index != -1)
+                path = path.Remove(index);
 
             // Get the parts to navigate
             string[] pathParts = path.Split('\\');
@@ -236,6 +248,7 @@ namespace StructuredStorageExplorer
                 }
 
                 r.Delete(pathParts[pathParts.Length - 1]);
+
                 //cf.Save("C:\\backlogOLECFS.tmp.cfs");
                 MemoryStream ms = new MemoryStream();
                 cf.Save(ms);
@@ -243,7 +256,7 @@ namespace StructuredStorageExplorer
                 inMemoryFileImage = ms.ToArray();
                 ms.Close();
 
-                LoadFile();
+                LoadFromMemory();
 
             }
             catch
@@ -262,7 +275,11 @@ namespace StructuredStorageExplorer
                 CompoundFile cf = new CompoundFile(new MemoryStream(inMemoryFileImage));
                 cf.Save(saveFileDialog1.FileName);
                 cf.Close();
-                
+
+                openFileDialog1.FileName = saveFileDialog1.FileName;
+
+                OpenFile(saveFileDialog1.FileName);
+
             }
 
         }
