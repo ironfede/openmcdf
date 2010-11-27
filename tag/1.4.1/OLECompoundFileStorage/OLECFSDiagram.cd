@@ -1,0 +1,155 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Comment CommentText="Stream Decorator for sector chains">
+    <Position X="0.542" Y="2.042" Height="0.344" Width="2.085" />
+  </Comment>
+  <Comment CommentText="Implements directory entry behaviour">
+    <Position X="4.113" Y="2.903" Height="0.34" Width="2.169" />
+  </Comment>
+  <Comment CommentText="Decorator objects for directory entries">
+    <Position X="8.708" Y="3.609" Height="0.75" Width="1.7" />
+  </Comment>
+  <Class Name="OLECompoundFileStorage.CompoundFile">
+    <Position X="12" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="header" Type="OLECompoundFileStorage.Header">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.193" Y="0.07" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="directory" Type="OLECompoundFileStorage.Directory">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.133" Y="0.11" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>ARAGAIQBEgAQABBwAAJAAIgAAEAEAmRAAIAEAGGABCA=</HashCode>
+      <FileName>CompoundFile.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="header" />
+      <Field Name="directory" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="OLECompoundFileStorage.Header" Collapsed="true">
+    <Position X="9.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAEAAAQABQIAgEUgEIBYgDg0GEAwUAAABAAAAEQgCA=</HashCode>
+      <FileName>Header.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OLECompoundFileStorage.CFStream">
+    <Position X="5.25" Y="4.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAABFAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CFStream.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OLECompoundFileStorage.Directory">
+    <Position X="9.25" Y="1.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="DirectoryEntries" Type="OLECompoundFileStorage.IDirectoryEntry">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-1.53" Y="0.575" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAEAAAAIAAAAAQAAAAAAAAAAAAAAAAQEAAAA=</HashCode>
+      <FileName>Directory.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Property Name="DirectoryEntries" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="OLECompoundFileStorage.CFStorage">
+    <Position X="8.25" Y="4.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAAAAEYAAAQEIBAAAAAABAAAAAACAAAAAAA=</HashCode>
+      <FileName>CFStorage.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OLECompoundFileStorage.Sector">
+    <Position X="7.5" Y="8.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAiQBAAAAAAgAAAAAAAIAAAAAADAJAAAwAQAAAACog=</HashCode>
+      <FileName>Sector.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OLECompoundFileStorage.StreamView" Collapsed="true">
+    <Position X="1" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAQAAgGkgAIABgAAAAAAQAAAAAAAGIACA=</HashCode>
+      <FileName>StreamView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OLECompoundFileStorage.CFSItem" Collapsed="true">
+    <Position X="6.75" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AYIAAAgBEAgAgA2EAAAAACQAACAAARAAAgYCAAAAAiA=</HashCode>
+      <FileName>CFSItem.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="1.066" />
+  </Class>
+  <Class Name="OLECompoundFileStorage.DirectoryEntry" Collapsed="true">
+    <Position X="5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QIQAwEAAkAAAgMQAAIDAgAQkEACAACwgAAAsIAHEAAA=</HashCode>
+      <FileName>DirectoryEntry.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Interface Name="OLECompoundFileStorage.IDirectoryEntry">
+    <Position X="6.25" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Properties" Collapsed="true" />
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>QAAAQAAAEAAAgMAAAIAAgAQkAAAAACwAAAAAIAHEAAA=</HashCode>
+      <FileName>IDirectoryEntry.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Enum Name="OLECompoundFileStorage.StgType" Collapsed="true">
+    <Position X="2.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQAAAAAAAAAAAAAAAAAAAAAAgAAAgAAAAAAAAIAAEAg=</HashCode>
+      <FileName>DirectoryEntry.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="OLECompoundFileStorage.StgColor" Collapsed="true">
+    <Position X="1" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAAAAAABAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>DirectoryEntry.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="OLECompoundFileStorage.SectorType" Collapsed="true">
+    <Position X="2.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAAAAIAQAAAAAAAAAAACA=</HashCode>
+      <FileName>Sector.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>
