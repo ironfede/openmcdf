@@ -359,7 +359,6 @@ namespace OleCompoundFileStorage
                     // ...and now remove directory (storage) entry
                     this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);
 
-
                     break;
 
                 case StgType.StgStream:

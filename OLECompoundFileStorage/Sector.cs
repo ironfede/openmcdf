@@ -130,11 +130,9 @@ namespace OleCompoundFileStorage
 
         public static Sector LoadSector(int secID, BinaryReader reader, int size)
         {
-            Sector s = null;
-
-            s = new Sector(size);
+            Sector s = new Sector(size);
             s.Id = secID;
-            reader.BaseStream.Position = 512 + secID * size;
+            reader.BaseStream.Seek(512 + secID * size, SeekOrigin.Begin);
             s.data = reader.ReadBytes(size);
 
             return s;

@@ -859,7 +859,7 @@ namespace OleCompoundFileStorage
                         miniStreamView.Seek(nextSecID * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
 
                         miniStreamView.Read(ms.Data, 0, Sector.MINISECTOR_SIZE);
-                         
+
 
                         result.Add(ms);
 
@@ -957,6 +957,8 @@ namespace OleCompoundFileStorage
         {
             if (de.Child != DirectoryEntry.NOSTREAM)
             {
+                if (directoryEntries[de.Child].StgType == StgType.StgInvalid) return;
+
                 if (directoryEntries[de.Child].StgType == StgType.StgStream)
                     bst.Add(new CFStream(this, directoryEntries[de.Child]));
                 else
@@ -1029,18 +1031,16 @@ namespace OleCompoundFileStorage
             BinaryReader dirReader
                 = new BinaryReader(new StreamView(directoryChain, Sector.SECTOR_SIZE, directoryChain.Count * Sector.SECTOR_SIZE));
 
-            DirectoryEntry de
+
+            while (dirReader.BaseStream.Position < directoryChain.Count * 512)
+            {
+                DirectoryEntry de
                 = new DirectoryEntry(StgType.StgInvalid);
 
-            de.Read(dirReader);
-
-            while (de.StgType != StgType.StgInvalid)
-            {
-                this.AddDirectoryEntry(de);
-
-                de = new DirectoryEntry(StgType.StgInvalid);
                 de.Read(dirReader);
+                this.AddDirectoryEntry(de);
             }
+           
         }
 
         internal void RefreshIterative(BinaryTreeNode<IDirectoryEntry> node)
@@ -1092,37 +1092,52 @@ namespace OleCompoundFileStorage
             if (_disposed)
                 throw new CFException("Compound File closed: cannot save data");
 
+            FileStream fs = null;
+            BinaryWriter bw = null;
 
-            FileStream fs = new FileStream(fileName, FileMode.Create);
-            BinaryWriter bw = new BinaryWriter(fs);
-
-            bw.Write((byte[])Array.CreateInstance(typeof(byte), 512));
-            SaveDirectory();
-
-            if (fileReader != null)
-                fileReader.BaseStream.Seek(0, SeekOrigin.Begin);
-
-            for (int i = 0; i < sectors.Count; i++)
+            try
             {
-                Sector s = sectors[i] as Sector;
+                fs = new FileStream(fileName, FileMode.Create);
+                bw = new BinaryWriter(fs);
 
-                if (fileReader != null && s == null)
+                bw.Write((byte[])Array.CreateInstance(typeof(byte), 512));
+                SaveDirectory();
+
+                for (int i = 0; i < sectors.Count; i++)
                 {
-                    s = Sector.LoadSector(i, fileReader, Sector.SECTOR_SIZE);
-                    sectors[i] = s;
+                    Sector s = sectors[i] as Sector;
+
+                    if (fileReader != null && s == null)
+                    {
+                        s = Sector.LoadSector(i, fileReader, Sector.SECTOR_SIZE);
+                        sectors[i] = s;
+                    }
+
+                    bw.Write(s.Data);
                 }
 
-                bw.Write(s.Data);
+                // Seek to beginning position and save header (first 512 bytes)
+                bw.BaseStream.Seek(0, SeekOrigin.Begin);
+                header.Write(bw);
             }
+            catch (Exception ex)
+            {
+                throw new CFException("Error saving file [" + fileName + "]", ex);
+            }
+            finally
+            {
+                if (fs != null)
+                    fs.Flush();
 
-            bw.BaseStream.Seek(0, SeekOrigin.Begin);
-            header.Write(bw);
+                if (bw != null)
+                    bw.Flush();
 
-            fs.Flush();
-            bw.Flush();
+                if (fs != null)
+                    fs.Close();
 
-            fs.Close();
-            bw.Close();
+                if (bw != null)
+                    bw.Close();
+            }
         }
 
         /// <summary>
@@ -1186,6 +1201,9 @@ namespace OleCompoundFileStorage
 
         private void SetStreamData(IDirectoryEntry directoryEntry, Byte[] buffer)
         {
+            if (buffer == null)
+                throw new CFException("Parameter [buffer] cannot be null");
+
             //Quick and dirty :-)
             if (buffer.Length == 0) return;
 
@@ -1247,7 +1265,7 @@ namespace OleCompoundFileStorage
         {
 
             if (_disposed)
-                throw new CFException("Compound File closed: cannot access data");
+                throw new CFDisposedException("Compound File closed: cannot access data");
 
             byte[] result = null;
 
@@ -1291,19 +1309,6 @@ namespace OleCompoundFileStorage
             return i > 0 ? i : 0;
         }
 
-        //private int FindMaxID(List<Sector> sectorChain)
-        //{
-        //    int temp = Sector.ENDOFCHAIN;
-
-        //    foreach (Sector s in sectorChain)
-        //    {
-        //        if (s.Id > temp)
-        //            temp = s.Id;
-        //    }
-
-        //    return temp;
-        //}
-
 
         internal void RemoveDirectoryEntry(int sid)
         {
@@ -1326,7 +1331,7 @@ namespace OleCompoundFileStorage
             Random r = new Random();
 
             directoryEntries[sid].SetEntryName("_DELETED_NAME_" + r.Next(short.MaxValue).ToString());
-            //directoryEntries[sid].StgType = StgType.STGTY_INVALID;
+            directoryEntries[sid].StgType = StgType.StgInvalid;
 
             //// Update the SIDs of the entries following the (tobe)removed one.
             //// This update will NOT invalidate sorting 
@@ -1421,10 +1426,6 @@ namespace OleCompoundFileStorage
                                 sectors = null;
                             }
 
-                            //if (this.rootStorage != null)
-                            //{
-                            //    rootStorage
-                            //}
 
                         }
 

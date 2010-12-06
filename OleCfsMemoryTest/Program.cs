@@ -11,24 +11,24 @@ namespace OleCfsMemoryTest
         {
             //for (int i = 0; i < 1000; i++)
             //{
-                CompoundFile cf = new CompoundFile(@"C:\Documents and Settings\blaseotf\My Documents\Visual Studio 2008\Projects\openmcdf\TestResults\blaseotf_WS0030 2010-10-25 13_16_56\WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
-                AddNodes("", cf.RootStorage);
+            CompoundFile cf = new CompoundFile(@"C:\Documents and Settings\Federico\Desktop\openmcdf\OleCfsMemoryTest\testfile\INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS.cfs");
+            AddNodes("", cf.RootStorage);
 
-                
+
             //}
             Console.WriteLine("TRAVERSED");
             Console.ReadKey();
-            
+
             cf.Save(@"C:\OUIOIUIO");
             Console.WriteLine("SAVED");
             Console.ReadKey();
-           
-            cf.Close(); 
+
+            cf.Close();
             Console.WriteLine("CLOSED");
             Console.ReadKey();
         }
 
-        
+
         private static void AddNodes(String depth, CFStorage cfs)
         {
 
@@ -38,16 +38,16 @@ namespace OleCfsMemoryTest
 
                 //Stream
 
-                Console.WriteLine(temp);
+                Console.WriteLine(depth + temp);
 
                 if (target is CFStorage)
                 {  //Storage
-                  
+
                     String newDepth = depth + "    ";
 
                     //Recursion into the storage
                     AddNodes(newDepth, (CFStorage)target);
-                 
+
                 }
             };
 
