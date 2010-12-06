@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("OLECompoundFileStorage")]
-[assembly: AssemblyDescription("MS Compound File Storage .NET Implementation")]
+[assembly: AssemblyTitle("OleCfsMemoryTest")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Federico Blaseotto")]
-[assembly: AssemblyProduct("OLECompoundFileStorage")]
-[assembly: AssemblyCopyright("Copyright © Federico Blaseotto 2010")]
+[assembly: AssemblyCompany("-")]
+[assembly: AssemblyProduct("OleCfsMemoryTest")]
+[assembly: AssemblyCopyright("Copyright © - 2010")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("ffc13791-ddf0-4d14-bd64-575aba119190")]
+[assembly: Guid("6be95c7d-5e29-4e84-b1d0-ac5a0de6bfe2")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,6 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.4.2.*")]
-
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("OLECFSTest")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]
