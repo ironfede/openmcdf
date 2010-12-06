@@ -361,7 +361,7 @@ namespace OleCompoundFileStorage
             for (int i = 0; i < sectorChain.Count; i++)
             {
                 Sector s = sectorChain[i];
-                s.Data = ZEROED_SECTOR;
+                s.ZeroData();
             }
 
             // Update FAT
@@ -530,7 +530,7 @@ namespace OleCompoundFileStorage
             // ReCheck FAT bias
             while (header.FATSectorsNumber * FAT_SECTOR_ENTRIES_COUNT < nCurrentSectors)
             {
-                Sector extraFATSector = new Sector();
+                Sector extraFATSector = new Sector(Sector.SECTOR_SIZE);
                 sectors.Add(extraFATSector);
 
                 extraFATSector.Id = sectors.Count - 1;
@@ -852,14 +852,14 @@ namespace OleCompoundFileStorage
                         if (nextSecID == Sector.ENDOFCHAIN)
                             break;
 
-                        Sector ms = new Sector();
+                        Sector ms = new Sector(Sector.MINISECTOR_SIZE);
                         byte[] temp = new byte[Sector.MINISECTOR_SIZE];
 
                         ms.Id = nextSecID;
                         miniStreamView.Seek(nextSecID * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
 
-                        miniStreamView.Read(temp, 0, Sector.MINISECTOR_SIZE);
-                        ms.Data = temp;
+                        miniStreamView.Read(ms.Data, 0, Sector.MINISECTOR_SIZE);
+                         
 
                         result.Add(ms);
 
@@ -1420,6 +1420,11 @@ namespace OleCompoundFileStorage
                                 sectors.Clear();
                                 sectors = null;
                             }
+
+                            //if (this.rootStorage != null)
+                            //{
+                            //    rootStorage
+                            //}
 
                         }
 

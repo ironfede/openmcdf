@@ -46,21 +46,23 @@ namespace OleCompoundFileStorage
 
         public const int HEADER = unchecked((int)0xEEEEEEEE);
 
+        private int size = 0;
+
         public Sector(int size)
         {
+            this.size = size;
+            //this.data = new byte[size];
 
-            this.data = new byte[size];
-
-            for (int i = 0; i < size; i++)
-            {
-                data[i] = 0xFF;
-            }
+            //for (int i = 0; i < size; i++)
+            //{
+            //    data[i] = 0xFF;
+            //}
 
         }
 
-        public Sector()
-        {
-        }
+        //public Sector()
+        //{
+        //}
 
         private SectorType type;
 
@@ -99,13 +101,20 @@ namespace OleCompoundFileStorage
         {
             get
             {
-                if (data == null)
-                    data = new byte[SECTOR_SIZE];
+                if (this.data == null)
+                {
+                    data = new byte[size];
+                }
 
                 return data;
             }
 
-            set { data = value; }
+            //set
+            //{
+            //    this.data = value;
+            //    size = this.data.Length;
+            //}
+
         }
 
         public void FillData(byte b)
@@ -123,12 +132,23 @@ namespace OleCompoundFileStorage
         {
             Sector s = null;
 
-            s = new Sector();
+            s = new Sector(size);
             s.Id = secID;
             reader.BaseStream.Position = 512 + secID * size;
             s.data = reader.ReadBytes(size);
 
             return s;
+        }
+
+        public void ZeroData()
+        {
+            if (this.data != null)
+            {
+                for (int i = 0; i < this.data.Length; i++)
+                {
+                    data[i] = 0x00;
+                }
+            }
         }
 
 
