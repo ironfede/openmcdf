@@ -302,17 +302,17 @@ namespace OleCompoundFileStorage
         //}
 
         /// <summary>
-        /// Remove (logically) an entry from the current storage and compound file.
+        /// Remove an entry from the current storage and compound file.
         /// </summary>
-        /// <param name="entryName">Entry to delete</param>
+        /// <param name="entryName">The name of the entry in the current storage to delete</param>
+        /// <param name="overwrite">If true, entry associated data will be overwritten with zeroes</param>
         /// <remarks>
-        /// Entry name is overwritten with a '_DELETED_NAME_[random]'
-        /// string and associated contents are overwritten with zeros.
-        /// Data is NOT recoverable.
-        /// If phisical deletion is required it's suggested to create a new
-        /// compound file and inject in it the old structure using items traversal.
+        /// If 'overwrite' parameter is set, entry name is overwritten with a '_DELETED_NAME_[random]'
+        /// string and associated contents are overwritten with zeros: data cannot be recovered.
+        /// When 'overwrite' is not set, entry is simply invalidated but its data and name will be still
+        /// present in the compound file with a slightly performance enhanchement.
         /// </remarks>
-        public void Delete(String entryName)
+        public void Delete(String entryName, bool overwrite)
         {
             CheckDisposed();
 
@@ -341,7 +341,7 @@ namespace OleCompoundFileStorage
 
                     foreach (IDirectoryEntry de in temp.Children)
                     {
-                        temp.Delete(de.Name);
+                        temp.Delete(de.Name, overwrite);
                     }
 
                     // Remove item from children tree
@@ -357,7 +357,7 @@ namespace OleCompoundFileStorage
                         this.dirEntry.Child = DirectoryEntry.NOSTREAM;
 
                     // ...and now remove directory (storage) entry
-                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);
+                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID, overwrite);
 
                     break;
 
@@ -376,7 +376,7 @@ namespace OleCompoundFileStorage
                         this.dirEntry.Child = DirectoryEntry.NOSTREAM;
 
                     // Remove directory entry
-                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);
+                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID, overwrite);
 
                     break;
             }

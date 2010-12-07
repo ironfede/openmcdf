@@ -247,7 +247,7 @@ namespace StructuredStorageExplorer
                     r = r.GetStorage(pathParts[i]);
                 }
 
-                r.Delete(pathParts[pathParts.Length - 1]);
+                r.Delete(pathParts[pathParts.Length - 1],true);
 
                 //cf.Save("C:\\backlogOLECFS.tmp.cfs");
                 MemoryStream ms = new MemoryStream();
