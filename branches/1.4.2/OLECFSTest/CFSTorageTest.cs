@@ -202,7 +202,7 @@ namespace OleCfsTest
 
             Assert.IsNotNull(st);
 
-            st.Delete("AnotherStorage");
+            st.Delete("AnotherStorage",true);
 
             cf.Save("MultipleStorage_Delete.cfs");
 
@@ -210,7 +210,7 @@ namespace OleCfsTest
         }
 
         [TestMethod]
-        public void Test_DELETE_STREAM()
+        public void Test_DELETE_MINISTREAM_STREAM()
         {
             String FILENAME = "MultipleStorage2.cfs";
             CompoundFile cf = new CompoundFile(FILENAME);
@@ -221,11 +221,30 @@ namespace OleCfsTest
 
             Assert.IsNotNull(found);
 
-            found.Delete("Another2Stream");
+            found.Delete("AnotherStream",true);
+
+            cf.Save("MultipleDeleteMiniStream");
+            cf.Close();
+        }
+
+        [TestMethod]
+        public void Test_DELETE_STREAM()
+        {
+            String FILENAME = "MultipleStorage3.cfs";
+            CompoundFile cf = new CompoundFile(FILENAME);
+
+            CFStorage found = null;
+            VisitedEntryAction action = delegate(CFItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; };
+            cf.RootStorage.VisitEntries(action, true);
+
+            Assert.IsNotNull(found);
+
+            found.Delete("Another2Stream",true);
 
             cf.Save("MultipleDeleteStream");
             cf.Close();
         }
+
 
         
 

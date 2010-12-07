@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{
 	ProjectSection(SolutionItems) = preProject
 		TestFiles\MultipleStorage.cfs = TestFiles\MultipleStorage.cfs
 		TestFiles\MultipleStorage2.cfs = TestFiles\MultipleStorage2.cfs
+		TestFiles\MultipleStorage3.cfs = TestFiles\MultipleStorage3.cfs
 		TestFiles\report.xls = TestFiles\report.xls
 	EndProjectSection
 EndProject

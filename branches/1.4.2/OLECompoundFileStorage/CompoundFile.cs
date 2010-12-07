@@ -344,7 +344,7 @@ namespace OleCompoundFileStorage
             }
         }
 
-        private void FreeChain(List<Sector> sectorChain)
+        private void FreeChain(List<Sector> sectorChain, bool zeroSector)
         {
             byte[] ZEROED_SECTOR = new byte[Sector.SECTOR_SIZE];
 
@@ -354,17 +354,18 @@ namespace OleCompoundFileStorage
             StreamView FATView
                 = new StreamView(FAT, Sector.SECTOR_SIZE, FAT.Count * Sector.SECTOR_SIZE);
 
-            //StreamView streamView
-            //    = new StreamView(sectorChain, Sector.SECTOR_SIZE, sectorChain.Count * Sector.SECTOR_SIZE);
+            // Zeroes out sector data (if requested)
 
-            // Set updated/new sectors within the ministream
-            for (int i = 0; i < sectorChain.Count; i++)
+            if (zeroSector)
             {
-                Sector s = sectorChain[i];
-                s.ZeroData();
+                for (int i = 0; i < sectorChain.Count; i++)
+                {
+                    Sector s = sectorChain[i];
+                    s.ZeroData();
+                }
             }
 
-            // Update FAT
+            // Update FAT marking unallocated sectors
             for (int i = 0; i < sectorChain.Count - 1; i++)
             {
                 Int32 currentId = sectorChain[i].Id;
@@ -377,7 +378,7 @@ namespace OleCompoundFileStorage
             }
         }
 
-        private void FreeMiniChain(List<Sector> sectorChain)
+        private void FreeMiniChain(List<Sector> sectorChain, bool zeroSector)
         {
 
             byte[] ZEROED_MINI_SECTOR = new byte[Sector.MINISECTOR_SIZE];
@@ -395,15 +396,18 @@ namespace OleCompoundFileStorage
                 = new StreamView(miniStream, Sector.SECTOR_SIZE, this.rootStorage.Size);
 
             // Set updated/new sectors within the ministream
-            for (int i = 0; i < sectorChain.Count; i++)
+            if (zeroSector)
             {
-                Sector s = sectorChain[i];
-
-                if (s.IsAllocated)
+                for (int i = 0; i < sectorChain.Count; i++)
                 {
-                    // Overwrite
-                    miniStreamView.Seek(Sector.MINISECTOR_SIZE * s.Id, SeekOrigin.Begin);
-                    miniStreamView.Write(ZEROED_MINI_SECTOR, 0, Sector.MINISECTOR_SIZE);
+                    Sector s = sectorChain[i];
+               
+                    if (s.IsAllocated)
+                    {
+                        // Overwrite
+                        miniStreamView.Seek(Sector.MINISECTOR_SIZE * s.Id, SeekOrigin.Begin);
+                        miniStreamView.Write(ZEROED_MINI_SECTOR, 0, Sector.MINISECTOR_SIZE);
+                    }
                 }
             }
 
@@ -572,7 +576,7 @@ namespace OleCompoundFileStorage
                 }
                 else
                 {
-                    // room for DIFAT chaining at the end of any DIFAT sector (4 bytes
+                    // room for DIFAT chaining at the end of any DIFAT sector (4 bytes)
                     if (i != HEADER_DIFAT_ENTRIES_COUNT && (i - HEADER_DIFAT_ENTRIES_COUNT) % DIFAT_SECTOR_FAT_ENTRIES_COUNT == 0)
                     {
                         byte[] temp = new byte[sizeof(int)];
@@ -919,7 +923,7 @@ namespace OleCompoundFileStorage
         {
             if (Node.Value != null)
             {
-                if (Node.Left != null)
+                if (Node.Left != null && (Node.Left.Value.StgType != StgType.StgInvalid))
                 {
                     Node.Value.LeftSibling = Node.Left.Value.SID;
                 }
@@ -928,7 +932,7 @@ namespace OleCompoundFileStorage
                     Node.Value.LeftSibling = DirectoryEntry.NOSTREAM;
                 }
 
-                if (Node.Right != null)
+                if (Node.Right != null && (Node.Right.Value.StgType != StgType.StgInvalid))
                 {
                     Node.Value.RightSibling = Node.Right.Value.SID;
                 }
@@ -1040,7 +1044,7 @@ namespace OleCompoundFileStorage
                 de.Read(dirReader);
                 this.AddDirectoryEntry(de);
             }
-           
+
         }
 
         internal void RefreshIterative(BinaryTreeNode<IDirectoryEntry> node)
@@ -1310,27 +1314,34 @@ namespace OleCompoundFileStorage
         }
 
 
-        internal void RemoveDirectoryEntry(int sid)
+        internal void RemoveDirectoryEntry(int sid, bool overwrite)
         {
             if (sid >= directoryEntries.Count)
                 throw new CFException("Invalid SID of the directory entry to remove");
 
-            // Clear the associated stream (or ministream)
-            if (directoryEntries[sid].Size < header.MinSizeStandardStream)
+            if (directoryEntries[sid].StgType == StgType.StgStream)
             {
-                List<Sector> miniChain
-                    = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Mini);
-                FreeMiniChain(miniChain);
+
+                // Clear the associated stream (or ministream)
+                if (directoryEntries[sid].Size < header.MinSizeStandardStream)
+                {
+                    List<Sector> miniChain
+                        = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Mini);
+                    FreeMiniChain(miniChain, overwrite);
+                }
+                else
+                {
+                    List<Sector> chain
+                        = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Normal);
+                    FreeChain(chain, overwrite);
+                }
             }
-            else
-            {
-                List<Sector> chain
-                    = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Normal);
-                FreeChain(chain);
-            }
+
             Random r = new Random();
 
-            directoryEntries[sid].SetEntryName("_DELETED_NAME_" + r.Next(short.MaxValue).ToString());
+            if (overwrite)
+                directoryEntries[sid].SetEntryName("_DELETED_NAME_" + r.Next(short.MaxValue).ToString());
+
             directoryEntries[sid].StgType = StgType.StgInvalid;
 
             //// Update the SIDs of the entries following the (tobe)removed one.
