@@ -34,6 +34,7 @@ namespace OleCfsMemoryTest
 
             VisitedEntryAction va = delegate(CFItem target)
             {
+                target.Name = "";
                 String temp = target.Name + (target is CFStorage ? "" : " (" + target.Size + " bytes )");
 
                 //Stream
