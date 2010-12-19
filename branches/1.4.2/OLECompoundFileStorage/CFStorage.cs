@@ -325,7 +325,7 @@ namespace OleCompoundFileStorage
             this.Children.TryFind(dto, out foundObj);
 
             if (foundObj == null)
-                throw new CFException("Entry named [" + entryName + "] not found");
+                throw new CFItemNotFound("Entry named [" + entryName + "] not found");
 
             //if (foundObj.GetType() != typeCheck)
             //    throw new CFException("Entry named [" + entryName + "] has not the correct type");

@@ -73,7 +73,7 @@ namespace OleCompoundFileStorage
         public ushort SectorShift
         {
             get { return sectorShift; }
-            set { sectorShift = value; }
+            
         }
 
         //32 2 Size of a short-sector in the short-stream container stream (➜6.1) in power-of-two (sssz),
@@ -83,7 +83,6 @@ namespace OleCompoundFileStorage
         public ushort MiniSectorShift
         {
             get { return miniSectorShift; }
-            set { miniSectorShift = value; }
         }
 
         //34 10 Not used
@@ -191,11 +190,39 @@ namespace OleCompoundFileStorage
 
 
         public Header()
+            : this(3)
         {
+
+        }
+
+
+        public Header(ushort version)
+        {
+
+            switch (version)
+            {
+                case 3:
+                    this.majorVersion = 3;
+                    this.sectorShift = 0x0009;
+                    break;
+
+                case 4:
+                    this.majorVersion = 4;
+                    this.sectorShift = 0x000C;
+                    break;
+
+                default:
+                    throw new CFException("Invalid Compound File Format version");
+
+
+            }
+
             for (int i = 0; i < 109; i++)
             {
                 difat[i] = Sector.FREESECT;
             }
+
+
         }
 
         public void Write(BinaryWriter bw)
@@ -252,21 +279,21 @@ namespace OleCompoundFileStorage
             }
         }
 
-        private UInt16 SUPPORTED_VERSION = 0x0003;
+
         private void CheckVersion()
         {
-            if(this.majorVersion!= SUPPORTED_VERSION)
-                throw  new CFFileFormatException("Unsupported version. OLECFS only supports Compound Files with major version equal to 3 ");
+            if (this.majorVersion != 3 && this.majorVersion != 4)
+                throw new CFFileFormatException("Unsupported Binary File Format version: OpenMcdf only supports Compound Files with major version equal to 3 or 4 ");
         }
 
         /// <summary>
         /// Structured Storage signature
         /// </summary>
         private byte[] OLE_CFS_SIGNATURE = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
-        
+
         private void CheckSignature()
         {
-            for (int i = 0; i<headerSignature.Length;i++)
+            for (int i = 0; i < headerSignature.Length; i++)
             {
                 if (headerSignature[i] != OLE_CFS_SIGNATURE[i])
                     throw new CFFileFormatException("Invalid OLE structured storage file");

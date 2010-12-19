@@ -295,7 +295,7 @@ namespace OleCompoundFileStorage
         }
 
         /// <summary>
-        /// Entity Name
+        /// Gets entity name
         /// </summary>
         public String Name
         {
