@@ -29,7 +29,7 @@ namespace OleCompoundFileStorage
     /// </summary>
     internal class StreamView : Stream
     {
-        private int sectorSize = Sector.SECTOR_SIZE;
+        private int sectorSize;
 
         private long position;
 
