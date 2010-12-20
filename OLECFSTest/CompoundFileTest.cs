@@ -62,7 +62,7 @@ namespace OleCfsTest
         #endregion
 
         [TestMethod]
-        public void TestCompressSpace()
+        public void Test_COMPRESS_SPACE()
         {
             String FILENAME = "MultipleStorage3.cfs";
 
@@ -89,7 +89,7 @@ namespace OleCfsTest
         }
 
         [TestMethod]
-        public void TestDeleteWithoutCompression()
+        public void Test_DELETE_WITHOUT_COMPRESSION()
         {
             String FILENAME = "MultipleStorage3.cfs";
 

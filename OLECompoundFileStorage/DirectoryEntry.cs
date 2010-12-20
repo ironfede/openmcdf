@@ -63,6 +63,7 @@ namespace OleCompoundFileStorage
                     this.creationDate = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
                     this.modifyDate = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
                     break;
+
                 case StgType.StgStorage:
                     this.creationDate = BitConverter.GetBytes((DateTime.Now.ToFileTime()));
                     break;
