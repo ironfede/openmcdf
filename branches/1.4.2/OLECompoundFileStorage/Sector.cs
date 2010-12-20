@@ -132,7 +132,7 @@ namespace OleCompoundFileStorage
         {
             Sector s = new Sector(size);
             s.Id = secID;
-            reader.BaseStream.Seek(512 + secID * size, SeekOrigin.Begin);
+            reader.BaseStream.Seek(size + secID * size, SeekOrigin.Begin);
             s.data = reader.ReadBytes(size);
 
             return s;

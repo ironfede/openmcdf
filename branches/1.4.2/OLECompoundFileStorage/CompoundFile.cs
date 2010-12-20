@@ -40,7 +40,14 @@ namespace OleCompoundFileStorage
     /// </summary>
     public enum CFSVersion : int
     {
-        Ver_3 = 3, Ver_4 = 4
+        /// <summary>
+        /// Compound file version 3 - sector size 512 bytes (default and most common version available)
+        /// </summary>
+        Ver_3 = 3,
+        /// <summary>
+        /// Compound file version 4 - sector size 4096 bytes
+        /// </summary>
+        Ver_4 = 4
     }
 
 
@@ -70,12 +77,12 @@ namespace OleCompoundFileStorage
         /// <summary>
         /// Number of FAT entries in a DIFAT Sector
         /// </summary>
-        private const int DIFAT_SECTOR_FAT_ENTRIES_COUNT = 127;
+        private readonly int DIFAT_SECTOR_FAT_ENTRIES_COUNT = 127;
 
         /// <summary>
         /// Sectors ID entries in a FAT Sector
         /// </summary>
-        private const int FAT_SECTOR_ENTRIES_COUNT = 128;
+        private readonly int FAT_SECTOR_ENTRIES_COUNT = 128;
 
         /// <summary>
         /// Sector ID Size (int)
@@ -115,8 +122,8 @@ namespace OleCompoundFileStorage
         public CompoundFile()
         {
             this.header = new Header();
-
-            //this.directory = new Directory();
+            DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
+            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
             //Root -- 
             rootStorage = new CFStorage(this);
@@ -154,7 +161,9 @@ namespace OleCompoundFileStorage
         public CompoundFile(CFSVersion ver)
         {
             this.header = new Header((ushort)ver);
-            //this.directory = new Directory();
+
+            DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
+            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
             //Root -- 
             rootStorage = new CFStorage(this);
@@ -194,6 +203,9 @@ namespace OleCompoundFileStorage
         public CompoundFile(String fileName)
         {
             LoadFile(fileName);
+
+            DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
+            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
         }
 
         /// <summary>
@@ -218,6 +230,9 @@ namespace OleCompoundFileStorage
         public CompoundFile(Stream stream)
         {
             LoadStream(stream);
+
+            DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
+            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
         }
 
         private void LoadFile(String fileName)
@@ -266,6 +281,11 @@ namespace OleCompoundFileStorage
 
             temp.Seek(0, SeekOrigin.Begin);
 
+            if (fileReader != null)
+            {
+                fileReader.Close();
+            }
+
             fileReader = new BinaryReader(temp);
 
             header.Read(fileReader);
@@ -295,39 +315,6 @@ namespace OleCompoundFileStorage
             get { return fileReader != null; }
         }
 
-        //internal void SetSectorChain(List<Sector> sectorChain, SectorType chainType)
-        //{
-        //    List<Sector> result
-        //        = new List<Sector>();
-
-        //    switch (chainType)
-        //    {
-        //        case SectorType.DIFAT:
-
-        //            SetDIFATSectorChain(sectorChain);
-
-        //            break;
-
-        //        case SectorType.FAT:
-
-        //            SetFATSectorChain(sectorChain);
-
-        //            break;
-
-        //        case SectorType.Normal:
-
-        //            SetNormalSectorChain(sectorChain);
-
-        //            break;
-
-        //        case SectorType.Mini:
-
-        //            SetMiniSectorChain(sectorChain);
-
-        //            break;
-        //    }
-
-        //}
 
         /// <summary>
         /// Allocate space, setup sectors id and refresh header
@@ -769,9 +756,10 @@ namespace OleCompoundFileStorage
                         {
                             nextSecID = BitConverter.ToInt32(s.Data, 508);
 
-                            // Strictly the following condition is not correct:
+                            // Strictly speaking, the following condition is not correct from
+                            // a specification point of view:
                             // only ENDOFCHAIN should break DIFAT chain but 
-                            // a lot of compound files use FREESECT as DIFAT chain termination
+                            // a lot of existing compound files use FREESECT as DIFAT chain termination
                             if (nextSecID == Sector.FREESECT || nextSecID == Sector.ENDOFCHAIN) break;
 
                             if (sectors[nextSecID] == null)
@@ -795,11 +783,11 @@ namespace OleCompoundFileStorage
 
                     List<Sector> difatSectors = GetSectorChain(-1, SectorType.DIFAT);
 
-                    int c = 0;
+                    int idx = 0;
 
-                    while (c < 109 && header.DIFAT[c] != Sector.FREESECT)
+                    while (idx < 109 && header.DIFAT[idx] != Sector.FREESECT)
                     {
-                        nextSecID = header.DIFAT[c];
+                        nextSecID = header.DIFAT[idx];
 
                         if (sectors[nextSecID] == null && fileReader != null)
                         {
@@ -811,7 +799,7 @@ namespace OleCompoundFileStorage
 
                         result.Add(sectors[nextSecID] as Sector);
 
-                        c++;
+                        idx++;
                     }
 
                     if (difatSectors.Count > 0)
@@ -1095,7 +1083,7 @@ namespace OleCompoundFileStorage
                 = new BinaryReader(new StreamView(directoryChain, GetSectorSize(), directoryChain.Count * GetSectorSize()));
 
 
-            while (dirReader.BaseStream.Position < directoryChain.Count * 512)
+            while (dirReader.BaseStream.Position < directoryChain.Count * GetSectorSize())
             {
                 DirectoryEntry de
                 = new DirectoryEntry(StgType.StgInvalid);
@@ -1116,10 +1104,12 @@ namespace OleCompoundFileStorage
 
         private void SaveDirectory()
         {
+            const int DIRECTORY_SIZE = 128;
+
             List<Sector> directorySectors
                 = GetSectorChain(header.FirstDirectorySectorID, SectorType.Normal);
 
-            StreamView sv = new StreamView(directorySectors, 512, 0);
+            StreamView sv = new StreamView(directorySectors, GetSectorSize(), 0);
             BinaryWriter bw = new BinaryWriter(sv);
 
             ((CFStorage)rootStorage).Children.VisitTreeInOrder(new NodeAction<IDirectoryEntry>(RefreshIterative));
@@ -1131,7 +1121,7 @@ namespace OleCompoundFileStorage
 
             int delta = directoryEntries.Count;
 
-            while (delta % 4 != 0)
+            while (delta % (GetSectorSize() / DIRECTORY_SIZE) != 0)
             {
                 DirectoryEntry dummy = new DirectoryEntry(StgType.StgInvalid);
                 dummy.Write(bw);
@@ -1174,7 +1164,7 @@ namespace OleCompoundFileStorage
                 fs = new FileStream(fileName, FileMode.Create);
                 bw = new BinaryWriter(fs);
 
-                bw.Write((byte[])Array.CreateInstance(typeof(byte), 512));
+                bw.Write((byte[])Array.CreateInstance(typeof(byte), GetSectorSize()));
                 SaveDirectory();
 
                 for (int i = 0; i < sectors.Count; i++)
@@ -1236,7 +1226,7 @@ namespace OleCompoundFileStorage
 
             BinaryWriter bw = new BinaryWriter(tempStream);
 
-            bw.Write((byte[])Array.CreateInstance(typeof(byte), 512));
+            bw.Write((byte[])Array.CreateInstance(typeof(byte), GetSectorSize()));
             SaveDirectory();
 
             if (fileReader != null)
@@ -1413,26 +1403,6 @@ namespace OleCompoundFileStorage
             }
 
             directoryEntries[sid].StgType = StgType.StgInvalid;
-
-            //// Update the SIDs of the entries following the (tobe)removed one.
-            //// This update will NOT invalidate sorting 
-            //for (int i = 0; i < directoryEntries.Count; i++)
-            //{
-            //    if (directoryEntries[i].SID > sid)
-            //        directoryEntries[i].SID--;
-
-            //    if (directoryEntries[i].Child > sid)
-            //        directoryEntries[i].Child--;
-
-            //    if (directoryEntries[i].LeftSibling > sid)
-            //        directoryEntries[i].LeftSibling--;
-
-            //    if (directoryEntries[i].RightSibling > sid)
-            //        directoryEntries[i].RightSibling--;
-            //}
-
-            //// Remove phisically the entry
-            //this.directoryEntries.RemoveAt(sid);
         }
 
         /// <summary>
@@ -1571,9 +1541,14 @@ namespace OleCompoundFileStorage
 
         /// <summary>
         /// Compress free space removing unallocated sectors from compound file
-        /// reducing its size. This method is meant to be called after multiple structures
+        /// effectively reducing its size. 
+        /// This method is meant to be called after multiple structures
         /// removal in order to avoid space wasting.
         /// </summary>
+        /// <remarks>
+        /// This method will cause a full load
+        /// of sectors introducing a slightly performance penalty.
+        /// </remarks>
         public void CompressFreeSpace()
         {
             CompoundFile tempCF = new CompoundFile((CFSVersion)this.header.MajorVersion);
@@ -1584,17 +1559,22 @@ namespace OleCompoundFileStorage
             tempCF.Save(tmpMS);
             tempCF.Close();
 
-            tmpMS.Seek(0,SeekOrigin.Begin);
+            tmpMS.Seek(0, SeekOrigin.Begin);
+
 
             this.LoadStream(tmpMS);
         }
 
+        /// <summary>
+        /// Recursively clones valid structures, avoiding to copy free sectors.
+        /// </summary>
+        /// <param name="currSrcStorage">Current source storage to clone</param>
+        /// <param name="currDstStorage">Current cloned destination storage</param>
         private void DoCompression(CFStorage currSrcStorage, CFStorage currDstStorage)
         {
             VisitedEntryAction va =
                 delegate(CFItem item)
                 {
-
                     if (item.IsStream)
                     {
                         CFStream itemAsStream = item as CFStream;
@@ -1605,7 +1585,8 @@ namespace OleCompoundFileStorage
                     {
                         CFStorage itemAsStorage = item as CFStorage;
                         CFStorage strg = ((CFStorage)currDstStorage).AddStorage(itemAsStorage.Name);
-                        DoCompression(itemAsStorage, strg);
+
+                        DoCompression(itemAsStorage, strg); // recursion, one level deeper
 
                     }
                 };
