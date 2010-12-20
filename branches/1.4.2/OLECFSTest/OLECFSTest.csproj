@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="CFSStreamTest.cs" />
     <Compile Include="CFSTorageTest.cs" />
+    <Compile Include="CompoundFileTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

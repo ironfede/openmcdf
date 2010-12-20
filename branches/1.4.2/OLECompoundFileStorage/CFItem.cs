@@ -391,7 +391,10 @@ namespace OleCompoundFileStorage
 
             set
             {
-                this.dirEntry.CreationDate = BitConverter.GetBytes((value.ToFileTime()));
+                if (this.dirEntry.StgType != StgType.StgStream && this.dirEntry.StgType != StgType.StgRoot)
+                    this.dirEntry.CreationDate = BitConverter.GetBytes((value.ToFileTime()));
+                else
+                    throw new CFException("Creation Date can only be set on storage entries");
             }
         }
 
@@ -407,8 +410,32 @@ namespace OleCompoundFileStorage
 
             set
             {
-                this.dirEntry.ModifyDate = BitConverter.GetBytes((value.ToFileTime()));
+                if (this.dirEntry.StgType != StgType.StgStream && this.dirEntry.StgType != StgType.StgRoot)
+                    this.dirEntry.ModifyDate = BitConverter.GetBytes((value.ToFileTime()));
+                else
+                    throw new CFException("Modify Date can only be set on storage entries");
             }
         }
+
+        /// <summary>
+        /// Object class Guid for Root and Storage entries.
+        /// </summary>
+        public Guid CLSID
+        {
+            get
+            {
+                return this.dirEntry.StorageCLSID;
+            }
+            set
+            {
+                if (this.dirEntry.StgType != StgType.StgStream)
+                {
+                    this.dirEntry.StorageCLSID = value;
+                }
+                else
+                    throw new CFException("Object class GUID can only beset on Root and Storage entries");
+            }
+        }
+
     }
 }

@@ -54,6 +54,25 @@ namespace OleCompoundFileStorage
         public DirectoryEntry(StgType stgType)
         {
             this.stgType = stgType;
+
+            switch (stgType)
+            {
+                case StgType.StgStream:
+
+                    this.storageCLSID = new Guid("00000000000000000000000000000000");
+                    this.creationDate = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+                    this.modifyDate = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+                    break;
+                case StgType.StgStorage:
+                    this.creationDate = BitConverter.GetBytes((DateTime.Now.ToFileTime()));
+                    break;
+
+                case StgType.StgRoot:
+                    this.creationDate = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+                    this.modifyDate = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+                    break;
+            }
+
         }
 
         private byte[] entryName = new byte[64];
@@ -178,7 +197,7 @@ namespace OleCompoundFileStorage
             }
             set
             {
-                throw new NotImplementedException();
+                this.storageCLSID = value;
             }
         }
 
@@ -250,7 +269,7 @@ namespace OleCompoundFileStorage
             const int THIS_IS_GREATER = 1;
             const int OTHER_IS_GREATER = -1;
             IDirectoryEntry otherDir = obj as IDirectoryEntry;
-            
+
             if (otherDir == null)
                 throw new CFException("Invalid casting: compared object does not implement IDirectorEntry interface");
 

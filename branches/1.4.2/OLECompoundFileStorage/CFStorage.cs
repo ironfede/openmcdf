@@ -300,6 +300,19 @@ namespace OleCompoundFileStorage
         //{
         //    Delete(name, typeof(CFStorage));
         //}
+ 
+        /// <summary>
+        /// Remove an entry from the current storage and compound file.
+        /// </summary>
+        /// <param name="entryName">The name of the entry in the current storage to delete</param>
+        /// <remarks>
+        /// Entry is invalidated but its data and name will be still
+        /// present in the compound file.
+        /// </remarks>
+        public void Delete(String entryName)
+        {
+            Delete(entryName, false);
+        }
 
         /// <summary>
         /// Remove an entry from the current storage and compound file.
@@ -310,7 +323,7 @@ namespace OleCompoundFileStorage
         /// If 'overwrite' parameter is set, entry name is overwritten with a '_DELETED_NAME_[random]'
         /// string and associated contents are overwritten with zeros: data cannot be recovered.
         /// When 'overwrite' is not set, entry is simply invalidated but its data and name will be still
-        /// present in the compound file with a slightly performance enhanchement.
+        /// present in the compound file with a slightly performance enhanchement of the operation.
         /// </remarks>
         public void Delete(String entryName, bool overwrite)
         {
