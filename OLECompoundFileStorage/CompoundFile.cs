@@ -223,7 +223,7 @@ namespace OleCompoundFileStorage
         private void LoadFile(String fileName)
         {
             this.header = new Header();
-            //this.directory = new Directory();
+            this.directoryEntries = new List<IDirectoryEntry>();
 
             FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
             fileReader = new BinaryReader(fs);
@@ -248,7 +248,7 @@ namespace OleCompoundFileStorage
         private void LoadStream(Stream stream)
         {
             this.header = new Header();
-            //this.directory = new Directory();
+            this.directoryEntries = new List<IDirectoryEntry>();
 
             Stream temp = null;
 
@@ -1141,7 +1141,7 @@ namespace OleCompoundFileStorage
             SetNormalSectorChain(directorySectors);
 
             header.FirstDirectorySectorID = directorySectors[0].Id;
-            
+
             ///Version 4 supports directory sectors count
             if (header.MajorVersion == 3)
             {
@@ -1407,7 +1407,7 @@ namespace OleCompoundFileStorage
             }
 
             if (overwrite)
-            { 
+            {
                 Random r = new Random();
                 directoryEntries[sid].SetEntryName("_DELETED_NAME_" + r.Next(short.MaxValue).ToString());
             }
@@ -1569,38 +1569,48 @@ namespace OleCompoundFileStorage
             return result;
         }
 
+        /// <summary>
+        /// Compress free space removing unallocated sectors from compound file
+        /// reducing its size. This method is meant to be called after multiple structures
+        /// removal in order to avoid space wasting.
+        /// </summary>
+        public void CompressFreeSpace()
+        {
+            CompoundFile tempCF = new CompoundFile((CFSVersion)this.header.MajorVersion);
+            DoCompression(this.RootStorage, tempCF.RootStorage);
 
-        //internal void RemoveDirectoryEntry(int index)
-        //{
-        //    if (index < directoryEntries.Count)
-        //    {
-        //        for (int i = index + 1; i < directoryEntries.Count; i++)
-        //        {
-        //            directoryEntries[i].SID--;
-        //        }
+            MemoryStream tmpMS = new MemoryStream();
 
-        //        this.directoryEntries.RemoveAt(index);
-        //    }
-        //}
+            tempCF.Save(tmpMS);
+            tempCF.Close();
 
-        //public void Write(System.IO.BinaryWriter bw)
-        //{
-        //    int dirSectNumber = 0;
+            tmpMS.Seek(0,SeekOrigin.Begin);
 
-        //    foreach (DirectoryEntry dirEntry in directoryEntries)
-        //    {
-        //        dirEntry.Write(bw);
-        //        dirSectNumber++;
-        //    }
+            this.LoadStream(tmpMS);
+        }
 
-        //    // Padding with FREESECT
-        //    while (dirSectNumber++ % 512 != 0)
-        //    {
-        //        for (int i = 0; i < 31; i++)
-        //            bw.Write(Sector.FREESECT);
+        private void DoCompression(CFStorage currSrcStorage, CFStorage currDstStorage)
+        {
+            VisitedEntryAction va =
+                delegate(CFItem item)
+                {
 
-        //        dirSectNumber++;
-        //    }
-        //}
+                    if (item.IsStream)
+                    {
+                        CFStream itemAsStream = item as CFStream;
+                        CFStream st = ((CFStorage)currDstStorage).AddStream(itemAsStream.Name);
+                        st.SetData(itemAsStream.GetData());
+                    }
+                    else if (item.IsStorage)
+                    {
+                        CFStorage itemAsStorage = item as CFStorage;
+                        CFStorage strg = ((CFStorage)currDstStorage).AddStorage(itemAsStorage.Name);
+                        DoCompression(itemAsStorage, strg);
+
+                    }
+                };
+
+            currSrcStorage.VisitEntries(va, false);
+        }
     }
 }
