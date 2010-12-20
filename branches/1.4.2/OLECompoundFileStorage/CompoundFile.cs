@@ -1563,6 +1563,8 @@ namespace OleCompoundFileStorage
 
 
             this.LoadStream(tmpMS);
+            
+            
         }
 
         /// <summary>
@@ -1585,7 +1587,7 @@ namespace OleCompoundFileStorage
                     {
                         CFStorage itemAsStorage = item as CFStorage;
                         CFStorage strg = ((CFStorage)currDstStorage).AddStorage(itemAsStorage.Name);
-
+                        strg.CLSID = itemAsStorage.CLSID;
                         DoCompression(itemAsStorage, strg); // recursion, one level deeper
 
                     }
