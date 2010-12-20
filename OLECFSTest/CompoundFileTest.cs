@@ -114,5 +114,30 @@ namespace OleCfsTest
             Assert.IsFalse(srcFile.Length > dstFile.Length);
 
         }
+
+        [TestMethod]
+        public void Test_WRITE_AND_READ_CFS_VERSION_4()
+        {
+            String filename = "WRITE_AND_READ_CFS_V4.cfs";
+
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4);
+
+            CFStorage st = cf.RootStorage.AddStorage("MyStorage");
+            CFStream sm = st.AddStream("MyStream");
+            byte[] b = new byte[220];
+            sm.SetData(b);
+
+            cf.Save(filename);
+            cf.Close();
+
+            CompoundFile cf2 = new CompoundFile(filename);
+            CFStorage st2 = cf2.RootStorage.GetStorage("MyStorage");
+            CFStream sm2 = st2.GetStream("MyStream");
+
+            Assert.IsNotNull(sm2);
+            Assert.IsTrue(sm2.Size == 220);
+
+            cf2.Close();
+        }
     }
 }

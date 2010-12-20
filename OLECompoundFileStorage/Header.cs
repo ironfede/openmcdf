@@ -249,6 +249,12 @@ namespace OleCompoundFileStorage
             {
                 bw.Write(i);
             }
+
+            if (majorVersion == 4)
+            {
+                byte[] zeroHead = new byte[3584];
+                bw.Write(zeroHead);
+            }
         }
 
         public void Read(BinaryReader br)
