@@ -245,9 +245,6 @@ namespace OleCfsTest
             cf.Close();
         }
 
-
-        
-
         [TestMethod]
         public void Test_CHECK_DISPOSED_()
         {

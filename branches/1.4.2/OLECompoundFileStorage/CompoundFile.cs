@@ -1227,6 +1227,7 @@ namespace OleCompoundFileStorage
             BinaryWriter bw = new BinaryWriter(tempStream);
 
             bw.Write((byte[])Array.CreateInstance(typeof(byte), GetSectorSize()));
+
             SaveDirectory();
 
             if (fileReader != null)
