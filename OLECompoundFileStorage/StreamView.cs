@@ -29,7 +29,7 @@ namespace OleCompoundFileStorage
     /// </summary>
     internal class StreamView : Stream
     {
-        private int sectorSize = Sector.SECTOR_SIZE;
+        private int sectorSize;
 
         private long position;
 
@@ -46,6 +46,13 @@ namespace OleCompoundFileStorage
             this.sectorChain = sectorChain;
             this.sectorSize = sectorSize;
         }
+
+        public StreamView(List<Sector> sectorChain, int sectorSize, long length, Stack<Sector> availableSectors)
+            : this(sectorChain, sectorSize)
+        {
+            adjustLength(length, availableSectors);
+        }
+
 
         public StreamView(List<Sector> sectorChain, int sectorSize, long length)
             : this(sectorChain, sectorSize)
@@ -204,6 +211,11 @@ namespace OleCompoundFileStorage
 
         private void adjustLength(long value)
         {
+            adjustLength(value, null);
+        }
+
+        private void adjustLength(long value, Stack<Sector> availableSectors)
+        {
             this.length = value;
 
             long delta = value - (this.sectorChain.Count * sectorSize);
@@ -216,7 +228,17 @@ namespace OleCompoundFileStorage
 
                 while (nSec > 0)
                 {
-                    Sector t = new Sector(sectorSize);
+                    Sector t = null;
+
+                    if (availableSectors == null || availableSectors.Count == 0)
+                    {
+                         t = new Sector(sectorSize);
+                    }
+                    else
+                    {
+                        t = availableSectors.Pop();
+                    }
+
                     sectorChain.Add(t);
                     nSec--;
                 }

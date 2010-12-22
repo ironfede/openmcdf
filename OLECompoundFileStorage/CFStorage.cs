@@ -300,19 +300,32 @@ namespace OleCompoundFileStorage
         //{
         //    Delete(name, typeof(CFStorage));
         //}
-
+ 
         /// <summary>
-        /// Remove (logically) an entry from the current storage and compound file.
+        /// Remove an entry from the current storage and compound file.
         /// </summary>
-        /// <param name="entryName">Entry to delete</param>
+        /// <param name="entryName">The name of the entry in the current storage to delete</param>
         /// <remarks>
-        /// Entry name is overwritten with a '_DELETED_NAME_[random]'
-        /// string and associated contents are overwritten with zeros.
-        /// Data is NOT recoverable.
-        /// If phisical deletion is required it's suggested to create a new
-        /// compound file and inject in it the old structure using items traversal.
+        /// Entry is invalidated but its data and name will be still
+        /// present in the compound file.
         /// </remarks>
         public void Delete(String entryName)
+        {
+            Delete(entryName, false);
+        }
+
+        /// <summary>
+        /// Remove an entry from the current storage and compound file.
+        /// </summary>
+        /// <param name="entryName">The name of the entry in the current storage to delete</param>
+        /// <param name="overwrite">If true, entry associated data will be overwritten with zeroes</param>
+        /// <remarks>
+        /// If 'overwrite' parameter is set, entry name is overwritten with a '_DELETED_NAME_[random]'
+        /// string and associated contents are overwritten with zeros: data cannot be recovered.
+        /// When 'overwrite' is not set, entry is simply invalidated but its data and name will be still
+        /// present in the compound file with a slightly performance enhanchement of the operation.
+        /// </remarks>
+        public void Delete(String entryName, bool overwrite)
         {
             CheckDisposed();
 
@@ -325,7 +338,7 @@ namespace OleCompoundFileStorage
             this.Children.TryFind(dto, out foundObj);
 
             if (foundObj == null)
-                throw new CFException("Entry named [" + entryName + "] not found");
+                throw new CFItemNotFound("Entry named [" + entryName + "] not found");
 
             //if (foundObj.GetType() != typeCheck)
             //    throw new CFException("Entry named [" + entryName + "] has not the correct type");
@@ -341,7 +354,7 @@ namespace OleCompoundFileStorage
 
                     foreach (IDirectoryEntry de in temp.Children)
                     {
-                        temp.Delete(de.Name);
+                        temp.Delete(de.Name, overwrite);
                     }
 
                     // Remove item from children tree
@@ -357,8 +370,7 @@ namespace OleCompoundFileStorage
                         this.dirEntry.Child = DirectoryEntry.NOSTREAM;
 
                     // ...and now remove directory (storage) entry
-                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);
-
+                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID, overwrite);
 
                     break;
 
@@ -377,7 +389,7 @@ namespace OleCompoundFileStorage
                         this.dirEntry.Child = DirectoryEntry.NOSTREAM;
 
                     // Remove directory entry
-                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);
+                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID, overwrite);
 
                     break;
             }

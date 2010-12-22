@@ -167,7 +167,7 @@ namespace OleCfsTest
             const int SIZE = 15388609; //Incredible condition of 'resonance' between FAT and DIFAT sec number
             //const int SIZE = 15345665; // 64 -> 65 NOT working
             byte[] b = GetBuffer(SIZE, 0);
-            
+
             CompoundFile cf = new CompoundFile();
             CFStream myStream = cf.RootStorage.AddStream("MyStream");
             Assert.IsNotNull(myStream);
@@ -295,6 +295,26 @@ namespace OleCfsTest
             cf.Save("RE_WRITE_SMALLER_MINI_STREAM.xls");
             cf.Close();
         }
+
+        [TestMethod]
+        public void Test_TRANSACTEDMODE_ADD_STREAM_TO_EXISTING_FILE()
+        {
+            String srcFilename = "report.xls";
+            String dstFilename = "reportOverwrite.xls";
+
+            File.Copy(srcFilename, dstFilename, true);
+
+            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted);
+
+            byte[] buffer = GetBuffer(5000);
+
+            CFStream addedStream = cf.RootStorage.AddStream("MyNewStream");
+            addedStream.SetData(buffer);
+
+            cf.Commit();
+            cf.Close();
+        }
+
 
         //[TestMethod]
         //public void Test_DELETE_STREAM_1()

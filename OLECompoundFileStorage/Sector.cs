@@ -30,7 +30,7 @@ namespace OleCompoundFileStorage
 
     internal class Sector
     {
-        public static int SECTOR_SIZE = 512;
+        //public static int SECTOR_SIZE = 512;
         public static int MINISECTOR_SIZE = 64;
 
         public const int FREESECT = unchecked((int)0xFFFFFFFF);
@@ -130,11 +130,9 @@ namespace OleCompoundFileStorage
 
         public static Sector LoadSector(int secID, BinaryReader reader, int size)
         {
-            Sector s = null;
-
-            s = new Sector(size);
+            Sector s = new Sector(size);
             s.Id = secID;
-            reader.BaseStream.Position = 512 + secID * size;
+            reader.BaseStream.Seek(size + secID * size, SeekOrigin.Begin);
             s.data = reader.ReadBytes(size);
 
             return s;
