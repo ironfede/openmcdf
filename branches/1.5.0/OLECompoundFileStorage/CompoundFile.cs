@@ -1415,9 +1415,15 @@ namespace OleCompoundFileStorage
             {
                 List<Sector> miniFAT
                     = GetSectorChain(header.FirstMiniFATSectorID, SectorType.Normal);
-   
+
                 StreamView miniFATView
                     = new StreamView(miniFAT, GetSectorSize(), header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE);
+
+                List<Sector> miniStream
+                    = GetSectorChain(RootEntry.StartSetc, SectorType.Normal);
+
+                StreamView miniStreamView
+                    = new StreamView(miniStream, GetSectorSize(), rootStorage.Size);
 
                 long ptr = 0;
 
@@ -1430,7 +1436,14 @@ namespace OleCompoundFileStorage
 
                     if (id == Sector.FREESECT)
                     {
-                        freeList.Push(sectors[id] as Sector);
+                        Sector ms = new Sector(Sector.MINISECTOR_SIZE);
+                        byte[] temp = new byte[Sector.MINISECTOR_SIZE];
+
+                        ms.Id = (int)(ptr / 4);
+                        miniStreamView.Seek(ms.Id * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
+
+                        miniStreamView.Read(ms.Data, 0, Sector.MINISECTOR_SIZE);
+                        freeList.Push(ms);
                     }
 
                     ptr += 4;
@@ -1482,7 +1495,7 @@ namespace OleCompoundFileStorage
             List<Sector> sectorChain
                 = GetSectorChain(directoryEntry.StartSetc, _st);
 
-            Stack<Sector> freeList = FindFreeSectors(); // Collect available free sectors
+            Stack<Sector> freeList = FindFreeSectors(_st); // Collect available free sectors
 
             StreamView sv = new StreamView(sectorChain, _sectorSize, buffer.Length, freeList);
 

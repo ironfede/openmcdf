@@ -315,6 +315,28 @@ namespace OleCfsTest
             cf.Close();
         }
 
+        [TestMethod]
+        public void Test_TRANSACTEDMODE_REMOVE_MINI_STREAM_ADD_MINISTREAM_TO_EXISTING_FILE()
+        {
+            String srcFilename = "report.xls";
+            String dstFilename = "reportOverwrite2.xls";
+
+            File.Copy(srcFilename, dstFilename, true);
+
+            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted);
+
+            cf.RootStorage.Delete("\x05SummaryInformation"); 
+
+            byte[] buffer = GetBuffer(2000);
+
+            CFStream addedStream = cf.RootStorage.AddStream("MyNewStream");
+            addedStream.SetData(buffer);
+
+            cf.Commit();
+            cf.Close();
+        }
+
+
 
         //[TestMethod]
         //public void Test_DELETE_STREAM_1()
