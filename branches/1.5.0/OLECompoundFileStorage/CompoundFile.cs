@@ -320,7 +320,10 @@ namespace OleCompoundFileStorage
         public void Commit()
         {
             if (_disposed)
-                throw new CFException("Compound File closed: cannot save data");
+                throw new CFException("Compound File closed: cannot commit data");
+
+            if (updateMode != UpdateMode.Transacted)
+                throw new CFException("Cannot update data in Read-Only update mode");
 
             FileStream fs = null;
             BinaryWriter bw = null;
@@ -347,13 +350,13 @@ namespace OleCompoundFileStorage
                     bw.Write(s.Data);
                 }
 
-                // Seek to beginning position and save header (first 512 bytes)
+                // Seek to beginning position and save header (first 512 or 4096 bytes)
                 bw.BaseStream.Seek(0, SeekOrigin.Begin);
                 header.Write(bw);
             }
             catch (Exception ex)
             {
-                throw new CFException("Error saving file [" + fileName + "]", ex);
+                throw new CFException("Error updating file [" + fileName + "]", ex);
             }
             finally
             {
