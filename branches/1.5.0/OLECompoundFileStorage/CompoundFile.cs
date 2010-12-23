@@ -56,8 +56,6 @@ namespace OleCompoundFileStorage
         ReadOnly, Transacted
     }
 
-
-
     /// <summary>
     /// Standard Microsoft&#169; Compound File implementation.
     /// It is also known as OLE/COM structured storage 
@@ -339,15 +337,18 @@ namespace OleCompoundFileStorage
 
                 for (int i = 0; i < sectors.Count; i++)
                 {
-                    Sector s = sectors[i] as Sector;
+                    // Note:
+                    // Here sector should not be loaded dynamically because
+                    // if it is null it means that no change has happened to it;
 
-                    if (fileReader != null && s == null)
+                    Sector s = sectors[i] as Sector; 
+
+                    if (s != null && s.DirtyFlag)
                     {
-                        s = Sector.LoadSector(i, fileReader, GetSectorSize());
-                        sectors[i] = s;
+                        bw.BaseStream.Seek(GetSectorSize() + i * GetSectorSize(), SeekOrigin.Begin);
+                        bw.Write(s.Data);
+                        s.DirtyFlag = false;
                     }
-
-                    bw.Write(s.Data);
                 }
 
                 // Seek to beginning position and save header (first 512 or 4096 bytes)
@@ -1082,9 +1083,20 @@ namespace OleCompoundFileStorage
 
         internal void AddDirectoryEntry(IDirectoryEntry de)
         {
+            // Find first available invalid slot (if any)
+            for (int i = 0; i < directoryEntries.Count; i++)
+            {
+                if (directoryEntries[i].StgType == StgType.StgInvalid)
+                {
+                    directoryEntries[i] = de;
+                    de.SID = i;
+                    return;
+                }
+            }
+            
+            // No invalid directory entry found
             directoryEntries.Add(de);
             de.SID = directoryEntries.Count - 1;
-
         }
 
         internal void RefreshSIDs(BinaryTreeNode<IDirectoryEntry> Node)

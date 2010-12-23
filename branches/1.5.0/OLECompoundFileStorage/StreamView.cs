@@ -300,6 +300,8 @@ namespace OleCompoundFileStorage
                         secShift,
                         roundByteWritten
                         );
+
+                    sectorChain[secOffset].DirtyFlag = true;
                 }
 
                 byteWritten += roundByteWritten;
@@ -319,6 +321,8 @@ namespace OleCompoundFileStorage
                         roundByteWritten
                         );
 
+                    sectorChain[secOffset].DirtyFlag = true;
+
                     byteWritten += roundByteWritten;
                     offset += roundByteWritten;
                     secOffset++;
@@ -336,6 +340,8 @@ namespace OleCompoundFileStorage
                         0,
                         roundByteWritten
                         );
+
+                    sectorChain[secOffset].DirtyFlag = true;
 
                     offset += roundByteWritten;
                     byteWritten += roundByteWritten;
