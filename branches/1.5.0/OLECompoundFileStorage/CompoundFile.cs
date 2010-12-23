@@ -51,9 +51,26 @@ namespace OleCompoundFileStorage
         Ver_4 = 4
     }
 
+    /// <summary>
+    /// Update mode of the compound file.
+    /// Default is ReadOnly.
+    /// </summary>
     public enum UpdateMode
     {
-        ReadOnly, Transacted
+        /// <summary>
+        /// ReadOnly update mode prevents overwriting
+        /// of the opened file or stream. 
+        /// Data changes have to be persisted on a different
+        /// file or stream when required.
+        /// </summary>
+        ReadOnly, 
+        /// <summary>
+        /// Transacted mode allows subsequent data changing operations
+        /// to be persisted directly on the opened file 
+        /// using the <see cref="M:OleCompoundFileStorage.CompoundFile.Commit">Commit</see>
+        /// method when required. Warning: this option may destroy existing data if misused.
+        /// </summary>
+        Transacted
     }
 
     /// <summary>
@@ -315,6 +332,15 @@ namespace OleCompoundFileStorage
                 = new CFStorage(this, directoryEntries[0]);
         }
 
+        /// <summary>
+        /// Commit data changes happened from the previously commit operation
+        /// to compound file on disk.
+        /// </summary>
+        /// <remarks>
+        /// This method can be used
+        /// only if <see cref="T:OleCompoundFileStorage.CompoundFile">CompoundFile</see> 
+        /// has been opened in <see cref="T:OleCompoundFileStorage.UpdateMode">Transacted mode</see>.
+        /// </remarks>
         public void Commit()
         {
             if (_disposed)
@@ -1099,29 +1125,7 @@ namespace OleCompoundFileStorage
             de.SID = directoryEntries.Count - 1;
         }
 
-        internal void RefreshSIDs(BinaryTreeNode<IDirectoryEntry> Node)
-        {
-            if (Node.Value != null)
-            {
-                if (Node.Left != null && (Node.Left.Value.StgType != StgType.StgInvalid))
-                {
-                    Node.Value.LeftSibling = Node.Left.Value.SID;
-                }
-                else
-                {
-                    Node.Value.LeftSibling = DirectoryEntry.NOSTREAM;
-                }
-
-                if (Node.Right != null && (Node.Right.Value.StgType != StgType.StgInvalid))
-                {
-                    Node.Value.RightSibling = Node.Right.Value.SID;
-                }
-                else
-                {
-                    Node.Value.RightSibling = DirectoryEntry.NOSTREAM;
-                }
-            }
-        }
+      
 
         internal BinarySearchTree<IDirectoryEntry> GetChildrenTree(int sid)
         {
@@ -1197,7 +1201,6 @@ namespace OleCompoundFileStorage
                 // If there're more right siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.RightSibling]);
             }
-
         }
 
 
@@ -1224,7 +1227,30 @@ namespace OleCompoundFileStorage
                 de.Read(dirReader);
                 this.AddDirectoryEntry(de);
             }
+        }
 
+        internal void RefreshSIDs(BinaryTreeNode<IDirectoryEntry> Node)
+        {
+            if (Node.Value != null)
+            {
+                if (Node.Left != null && (Node.Left.Value.StgType != StgType.StgInvalid))
+                {
+                    Node.Value.LeftSibling = Node.Left.Value.SID;
+                }
+                else
+                {
+                    Node.Value.LeftSibling = DirectoryEntry.NOSTREAM;
+                }
+
+                if (Node.Right != null && (Node.Right.Value.StgType != StgType.StgInvalid))
+                {
+                    Node.Value.RightSibling = Node.Right.Value.SID;
+                }
+                else
+                {
+                    Node.Value.RightSibling = DirectoryEntry.NOSTREAM;
+                }
+            }
         }
 
         internal void RefreshIterative(BinaryTreeNode<IDirectoryEntry> node)
@@ -1245,7 +1271,8 @@ namespace OleCompoundFileStorage
             StreamView sv = new StreamView(directorySectors, GetSectorSize(), 0);
             BinaryWriter bw = new BinaryWriter(sv);
 
-            ((CFStorage)rootStorage).Children.VisitTreeInOrder(new NodeAction<IDirectoryEntry>(RefreshIterative));
+           
+            //((CFStorage)rootStorage).Children.VisitTreeInOrder(new NodeAction<IDirectoryEntry>(RefreshIterative));
 
             foreach (IDirectoryEntry di in directoryEntries)
             {
@@ -1313,7 +1340,7 @@ namespace OleCompoundFileStorage
                     bw.Write(s.Data);
                 }
 
-                // Seek to beginning position and save header (first 512 bytes)
+                // Seek to beginning position and save header (first 512/4096 bytes)
                 bw.BaseStream.Seek(0, SeekOrigin.Begin);
                 header.Write(bw);
             }

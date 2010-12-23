@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Globalization;
+using BinaryTrees;
 
 /*
      The contents of this file are subject to the Mozilla Public License
@@ -38,7 +39,7 @@ namespace OleCompoundFileStorage
         Black = 1
     }
 
-    public class DirectoryEntry : IComparable, IDirectoryEntry
+    internal class DirectoryEntry :  IComparable, IDirectoryEntry 
     {
 
         private int sid = -1;
