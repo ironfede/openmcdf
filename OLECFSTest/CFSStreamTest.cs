@@ -340,11 +340,39 @@ namespace OleCfsTest
                 }
 
                 CFStream addedStream = cf.RootStorage.AddStream("MyNewStream" + i.ToString());
+                Assert.IsNotNull(addedStream);
                 addedStream.SetData(buffer);
-                //cf.Commit();
+
+                Assert.IsTrue(CompareBuffer(addedStream.GetData(), buffer));
+
+                // Random commit, not on single addition
+                if (r.Next(0, 100) > 50)
+                    cf.Commit();
             }
 
             cf.Close();
+        }
+
+        [TestMethod]
+        public void Test_TRANSACTED_ADD_MINISTREAM_TO_EXISTING_FILE()
+        {
+            String srcFilename = "report.xls";
+            String dstFilename = "reportOverwriteMultiple.xls";
+
+            File.Copy(srcFilename, dstFilename, true);
+            
+            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted);
+
+            Random r = new Random();
+
+            byte[] buffer = GetBuffer(r.Next(3, 4095), 0x0A);
+
+            cf.RootStorage.AddStream("MyStream").SetData(buffer);
+            cf.Commit();
+            cf.Close();
+
+            Assert.IsTrue(new FileStream(dstFilename, FileMode.Open).Length > new FileStream(srcFilename, FileMode.Open).Length);
+
         }
 
         [TestMethod]
