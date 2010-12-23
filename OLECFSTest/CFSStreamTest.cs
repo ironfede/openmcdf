@@ -297,7 +297,7 @@ namespace OleCfsTest
         }
 
         [TestMethod]
-        public void Test_TRANSACTEDMODE_ADD_STREAM_TO_EXISTING_FILE()
+        public void Test_TRANSACTED_ADD_STREAM_TO_EXISTING_FILE()
         {
             String srcFilename = "report.xls";
             String dstFilename = "reportOverwrite.xls";
@@ -316,7 +316,39 @@ namespace OleCfsTest
         }
 
         [TestMethod]
-        public void Test_TRANSACTEDMODE_REMOVE_MINI_STREAM_ADD_MINISTREAM_TO_EXISTING_FILE()
+        public void Test_TRANSACTED_ADD_REMOVE_MULTIPLE_STREAM_TO_EXISTING_FILE()
+        {
+            String srcFilename = "report.xls";
+            String dstFilename = "reportOverwriteMultiple.xls";
+
+            File.Copy(srcFilename, dstFilename, true);
+
+            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted);
+
+            Random r = new Random();
+
+            for (int i = 0; i < 254; i++)
+            {
+                byte[] buffer = GetBuffer(r.Next(100, 3500), (byte)i);
+
+                if (i > 0)
+                {
+                    if (r.Next(0, 100) > 50)
+                    {
+                        cf.RootStorage.Delete("MyNewStream" + (i - 1).ToString());
+                    }
+                }
+
+                CFStream addedStream = cf.RootStorage.AddStream("MyNewStream" + i.ToString());
+                addedStream.SetData(buffer);
+                //cf.Commit();
+            }
+
+            cf.Close();
+        }
+
+        [TestMethod]
+        public void Test_TRANSACTED_REMOVE_MINI_STREAM_ADD_MINISTREAM_TO_EXISTING_FILE()
         {
             String srcFilename = "report.xls";
             String dstFilename = "reportOverwrite2.xls";
@@ -325,7 +357,7 @@ namespace OleCfsTest
 
             CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted);
 
-            cf.RootStorage.Delete("\x05SummaryInformation"); 
+            cf.RootStorage.Delete("\x05SummaryInformation");
 
             byte[] buffer = GetBuffer(2000);
 

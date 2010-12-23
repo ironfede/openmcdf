@@ -38,6 +38,14 @@ namespace OleCompoundFileStorage
         public const int FATSECT = unchecked((int)0xFFFFFFFD);
         public const int DIFSECT = unchecked((int)0xFFFFFFFC);
 
+        private bool dirtyFlag = false;
+
+        public bool DirtyFlag
+        {
+            get { return dirtyFlag; }
+            set { dirtyFlag = value; }
+        }
+
         private bool isAllocated; //false
         public bool IsAllocated
         {
