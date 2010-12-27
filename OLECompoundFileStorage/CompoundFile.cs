@@ -707,12 +707,28 @@ namespace OleCompoundFileStorage
                     //{
                     //}
 
+                    if (header.MajorVersion == (ushort)CFSVersion.Ver_4)
+                        CheckTransactionLockSector();
+
                     sectors.Add(s);
                     s.Id = sectors.Count - 1;
                 }
             }
 
             SetFATSectorChain(sectorChain);
+        }
+
+        private void CheckTransactionLockSector()
+        {
+            int sSize = GetSectorSize();
+
+            if (sSize * (sectors.Count + 2) > 0x7FFFFF00)
+            {
+                Sector rangeLockSector  = new Sector(GetSectorSize());
+                rangeLockSector.Id = sectors.Count - 1;
+                rangeLockSector.Type = SectorType.RangeLockSector;
+                sectors.Add(new Sector(GetSectorSize()));
+            }
         }
 
         /// <summary>
@@ -735,8 +751,19 @@ namespace OleCompoundFileStorage
 
             for (int i = 0; i < sectorChain.Count - 1; i++)
             {
+                if (header.MajorVersion == (ushort)CFSVersion.Ver_4)
+                {
+                    if (sectorChain[i].Type == SectorType.RangeLockSector)
+                    {
+                        fatStream.Seek(sectorChain[i].Id * 4, SeekOrigin.Begin);
+                        fatStream.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
+                        continue;
+                    }
+                }
+
                 Sector sN = sectorChain[i + 1];
                 Sector sC = sectorChain[i];
+
                 fatStream.Seek(sC.Id * 4, SeekOrigin.Begin);
                 fatStream.Write(BitConverter.GetBytes(sN.Id), 0, 4);
             }
