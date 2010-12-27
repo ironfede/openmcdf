@@ -116,6 +116,14 @@ namespace OleCompoundFileStorage
             base.Close();
         }
 
+        private byte[] buf = new byte[4];
+
+        public int ReadInt32()
+        {
+            this.Read(buf, 0, 4);
+            return  (((this.buf[0] | (this.buf[1] << 8)) | (this.buf[2] << 16)) | (this.buf[3] << 24));
+        }
+
         public override int Read(byte[] buffer, int offset, int count)
         {
             int nRead = 0;

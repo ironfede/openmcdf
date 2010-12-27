@@ -301,18 +301,7 @@ namespace OleCompoundFileStorage
         //    Delete(name, typeof(CFStorage));
         //}
  
-        /// <summary>
-        /// Remove an entry from the current storage and compound file.
-        /// </summary>
-        /// <param name="entryName">The name of the entry in the current storage to delete</param>
-        /// <remarks>
-        /// Entry is invalidated but its data and name will be still
-        /// present in the compound file.
-        /// </remarks>
-        public void Delete(String entryName)
-        {
-            Delete(entryName, false);
-        }
+        
 
         /// <summary>
         /// Remove an entry from the current storage and compound file.
@@ -325,7 +314,7 @@ namespace OleCompoundFileStorage
         /// When 'overwrite' is not set, entry is simply invalidated but its data and name will be still
         /// present in the compound file with a slightly performance enhanchement of the operation.
         /// </remarks>
-        public void Delete(String entryName, bool overwrite)
+        public void Delete(String entryName)
         {
             CheckDisposed();
 
@@ -354,7 +343,7 @@ namespace OleCompoundFileStorage
 
                     foreach (IDirectoryEntry de in temp.Children)
                     {
-                        temp.Delete(de.Name, overwrite);
+                        temp.Delete(de.Name);
                     }
 
                     // Remove item from children tree
@@ -370,7 +359,7 @@ namespace OleCompoundFileStorage
                         this.dirEntry.Child = DirectoryEntry.NOSTREAM;
 
                     // ...and now remove directory (storage) entry
-                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID, overwrite);
+                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);
 
                     break;
 
@@ -389,7 +378,7 @@ namespace OleCompoundFileStorage
                         this.dirEntry.Child = DirectoryEntry.NOSTREAM;
 
                     // Remove directory entry
-                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID, overwrite);
+                    this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);
 
                     break;
             }

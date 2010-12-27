@@ -95,7 +95,6 @@ namespace OleCfsTest
 
             FileInfo srcFile = new FileInfo(FILENAME);
 
-
             CompoundFile cf = new CompoundFile(FILENAME);
 
             CFStorage st = cf.RootStorage.GetStorage("MyStorage");
@@ -120,7 +119,7 @@ namespace OleCfsTest
         {
             String filename = "WRITE_AND_READ_CFS_V4.cfs";
 
-            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4);
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, true);
 
             CFStorage st = cf.RootStorage.AddStorage("MyStorage");
             CFStream sm = st.AddStream("MyStream");
@@ -138,6 +137,47 @@ namespace OleCfsTest
             Assert.IsTrue(sm2.Size == 220);
 
             cf2.Close();
+        }
+
+        [TestMethod]
+        public void Test_WRITE_READ_CFS_VERSION_4_STREAM()
+        {
+            String filename = "WRITE_COMMIT_READ_CFS_V4.cfs";
+
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, true);
+
+            CFStorage st = cf.RootStorage.AddStorage("MyStorage");
+            CFStream sm = st.AddStream("MyStream");
+            byte[] b = Helpers.GetBuffer(227);
+            sm.SetData(b);
+
+            cf.Save(filename);
+            cf.Close();
+
+            CompoundFile cf2 = new CompoundFile(filename);
+            CFStorage st2 = cf2.RootStorage.GetStorage("MyStorage");
+            CFStream sm2 = st2.GetStream("MyStream");
+
+            Assert.IsNotNull(sm2);
+            Assert.IsTrue(sm2.Size == b.Length);
+
+            cf2.Close();
+        }
+
+        [TestMethod]
+        public void Test_OPEN_FROM_STREAM()
+        {
+            String filename = "reportREAD.xls";
+            File.Copy(filename, "reportOPENFROMSTREAM.xls");
+            FileStream fs = new FileStream(filename, FileMode.Open);
+            CompoundFile cf = new CompoundFile(fs);
+            CFStream foundStream = cf.RootStorage.GetStream("Workbook");
+
+            byte[] temp = foundStream.GetData();
+
+            Assert.IsNotNull(temp);
+
+            cf.Close();
         }
     }
 }

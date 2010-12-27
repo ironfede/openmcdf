@@ -1,11 +1,3 @@
-///<summary>
-///A red-black tree must satisfy these properties:
-///
-///1. The root is black. 
-///2. All leaves are black. 
-///3. Red nodes can only have black children. 
-///4. All paths from a node to its leaves contain the same number of black nodes.
-///</summary>
 
 using System.Collections;
 using System.Text;
@@ -14,6 +6,14 @@ using System.Reflection;
 
 namespace RBTree
 {
+    ///<summary>
+    ///A red-black tree must satisfy these properties:
+    ///
+    ///1. The root is black. 
+    ///2. All leaves are black. 
+    ///3. Red nodes can only have black children. 
+    ///4. All paths from a node to its leaves contain the same number of black nodes.
+    ///</summary>
 	public class RedBlack : object
 	{
 		// the number of nodes contained in the tree

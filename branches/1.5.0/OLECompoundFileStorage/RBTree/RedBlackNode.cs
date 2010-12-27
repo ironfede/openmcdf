@@ -1,12 +1,11 @@
-///<summary>
-/// The RedBlackNode class encapsulates a node in the tree
-///</summary>
-
 using System;
 using System.Text;
 
 namespace RBTree
 {
+    ///<summary>
+    /// The RedBlackNode class encapsulates a node in the tree
+    ///</summary>
 	public class RedBlackNode
 	{
         // tree node colors
