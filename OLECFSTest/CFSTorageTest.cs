@@ -196,13 +196,13 @@ namespace OleCfsTest
         public void Test_DELETE_DIRECTORY()
         {
             String FILENAME = "MultipleStorage2.cfs";
-            CompoundFile cf = new CompoundFile(FILENAME);
+            CompoundFile cf = new CompoundFile(FILENAME, UpdateMode.ReadOnly, false, false);
 
             CFStorage st = cf.RootStorage.GetStorage("MyStorage");
 
             Assert.IsNotNull(st);
 
-            st.Delete("AnotherStorage",true);
+            st.Delete("AnotherStorage");
 
             cf.Save("MultipleStorage_Delete.cfs");
 
@@ -221,7 +221,7 @@ namespace OleCfsTest
 
             Assert.IsNotNull(found);
 
-            found.Delete("AnotherStream",true);
+            found.Delete("AnotherStream");
 
             cf.Save("MultipleDeleteMiniStream");
             cf.Close();
@@ -239,7 +239,7 @@ namespace OleCfsTest
 
             Assert.IsNotNull(found);
 
-            found.Delete("Another2Stream",true);
+            found.Delete("Another2Stream");
 
             cf.Save("MultipleDeleteStream");
             cf.Close();

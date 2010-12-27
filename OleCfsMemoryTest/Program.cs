@@ -61,13 +61,13 @@ namespace OleCfsMemoryTest
 
         public static void TestMultipleStreamCommit()
         {
-            String srcFilename = Directory.GetCurrentDirectory()+ @"\testfile\report.xls";
-            String dstFilename = Directory.GetCurrentDirectory()+@"\testfile\reportOverwriteMultiple.xls";
+            String srcFilename = Directory.GetCurrentDirectory() + @"\testfile\report.xls";
+            String dstFilename = Directory.GetCurrentDirectory() + @"\testfile\reportOverwriteMultiple.xls";
             //Console.WriteLine(Directory.GetCurrentDirectory());
             //Console.ReadKey(); 
             File.Copy(srcFilename, dstFilename, true);
 
-            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted);
+            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted, true, false);
 
             Random r = new Random();
 
@@ -91,7 +91,7 @@ namespace OleCfsMemoryTest
 
                 // Random commit, not on single addition
                 if (r.Next(0, 100) > 50)
-                    cf.Commit();
+                    cf.UpdateFile();
             }
 
             cf.Close();

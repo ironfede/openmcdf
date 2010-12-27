@@ -146,7 +146,7 @@ namespace OleCfsTest
             Assert.IsNotNull(oStream);
             try
             {
-                oStream.SetData(GetBuffer(30));
+                oStream.SetData(Helpers.GetBuffer(30));
                 cfo.Save("ZERO_LENGTH_STREAM_RE2.cfs");
             }
             catch
@@ -166,7 +166,7 @@ namespace OleCfsTest
         {
             const int SIZE = 15388609; //Incredible condition of 'resonance' between FAT and DIFAT sec number
             //const int SIZE = 15345665; // 64 -> 65 NOT working
-            byte[] b = GetBuffer(SIZE, 0);
+            byte[] b = Helpers.GetBuffer(SIZE, 0);
 
             CompoundFile cf = new CompoundFile();
             CFStream myStream = cf.RootStorage.AddStream("MyStream");
@@ -183,7 +183,7 @@ namespace OleCfsTest
             Assert.IsNotNull(cf2);
             Assert.IsTrue(st.Size == SIZE);
 
-            Assert.IsTrue(CompareBuffer(b, st.GetData()));
+            Assert.IsTrue(Helpers.CompareBuffer(b, st.GetData()));
 
             cf2.Close();
 
@@ -197,11 +197,11 @@ namespace OleCfsTest
             //const int SMALLER_SIZE = 290;
             const int MEGA_SIZE = 18000000;
 
-            byte[] ba = GetBuffer(BIGGER_SIZE, 10);
-            byte[] ba2 = GetBuffer(BIGGER_SIZE, 2);
-            byte[] ba3 = GetBuffer(BIGGER_SIZE, 3);
-            byte[] ba4 = GetBuffer(BIGGER_SIZE, 4);
-            byte[] ba5 = GetBuffer(BIGGER_SIZE, 5);
+            byte[] ba = Helpers.GetBuffer(BIGGER_SIZE, 10);
+            byte[] ba2 = Helpers.GetBuffer(BIGGER_SIZE, 2);
+            byte[] ba3 = Helpers.GetBuffer(BIGGER_SIZE, 3);
+            byte[] ba4 = Helpers.GetBuffer(BIGGER_SIZE, 4);
+            byte[] ba5 = Helpers.GetBuffer(BIGGER_SIZE, 5);
 
             //WRITE 5 (mini)streams in a compound file --
 
@@ -242,7 +242,7 @@ namespace OleCfsTest
             cfa.Close();
 
             // Now get the second stream and rewrite it smaller
-            byte[] bb = GetBuffer(MEGA_SIZE);
+            byte[] bb = Helpers.GetBuffer(MEGA_SIZE);
             CompoundFile cfb = new CompoundFile("WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs");
             CFStream myStreamB = cfb.RootStorage.GetStream("MySecondStream");
             Assert.IsNotNull(myStreamB);
@@ -258,7 +258,7 @@ namespace OleCfsTest
             Assert.IsTrue(myStreamC.Size == MEGA_SIZE, "DATA SIZE FAILED");
 
             byte[] bufferC = myStreamC.GetData();
-            Assert.IsTrue(CompareBuffer(bufferB, bufferC), "DATA INTEGRITY FAILED");
+            Assert.IsTrue(Helpers.CompareBuffer(bufferB, bufferC), "DATA INTEGRITY FAILED");
 
             cfc.Close();
         }
@@ -304,14 +304,14 @@ namespace OleCfsTest
 
             File.Copy(srcFilename, dstFilename, true);
 
-            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted);
+            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted, false, false);
 
-            byte[] buffer = GetBuffer(5000);
+            byte[] buffer = Helpers.GetBuffer(5000);
 
             CFStream addedStream = cf.RootStorage.AddStream("MyNewStream");
             addedStream.SetData(buffer);
 
-            cf.Commit();
+            cf.UpdateFile();
             cf.Close();
         }
 
@@ -323,13 +323,13 @@ namespace OleCfsTest
 
             File.Copy(srcFilename, dstFilename, true);
 
-            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted);
+            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted, true, true);
 
             Random r = new Random();
 
             for (int i = 0; i < 254; i++)
             {
-                byte[] buffer = GetBuffer(r.Next(100, 3500), (byte)i);
+                byte[] buffer = Helpers.GetBuffer(r.Next(100, 3500), (byte)i);
 
                 if (i > 0)
                 {
@@ -343,11 +343,11 @@ namespace OleCfsTest
                 Assert.IsNotNull(addedStream);
                 addedStream.SetData(buffer);
 
-                Assert.IsTrue(CompareBuffer(addedStream.GetData(), buffer));
+                Assert.IsTrue(Helpers.CompareBuffer(addedStream.GetData(), buffer));
 
                 // Random commit, not on single addition
                 if (r.Next(0, 100) > 50)
-                    cf.Commit();
+                    cf.UpdateFile();
             }
 
             cf.Close();
@@ -360,15 +360,15 @@ namespace OleCfsTest
             String dstFilename = "reportOverwriteMultiple.xls";
 
             File.Copy(srcFilename, dstFilename, true);
-            
-            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted);
+
+            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted, true, true);
 
             Random r = new Random();
 
-            byte[] buffer = GetBuffer(r.Next(3, 4095), 0x0A);
+            byte[] buffer = Helpers.GetBuffer(r.Next(3, 4095), 0x0A);
 
             cf.RootStorage.AddStream("MyStream").SetData(buffer);
-            cf.Commit();
+            cf.UpdateFile();
             cf.Close();
 
             Assert.IsTrue(new FileStream(dstFilename, FileMode.Open).Length > new FileStream(srcFilename, FileMode.Open).Length);
@@ -383,16 +383,16 @@ namespace OleCfsTest
 
             File.Copy(srcFilename, dstFilename, true);
 
-            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted);
+            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted, true, true);
 
             cf.RootStorage.Delete("\x05SummaryInformation");
 
-            byte[] buffer = GetBuffer(2000);
+            byte[] buffer = Helpers.GetBuffer(2000);
 
             CFStream addedStream = cf.RootStorage.AddStream("MyNewStream");
             addedStream.SetData(buffer);
 
-            cf.Commit();
+            cf.UpdateFile();
             cf.Close();
         }
 
@@ -501,7 +501,7 @@ namespace OleCfsTest
             CFStorage st = cf.RootStorage.AddStorage("MyStorage");
             CFStream sm = st.AddStream("MyStream");
 
-            byte[] b = GetBuffer(size);
+            byte[] b = Helpers.GetBuffer(size);
 
             sm.SetData(b);
             cf.Save(filename);
@@ -513,7 +513,7 @@ namespace OleCfsTest
 
             Assert.IsNotNull(sm2);
             Assert.IsTrue(sm2.Size == size);
-            Assert.IsTrue(CompareBuffer(sm2.GetData(), b));
+            Assert.IsTrue(Helpers.CompareBuffer(sm2.GetData(), b));
 
             cf2.Close();
         }
@@ -530,7 +530,7 @@ namespace OleCfsTest
             CFStorage st = cf.RootStorage.AddStorage("MyStorage");
             CFStream sm = st.AddStream("MyStream");
 
-            byte[] b = GetBuffer(size);
+            byte[] b = Helpers.GetBuffer(size);
 
             sm.SetData(b);
             cf.Save(filename);
@@ -542,7 +542,7 @@ namespace OleCfsTest
 
             Assert.IsNotNull(sm2);
             Assert.IsTrue(sm2.Size == size);
-            Assert.IsTrue(CompareBuffer(sm2.GetData(), b));
+            Assert.IsTrue(Helpers.CompareBuffer(sm2.GetData(), b));
 
             cf2.Close();
         }
@@ -555,7 +555,7 @@ namespace OleCfsTest
             CFStorage st = cf.RootStorage.AddStorage("MyStorage");
             CFStream sm = st.AddStream("MyStream");
 
-            byte[] b = GetBuffer(size);
+            byte[] b = Helpers.GetBuffer(size);
 
             sm.SetData(b);
             cf.Save(ms);
@@ -567,7 +567,7 @@ namespace OleCfsTest
 
             Assert.IsNotNull(sm2);
             Assert.IsTrue(sm2.Size == size);
-            Assert.IsTrue(CompareBuffer(sm2.GetData(), b));
+            Assert.IsTrue(Helpers.CompareBuffer(sm2.GetData(), b));
 
             cf2.Close();
         }
@@ -629,43 +629,6 @@ namespace OleCfsTest
             }
         }
 
-        private byte[] GetBuffer(int count)
-        {
-            Random r = new Random();
-            byte[] b = new byte[count];
-            r.NextBytes(b);
-            return b;
-        }
 
-        private byte[] GetBuffer(int count, byte c)
-        {
-            byte[] b = new byte[count];
-            for (int i = 0; i < b.Length; i++)
-            {
-                b[i] = c;
-            }
-
-            return b;
-        }
-
-        private bool CompareBuffer(byte[] b, byte[] p)
-        {
-            if (b == null && p == null)
-                throw new Exception("Null buffers");
-
-            if (b == null && p != null) return false;
-            if (b != null && p == null) return false;
-
-            if (b.Length != p.Length)
-                return false;
-
-            for (int i = 0; i < b.Length; i++)
-            {
-                if (b[i] != p[i])
-                    return false;
-            }
-
-            return true;
-        }
     }
 }
