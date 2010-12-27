@@ -25,7 +25,7 @@ namespace OleCompoundFileStorage
 {
     internal enum SectorType
     {
-        Normal, Mini, FAT, DIFAT
+        Normal, Mini, FAT, DIFAT, RangeLockSector
     }
 
     internal class Sector
