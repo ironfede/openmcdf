@@ -61,10 +61,10 @@ namespace OleCfsMemoryTest
 
         public static void TestMultipleStreamCommit()
         {
-            String srcFilename = @"..\..\testfile\report.xls";
-            String dstFilename = @"..\..\testfile\reportOverwriteMultiple.xls";
+            String srcFilename = Directory.GetCurrentDirectory()+ @"\testfile\report.xls";
+            String dstFilename = Directory.GetCurrentDirectory()+@"\testfile\reportOverwriteMultiple.xls";
             //Console.WriteLine(Directory.GetCurrentDirectory());
-            //Console.ReadKey();
+            //Console.ReadKey(); 
             File.Copy(srcFilename, dstFilename, true);
 
             CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted);

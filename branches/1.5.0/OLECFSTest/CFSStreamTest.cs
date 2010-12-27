@@ -476,6 +476,48 @@ namespace OleCfsTest
 
         }
 
+        //[TestMethod]
+        //public void Test_INCREMENTAL_TRANSACTED_CHANGE_CFS()
+        //{
+
+        //    Random r = new Random();
+
+        //    for (int i = r.Next(1, 100); i < 1024 * 1024 * 70; i = i << 1)
+        //    {
+        //        SingleTransactedChange(i + r.Next(0, 3));
+        //    }
+
+        //}
+
+        private void SingleTransactedChange(int size)
+        {
+
+            String filename = "INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS.cfs";
+
+            if (File.Exists(filename))
+                File.Delete(filename);
+
+            CompoundFile cf = new CompoundFile();
+            CFStorage st = cf.RootStorage.AddStorage("MyStorage");
+            CFStream sm = st.AddStream("MyStream");
+
+            byte[] b = GetBuffer(size);
+
+            sm.SetData(b);
+            cf.Save(filename);
+            cf.Close();
+
+            CompoundFile cf2 = new CompoundFile(filename);
+            CFStorage st2 = cf2.RootStorage.GetStorage("MyStorage");
+            CFStream sm2 = st2.GetStream("MyStream");
+
+            Assert.IsNotNull(sm2);
+            Assert.IsTrue(sm2.Size == size);
+            Assert.IsTrue(CompareBuffer(sm2.GetData(), b));
+
+            cf2.Close();
+        }
+
         private void SingleWriteReadMatching(int size)
         {
 
