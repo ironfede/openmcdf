@@ -214,6 +214,8 @@ namespace OleCompoundFileStorage
                     break;
             }
 
+            //adjustLength(position);
+
             return position;
         }
 
