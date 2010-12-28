@@ -323,33 +323,38 @@ namespace OleCfsTest
 
             File.Copy(srcFilename, dstFilename, true);
 
-            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted, true, true);
+            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.ReadOnly, true, false);
+            
+            //CompoundFile cf = new CompoundFile();
 
             Random r = new Random();
 
             for (int i = 0; i < 254; i++)
             {
-                byte[] buffer = Helpers.GetBuffer(r.Next(100, 3500), (byte)i);
+                //byte[] buffer = Helpers.GetBuffer(r.Next(100, 3500), (byte)i);
+                byte[] buffer = Helpers.GetBuffer(1995,1);
 
-                if (i > 0)
-                {
-                    if (r.Next(0, 100) > 50)
-                    {
-                        cf.RootStorage.Delete("MyNewStream" + (i - 1).ToString());
-                    }
-                }
+                //if (i > 0)
+                //{
+                //    if (r.Next(0, 100) > 50)
+                //    {
+                //        cf.RootStorage.Delete("MyNewStream" + (i - 1).ToString());
+                //    }
+                //}
 
                 CFStream addedStream = cf.RootStorage.AddStream("MyNewStream" + i.ToString());
-                Assert.IsNotNull(addedStream);
+                Assert.IsNotNull(addedStream, "Stream not found");
                 addedStream.SetData(buffer);
 
-                Assert.IsTrue(Helpers.CompareBuffer(addedStream.GetData(), buffer));
+                Assert.IsTrue(Helpers.CompareBuffer(addedStream.GetData(), buffer),"Data buffer corrupted");
 
                 // Random commit, not on single addition
-                if (r.Next(0, 100) > 50)
-                    cf.UpdateFile();
+                //if (r.Next(0, 100) > 50)
+                //    cf.UpdateFile();
+               
             }
 
+ cf.Save(dstFilename+"PP");
             cf.Close();
         }
 
@@ -574,7 +579,7 @@ namespace OleCfsTest
 
 
         [TestMethod]
-        public void TestStreamView_1()
+        public void TEST_STREAM_VIEW()
         {
             List<Sector> temp = new List<Sector>();
             Sector s = new Sector(512);
@@ -590,7 +595,7 @@ namespace OleCfsTest
 
 
         [TestMethod]
-        public void TestStreamView_2()
+        public void Test_STREAM_VIEW_2()
         {
             List<Sector> temp = new List<Sector>();
 
@@ -609,7 +614,7 @@ namespace OleCfsTest
         /// read and compare.
         /// </summary>
         [TestMethod]
-        public void TestStreamView_3()
+        public void Test_STREAM_VIEW_3()
         {
             List<Sector> temp = new List<Sector>();
 
@@ -628,6 +633,32 @@ namespace OleCfsTest
                 Assert.IsTrue(i == br.ReadInt32(), "Failed with " + i.ToString());
             }
         }
+
+        /// <summary>
+        /// Write a sequence of Int32 greater than sector size,
+        /// read and compare.
+        /// </summary>
+        [TestMethod]
+        public void Test_STREAM_VIEW_LARGE_DATA()
+        {
+            List<Sector> temp = new List<Sector>();
+
+            StreamView sv = new StreamView(temp, 512);
+
+            for (int i = 0; i < 200; i++)
+            {
+                sv.Write(BitConverter.GetBytes(i), 0, 4);
+            }
+
+            sv.Seek(0, SeekOrigin.Begin);
+            BinaryReader br = new BinaryReader(sv);
+
+            for (int i = 0; i < 200; i++)
+            {
+                Assert.IsTrue(i == br.ReadInt32(), "Failed with " + i.ToString());
+            }
+        }
+
 
 
     }
