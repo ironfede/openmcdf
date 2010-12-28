@@ -724,7 +724,7 @@ namespace OleCompoundFileStorage
 
             if (sSize * (sectors.Count + 2) > 0x7FFFFF00)
             {
-                Sector rangeLockSector  = new Sector(GetSectorSize());
+                Sector rangeLockSector = new Sector(GetSectorSize());
                 rangeLockSector.Id = sectors.Count - 1;
                 rangeLockSector.Type = SectorType.RangeLockSector;
                 sectors.Add(new Sector(GetSectorSize()));
@@ -1529,6 +1529,7 @@ namespace OleCompoundFileStorage
 
             if (sType == SectorType.Normal)
             {
+
                 List<Sector> FatChain = GetSectorChain(-1, SectorType.FAT);
                 StreamView fatStream = new StreamView(FatChain, GetSectorSize());
 
@@ -1567,30 +1568,30 @@ namespace OleCompoundFileStorage
 
                 long ptr = 0;
 
-                BinaryReader br
-                    = new BinaryReader(miniFATView);
+                int nMinisectors = (int)(miniStreamView.Length / Sector.MINISECTOR_SIZE);
 
-                while (ptr < miniFATView.Length)
+                while (ptr < nMinisectors)
                 {
-                    int id = br.ReadInt32();
+                    //AssureLength(miniStreamView, (int)miniFATView.Length);
+
+                    int id = miniFATView.ReadInt32();
+                    ptr += 4;
 
                     if (id == Sector.FREESECT)
                     {
                         Sector ms = new Sector(Sector.MINISECTOR_SIZE);
                         byte[] temp = new byte[Sector.MINISECTOR_SIZE];
 
-                        ms.Id = (int)(ptr / 4);
-                        miniStreamView.Seek(ms.Id * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
+                        ms.Id = (int)((ptr - 4) / 4);
+                        ms.Type = SectorType.Mini;
 
+                        miniStreamView.Seek(ms.Id * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
                         miniStreamView.Read(ms.Data, 0, Sector.MINISECTOR_SIZE);
+
                         freeList.Push(ms);
                     }
 
-                    ptr += 4;
                 }
-
-                br.Close();
-
             }
 
             return freeList;
@@ -1601,7 +1602,12 @@ namespace OleCompoundFileStorage
             SetStreamData(directoryEntry, buffer);
         }
 
-        private void SetStreamData(IDirectoryEntry directoryEntry, Byte[] buffer)
+        /// <summary>
+        /// INTERNAL DEVELOPMENT. DO NOT CALL.
+        /// </summary>
+        /// <param name="directoryEntry"></param>
+        /// <param name="buffer"></param>
+        internal void AppendStreamData(IDirectoryEntry directoryEntry, Byte[] buffer, long offset)
         {
             //CheckFileLength();
 
@@ -1653,6 +1659,88 @@ namespace OleCompoundFileStorage
 
             StreamView sv = new StreamView(sectorChain, _sectorSize, buffer.Length, freeList);
 
+            sv.Seek(offset, SeekOrigin.Begin);
+            sv.Write(buffer, 0, buffer.Length);
+
+            switch (_st)
+            {
+                case SectorType.Normal:
+                    SetNormalSectorChain(sv.BaseSectorChain);
+                    break;
+
+                case SectorType.Mini:
+                    SetMiniSectorChain(sv.BaseSectorChain);
+                    break;
+            }
+
+
+            if (sv.BaseSectorChain.Count > 0)
+            {
+                directoryEntry.StartSetc = sv.BaseSectorChain[0].Id;
+                directoryEntry.Size = buffer.Length;
+            }
+            else
+            {
+                directoryEntry.StartSetc = Sector.ENDOFCHAIN;
+                directoryEntry.Size = 0;
+            }
+        }
+
+        private void SetStreamData(IDirectoryEntry directoryEntry, Byte[] buffer)
+        {
+            //CheckFileLength();
+
+            if (buffer == null)
+                throw new CFException("Parameter [buffer] cannot be null");
+
+            //Quick and dirty :-)
+            if (buffer.Length == 0) return;
+
+            SectorType _st = SectorType.Normal;
+            int _sectorSize = GetSectorSize();
+
+            if (buffer.Length < header.MinSizeStandardStream)
+            {
+                _st = SectorType.Mini;
+                _sectorSize = Sector.MINISECTOR_SIZE;
+            }
+
+            // Check for transition ministream -> stream:
+            // Only in this case we need to free old sectors,
+            // otherwise they will be overwritten.
+
+            if (directoryEntry.StartSetc != Sector.ENDOFCHAIN)
+            {
+                if (
+                    (buffer.Length < header.MinSizeStandardStream && directoryEntry.Size > header.MinSizeStandardStream)
+                    || (buffer.Length > header.MinSizeStandardStream && directoryEntry.Size < header.MinSizeStandardStream)
+                   )
+                {
+
+                    if (directoryEntry.Size < header.MinSizeStandardStream)
+                    {
+                        FreeMiniChain(GetMiniSectorChain(directoryEntry.StartSetc), this.eraseFreeSectors);
+                    }
+                    else
+                    {
+                        FreeChain(GetNormalSectorChain(directoryEntry.StartSetc), this.eraseFreeSectors);
+                    }
+
+                    directoryEntry.Size = 0;
+                    directoryEntry.StartSetc = Sector.ENDOFCHAIN;
+                }
+            }
+
+            List<Sector> sectorChain
+                = GetSectorChain(directoryEntry.StartSetc, _st);
+
+            Stack<Sector> freeList = null;
+
+            if (this.sectorRecycle)
+                freeList = FindFreeSectors(_st); // Collect available free sectors
+
+            StreamView sv = new StreamView(sectorChain, _sectorSize, buffer.Length, freeList);
+
             sv.Write(buffer, 0, buffer.Length);
 
             switch (_st)
@@ -1685,6 +1773,46 @@ namespace OleCompoundFileStorage
         private void CheckFileLength()
         {
             throw new NotImplementedException();
+        }
+
+        internal byte[] GetData(CFStream cFStream, long offset, int count)
+        {
+            if (_disposed)
+                throw new CFDisposedException("Compound File closed: cannot access data");
+
+            byte[] result = null;
+
+            IDirectoryEntry de = cFStream as IDirectoryEntry;
+
+            //IDirectoryEntry root = directoryEntries[0];
+
+            if (de.Size < header.MinSizeStandardStream)
+            {
+
+                StreamView miniView
+                    = new StreamView(GetSectorChain(de.StartSetc, SectorType.Mini), Sector.MINISECTOR_SIZE, de.Size);
+
+                BinaryReader br = new BinaryReader(miniView);
+
+                result = br.ReadBytes((int)de.Size);
+                br.Close();
+
+            }
+            else
+            {
+                StreamView sView
+                    = new StreamView(GetSectorChain(de.StartSetc, SectorType.Normal), GetSectorSize(), de.Size);
+
+                long cnt = Math.Min((long)(de.Size - offset), (long)count);
+
+                result = new byte[(int)(cnt)];
+
+
+                sView.Seek(offset, SeekOrigin.Begin);
+                sView.Read(result, 0, result.Length);
+            }
+
+            return result;
         }
 
 
