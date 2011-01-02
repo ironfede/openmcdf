@@ -206,15 +206,17 @@ namespace OleCompoundFileStorage
                 case SeekOrigin.Begin:
                     position = offset;
                     break;
+
                 case SeekOrigin.Current:
                     position += offset;
                     break;
+
                 case SeekOrigin.End:
                     position = Length - offset;
                     break;
             }
 
-            //adjustLength(position);
+            adjustLength(position);
 
             return position;
         }
@@ -291,7 +293,7 @@ namespace OleCompoundFileStorage
 
             // Assure length
             if ((position + count) > length)
-                SetLength((position + count));
+                adjustLength((position + count));
 
             if (sectorChain != null)
             {

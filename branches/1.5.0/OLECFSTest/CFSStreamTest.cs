@@ -324,7 +324,7 @@ namespace OleCfsTest
             File.Copy(srcFilename, dstFilename, true);
 
             CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.ReadOnly, true, false);
-            
+
             //CompoundFile cf = new CompoundFile();
 
             Random r = new Random();
@@ -332,7 +332,7 @@ namespace OleCfsTest
             for (int i = 0; i < 254; i++)
             {
                 //byte[] buffer = Helpers.GetBuffer(r.Next(100, 3500), (byte)i);
-                byte[] buffer = Helpers.GetBuffer(1995,1);
+                byte[] buffer = Helpers.GetBuffer(1995, 1);
 
                 //if (i > 0)
                 //{
@@ -346,15 +346,15 @@ namespace OleCfsTest
                 Assert.IsNotNull(addedStream, "Stream not found");
                 addedStream.SetData(buffer);
 
-                Assert.IsTrue(Helpers.CompareBuffer(addedStream.GetData(), buffer),"Data buffer corrupted");
+                Assert.IsTrue(Helpers.CompareBuffer(addedStream.GetData(), buffer), "Data buffer corrupted");
 
                 // Random commit, not on single addition
                 //if (r.Next(0, 100) > 50)
                 //    cf.UpdateFile();
-               
+
             }
 
- cf.Save(dstFilename+"PP");
+            cf.Save(dstFilename + "PP");
             cf.Close();
         }
 
@@ -575,6 +575,56 @@ namespace OleCfsTest
             Assert.IsTrue(Helpers.CompareBuffer(sm2.GetData(), b));
 
             cf2.Close();
+        }
+
+
+        [TestMethod]
+        public void Test_APPEND_DATA_TO_STREAM()
+        {
+            MemoryStream ms = new MemoryStream();
+
+            byte[] b = new byte[] { 0x0, 0x1, 0x2, 0x3 };
+            byte[] b2 = new byte[] { 0x4, 0x5, 0x6, 0x7 };
+
+            CompoundFile cf = new CompoundFile();
+            CFStream st = cf.RootStorage.AddStream("MyLargeStream");
+            st.SetData(b);
+            st.AppendData(b2);
+
+            cf.Save(ms);
+            cf.Close();
+
+            byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
+            cf = new CompoundFile(ms);
+            byte[] data = cf.RootStorage.GetStream("MyLargeStream").GetData();
+            Assert.IsTrue(Helpers.CompareBuffer(cmp, data));
+
+        }
+
+        [TestMethod]
+        public void Test_APPEND_DATA_TO_CREATE_LARGE_STREAM()
+        {
+            byte[] b = Helpers.GetBuffer(1024 * 1024 * 20); //2GB buffer
+            byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
+
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, false, false);
+            CFStream st = cf.RootStorage.AddStream("MySuperLargeStream");
+            cf.Save("MEGALARGESSIMUSFILE.cfs");
+
+            cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs", UpdateMode.Transacted, false, false);
+            for (int i = 0; i < 10; i++)
+            {
+                st.AppendData(b);
+                cf.UpdateFile();
+            }
+
+            cf.Close();
+
+            cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs");
+            int count = 8;
+            byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData(b.Length * 10, ref count);
+            Assert.IsTrue(Helpers.CompareBuffer(cmp, data));
+
         }
 
 
