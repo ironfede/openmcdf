@@ -119,7 +119,7 @@ namespace OleCfsTest
         {
             String filename = "WRITE_AND_READ_CFS_V4.cfs";
 
-            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, true);
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, true,true);
 
             CFStorage st = cf.RootStorage.AddStorage("MyStorage");
             CFStream sm = st.AddStream("MyStream");
@@ -144,7 +144,7 @@ namespace OleCfsTest
         {
             String filename = "WRITE_COMMIT_READ_CFS_V4.cfs";
 
-            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, true);
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, true,true);
 
             CFStorage st = cf.RootStorage.AddStorage("MyStorage");
             CFStream sm = st.AddStream("MyStream");

@@ -30,7 +30,7 @@ namespace OleCompoundFileStorage
     /// </summary>
     public class CFStream : CFItem
     {
-        
+
         internal CFStream(CompoundFile sectorManager)
             : base(sectorManager)
         {
@@ -68,6 +68,42 @@ namespace OleCompoundFileStorage
         }
 
         /// <summary>
+        /// Append the provided data to stream data.
+        /// </summary>
+        /// <example>
+        /// <code>
+        ///    byte[] b = new byte[]{0x0,0x1,0x2,0x3};
+        ///    byte[] b2 = new byte[]{0x4,0x5,0x6,0x7};
+        ///    CompoundFile cf = new CompoundFile();
+        ///    CFStream myStream = cf.RootStorage.AddStream("MyStream");
+        ///    myStream.SetData(b); // here we could also have invoked .AppendData
+        ///    myStream.AppendData(b2);
+        ///    cf.Save("MyLargeStreamsFile.cfs);
+        ///    cf.Close();
+        /// </code>
+        /// </example>
+        /// <param name="data">Data bytes to append to this stream</param>
+        /// <remarks>
+        /// This method allows user to create stream with more than 2GB of data, 
+        /// appending data to the end of existing ones.
+        /// Large streams (>2GB) are only supported by CFS version 4.
+        /// Append data can also be invoked on streams with no data in order
+        /// to simplify its use inside loops.
+        /// </remarks>
+        public void AppendData(Byte[] data)
+        {
+            CheckDisposed();
+            if (this.Size > 0)
+            {
+                this.CompoundFile.AppendData(this, data);
+            }
+            else
+            {
+                this.CompoundFile.SetData(this, data);
+            }
+        }
+
+        /// <summary>
         /// Get the data associated with the stream object.
         /// </summary>
         /// <example>
@@ -89,6 +125,29 @@ namespace OleCompoundFileStorage
         }
 
         /// <summary>
+        /// Get <paramref name="count"/> bytes associated with the stream object, starting from
+        /// a provided <paramref name="offset"/>. When method returns, count will contain the
+        /// effective count of bytes read.
+        /// </summary>
+        /// <example>
+        /// <code>
+        ///     CompoundFile cf2 = new CompoundFile("AFileName.cfs");
+        ///     CFStream st = cf2.RootStorage.GetStream("MyStream");
+        ///     byte[] buffer = st.GetData();
+        /// </code>
+        /// </example>
+        /// <returns>Array of byte containing stream data</returns>
+        /// <exception cref="T:OLECompoundFileStorage.CFDisposedException">
+        /// Raised when the owner compound file has been closed.
+        /// </exception>
+        public Byte[] GetData(long offset, ref int count)
+        {
+            CheckDisposed();
+
+            return this.CompoundFile.GetData(this, offset, ref count);
+        }
+
+        /// <summary>
         /// Copy data from an existing stream.
         /// </summary>
         /// <param name="input">A stream to read from</param>
@@ -103,7 +162,7 @@ namespace OleCompoundFileStorage
                 input.Seek(0, SeekOrigin.Begin);
             }
 
-            input.Read(buffer,0,(int)input.Length);
+            input.Read(buffer, 0, (int)input.Length);
             this.SetData(buffer);
         }
     }

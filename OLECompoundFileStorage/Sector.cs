@@ -28,7 +28,7 @@ namespace OleCompoundFileStorage
         Normal, Mini, FAT, DIFAT, RangeLockSector
     }
 
-    internal class Sector
+    internal class Sector : IDisposable
     {
         //public static int SECTOR_SIZE = 512;
         public static int MINISECTOR_SIZE = 64;
@@ -59,6 +59,19 @@ namespace OleCompoundFileStorage
         public Sector(int size)
         {
             this.size = size;
+            //this.data = new byte[size];
+
+            //for (int i = 0; i < size; i++)
+            //{
+            //    data[i] = 0xFF;
+            //}
+
+        }
+
+        public Sector(int size,byte[] data)
+        {
+            this.size = size;
+            this.data = data;
             //this.data = new byte[size];
 
             //for (int i = 0; i < size; i++)
@@ -125,6 +138,11 @@ namespace OleCompoundFileStorage
 
         }
 
+        //public void SetSectorData(byte[] b)
+        //{
+        //    this.data = b;
+        //}
+
         public void FillData(byte b)
         {
             if (data != null)
@@ -158,6 +176,59 @@ namespace OleCompoundFileStorage
         }
 
 
+        internal void Release()
+        {
+            Dispose(true);
+        }
+
+        private object lockObject = new Object();
+
+        /// <summary>
+        /// When called from user code, release all resources, otherwise, in the case runtime called it,
+        /// only unmanagd resources are released.
+        /// </summary>
+        /// <param name="disposing">If true, method has been called from User code, if false it's been called from .net runtime</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            try
+            {
+                if (!_disposed)
+                {
+                    lock (lockObject)
+                    {
+                        if (disposing)
+                        {
+                            // Call from user code...
+
+
+                        }
+
+                        this.data = null;
+                        this.dirtyFlag = false;
+                        this.id = Sector.ENDOFCHAIN;
+                        this.size = 0;
+ 
+                    }
+                }
+            }
+            finally
+            {
+                _disposed = true;
+            }
+
+        }
+
+        #region IDisposable Members
+
+        private bool _disposed;//false
+
+        void IDisposable.Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 
 

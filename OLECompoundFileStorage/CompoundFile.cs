@@ -177,6 +177,7 @@ namespace OleCompoundFileStorage
         /// </summary>
         /// <param name="cfsVersion">Use a specific Compound File Version to set 512 or 4096 bytes sectors</param>
         /// <param name="sectorRecycle">If true, recycle unused sectors</param>
+        /// <param name="eraseFreeSectors">If true, unallocated sectors will be overwritten with zeros</param>
         /// <example>
         /// <code>
         /// 
@@ -199,7 +200,7 @@ namespace OleCompoundFileStorage
         /// <remarks>
         /// Sector recycling reduces data writing performances but avoids space wasting.
         /// </remarks>
-        public CompoundFile(CFSVersion cfsVersion, bool sectorRecycle)
+        public CompoundFile(CFSVersion cfsVersion, bool sectorRecycle, bool eraseFreeSectors)
         {
             this.header = new Header((ushort)cfsVersion);
             this.sectorRecycle = sectorRecycle;
@@ -411,6 +412,21 @@ namespace OleCompoundFileStorage
         /// </remarks>
         public void UpdateFile()
         {
+            UpdateFile(false);
+        }
+
+        /// <summary>
+        /// Commit data changes since the previously commit operation
+        /// to the underlying compound file on the disk.
+        /// </summary>
+        /// <param name="releaseMemory">If true, release loaded sectors to limit memory usage but reduces following read operations</param>
+        /// <remarks>
+        /// This method can be used
+        /// only if <see cref="T:OleCompoundFileStorage.CompoundFile">CompoundFile</see> 
+        /// has been opened in <see cref="T:OleCompoundFileStorage.UpdateMode">Transacted mode</see>.
+        /// </remarks>
+        public void UpdateFile(bool releaseMemory)
+        {
             if (_disposed)
                 throw new CFException("Compound File closed: cannot commit data");
 
@@ -445,14 +461,18 @@ namespace OleCompoundFileStorage
                     {
                         streamWriter.BaseStream.Seek(GetSectorSize() + i * GetSectorSize(), SeekOrigin.Begin);
                         streamWriter.Write(s.Data);
-                        s.DirtyFlag = false;
+
+                        if (releaseMemory)
+                            sectors[i] = null;
                     }
+
                 }
 
                 // Seek to beginning position and save header (first 512 or 4096 bytes)
                 streamWriter.BaseStream.Seek(0, SeekOrigin.Begin);
-
                 header.Write(streamWriter);
+
+
             }
             catch (Exception ex)
             {
@@ -1533,24 +1553,18 @@ namespace OleCompoundFileStorage
                 List<Sector> FatChain = GetSectorChain(-1, SectorType.FAT);
                 StreamView fatStream = new StreamView(FatChain, GetSectorSize());
 
-                long ptr = 0;
+                int ptr = 0;
 
-                BinaryReader br
-                    = new BinaryReader(fatStream);
-
-                while (ptr < fatStream.Length)
+                while (ptr < sectors.Count)
                 {
-                    int id = br.ReadInt32();
+                    int id = fatStream.ReadInt32();
+                    ptr += 4;
 
                     if (id == Sector.FREESECT)
                     {
-                        freeList.Push(sectors[id] as Sector);
+                        freeList.Push(sectors[ptr - 4] as Sector);
                     }
-
-                    ptr += 4;
                 }
-
-                br.Close();
             }
             else
             {
@@ -1607,7 +1621,7 @@ namespace OleCompoundFileStorage
         /// </summary>
         /// <param name="directoryEntry"></param>
         /// <param name="buffer"></param>
-        internal void AppendStreamData(IDirectoryEntry directoryEntry, Byte[] buffer, long offset)
+        internal void AppendData(IDirectoryEntry directoryEntry, Byte[] buffer)
         {
             //CheckFileLength();
 
@@ -1620,7 +1634,7 @@ namespace OleCompoundFileStorage
             SectorType _st = SectorType.Normal;
             int _sectorSize = GetSectorSize();
 
-            if (buffer.Length < header.MinSizeStandardStream)
+            if (buffer.Length + directoryEntry.Size < header.MinSizeStandardStream)
             {
                 _st = SectorType.Mini;
                 _sectorSize = Sector.MINISECTOR_SIZE;
@@ -1630,25 +1644,23 @@ namespace OleCompoundFileStorage
             // Only in this case we need to free old sectors,
             // otherwise they will be overwritten.
 
+            int streamSize = (int)directoryEntry.Size;
+            byte[] temp = null;
+
             if (directoryEntry.StartSetc != Sector.ENDOFCHAIN)
             {
-                if (
-                    (buffer.Length < header.MinSizeStandardStream && directoryEntry.Size > header.MinSizeStandardStream)
-                    || (buffer.Length > header.MinSizeStandardStream && directoryEntry.Size < header.MinSizeStandardStream)
-                   )
+                if ((directoryEntry.Size + buffer.Length) > header.MinSizeStandardStream && directoryEntry.Size < header.MinSizeStandardStream)
                 {
+                    temp = new byte[streamSize];
 
-                    if (directoryEntry.Size < header.MinSizeStandardStream)
-                    {
-                        FreeMiniChain(GetMiniSectorChain(directoryEntry.StartSetc), this.eraseFreeSectors);
-                    }
-                    else
-                    {
-                        FreeChain(GetNormalSectorChain(directoryEntry.StartSetc), this.eraseFreeSectors);
-                    }
+                    StreamView miniData
+                        = new StreamView(GetMiniSectorChain(directoryEntry.StartSetc), Sector.MINISECTOR_SIZE);
 
-                    directoryEntry.Size = 0;
+                    miniData.Read(temp, 0, streamSize);
+                    FreeMiniChain(GetMiniSectorChain(directoryEntry.StartSetc), this.eraseFreeSectors);
+
                     directoryEntry.StartSetc = Sector.ENDOFCHAIN;
+                    directoryEntry.Size = 0;
                 }
             }
 
@@ -1659,7 +1671,13 @@ namespace OleCompoundFileStorage
 
             StreamView sv = new StreamView(sectorChain, _sectorSize, buffer.Length, freeList);
 
-            sv.Seek(offset, SeekOrigin.Begin);
+            if (temp != null)
+            {
+                sv.Seek(0, SeekOrigin.Begin);
+                sv.Write(temp, 0, streamSize);
+            }
+
+            sv.Seek(streamSize, SeekOrigin.Begin);
             sv.Write(buffer, 0, buffer.Length);
 
             switch (_st)
@@ -1677,7 +1695,7 @@ namespace OleCompoundFileStorage
             if (sv.BaseSectorChain.Count > 0)
             {
                 directoryEntry.StartSetc = sv.BaseSectorChain[0].Id;
-                directoryEntry.Size = buffer.Length;
+                directoryEntry.Size = buffer.Length + streamSize;
             }
             else
             {
@@ -1775,42 +1793,35 @@ namespace OleCompoundFileStorage
             throw new NotImplementedException();
         }
 
-        internal byte[] GetData(CFStream cFStream, long offset, int count)
+
+        internal byte[] GetData(CFStream cFStream, long offset, ref int count)
         {
-            if (_disposed)
-                throw new CFDisposedException("Compound File closed: cannot access data");
 
             byte[] result = null;
-
             IDirectoryEntry de = cFStream as IDirectoryEntry;
 
-            //IDirectoryEntry root = directoryEntries[0];
+            count = (int)Math.Min((long)(de.Size - offset), (long)count);
+
+            StreamView sView = null;
+
 
             if (de.Size < header.MinSizeStandardStream)
             {
-
-                StreamView miniView
+                sView
                     = new StreamView(GetSectorChain(de.StartSetc, SectorType.Mini), Sector.MINISECTOR_SIZE, de.Size);
-
-                BinaryReader br = new BinaryReader(miniView);
-
-                result = br.ReadBytes((int)de.Size);
-                br.Close();
-
             }
             else
             {
-                StreamView sView
-                    = new StreamView(GetSectorChain(de.StartSetc, SectorType.Normal), GetSectorSize(), de.Size);
 
-                long cnt = Math.Min((long)(de.Size - offset), (long)count);
-
-                result = new byte[(int)(cnt)];
-
-
-                sView.Seek(offset, SeekOrigin.Begin);
-                sView.Read(result, 0, result.Length);
+                sView = new StreamView(GetSectorChain(de.StartSetc, SectorType.Normal), GetSectorSize(), de.Size);
             }
+
+            result = new byte[(int)(count)];
+
+
+            sView.Seek(offset, SeekOrigin.Begin);
+            sView.Read(result, 0, result.Length);
+
 
             return result;
         }
@@ -1964,11 +1975,17 @@ namespace OleCompoundFileStorage
                                 sectors.Clear();
                                 sectors = null;
                             }
+
+                            this.rootStorage = null; // Some problem releasing resources...
+                            this.header = null;
+                            this.directoryEntries.Clear();
+                            this.directoryEntries = null;
+                            this.fileName = null;
+                            this.lockObject = null;
                         }
 
                         if (this.streamReader != null)
                         {
-                            this.streamReader.BaseStream.Flush();
                             streamReader.Close();
                             streamReader = null;
                         }
@@ -1978,6 +1995,8 @@ namespace OleCompoundFileStorage
                             streamWriter.Close();
                             streamWriter = null;
                         }
+
+
 
                     }
                 }
@@ -2043,7 +2062,7 @@ namespace OleCompoundFileStorage
         /// </remarks>
         public void CompressFreeSpace()
         {
-            using (CompoundFile tempCF = new CompoundFile((CFSVersion)this.header.MajorVersion, this.sectorRecycle))
+            using (CompoundFile tempCF = new CompoundFile((CFSVersion)this.header.MajorVersion, this.sectorRecycle, this.eraseFreeSectors))
             {
                 DoCompression(this.RootStorage, tempCF.RootStorage);
 
