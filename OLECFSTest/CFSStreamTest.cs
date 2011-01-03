@@ -186,7 +186,6 @@ namespace OleCfsTest
             Assert.IsTrue(Helpers.CompareBuffer(b, st.GetData()));
 
             cf2.Close();
-
         }
 
 
@@ -601,42 +600,53 @@ namespace OleCfsTest
 
         }
 
-        [TestMethod]
-        public void Test_APPEND_DATA_TO_CREATE_LARGE_STREAM()
-        {
-            byte[] b = Helpers.GetBuffer(1024 * 1024 * 20); //2GB buffer
-            byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
+        //[TestMethod]
+        //public void Test_APPEND_DATA_TO_CREATE_LARGE_STREAM()
+        //{
+        //    byte[] b = Helpers.GetBuffer(1024 * 1024 * 200); //2GB buffer
+        //    byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
 
-            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, false, false);
-            CFStream st = cf.RootStorage.AddStream("MySuperLargeStream");
-            cf.Save("MEGALARGESSIMUSFILE.cfs");
+        //    CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, false, false);
+        //    CFStream st = cf.RootStorage.AddStream("MySuperLargeStream");
+        //    cf.Save("MEGALARGESSIMUSFILE.cfs");
+        //    cf.Close();
 
-            cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs", UpdateMode.Transacted, false, false);
-            for (int i = 0; i < 10; i++)
-            {
-                st.AppendData(b);
-                cf.UpdateFile();
-            }
 
-            cf.Close();
+        //    cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs", UpdateMode.Transacted, false, false);
+        //    CFStream cfst = cf.RootStorage.GetStream("MySuperLargeStream");
+        //    for (int i = 0; i < 10; i++)
+        //    {
+        //        cfst.AppendData(b);
+        //        cf.UpdateFile(true);
+        //        //Console.WriteLine("     Updated " + i.ToString());
+        //        //Console.ReadKey();
+        //    }
 
-            cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs");
-            int count = 8;
-            byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData(b.Length * 10, ref count);
-            Assert.IsTrue(Helpers.CompareBuffer(cmp, data));
+        //    cfst.AppendData(cmp);
+        //    cf.UpdateFile();
 
-        }
+        //    cf.Close();
+
+          
+        //    cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs");
+        //    int count = 8;
+        //    byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData(b.Length * 10, ref count);
+
+        //    cf.Close();
+
+        //}
 
 
         [TestMethod]
         public void TEST_STREAM_VIEW()
         {
+            BinaryReader b = null;
             List<Sector> temp = new List<Sector>();
-            Sector s = new Sector(512);
-            Buffer.BlockCopy(BitConverter.GetBytes((int)1), 0, s.Data, 0, 4);
+            Sector s = new Sector(512, b);
+            Buffer.BlockCopy(BitConverter.GetBytes((int)1), 0, s.GetData(), 0, 4);
             temp.Add(s);
 
-            StreamView sv = new StreamView(temp, 512, 0);
+            StreamView sv = new StreamView(temp, 512, 0, b);
             BinaryReader br = new BinaryReader(sv);
             Int32 t = br.ReadInt32();
 
@@ -647,9 +657,10 @@ namespace OleCfsTest
         [TestMethod]
         public void Test_STREAM_VIEW_2()
         {
+            BinaryReader b = null;
             List<Sector> temp = new List<Sector>();
 
-            StreamView sv = new StreamView(temp, 512);
+            StreamView sv = new StreamView(temp, 512, b);
             sv.Write(BitConverter.GetBytes(1), 0, 4);
             sv.Seek(0, SeekOrigin.Begin);
             BinaryReader br = new BinaryReader(sv);
@@ -666,9 +677,10 @@ namespace OleCfsTest
         [TestMethod]
         public void Test_STREAM_VIEW_3()
         {
+            BinaryReader b = null;
             List<Sector> temp = new List<Sector>();
 
-            StreamView sv = new StreamView(temp, 512);
+            StreamView sv = new StreamView(temp, 512, b);
 
             for (int i = 0; i < 200; i++)
             {
@@ -691,9 +703,10 @@ namespace OleCfsTest
         [TestMethod]
         public void Test_STREAM_VIEW_LARGE_DATA()
         {
+            BinaryReader b = null;
             List<Sector> temp = new List<Sector>();
 
-            StreamView sv = new StreamView(temp, 512);
+            StreamView sv = new StreamView(temp, 512, b);
 
             for (int i = 0; i < 200; i++)
             {

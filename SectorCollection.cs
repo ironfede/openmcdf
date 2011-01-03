@@ -11,7 +11,6 @@ namespace OleCompoundFileStorage
         ArrayList sectors = null;
         int sectorSize = 0;
         BinaryReader reader;
-
         internal SectorCollection(int capacity, int sectorSize, BinaryReader reader)
         {
             this.sectorSize = sectorSize;

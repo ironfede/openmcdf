@@ -30,7 +30,6 @@ namespace OleCompoundFileStorage
 
     internal class Sector : IDisposable
     {
-        //public static int SECTOR_SIZE = 512;
         public static int MINISECTOR_SIZE = 64;
 
         public const int FREESECT = unchecked((int)0xFFFFFFFF);
@@ -46,39 +45,28 @@ namespace OleCompoundFileStorage
             set { dirtyFlag = value; }
         }
 
-        private bool isAllocated; //false
-        public bool IsAllocated
+        public bool IsStreamed
         {
-            get { return isAllocated; }
+            get { return (reader != null && size != MINISECTOR_SIZE) ? (this.id * size) + size < reader.BaseStream.Length : false; }
         }
 
-        public const int HEADER = unchecked((int)0xEEEEEEEE);
+        //public const int HEADER = unchecked((int)0xEEEEEEEE);
 
         private int size = 0;
+        private BinaryReader reader;
 
-        public Sector(int size)
+
+        public Sector(int size, BinaryReader reader)
         {
             this.size = size;
-            //this.data = new byte[size];
-
-            //for (int i = 0; i < size; i++)
-            //{
-            //    data[i] = 0xFF;
-            //}
-
+            this.reader = reader;
         }
 
-        public Sector(int size,byte[] data)
+        public Sector(int size, byte[] data)
         {
             this.size = size;
             this.data = data;
-            //this.data = new byte[size];
-
-            //for (int i = 0; i < size; i++)
-            //{
-            //    data[i] = 0xFF;
-            //}
-
+            this.reader = null;
         }
 
         //public Sector()
@@ -100,7 +88,6 @@ namespace OleCompoundFileStorage
             get { return id; }
             set
             {
-                isAllocated = true;
                 id = value;
             }
         }
@@ -109,26 +96,30 @@ namespace OleCompoundFileStorage
         {
             get
             {
-                if (data != null)
-                    return data.Length;
-                else
-                    return 0;
+                return size;
             }
         }
 
         private byte[] data;
 
-        public byte[] Data
+        public byte[] GetData()
         {
-            get
+
+            if (this.data == null)
             {
-                if (this.data == null)
+                if (IsStreamed)
+                {
+                    reader.BaseStream.Seek(size + this.id * size, SeekOrigin.Begin);
+                    data = reader.ReadBytes(size);
+                }
+                else
                 {
                     data = new byte[size];
                 }
-
-                return data;
             }
+
+            return data;
+
 
             //set
             //{
@@ -154,16 +145,6 @@ namespace OleCompoundFileStorage
             }
         }
 
-        public static Sector LoadSector(int secID, BinaryReader reader, int size)
-        {
-            Sector s = new Sector(size);
-            s.Id = secID;
-            reader.BaseStream.Seek(size + secID * size, SeekOrigin.Begin);
-            s.data = reader.ReadBytes(size);
-
-            return s;
-        }
-
         public void ZeroData()
         {
             if (this.data != null)
@@ -175,10 +156,9 @@ namespace OleCompoundFileStorage
             }
         }
 
-
-        internal void Release()
+        internal void ReleaseData()
         {
-            Dispose(true);
+            this.data = null;
         }
 
         private object lockObject = new Object();
@@ -207,7 +187,7 @@ namespace OleCompoundFileStorage
                         this.dirtyFlag = false;
                         this.id = Sector.ENDOFCHAIN;
                         this.size = 0;
- 
+
                     }
                 }
             }

@@ -59,6 +59,7 @@
     <Compile Include="RBTree\RedBlackNode.cs" />
     <Compile Include="CompoundFile.cs" />
     <Compile Include="Sector.cs" />
+    <Compile Include="SectorCollection.cs" />
     <Compile Include="StreamView.cs" />
   </ItemGroup>
   <ItemGroup>

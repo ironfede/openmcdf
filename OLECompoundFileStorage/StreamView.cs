@@ -34,8 +34,9 @@ namespace OleCompoundFileStorage
         private long position;
 
         private List<Sector> sectorChain;
+        private BinaryReader sectorReader;
 
-        public StreamView(List<Sector> sectorChain, int sectorSize)
+        public StreamView(List<Sector> sectorChain, int sectorSize, BinaryReader sectorReader)
         {
             if (sectorChain == null)
                 throw new CFException("Sector Chain cannot be null");
@@ -45,17 +46,18 @@ namespace OleCompoundFileStorage
 
             this.sectorChain = sectorChain;
             this.sectorSize = sectorSize;
+            this.sectorReader = sectorReader;
         }
 
-        public StreamView(List<Sector> sectorChain, int sectorSize, long length, Stack<Sector> availableSectors)
-            : this(sectorChain, sectorSize)
+        public StreamView(List<Sector> sectorChain, int sectorSize, long length, Stack<Sector> availableSectors, BinaryReader sectorReader)
+            : this(sectorChain, sectorSize, sectorReader)
         {
             adjustLength(length, availableSectors);
         }
 
 
-        public StreamView(List<Sector> sectorChain, int sectorSize, long length)
-            : this(sectorChain, sectorSize)
+        public StreamView(List<Sector> sectorChain, int sectorSize, long length, BinaryReader sectorReader)
+            : this(sectorChain, sectorSize, sectorReader)
         {
             adjustLength(length);
         }
@@ -121,7 +123,7 @@ namespace OleCompoundFileStorage
         public int ReadInt32()
         {
             this.Read(buf, 0, 4);
-            return  (((this.buf[0] | (this.buf[1] << 8)) | (this.buf[2] << 16)) | (this.buf[3] << 24));
+            return (((this.buf[0] | (this.buf[1] << 8)) | (this.buf[2] << 16)) | (this.buf[3] << 24));
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -144,7 +146,7 @@ namespace OleCompoundFileStorage
                 if (secIndex < sectorChain.Count)
                 {
                     Buffer.BlockCopy(
-                        sectorChain[secIndex].Data,
+                        sectorChain[secIndex].GetData(),
                         (int)(position % sectorSize),
                         buffer,
                         offset,
@@ -162,7 +164,7 @@ namespace OleCompoundFileStorage
                     nToRead = sectorSize;
 
                     Buffer.BlockCopy(
-                        sectorChain[secIndex].Data,
+                        sectorChain[secIndex].GetData(),
                         0,
                         buffer,
                         offset + nRead,
@@ -179,7 +181,7 @@ namespace OleCompoundFileStorage
                 if (nToRead != 0)
                 {
                     Buffer.BlockCopy(
-                        sectorChain[secIndex].Data,
+                        sectorChain[secIndex].GetData(),
                         0,
                         buffer,
                         offset + nRead,
@@ -244,7 +246,7 @@ namespace OleCompoundFileStorage
 
                     if (availableSectors == null || availableSectors.Count == 0)
                     {
-                         t = new Sector(sectorSize);
+                        t = new Sector(sectorSize, sectorReader);
                     }
                     else
                     {
@@ -308,7 +310,7 @@ namespace OleCompoundFileStorage
                     Buffer.BlockCopy(
                         buffer,
                         offset,
-                        sectorChain[secOffset].Data,
+                        sectorChain[secOffset].GetData(),
                         secShift,
                         roundByteWritten
                         );
@@ -328,7 +330,7 @@ namespace OleCompoundFileStorage
                     Buffer.BlockCopy(
                         buffer,
                         offset,
-                        sectorChain[secOffset].Data,
+                        sectorChain[secOffset].GetData(),
                         0,
                         roundByteWritten
                         );
@@ -348,7 +350,7 @@ namespace OleCompoundFileStorage
                     Buffer.BlockCopy(
                         buffer,
                         offset,
-                        sectorChain[secOffset].Data,
+                        sectorChain[secOffset].GetData(),
                         0,
                         roundByteWritten
                         );

@@ -35,7 +35,7 @@ namespace OleCfsMemoryTest
 
         private static void StressMemory()
         {
-            byte[] b = GetBuffer(1024 * 1024 * 2); //2GB buffer
+            byte[] b = GetBuffer(1024 * 1024 * 5); //2GB buffer
             byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
 
             CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, false, false);
@@ -43,29 +43,29 @@ namespace OleCfsMemoryTest
             cf.Save("MEGALARGESSIMUSFILE.cfs");
             cf.Close();
 
-            Console.WriteLine("Closed save");
-            Console.ReadKey();
+            //Console.WriteLine("Closed save");
+            //Console.ReadKey();
 
             cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs", UpdateMode.Transacted, false, false);
             CFStream cfst = cf.RootStorage.GetStream("MySuperLargeStream");
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 100; i++)
             {
                 cfst.AppendData(b);
-                cf.UpdateFile();
+                if ((i % 20) == 0) cf.UpdateFile(true);
                 //Console.WriteLine("     Updated " + i.ToString());
                 //Console.ReadKey();
             }
 
             cfst.AppendData(cmp);
-            cf.UpdateFile();
-            
-            Console.WriteLine("Before Closed Transacted");
-            Console.ReadKey();
+            cf.UpdateFile(true);
+
+            //Console.WriteLine("Before Closed Transacted");
+            //Console.ReadKey();
 
             cf.Close();
 
-            Console.WriteLine("Closed Transacted");
-            Console.ReadKey();
+            //Console.WriteLine("Closed Transacted");
+            //Console.ReadKey();
 
             cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs");
             int count = 8;
