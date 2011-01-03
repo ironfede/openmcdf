@@ -443,11 +443,14 @@ namespace OleCompoundFileStorage
             {
                 //fs = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite);
                 //bw = new BinaryWriter(fs);
+                Stream fs = streamWriter.BaseStream;
+                int sSize = GetSectorSize();
 
-                streamWriter.BaseStream.Seek(0, SeekOrigin.Begin);
-                streamWriter.Write((byte[])Array.CreateInstance(typeof(byte), GetSectorSize()));
+                fs.Seek(0, SeekOrigin.Begin);
+                fs.Write((byte[])Array.CreateInstance(typeof(byte), GetSectorSize()), 0, sSize);
 
                 SaveDirectory();
+
 
                 for (int i = 0; i < sectors.Count; i++)
                 {
@@ -459,17 +462,18 @@ namespace OleCompoundFileStorage
 
                     if (s != null && s.DirtyFlag)
                     {
-                        streamWriter.BaseStream.Seek(GetSectorSize() + i * GetSectorSize(), SeekOrigin.Begin);
-                        streamWriter.Write(s.Data);
-
-                        if (releaseMemory)
-                            sectors[i] = null;
+                        fs.Seek(sSize + i * sSize, SeekOrigin.Begin);
+                        fs.Write(s.GetData(), 0, sSize);
+                        s.DirtyFlag = false;
                     }
+
+                    if (releaseMemory)
+                        s.ReleaseData();
 
                 }
 
                 // Seek to beginning position and save header (first 512 or 4096 bytes)
-                streamWriter.BaseStream.Seek(0, SeekOrigin.Begin);
+                fs.Seek(0, SeekOrigin.Begin);
                 header.Write(streamWriter);
 
 
@@ -551,21 +555,30 @@ namespace OleCompoundFileStorage
                 = GetSectorChain(RootEntry.StartSetc, SectorType.Normal);
 
             StreamView miniFATView
-                = new StreamView(miniFAT, GetSectorSize(), header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE);
+                = new StreamView(
+                    miniFAT,
+                    GetSectorSize(),
+                    header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE,
+                    this.streamReader
+                    );
 
             StreamView miniStreamView
-                = new StreamView(miniStream, GetSectorSize(), this.rootStorage.Size);
+                = new StreamView(
+                    miniStream,
+                    GetSectorSize(),
+                    this.rootStorage.Size,
+                    streamReader);
 
             // Set updated/new sectors within the ministream
             for (int i = 0; i < sectorChain.Count; i++)
             {
                 Sector s = sectorChain[i];
 
-                if (s.IsAllocated)
+                if (s.Id != -1)
                 {
                     // Overwrite
                     miniStreamView.Seek(Sector.MINISECTOR_SIZE * s.Id, SeekOrigin.Begin);
-                    miniStreamView.Write(s.Data, 0, Sector.MINISECTOR_SIZE);
+                    miniStreamView.Write(s.GetData(), 0, Sector.MINISECTOR_SIZE);
                 }
                 else
                 {
@@ -573,7 +586,7 @@ namespace OleCompoundFileStorage
                     // ministream's sectors
 
                     miniStreamView.Seek(this.rootStorage.Size, SeekOrigin.Begin);
-                    miniStreamView.Write(s.Data, 0, Sector.MINISECTOR_SIZE);
+                    miniStreamView.Write(s.GetData(), 0, Sector.MINISECTOR_SIZE);
                     s.Id = (int)(miniStreamView.Position - Sector.MINISECTOR_SIZE) / Sector.MINISECTOR_SIZE;
 
                     this.rootStorage.Size = miniStreamView.Length;
@@ -619,7 +632,7 @@ namespace OleCompoundFileStorage
                 = GetSectorChain(-1, SectorType.FAT);
 
             StreamView FATView
-                = new StreamView(FAT, GetSectorSize(), FAT.Count * GetSectorSize());
+                = new StreamView(FAT, GetSectorSize(), FAT.Count * GetSectorSize(), streamReader);
 
             // Zeroes out sector data (if requested)
 
@@ -657,10 +670,10 @@ namespace OleCompoundFileStorage
                 = GetSectorChain(RootEntry.StartSetc, SectorType.Normal);
 
             StreamView miniFATView
-                = new StreamView(miniFAT, GetSectorSize(), header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE);
+                = new StreamView(miniFAT, GetSectorSize(), header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE, streamReader);
 
             StreamView miniStreamView
-                = new StreamView(miniStream, GetSectorSize(), this.rootStorage.Size);
+                = new StreamView(miniStream, GetSectorSize(), this.rootStorage.Size, streamReader);
 
             // Set updated/new sectors within the ministream
             if (zeroSector)
@@ -669,7 +682,7 @@ namespace OleCompoundFileStorage
                 {
                     Sector s = sectorChain[i];
 
-                    if (s.IsAllocated)
+                    if (s.Id != -1)
                     {
                         // Overwrite
                         miniStreamView.Seek(Sector.MINISECTOR_SIZE * s.Id, SeekOrigin.Begin);
@@ -719,7 +732,7 @@ namespace OleCompoundFileStorage
 
             foreach (Sector s in sectorChain)
             {
-                if (!s.IsAllocated)
+                if (s.Id == -1)
                 {
                     //int freeId =fatScan.GetFreeSectorID();
 
@@ -744,10 +757,10 @@ namespace OleCompoundFileStorage
 
             if (sSize * (sectors.Count + 2) > 0x7FFFFF00)
             {
-                Sector rangeLockSector = new Sector(GetSectorSize());
+                Sector rangeLockSector = new Sector(GetSectorSize(), streamReader);
                 rangeLockSector.Id = sectors.Count - 1;
                 rangeLockSector.Type = SectorType.RangeLockSector;
-                sectors.Add(new Sector(GetSectorSize()));
+                sectors.Add(new Sector(GetSectorSize(), streamReader));
             }
         }
 
@@ -762,7 +775,7 @@ namespace OleCompoundFileStorage
                 new StreamView(
                     GetSectorChain(-1, SectorType.FAT),
                     GetSectorSize(),
-                    header.FATSectorsNumber * GetSectorSize()
+                    header.FATSectorsNumber * GetSectorSize(), streamReader
                     );
 
             AssureLength(fatStream, (sectorChain.Count * 4));
@@ -809,7 +822,7 @@ namespace OleCompoundFileStorage
             // Allocate Sectors
             foreach (Sector s in FATsectorChain)
             {
-                if (!s.IsAllocated)
+                if (s.Id == -1)
                 {
                     sectors.Add(s);
                     s.Id = sectors.Count - 1;
@@ -835,7 +848,7 @@ namespace OleCompoundFileStorage
             // ReCheck FAT bias
             while (header.FATSectorsNumber * FAT_SECTOR_ENTRIES_COUNT < nCurrentSectors)
             {
-                Sector extraFATSector = new Sector(GetSectorSize());
+                Sector extraFATSector = new Sector(GetSectorSize(), streamReader);
                 sectors.Add(extraFATSector);
 
                 extraFATSector.Id = sectors.Count - 1;
@@ -863,7 +876,7 @@ namespace OleCompoundFileStorage
                         GetSectorChain(-1, SectorType.DIFAT);
 
             StreamView difatStream
-                = new StreamView(difatSectors, GetSectorSize());
+                = new StreamView(difatSectors, GetSectorSize(), streamReader);
 
             AssureLength(difatStream, nDIFATSectors * GetSectorSize());
 
@@ -892,7 +905,7 @@ namespace OleCompoundFileStorage
             // Allocate room for DIFAT sectors
             for (int i = 0; i < difatStream.BaseSectorChain.Count; i++)
             {
-                if (!difatStream.BaseSectorChain[i].IsAllocated)
+                if (difatStream.BaseSectorChain[i].Id == -1)
                 {
                     sectors.Add(difatStream.BaseSectorChain[i]);
                     difatStream.BaseSectorChain[i].Id = sectors.Count - 1;
@@ -917,7 +930,7 @@ namespace OleCompoundFileStorage
                     Buffer.BlockCopy(
                         BitConverter.GetBytes(difatStream.BaseSectorChain[i + 1].Id),
                         0,
-                        difatStream.BaseSectorChain[i].Data,
+                        difatStream.BaseSectorChain[i].GetData(),
                         GetSectorSize() - sizeof(int),
                         4);
                 }
@@ -925,7 +938,7 @@ namespace OleCompoundFileStorage
                 Buffer.BlockCopy(
                     BitConverter.GetBytes(Sector.ENDOFCHAIN),
                     0,
-                    difatStream.BaseSectorChain[difatStream.BaseSectorChain.Count - 1].Data,
+                    difatStream.BaseSectorChain[difatStream.BaseSectorChain.Count - 1].GetData(),
                     GetSectorSize() - sizeof(int),
                     sizeof(int)
                     );
@@ -935,7 +948,7 @@ namespace OleCompoundFileStorage
 
             // Mark DIFAT Sectors in FAT
             StreamView fatSv =
-                new StreamView(FATsectorChain, GetSectorSize(), header.FATSectorsNumber * GetSectorSize());
+                new StreamView(FATsectorChain, GetSectorSize(), header.FATSectorsNumber * GetSectorSize(), streamReader);
 
 
             for (int i = 0; i < header.DIFATSectorsNumber; i++)
@@ -988,9 +1001,9 @@ namespace OleCompoundFileStorage
 
                 if (s == null) //Lazy loading
                 {
-                    s = Sector.LoadSector(header.FirstDIFATSectorID, streamReader, GetSectorSize());
+                    s = new Sector(GetSectorSize(), streamReader);
                     s.Type = SectorType.DIFAT;
-                    //s.Id = header.FirstDIFATSectorID;
+                    s.Id = header.FirstDIFATSectorID;
                     //header.FirstDIFATSectorID = s.Id;  ?
                     sectors[header.FirstDIFATSectorID] = s;
                 }
@@ -999,7 +1012,7 @@ namespace OleCompoundFileStorage
 
                 while (true)
                 {
-                    nextSecID = BitConverter.ToInt32(s.Data, GetSectorSize() - 4);
+                    nextSecID = BitConverter.ToInt32(s.GetData(), GetSectorSize() - 4);
 
                     // Strictly speaking, the following condition is not correct from
                     // a specification point of view:
@@ -1007,16 +1020,14 @@ namespace OleCompoundFileStorage
                     // a lot of existing compound files use FREESECT as DIFAT chain termination
                     if (nextSecID == Sector.FREESECT || nextSecID == Sector.ENDOFCHAIN) break;
 
-                    if (sectors[nextSecID] == null)
-                    {
-                        sectors[nextSecID] = Sector.LoadSector(
-                            nextSecID,
-                            streamReader,
-                           GetSectorSize()
-                        );
-                    }
-
                     s = sectors[nextSecID] as Sector;
+
+                    if (s == null)
+                    {
+                        s = new Sector(GetSectorSize(), streamReader);
+                        s.Id = nextSecID;
+                        sectors[nextSecID] = s;
+                    }
 
                     result.Add(s);
                 }
@@ -1047,16 +1058,17 @@ namespace OleCompoundFileStorage
             while (idx < header.FATSectorsNumber && idx < N_HEADER_FAT_ENTRY)
             {
                 nextSecID = header.DIFAT[idx];
+                Sector s = sectors[nextSecID] as Sector;
 
-                if (sectors[nextSecID] == null && streamReader != null)
+                if (s == null)
                 {
-                    sectors[nextSecID] = Sector.LoadSector(
-                           nextSecID,
-                           streamReader,
-                           GetSectorSize());
+                    s = new Sector(GetSectorSize(), streamReader);
+                    s.Id = nextSecID;
+                    s.Type = SectorType.FAT;
+                    sectors[nextSecID] = s;
                 }
 
-                result.Add(sectors[nextSecID] as Sector);
+                result.Add(s);
 
                 idx++;
             }
@@ -1071,7 +1083,8 @@ namespace OleCompoundFileStorage
                         GetSectorSize(),
                         header.FATSectorsNumber > N_HEADER_FAT_ENTRY ?
                             (header.FATSectorsNumber - N_HEADER_FAT_ENTRY) * 4 :
-                            0
+                            0,
+                            streamReader
                         );
 
                 byte[] nextDIFATSectorBuffer = new byte[4];
@@ -1091,16 +1104,16 @@ namespace OleCompoundFileStorage
                         continue;
                     }
 
+                    Sector s = sectors[nextSecID] as Sector;
 
-                    if (sectors[nextSecID] == null && streamReader != null)
+                    if (s == null)
                     {
-                        sectors[nextSecID] = Sector.LoadSector(
-                               nextSecID,
-                               streamReader,
-                               GetSectorSize());
+                        s = new Sector(GetSectorSize(), streamReader);
+                        s.Type = SectorType.FAT;
+                        s.Id = nextSecID;
                     }
 
-                    result.Add(sectors[nextSecID] as Sector);
+                    result.Add(s);
 
                     difatStream.Read(nextDIFATSectorBuffer, 0, 4);
                     nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
@@ -1126,18 +1139,23 @@ namespace OleCompoundFileStorage
 
             List<Sector> fatSectors = GetFatSectorChain();
 
-            StreamView fatStream = new StreamView(fatSectors, GetSectorSize(), fatSectors.Count * GetSectorSize());
+            StreamView fatStream
+                = new StreamView(fatSectors, GetSectorSize(), fatSectors.Count * GetSectorSize(), streamReader);
 
             while (true)
             {
                 if (nextSecID == Sector.ENDOFCHAIN) break;
 
-                if (sectors[nextSecID] == null && streamReader != null)
+                Sector s = sectors[nextSecID] as Sector;
+                if (s == null)
                 {
-                    sectors[nextSecID] = Sector.LoadSector(nextSecID, streamReader, GetSectorSize());
+                    s = new Sector(GetSectorSize(), streamReader);
+                    s.Id = nextSecID;
+                    s.Type = SectorType.Normal;
+                    sectors[nextSecID] = s;
                 }
 
-                result.Add(sectors[nextSecID] as Sector);
+                result.Add(s);
 
                 fatStream.Seek(nextSecID * 4, SeekOrigin.Begin);
                 nextSecID = fatStream.ReadInt32();
@@ -1157,37 +1175,42 @@ namespace OleCompoundFileStorage
             List<Sector> result
                   = new List<Sector>();
 
-            int nextSecID = secID;
-
-            List<Sector> miniFAT = GetNormalSectorChain(header.FirstMiniFATSectorID);
-            List<Sector> miniStream = GetNormalSectorChain(RootEntry.StartSetc);
-
-            StreamView miniFATView = new StreamView(miniFAT, GetSectorSize(), header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE);
-            StreamView miniStreamView = new StreamView(miniStream, GetSectorSize(), rootStorage.Size);
-
-            BinaryReader miniFATReader = new BinaryReader(miniFATView);
-
-            nextSecID = secID;
-
-            while (true)
+            if (secID != Sector.ENDOFCHAIN)
             {
-                if (nextSecID == Sector.ENDOFCHAIN)
-                    break;
+                int nextSecID = secID;
 
-                Sector ms = new Sector(Sector.MINISECTOR_SIZE);
-                byte[] temp = new byte[Sector.MINISECTOR_SIZE];
+                List<Sector> miniFAT = GetNormalSectorChain(header.FirstMiniFATSectorID);
+                List<Sector> miniStream = GetNormalSectorChain(RootEntry.StartSetc);
 
-                ms.Id = nextSecID;
-                miniStreamView.Seek(nextSecID * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
+                StreamView miniFATView
+                    = new StreamView(miniFAT, GetSectorSize(), header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE, streamReader);
+                StreamView miniStreamView = new StreamView(miniStream, GetSectorSize(), rootStorage.Size, streamReader);
 
-                miniStreamView.Read(ms.Data, 0, Sector.MINISECTOR_SIZE);
+                BinaryReader miniFATReader = new BinaryReader(miniFATView);
 
-                result.Add(ms);
+                nextSecID = secID;
 
-                miniFATView.Seek(nextSecID * 4, SeekOrigin.Begin);
-                nextSecID = miniFATReader.ReadInt32();
+                while (true)
+                {
+                    if (nextSecID == Sector.ENDOFCHAIN)
+                        break;
+
+                    Sector ms = new Sector(Sector.MINISECTOR_SIZE, streamReader);
+                    byte[] temp = new byte[Sector.MINISECTOR_SIZE];
+
+                    ms.Id = nextSecID;
+                    ms.Type = SectorType.Mini;
+
+                    miniStreamView.Seek(nextSecID * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
+
+                    miniStreamView.Read(ms.GetData(), 0, Sector.MINISECTOR_SIZE);
+
+                    result.Add(ms);
+
+                    miniFATView.Seek(nextSecID * 4, SeekOrigin.Begin);
+                    nextSecID = miniFATReader.ReadInt32();
+                }
             }
-
             return result;
         }
 
@@ -1365,7 +1388,7 @@ namespace OleCompoundFileStorage
                 header.FirstDirectorySectorID = directoryChain[0].Id;
 
             BinaryReader dirReader
-                = new BinaryReader(new StreamView(directoryChain, GetSectorSize(), directoryChain.Count * GetSectorSize()));
+                = new BinaryReader(new StreamView(directoryChain, GetSectorSize(), directoryChain.Count * GetSectorSize(), streamReader));
 
 
             while (dirReader.BaseStream.Position < directoryChain.Count * GetSectorSize())
@@ -1417,7 +1440,7 @@ namespace OleCompoundFileStorage
             List<Sector> directorySectors
                 = GetSectorChain(header.FirstDirectorySectorID, SectorType.Normal);
 
-            StreamView sv = new StreamView(directorySectors, GetSectorSize(), 0);
+            StreamView sv = new StreamView(directorySectors, GetSectorSize(), 0, streamReader);
             BinaryWriter bw = new BinaryWriter(sv);
 
             foreach (IDirectoryEntry di in directoryEntries)
@@ -1517,13 +1540,13 @@ namespace OleCompoundFileStorage
             {
                 Sector s = sectors[i] as Sector;
 
-                if (streamReader != null && s == null)
+                if (s == null)
                 {
-                    s = Sector.LoadSector(i, streamReader, GetSectorSize());
+                    s = new Sector(GetSectorSize(), streamReader);
                     sectors[i] = s;
                 }
 
-                bw.Write(s.Data);
+                bw.Write(s.GetData());
             }
 
             bw.BaseStream.Seek(0, SeekOrigin.Begin);
@@ -1551,7 +1574,7 @@ namespace OleCompoundFileStorage
             {
 
                 List<Sector> FatChain = GetSectorChain(-1, SectorType.FAT);
-                StreamView fatStream = new StreamView(FatChain, GetSectorSize());
+                StreamView fatStream = new StreamView(FatChain, GetSectorSize(), streamReader);
 
                 int ptr = 0;
 
@@ -1572,13 +1595,13 @@ namespace OleCompoundFileStorage
                     = GetSectorChain(header.FirstMiniFATSectorID, SectorType.Normal);
 
                 StreamView miniFATView
-                    = new StreamView(miniFAT, GetSectorSize(), header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE);
+                    = new StreamView(miniFAT, GetSectorSize(), header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE, streamReader);
 
                 List<Sector> miniStream
                     = GetSectorChain(RootEntry.StartSetc, SectorType.Normal);
 
                 StreamView miniStreamView
-                    = new StreamView(miniStream, GetSectorSize(), rootStorage.Size);
+                    = new StreamView(miniStream, GetSectorSize(), rootStorage.Size, streamReader);
 
                 long ptr = 0;
 
@@ -1593,18 +1616,17 @@ namespace OleCompoundFileStorage
 
                     if (id == Sector.FREESECT)
                     {
-                        Sector ms = new Sector(Sector.MINISECTOR_SIZE);
+                        Sector ms = new Sector(Sector.MINISECTOR_SIZE, streamReader);
                         byte[] temp = new byte[Sector.MINISECTOR_SIZE];
 
                         ms.Id = (int)((ptr - 4) / 4);
                         ms.Type = SectorType.Mini;
 
                         miniStreamView.Seek(ms.Id * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
-                        miniStreamView.Read(ms.Data, 0, Sector.MINISECTOR_SIZE);
+                        miniStreamView.Read(ms.GetData(), 0, Sector.MINISECTOR_SIZE);
 
                         freeList.Push(ms);
                     }
-
                 }
             }
 
@@ -1654,7 +1676,7 @@ namespace OleCompoundFileStorage
                     temp = new byte[streamSize];
 
                     StreamView miniData
-                        = new StreamView(GetMiniSectorChain(directoryEntry.StartSetc), Sector.MINISECTOR_SIZE);
+                        = new StreamView(GetMiniSectorChain(directoryEntry.StartSetc), Sector.MINISECTOR_SIZE, streamReader);
 
                     miniData.Read(temp, 0, streamSize);
                     FreeMiniChain(GetMiniSectorChain(directoryEntry.StartSetc), this.eraseFreeSectors);
@@ -1669,7 +1691,7 @@ namespace OleCompoundFileStorage
 
             Stack<Sector> freeList = FindFreeSectors(_st); // Collect available free sectors
 
-            StreamView sv = new StreamView(sectorChain, _sectorSize, buffer.Length, freeList);
+            StreamView sv = new StreamView(sectorChain, _sectorSize, buffer.Length, freeList, streamReader);
 
             if (temp != null)
             {
@@ -1757,7 +1779,7 @@ namespace OleCompoundFileStorage
             if (this.sectorRecycle)
                 freeList = FindFreeSectors(_st); // Collect available free sectors
 
-            StreamView sv = new StreamView(sectorChain, _sectorSize, buffer.Length, freeList);
+            StreamView sv = new StreamView(sectorChain, _sectorSize, buffer.Length, freeList, streamReader);
 
             sv.Write(buffer, 0, buffer.Length);
 
@@ -1808,12 +1830,12 @@ namespace OleCompoundFileStorage
             if (de.Size < header.MinSizeStandardStream)
             {
                 sView
-                    = new StreamView(GetSectorChain(de.StartSetc, SectorType.Mini), Sector.MINISECTOR_SIZE, de.Size);
+                    = new StreamView(GetSectorChain(de.StartSetc, SectorType.Mini), Sector.MINISECTOR_SIZE, de.Size, streamReader);
             }
             else
             {
 
-                sView = new StreamView(GetSectorChain(de.StartSetc, SectorType.Normal), GetSectorSize(), de.Size);
+                sView = new StreamView(GetSectorChain(de.StartSetc, SectorType.Normal), GetSectorSize(), de.Size, streamReader);
             }
 
             result = new byte[(int)(count)];
@@ -1843,7 +1865,7 @@ namespace OleCompoundFileStorage
             {
 
                 StreamView miniView
-                    = new StreamView(GetSectorChain(de.StartSetc, SectorType.Mini), Sector.MINISECTOR_SIZE, de.Size);
+                    = new StreamView(GetSectorChain(de.StartSetc, SectorType.Mini), Sector.MINISECTOR_SIZE, de.Size, streamReader);
 
                 BinaryReader br = new BinaryReader(miniView);
 
@@ -1854,7 +1876,7 @@ namespace OleCompoundFileStorage
             else
             {
                 StreamView sView
-                    = new StreamView(GetSectorChain(de.StartSetc, SectorType.Normal), GetSectorSize(), de.Size);
+                    = new StreamView(GetSectorChain(de.StartSetc, SectorType.Normal), GetSectorSize(), de.Size, streamReader);
 
                 result = new byte[(int)de.Size];
 
