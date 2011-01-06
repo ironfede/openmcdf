@@ -47,31 +47,34 @@ namespace OleCompoundFileStorage
 
         public bool IsStreamed
         {
-            get { return (reader != null && size != MINISECTOR_SIZE) ? (this.id * size) + size < reader.BaseStream.Length : false; }
+            get { return (stream != null && size != MINISECTOR_SIZE) ? (this.id * size) + size < stream.Length : false; }
         }
 
         //public const int HEADER = unchecked((int)0xEEEEEEEE);
 
         private int size = 0;
-        private BinaryReader reader;
+        private Stream stream;
 
 
-        public Sector(int size, BinaryReader reader)
+        public Sector(int size, Stream stream)
         {
             this.size = size;
-            this.reader = reader;
+            this.stream = stream;
         }
 
         public Sector(int size, byte[] data)
         {
             this.size = size;
             this.data = data;
-            this.reader = null;
+            this.stream = null;
         }
 
-        //public Sector()
-        //{
-        //}
+        public Sector(int size)
+        {
+            this.size = size;
+            this.data = null;
+            this.stream = null;
+        }
 
         private SectorType type;
 
@@ -104,29 +107,18 @@ namespace OleCompoundFileStorage
 
         public byte[] GetData()
         {
-
             if (this.data == null)
-            {
+            { 
+                data = new byte[size];
+                
                 if (IsStreamed)
                 {
-                    reader.BaseStream.Seek(size + this.id * size, SeekOrigin.Begin);
-                    data = reader.ReadBytes(size);
-                }
-                else
-                {
-                    data = new byte[size];
+                    stream.Seek((long)size + (long)this.id * (long)size, SeekOrigin.Begin);
+                    stream.Read(data, 0, size);
                 }
             }
 
             return data;
-
-
-            //set
-            //{
-            //    this.data = value;
-            //    size = this.data.Length;
-            //}
-
         }
 
         //public void SetSectorData(byte[] b)

@@ -34,9 +34,9 @@ namespace OleCompoundFileStorage
         private long position;
 
         private List<Sector> sectorChain;
-        private BinaryReader sectorReader;
+        private Stream stream;
 
-        public StreamView(List<Sector> sectorChain, int sectorSize, BinaryReader sectorReader)
+        public StreamView(List<Sector> sectorChain, int sectorSize, Stream stream)
         {
             if (sectorChain == null)
                 throw new CFException("Sector Chain cannot be null");
@@ -46,18 +46,18 @@ namespace OleCompoundFileStorage
 
             this.sectorChain = sectorChain;
             this.sectorSize = sectorSize;
-            this.sectorReader = sectorReader;
+            this.stream = stream;
         }
 
-        public StreamView(List<Sector> sectorChain, int sectorSize, long length, Stack<Sector> availableSectors, BinaryReader sectorReader)
-            : this(sectorChain, sectorSize, sectorReader)
+        public StreamView(List<Sector> sectorChain, int sectorSize, long length, Stack<Sector> availableSectors, Stream stream)
+            : this(sectorChain, sectorSize, stream)
         {
             adjustLength(length, availableSectors);
         }
 
 
-        public StreamView(List<Sector> sectorChain, int sectorSize, long length, BinaryReader sectorReader)
-            : this(sectorChain, sectorSize, sectorReader)
+        public StreamView(List<Sector> sectorChain, int sectorSize, long length, Stream stream)
+            : this(sectorChain, sectorSize, stream)
         {
             adjustLength(length);
         }
@@ -134,7 +134,7 @@ namespace OleCompoundFileStorage
             if (sectorChain != null && sectorChain.Count > 0)
             {
                 // First sector
-                int secIndex = (int)position / sectorSize;
+                int secIndex = (int)(position / (long)sectorSize);
 
                 // Bytes to read count is the min between request count
                 // and sector border
@@ -246,7 +246,7 @@ namespace OleCompoundFileStorage
 
                     if (availableSectors == null || availableSectors.Count == 0)
                     {
-                        t = new Sector(sectorSize, sectorReader);
+                        t = new Sector(sectorSize, stream);
                     }
                     else
                     {
@@ -300,10 +300,10 @@ namespace OleCompoundFileStorage
             if (sectorChain != null)
             {
                 // First sector
-                int secOffset = (int)position / sectorSize;
+                int secOffset = (int)(position / (long)sectorSize);
                 int secShift = (int)position % sectorSize;
 
-                roundByteWritten = Math.Min(sectorSize - ((int)position % sectorSize), count);
+                roundByteWritten = (int)Math.Min(sectorSize - (int)(position % (long)sectorSize), count);
 
                 if (secOffset < sectorChain.Count)
                 {
