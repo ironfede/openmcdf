@@ -330,66 +330,72 @@ namespace OleCompoundFileStorage
             return (int)fnv_hash(this.entryName);
         }
 
-        public void Write(BinaryWriter bw)
+        public void Write(Stream stream)
         {
-            bw.Write(entryName);
-            bw.Write(nameLength);
-            bw.Write((byte)stgType);
-            bw.Write((byte)stgColor);
-            bw.Write(leftSibling);
-            bw.Write(rightSibling);
-            bw.Write(child);
-            bw.Write(storageCLSID.ToByteArray());
-            bw.Write(stateBits);
-            bw.Write(creationDate);
-            bw.Write(modifyDate);
-            bw.Write(startSetc);
-            bw.Write(size);
+            StreamRW rw = new StreamRW(stream);
+
+            rw.Write(entryName);
+            rw.Write(nameLength);
+            rw.Write((byte)stgType);
+            rw.Write((byte)stgColor);
+            rw.Write(leftSibling);
+            rw.Write(rightSibling);
+            rw.Write(child);
+            rw.Write(storageCLSID.ToByteArray());
+            rw.Write(stateBits);
+            rw.Write(creationDate);
+            rw.Write(modifyDate);
+            rw.Write(startSetc);
+            rw.Write(size);
+
+            rw.Close();
         }
 
-        public Byte[] ToByteArray()
+        //public Byte[] ToByteArray()
+        //{
+        //    MemoryStream ms
+        //        = new MemoryStream(128);
+
+        //    BinaryWriter bw = new BinaryWriter(ms);
+
+        //    byte[] paddedName = new byte[64];
+        //    Array.Copy(entryName, paddedName, entryName.Length);
+
+        //    bw.Write(paddedName);
+        //    bw.Write(nameLength);
+        //    bw.Write((byte)stgType);
+        //    bw.Write((byte)stgColor);
+        //    bw.Write(leftSibling);
+        //    bw.Write(rightSibling);
+        //    bw.Write(child);
+        //    bw.Write(storageCLSID.ToByteArray());
+        //    bw.Write(stateBits);
+        //    bw.Write(creationDate);
+        //    bw.Write(modifyDate);
+        //    bw.Write(startSetc);
+        //    bw.Write(size);
+
+        //    return ms.ToArray();
+        //}
+
+        public void Read(Stream stream)
         {
-            MemoryStream ms
-                = new MemoryStream(128);
+            StreamRW rw = new StreamRW(stream);
 
-            BinaryWriter bw = new BinaryWriter(ms);
-
-            byte[] paddedName = new byte[64];
-            Array.Copy(entryName, paddedName, entryName.Length);
-
-            bw.Write(paddedName);
-            bw.Write(nameLength);
-            bw.Write((byte)stgType);
-            bw.Write((byte)stgColor);
-            bw.Write(leftSibling);
-            bw.Write(rightSibling);
-            bw.Write(child);
-            bw.Write(storageCLSID.ToByteArray());
-            bw.Write(stateBits);
-            bw.Write(creationDate);
-            bw.Write(modifyDate);
-            bw.Write(startSetc);
-            bw.Write(size);
-
-            return ms.ToArray();
-        }
-
-        public void Read(BinaryReader br)
-        {
-            entryName = br.ReadBytes(64);
-            nameLength = br.ReadUInt16();
-            stgType = (StgType)br.ReadByte();
-            br.ReadByte();//Ignore color, only black tree
+            entryName = rw.ReadBytes(64);
+            nameLength = rw.ReadUInt16();
+            stgType = (StgType)rw.ReadByte();
+            rw.ReadByte();//Ignore color, only black tree
             //stgColor = (StgColor)br.ReadByte();
-            leftSibling = br.ReadInt32();
-            rightSibling = br.ReadInt32();
-            child = br.ReadInt32();
-            storageCLSID = new Guid(br.ReadBytes(16));
-            stateBits = br.ReadInt32();
-            creationDate = br.ReadBytes(8);
-            modifyDate = br.ReadBytes(8);
-            startSetc = br.ReadInt32();
-            size = br.ReadInt64();
+            leftSibling = rw.ReadInt32();
+            rightSibling = rw.ReadInt32();
+            child = rw.ReadInt32();
+            storageCLSID = new Guid(rw.ReadBytes(16));
+            stateBits = rw.ReadInt32();
+            creationDate = rw.ReadBytes(8);
+            modifyDate = rw.ReadBytes(8);
+            startSetc = rw.ReadInt32();
+            size = rw.ReadInt64();
         }
 
         public string Name

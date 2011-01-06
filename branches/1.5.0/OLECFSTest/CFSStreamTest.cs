@@ -303,14 +303,14 @@ namespace OleCfsTest
 
             File.Copy(srcFilename, dstFilename, true);
 
-            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted, false, false);
+            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Update, false, false);
 
             byte[] buffer = Helpers.GetBuffer(5000);
 
             CFStream addedStream = cf.RootStorage.AddStream("MyNewStream");
             addedStream.SetData(buffer);
 
-            cf.UpdateFile();
+            cf.Commit();
             cf.Close();
         }
 
@@ -365,17 +365,21 @@ namespace OleCfsTest
 
             File.Copy(srcFilename, dstFilename, true);
 
-            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted, true, true);
+            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Update, true, true);
 
             Random r = new Random();
 
             byte[] buffer = Helpers.GetBuffer(r.Next(3, 4095), 0x0A);
 
             cf.RootStorage.AddStream("MyStream").SetData(buffer);
-            cf.UpdateFile();
+            cf.Commit();
             cf.Close();
+            FileStream larger = new FileStream(dstFilename, FileMode.Open);
+            FileStream smaller = new FileStream(srcFilename, FileMode.Open);
 
-            Assert.IsTrue(new FileStream(dstFilename, FileMode.Open).Length > new FileStream(srcFilename, FileMode.Open).Length);
+            Assert.IsTrue(larger.Length > smaller.Length);
+            larger.Close();
+            smaller.Close();
 
         }
 
@@ -387,7 +391,7 @@ namespace OleCfsTest
 
             File.Copy(srcFilename, dstFilename, true);
 
-            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted, true, true);
+            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Update, true, true);
 
             cf.RootStorage.Delete("\x05SummaryInformation");
 
@@ -396,7 +400,7 @@ namespace OleCfsTest
             CFStream addedStream = cf.RootStorage.AddStream("MyNewStream");
             addedStream.SetData(buffer);
 
-            cf.UpdateFile();
+            cf.Commit();
             cf.Close();
         }
 
@@ -440,7 +444,7 @@ namespace OleCfsTest
 
             CFStorage st = cf.RootStorage.AddStorage("MyStorage");
             CFStream sm = st.AddStream("MyStream");
-            byte[] b = new byte[220];
+            byte[] b = Helpers.GetBuffer(220, 0x0A);
             sm.SetData(b);
 
             cf.Save(filename);
@@ -627,7 +631,7 @@ namespace OleCfsTest
 
         //    cf.Close();
 
-          
+
         //    cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs");
         //    int count = 8;
         //    byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData(b.Length * 10, ref count);
@@ -640,13 +644,13 @@ namespace OleCfsTest
         [TestMethod]
         public void TEST_STREAM_VIEW()
         {
-            BinaryReader b = null;
+            Stream a = null;
             List<Sector> temp = new List<Sector>();
-            Sector s = new Sector(512, b);
+            Sector s = new Sector(512);
             Buffer.BlockCopy(BitConverter.GetBytes((int)1), 0, s.GetData(), 0, 4);
             temp.Add(s);
 
-            StreamView sv = new StreamView(temp, 512, 0, b);
+            StreamView sv = new StreamView(temp, 512, 0, a);
             BinaryReader br = new BinaryReader(sv);
             Int32 t = br.ReadInt32();
 
@@ -657,7 +661,7 @@ namespace OleCfsTest
         [TestMethod]
         public void Test_STREAM_VIEW_2()
         {
-            BinaryReader b = null;
+            Stream b = null;
             List<Sector> temp = new List<Sector>();
 
             StreamView sv = new StreamView(temp, 512, b);
@@ -677,7 +681,7 @@ namespace OleCfsTest
         [TestMethod]
         public void Test_STREAM_VIEW_3()
         {
-            BinaryReader b = null;
+            Stream b = null;
             List<Sector> temp = new List<Sector>();
 
             StreamView sv = new StreamView(temp, 512, b);
@@ -703,7 +707,7 @@ namespace OleCfsTest
         [TestMethod]
         public void Test_STREAM_VIEW_LARGE_DATA()
         {
-            BinaryReader b = null;
+            Stream b = null;
             List<Sector> temp = new List<Sector>();
 
             StreamView sv = new StreamView(temp, 512, b);

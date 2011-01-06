@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using OleCompoundFileStorage;
 using System.IO;
+using System.Diagnostics;
+using System.Threading;
 
 namespace OleCfsMemoryTest
 {
@@ -27,15 +29,15 @@ namespace OleCfsMemoryTest
             //cf.Close();
 
             //TestMultipleStreamCommit();
-            StressMemory();
-
+           StressMemory();
+             //DummyFile();
             //Console.WriteLine("CLOSED");
             //Console.ReadKey();
         }
 
         private static void StressMemory()
         {
-            byte[] b = GetBuffer(1024 * 1024 * 5); //2GB buffer
+            byte[] b = GetBuffer(1024*1024*2); //2GB buffer
             byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
 
             CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, false, false);
@@ -46,36 +48,72 @@ namespace OleCfsMemoryTest
             //Console.WriteLine("Closed save");
             //Console.ReadKey();
 
-            cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs", UpdateMode.Transacted, false, false);
+            cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs", UpdateMode.Update, false, false);
             CFStream cfst = cf.RootStorage.GetStream("MySuperLargeStream");
-            for (int i = 0; i < 100; i++)
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            for (int i = 0; i < 10; i++)
             {
+
                 cfst.AppendData(b);
-                if ((i % 20) == 0) cf.UpdateFile(true);
-                //Console.WriteLine("     Updated " + i.ToString());
+                cf.Commit(true);
+
+                Console.WriteLine("     Updated " + i.ToString());
                 //Console.ReadKey();
             }
 
             cfst.AppendData(cmp);
-            cf.UpdateFile(true);
-
-            //Console.WriteLine("Before Closed Transacted");
-            //Console.ReadKey();
+            cf.Commit(true);
+            sw.Stop();
+            Console.WriteLine(sw.Elapsed.TotalMilliseconds);
+            sw.Reset();
 
             cf.Close();
+
+            //Console.WriteLine(sw.Elapsed.TotalMilliseconds);
 
             //Console.WriteLine("Closed Transacted");
             //Console.ReadKey();
 
             cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs");
             int count = 8;
-            byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData(b.Length * 10, ref count);
-
+            sw.Reset();
+            sw.Start();
+            byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData(b.Length * 2L, ref count);
+            sw.Stop();
+            Console.Write(data.Length);
             cf.Close();
 
-            Console.WriteLine("Closed Final");
+            Console.WriteLine("Closed Final " + sw.ElapsedMilliseconds);
             Console.ReadKey();
 
+        }
+
+        private static void DummyFile()
+        {
+            Console.WriteLine("Start");
+            FileStream fs = new FileStream("myDummyFile", FileMode.Create);
+            fs.Close();
+
+            Stopwatch sw = new Stopwatch();
+
+            byte[] b = GetBuffer(1024 * 1024 * 20); //2GB buffer
+            
+            fs = new FileStream("myDummyFile", FileMode.Open);
+            for (int i = 0; i < 10; i++)
+            {
+sw.Start();
+fs.Seek(b.Length * i, SeekOrigin.Begin);
+                fs.Write(b, 0, b.Length);
+sw.Stop();Console.WriteLine("Stop - " + sw.ElapsedMilliseconds);
+sw.Reset();
+            }
+
+            fs.Close();
+            
+            
+            Console.ReadKey();
         }
 
         private static void AddNodes(String depth, CFStorage cfs)
@@ -113,7 +151,7 @@ namespace OleCfsMemoryTest
             //Console.ReadKey(); 
             File.Copy(srcFilename, dstFilename, true);
 
-            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Transacted, true, false);
+            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Update, true, false);
 
             Random r = new Random();
 
@@ -137,7 +175,7 @@ namespace OleCfsMemoryTest
 
                 // Random commit, not on single addition
                 if (r.Next(0, 100) > 50)
-                    cf.UpdateFile();
+                    cf.Commit();
             }
 
             cf.Close();

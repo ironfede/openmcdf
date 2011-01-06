@@ -29,7 +29,7 @@ namespace OleCompoundFileStorage
         byte[] ModifyDate { get; set; }
         string Name { get; }
         ushort NameLength { get; set; }
-        void Read(System.IO.BinaryReader br);
+        void Read(System.IO.Stream stream);
         int RightSibling { get; set; }
         void SetEntryName(string entryName);
         int SID { get; set; }
@@ -39,7 +39,6 @@ namespace OleCompoundFileStorage
         StgColor StgColor { get; set; }
         StgType StgType { get; set; }
         Guid StorageCLSID { get; set; }
-        byte[] ToByteArray();
-        void Write(System.IO.BinaryWriter bw);
+        void Write(System.IO.Stream stream);
     }
 }

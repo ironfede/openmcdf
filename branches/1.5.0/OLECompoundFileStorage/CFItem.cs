@@ -130,9 +130,9 @@ namespace OleCompoundFileStorage
             }
         }
 
-        void IDirectoryEntry.Read(System.IO.BinaryReader br)
+        void IDirectoryEntry.Read(System.IO.Stream stream)
         {
-            this.dirEntry.Read(br);
+            this.dirEntry.Read(stream);
         }
 
         int IDirectoryEntry.RightSibling
@@ -238,14 +238,14 @@ namespace OleCompoundFileStorage
             }
         }
 
-        byte[] IDirectoryEntry.ToByteArray()
-        {
-            return this.dirEntry.ToByteArray();
-        }
+        //byte[] IDirectoryEntry.ToByteArray()
+        //{
+        //    return this.dirEntry.ToByteArray();
+        //}
 
-        void IDirectoryEntry.Write(System.IO.BinaryWriter bw)
+        void IDirectoryEntry.Write(System.IO.Stream stream)
         {
-            this.dirEntry.Write(bw);
+            this.dirEntry.Write(stream);
         }
 
 
