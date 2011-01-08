@@ -122,11 +122,11 @@ namespace OleCompoundFileStorage
         /// </summary>
         private bool eraseFreeSectors = false;
 
-        private ArrayList sectors = new ArrayList();
+        private SectorCollection sectors;
 
         private Header header;
 
-        private Stream sourceStream = null;
+        internal Stream sourceStream = null;
 
 
         /// <summary>
@@ -155,8 +155,10 @@ namespace OleCompoundFileStorage
         /// </example>
         public CompoundFile()
         {
+
             this.header = new Header();
             this.sectorRecycle = false;
+            this.sectors = new SectorCollection(0, GetSectorSize(), this);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
@@ -203,6 +205,7 @@ namespace OleCompoundFileStorage
         {
             this.header = new Header((ushort)cfsVersion);
             this.sectorRecycle = sectorRecycle;
+            this.sectors = new SectorCollection(0, GetSectorSize(), this);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
@@ -302,7 +305,7 @@ namespace OleCompoundFileStorage
         /// <code>
         /// String srcFilename = "data_YOU_CAN_CHANGE.xls";
         /// 
-        /// CompoundFile cf = new CompoundFile(srcFilename, UpdateMode.Transacted, true);
+        /// CompoundFile cf = new CompoundFile(srcFilename, UpdateMode.Update, true, true);
         ///
         /// Random r = new Random();
         ///
@@ -377,7 +380,7 @@ namespace OleCompoundFileStorage
             Commit(false);
         }
 
-        private byte[] buffer = new byte[4096 * 1000];
+        private byte[] buffer = new byte[4096 * 8000];
         private Queue<Sector> flushingQueue = new Queue<Sector>();
 
 
@@ -385,137 +388,158 @@ namespace OleCompoundFileStorage
         /// Commit data changes since the previously commit operation
         /// to the underlying supporting stream or file on the disk.
         /// </summary>
-        /// <param name="releaseMemory">If true, release loaded sectors to limit memory usage but reduces following read operations</param>
+        /// <param name="releaseMemory">If true, release loaded sectors to limit memory usage but reduces following read operations performance</param>
         /// <remarks>
         /// This method can be used only if 
         /// the supporting stream has been opened in 
-        /// <see cref="T:OleCompoundFileStorage.UpdateMode">Transacted mode</see>.
+        /// <see cref="T:OleCompoundFileStorage.UpdateMode">Update mode</see>.
         /// </remarks>
         public void Commit(bool releaseMemory)
         {
             if (_disposed)
-                throw new CFException("Compound File closed: cannot commit data");
+                throw new CFDisposedException("Compound File closed: cannot commit data");
 
             if (updateMode != UpdateMode.Update)
-                throw new CFException("Cannot commit data in Read-Only update mode");
+                throw new CFInvalidOperation("Cannot commit data in Read-Only update mode");
 
-            try
+            //try
+            //{
+            int sId = -1;
+            int sCount = 0;
+            int sSize = GetSectorSize();
+
+            sourceStream.Seek(0, SeekOrigin.Begin);
+            sourceStream.Write((byte[])Array.CreateInstance(typeof(byte), GetSectorSize()), 0, sSize);
+
+            SaveDirectory();
+
+            bool gap = true;
+            int bufOffset = 0;
+
+            for (int i = 0; i < sectors.Count; i++)
             {
-                int sId = -1;
-                int sCount = 0;
-                int sSize = GetSectorSize();
+                // Note:
+                // Here sectors should not be loaded dynamically because
+                // if they are null it means that no change has involved them;
 
-                sourceStream.Seek(0, SeekOrigin.Begin);
-                sourceStream.Write((byte[])Array.CreateInstance(typeof(byte), GetSectorSize()), 0, sSize);
+                //    Sector s = (Sector)sectors[i];
 
-                SaveDirectory();
+                //    if (s != null && s.DirtyFlag)
+                //    {
+                //        if (gap)
+                //            stream.Seek((long)((long)(sSize) + (long)i * (long)sSize), SeekOrigin.Begin);
 
-                bool gap = true;
+                //        stream.Write(s.GetData(), 0, sSize);
+                //        stream.Flush();
+                //        s.DirtyFlag = false;
+                //        gap = false;
 
-                for (int i = 0; i < sectors.Count; i++)
+                //    }
+                //    else
+                //    {
+                //        gap = true;
+                //        continue;
+                //    }
+                //    if (releaseMemory)
+                //    {
+                //        s.ReleaseData();
+                //        s = null;
+                //        sectors[i] = null;
+
+                //        //GC.Collect();
+                //    }
+                //}
+
+
+                Sector s = sectors[i] as Sector;
+
+
+                if (s != null && s.DirtyFlag && flushingQueue.Count < (int)(buffer.Length / sSize))
                 {
-                    // Note:
-                    // Here sectors should not be loaded dynamically because
-                    // if they are null it means that no change has involved them;
+                    //First of a block of contiguous sectors, mark id, start enqueuing
 
-                    //    Sector s = (Sector)sectors[i];
+                    if (gap)
+                        sId = s.Id;
 
-                    //    if (s != null && s.DirtyFlag)
-                    //    {
-                    //        if (gap)
-                    //            stream.Seek((long)((long)(sSize) + (long)i * (long)sSize), SeekOrigin.Begin);
+                    flushingQueue.Enqueue(s);
 
-                    //        stream.Write(s.GetData(), 0, sSize);
-                    //        stream.Flush();
-                    //        s.DirtyFlag = false;
-                    //        gap = false;
+                    gap = false;
+                }
+                else
+                {
+                    sCount = flushingQueue.Count;
 
-                    //    }
-                    //    else
-                    //    {
-                    //        gap = true;
-                    //        continue;
-                    //    }
-                    //    if (releaseMemory)
-                    //    {
-                    //        s.ReleaseData();
-                    //        s = null;
-                    //        sectors[i] = null;
+                    if (sCount == 0) continue;
 
-                    //        //GC.Collect();
-                    //    }
-                    //}
+                    //Found a gap, flush a write operation
+                    gap = true;
 
-
-                    Sector s = sectors[i] as Sector;
-
-                    if (s != null && s.DirtyFlag && flushingQueue.Count < (int)(buffer.Length / sSize))
+                    bufOffset = 0;
+                    while (flushingQueue.Count > 0)
                     {
-                        //First of a block of contiguous sectors, mark id, start enqueuing
+                        Sector r = flushingQueue.Dequeue();
+                        Buffer.BlockCopy(r.GetData(), 0, buffer, bufOffset, sSize);
+                        r.DirtyFlag = false;
 
-                        if (gap)
-                            sId = s.Id;
-                        flushingQueue.Enqueue(s);
-
-                        gap = false;
-                    }
-                    else
-                    {
-                        //Found a gap, flush a write operation
-                        gap = true;
-
-                        sCount = flushingQueue.Count;
-
-                        while (flushingQueue.Count > 0)
+                        if (releaseMemory)
                         {
-                            Sector r = flushingQueue.Dequeue();
-                            Buffer.BlockCopy(r.GetData(), 0, buffer, r.Id * sSize, sSize);
-                            if (releaseMemory)
-                            {
-                                r.ReleaseData();
-                                r = null;
-                            }
+                            sectors.ReleaseStreamedSector(i);
                         }
 
-                        sourceStream.Seek(sSize + sId * sSize, SeekOrigin.Begin);
-                        sourceStream.Write(buffer, 0, sCount * sSize);
-
+                        bufOffset += sSize;
                     }
+
+                    sourceStream.Seek(sSize + sId * sSize, SeekOrigin.Begin);
+                    sourceStream.Write(buffer, 0, sCount * sSize);
+                    //Console.WriteLine("W - " + (int)(sCount * sSize ));
+
                 }
+            }
 
-                sCount = flushingQueue.Count;
+            sCount = flushingQueue.Count;
+            bufOffset = 0;
 
-                while (flushingQueue.Count > 0)
+            while (flushingQueue.Count > 0)
+            {
+                Sector r = flushingQueue.Dequeue();
+                Buffer.BlockCopy(r.GetData(), 0, buffer, bufOffset, sSize);
+                r.DirtyFlag = false;
+
+                if (releaseMemory)
                 {
-                    Sector r = flushingQueue.Dequeue();
-                    Buffer.BlockCopy(r.GetData(), 0, buffer, r.Id * sSize, sSize);
-                    if (releaseMemory)
-                    {
-                        r.ReleaseData();
-                        r = null;
-                    }
+                    sectors.ReleaseStreamedSector(r.Id);
                 }
 
+                bufOffset += sSize;
+            }
 
+            if (sCount != 0)
+            {
                 sourceStream.Seek(sSize + sId * sSize, SeekOrigin.Begin);
                 sourceStream.Write(buffer, 0, sCount * sSize);
-
-
-
-                // Seek to beginning position and save header (first 512 or 4096 bytes)
-                sourceStream.Seek(0, SeekOrigin.Begin);
-                header.Write(sourceStream);
-
-                sourceStream.Flush();
-
-
+                //Console.WriteLine("W - " + (int)(sCount * sSize));
             }
-            catch (Exception ex)
-            {
-                throw new CFException("Error while committing data", ex);
-            }
+
+
+
+            // Seek to beginning position and save header (first 512 or 4096 bytes)
+            sourceStream.Seek(0, SeekOrigin.Begin);
+            header.Write(sourceStream);
+
+            sourceStream.Flush();
+
+
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw new CFException("Internal error while committing data", ex);
+            //}
         }
 
+        /// <summary>
+        /// Load compound file from an existing stream.
+        /// </summary>
+        /// <param name="stream">Stream to load compound file from</param>
         private void Load(Stream stream)
         {
 
@@ -528,12 +552,7 @@ namespace OleCompoundFileStorage
 
             int n_sector = Ceiling((double)((stream.Length - GetSectorSize()) / GetSectorSize()));
 
-            sectors = new ArrayList(n_sector);
-
-            for (int i = 0; i < n_sector; i++)
-            {
-                sectors.Add(null);
-            }
+            sectors = new SectorCollection(n_sector, GetSectorSize(), this);
 
             LoadDirectories();
 
@@ -565,21 +584,23 @@ namespace OleCompoundFileStorage
 
         private void LoadStream(Stream stream)
         {
+            if (stream == null)
+                throw new CFException("Stream parameter cannot be null");
+
             if (!stream.CanSeek)
                 throw new CFException("Cannot load a non-seekable Stream");
 
+
             stream.Seek(0, SeekOrigin.Begin);
-
-
 
             Load(stream);
         }
 
         /// <summary>
         /// Return true if this compound file has been 
-        /// loaded from an existing file.
+        /// loaded from an existing file or stream
         /// </summary>
-        public bool IsFileMapped
+        public bool HasSourceStream
         {
             get { return sourceStream != null; }
         }
@@ -644,13 +665,13 @@ namespace OleCompoundFileStorage
                 Int32 currentId = sectorChain[i].Id;
                 Int32 nextId = sectorChain[i + 1].Id;
 
-                AssureLength(miniFATView, Math.Max(currentId * SIZE_OF_SID, nextId * SIZE_OF_SID));
+                //AssureLength(miniFATView, Math.Max(currentId * SIZE_OF_SID, nextId * SIZE_OF_SID));
 
                 miniFATView.Seek(currentId * 4, SeekOrigin.Begin);
                 miniFATView.Write(BitConverter.GetBytes(nextId), 0, 4);
             }
 
-            AssureLength(miniFATView, sectorChain[sectorChain.Count - 1].Id * SIZE_OF_SID);
+            //AssureLength(miniFATView, sectorChain[sectorChain.Count - 1].Id * SIZE_OF_SID);
 
             // Write End of Chain in MiniFAT
             miniFATView.Seek(sectorChain[sectorChain.Count - 1].Id * SIZE_OF_SID, SeekOrigin.Begin);
@@ -696,7 +717,7 @@ namespace OleCompoundFileStorage
                 Int32 currentId = sectorChain[i].Id;
                 Int32 nextId = sectorChain[i + 1].Id;
 
-                AssureLength(FATView, Math.Max(currentId * SIZE_OF_SID, nextId * SIZE_OF_SID));
+                //AssureLength(FATView, Math.Max(currentId * SIZE_OF_SID, nextId * SIZE_OF_SID));
 
                 FATView.Seek(currentId * 4, SeekOrigin.Begin);
                 FATView.Write(BitConverter.GetBytes(Sector.FREESECT), 0, 4);
@@ -741,13 +762,13 @@ namespace OleCompoundFileStorage
                 Int32 currentId = sectorChain[i].Id;
                 Int32 nextId = sectorChain[i + 1].Id;
 
-                AssureLength(miniFATView, Math.Max(currentId * SIZE_OF_SID, nextId * SIZE_OF_SID));
+                // AssureLength(miniFATView, Math.Max(currentId * SIZE_OF_SID, nextId * SIZE_OF_SID));
 
                 miniFATView.Seek(currentId * 4, SeekOrigin.Begin);
                 miniFATView.Write(BitConverter.GetBytes(Sector.FREESECT), 0, 4);
             }
 
-            AssureLength(miniFATView, sectorChain[sectorChain.Count - 1].Id * SIZE_OF_SID);
+            //AssureLength(miniFATView, sectorChain[sectorChain.Count - 1].Id * SIZE_OF_SID);
 
             // Write End of Chain in MiniFAT
             miniFATView.Seek(sectorChain[sectorChain.Count - 1].Id * SIZE_OF_SID, SeekOrigin.Begin);
@@ -783,8 +804,6 @@ namespace OleCompoundFileStorage
                     //{
                     //}
 
-                    if (header.MajorVersion == (ushort)CFSVersion.Ver_4)
-                        CheckTransactionLockSector();
 
                     sectors.Add(s);
                     s.Id = sectors.Count - 1;
@@ -794,21 +813,9 @@ namespace OleCompoundFileStorage
             SetFATSectorChain(sectorChain);
         }
 
-        private bool _transactionLock = false;
+        internal bool _transactionLock = false;
 
-        private void CheckTransactionLockSector()
-        {
-            int sSize = GetSectorSize();
 
-            if (!_transactionLock && sSize * (sectors.Count + 2) > 0x7FFFFF00)
-            {
-                Sector rangeLockSector = new Sector(GetSectorSize(), sourceStream);
-                rangeLockSector.Id = sectors.Count - 1;
-                rangeLockSector.Type = SectorType.RangeLockSector;
-                sectors.Add(new Sector(GetSectorSize(), sourceStream));
-                _transactionLock = true;
-            }
-        }
 
         /// <summary>
         /// Allocate space, setup sectors id and refresh header
@@ -824,7 +831,7 @@ namespace OleCompoundFileStorage
                     header.FATSectorsNumber * GetSectorSize(), sourceStream
                     );
 
-            AssureLength(fatStream, (sectorChain.Count * 4));
+            //AssureLength(fatStream, (sectorChain.Count * 4));
 
             // Write FAT chain values --
 
@@ -924,7 +931,7 @@ namespace OleCompoundFileStorage
             StreamView difatStream
                 = new StreamView(difatSectors, GetSectorSize(), sourceStream);
 
-            AssureLength(difatStream, nDIFATSectors * GetSectorSize());
+            //AssureLength(difatStream, nDIFATSectors * GetSectorSize());
 
             // Write DIFAT Sectors (if required)
             // Save room for the following chaining
@@ -1015,19 +1022,19 @@ namespace OleCompoundFileStorage
             header.FATSectorsNumber = fatSv.BaseSectorChain.Count;
         }
 
-        /// <summary>
-        /// Check for sector chain having enough sectors
-        /// to get an amount of <typeparamref name="length"/>  bytes
-        /// </summary>
-        /// <param name="streamView">StreamView decorator for a sector chain</param>
-        /// <param name="length">Amount of bytes to check for</param>
-        private static void AssureLength(StreamView streamView, int length)
-        {
-            if (streamView != null && streamView.Length < length)
-            {
-                streamView.SetLength(length);
-            }
-        }
+        ///// <summary>
+        ///// Check for sector chain having enough sectors
+        ///// to get an amount of <typeparamref name="length"/>  bytes
+        ///// </summary>
+        ///// <param name="streamView">StreamView decorator for a sector chain</param>
+        ///// <param name="length">Amount of bytes to check for</param>
+        //private static void AssureLength(StreamView streamView, int length)
+        //{
+        //    if (streamView != null && streamView.Length < length)
+        //    {
+        //        streamView.SetLength(length);
+        //    }
+        //}
 
         /// <summary>
         /// Get the DIFAT Sector chain
@@ -2053,6 +2060,7 @@ namespace OleCompoundFileStorage
                             this.directoryEntries = null;
                             this.fileName = null;
                             this.lockObject = null;
+                            this.buffer = null;
                         }
 
                         if (this.sourceStream != null)
