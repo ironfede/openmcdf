@@ -63,7 +63,7 @@ namespace OleCompoundFileStorage
                 // Lazy loading of children tree.
                 if (children == null)
                 {
-                    if (this.CompoundFile.IsFileMapped)
+                    if (this.CompoundFile.HasSourceStream)
                     {
                         children = LoadChildren(this.dirEntry.SID);
                     }

@@ -8,20 +8,20 @@ namespace OleCompoundFileStorage
 {
     internal class SectorCollection : IList<Sector>
     {
+        CompoundFile owner;
         ArrayList sectors = null;
         int sectorSize = 0;
-        BinaryReader reader;
 
-        internal SectorCollection(int capacity, int sectorSize, BinaryReader reader)
+        internal SectorCollection(int capacity, int sectorSize, CompoundFile owner)
         {
+            this.owner = owner;
             this.sectorSize = sectorSize;
-            this.reader = reader;
 
             sectors = new ArrayList(capacity);
 
             for (int i = 0; i < capacity; i++)
             {
-                sectors[i] = null;
+                sectors.Add(null);
             }
         }
 
@@ -48,27 +48,24 @@ namespace OleCompoundFileStorage
             {
                 Sector s = sectors[index] as Sector;
 
-                if (s == null)
-                {
-                    reader.BaseStream.Seek(sectorSize + index * sectorSize, SeekOrigin.Begin);
-                    s = new Sector(sectorSize, reader.ReadBytes(sectorSize));
-                    s.Id = index;
-                    sectors[index] = s;
-
-                }
-
                 return s;
             }
 
             set
             {
-                throw new NotImplementedException();
+                sectors[index] = value;
             }
         }
 
-        public void ReleaseSector(int index)
+        public void ReleaseStreamedSector(int index)
         {
-            sectors[index] = null;
+            Sector s = (Sector)sectors[index];
+
+            if (s != null)
+            {
+                s.ReleaseData();
+                s.DirtyFlag = false;
+            }
         }
 
         #endregion
@@ -77,8 +74,22 @@ namespace OleCompoundFileStorage
 
         public void Add(Sector item)
         {
+            CheckTransactionLockSector();
+
             this.sectors.Add(item);
             item.Id = sectors.Count - 1;
+        }
+
+        private void CheckTransactionLockSector()
+        {
+            if (!owner._transactionLock && sectorSize * (sectors.Count + 2) > 0x7FFFFF00)
+            {
+                Sector rangeLockSector = new Sector(sectorSize, owner.sourceStream);
+                rangeLockSector.Id = sectors.Count - 1;
+                rangeLockSector.Type = SectorType.RangeLockSector;
+                sectors.Add(new Sector(sectorSize, owner.sourceStream));
+                owner._transactionLock = true;
+            }
         }
 
         public void Clear()

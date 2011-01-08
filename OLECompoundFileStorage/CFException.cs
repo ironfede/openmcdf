@@ -145,6 +145,36 @@ namespace OleCompoundFileStorage
 
     }
 
+    /// <summary>
+    /// Exception thrown when a method call is invalid for the current object state
+    /// </summary>
+    [Serializable]
+    public class CFInvalidOperation : InvalidOperationException
+    {
+         public CFInvalidOperation()
+            : base()
+        {
+        }
+
+        protected CFInvalidOperation(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+        public CFInvalidOperation(string message)
+            : base(message, null)
+        {
+
+        }
+
+        public CFInvalidOperation(string message, Exception innerException)
+            : base(message, innerException)
+        {
+
+        }
+
+    }
+
 
 
 }
