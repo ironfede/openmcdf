@@ -483,13 +483,14 @@ namespace OleCompoundFileStorage
 
                         if (releaseMemory)
                         {
-                            sectors.ReleaseStreamedSector(i);
+                            r.ReleaseData();
+                            r = null;
                         }
 
                         bufOffset += sSize;
                     }
 
-                    sourceStream.Seek(sSize + sId * sSize, SeekOrigin.Begin);
+                    sourceStream.Seek(((long)sSize + (long)sId * (long)sSize), SeekOrigin.Begin);
                     sourceStream.Write(buffer, 0, sCount * sSize);
                     //Console.WriteLine("W - " + (int)(sCount * sSize ));
 
@@ -507,7 +508,8 @@ namespace OleCompoundFileStorage
 
                 if (releaseMemory)
                 {
-                    sectors.ReleaseStreamedSector(r.Id);
+                    r.ReleaseData();
+                    r = null;
                 }
 
                 bufOffset += sSize;
@@ -515,7 +517,7 @@ namespace OleCompoundFileStorage
 
             if (sCount != 0)
             {
-                sourceStream.Seek(sSize + sId * sSize, SeekOrigin.Begin);
+                sourceStream.Seek((long)sSize + (long)sId * (long)sSize, SeekOrigin.Begin);
                 sourceStream.Write(buffer, 0, sCount * sSize);
                 //Console.WriteLine("W - " + (int)(sCount * sSize));
             }
@@ -806,7 +808,7 @@ namespace OleCompoundFileStorage
 
 
                     sectors.Add(s);
-                    s.Id = sectors.Count - 1;
+                    //s.Id = sectors.Count - 1;
                 }
             }
 
@@ -824,9 +826,10 @@ namespace OleCompoundFileStorage
         /// <param name="sectorChain">The new or updated generic sector chain</param>
         private void SetFATSectorChain(List<Sector> sectorChain)
         {
+            List<Sector> fatSectors = GetSectorChain(-1, SectorType.FAT);
             StreamView fatStream =
                 new StreamView(
-                    GetSectorChain(-1, SectorType.FAT),
+                    fatSectors,
                     GetSectorSize(),
                     header.FATSectorsNumber * GetSectorSize(), sourceStream
                     );
@@ -878,7 +881,7 @@ namespace OleCompoundFileStorage
                 if (s.Id == -1)
                 {
                     sectors.Add(s);
-                    s.Id = sectors.Count - 1;
+                    //s.Id = sectors.Count - 1;
                     s.Type = SectorType.FAT;
                 }
             }
@@ -961,7 +964,7 @@ namespace OleCompoundFileStorage
                 if (difatStream.BaseSectorChain[i].Id == -1)
                 {
                     sectors.Add(difatStream.BaseSectorChain[i]);
-                    difatStream.BaseSectorChain[i].Id = sectors.Count - 1;
+                    //difatStream.BaseSectorChain[i].Id = sectors.Count - 1;
                     difatStream.BaseSectorChain[i].Type = SectorType.DIFAT;
                 }
             }
@@ -1742,6 +1745,8 @@ namespace OleCompoundFileStorage
 
             List<Sector> sectorChain
                 = GetSectorChain(directoryEntry.StartSetc, _st);
+
+           
 
             Stack<Sector> freeList = FindFreeSectors(_st); // Collect available free sectors
 
