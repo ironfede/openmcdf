@@ -604,41 +604,41 @@ namespace OleCfsTest
 
         }
 
-        //[TestMethod]
-        //public void Test_APPEND_DATA_TO_CREATE_LARGE_STREAM()
-        //{
-        //    byte[] b = Helpers.GetBuffer(1024 * 1024 * 200); //2GB buffer
-        //    byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
+        [TestMethod]
+        public void Test_APPEND_DATA_TO_CREATE_LARGE_STREAM()
+        {
+            byte[] b = Helpers.GetBuffer(1024 * 1024 * 50); //2GB buffer
+            byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
 
-        //    CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, false, false);
-        //    CFStream st = cf.RootStorage.AddStream("MySuperLargeStream");
-        //    cf.Save("MEGALARGESSIMUSFILE.cfs");
-        //    cf.Close();
-
-
-        //    cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs", UpdateMode.Transacted, false, false);
-        //    CFStream cfst = cf.RootStorage.GetStream("MySuperLargeStream");
-        //    for (int i = 0; i < 10; i++)
-        //    {
-        //        cfst.AppendData(b);
-        //        cf.UpdateFile(true);
-        //        //Console.WriteLine("     Updated " + i.ToString());
-        //        //Console.ReadKey();
-        //    }
-
-        //    cfst.AppendData(cmp);
-        //    cf.UpdateFile();
-
-        //    cf.Close();
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, false, false);
+            CFStream st = cf.RootStorage.AddStream("MySuperLargeStream");
+            cf.Save("MEGALARGESSIMUSFILE.cfs");
+            cf.Close();
 
 
-        //    cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs");
-        //    int count = 8;
-        //    byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData(b.Length * 10, ref count);
+            cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs", UpdateMode.Update, false, false);
+            CFStream cfst = cf.RootStorage.GetStream("MySuperLargeStream");
+            for (int i = 0; i < 4; i++)
+            {
+                cfst.AppendData(b);
+                cf.Commit(true);
+                //Console.WriteLine("     Updated " + i.ToString());
+                //Console.ReadKey();
+            }
 
-        //    cf.Close();
+            //cfst.AppendData(cmp);
+            //cf.Commit(true);
 
-        //}
+            //cf.Close();
+
+
+            //cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs");
+            //int count = 8;
+            //byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData((long)b.Length * 5L, ref count);
+
+            cf.Close();
+
+        }
 
 
         [TestMethod]

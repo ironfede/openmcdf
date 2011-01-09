@@ -78,6 +78,7 @@ namespace OleCompoundFileStorage
 
             this.sectors.Add(item);
             item.Id = sectors.Count - 1;
+
         }
 
         private void CheckTransactionLockSector()
