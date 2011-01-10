@@ -556,6 +556,11 @@ namespace OleCompoundFileStorage
 
             int n_sector = Ceiling((double)((stream.Length - GetSectorSize()) / GetSectorSize()));
 
+            if (((long)GetSectorSize() * (long)(n_sector)) > 0x7FFFFF00)
+            {
+                this._transactionLockSet = true;
+            }
+
             sectors = new SectorCollection(n_sector, GetSectorSize(), this);
 
             LoadDirectories();
@@ -821,6 +826,9 @@ namespace OleCompoundFileStorage
         internal int lockSectorId = -1;
         internal bool _transactionLockSet = false;
 
+        /// <summary>
+        /// Check for transaction lock sector addition and mark it in the FAT.
+        /// </summary>
         private void CheckForLockSector()
         {
             if (header.MajorVersion == (ushort)CFSVersion.Ver_4)
@@ -1590,6 +1598,8 @@ namespace OleCompoundFileStorage
 
             if (!stream.CanSeek)
                 throw new CFException("Cannot save on a non-seekable stream");
+
+            CheckForLockSector();
 
             try
             {
