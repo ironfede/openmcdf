@@ -83,13 +83,14 @@ namespace OleCompoundFileStorage
 
         private void CheckTransactionLockSector()
         {
-            if (!owner._transactionLock && sectorSize * (sectors.Count + 2) > 0x7FFFFF00)
+            if (!owner._transactionLock && (((long)sectorSize * (long)(sectors.Count + 2)) > 0x7FFFFF00))
             {
                 Sector rangeLockSector = new Sector(sectorSize, owner.sourceStream);
                 rangeLockSector.Id = sectors.Count - 1;
                 rangeLockSector.Type = SectorType.RangeLockSector;
                 sectors.Add(new Sector(sectorSize, owner.sourceStream));
                 owner._transactionLock = true;
+                owner.lockSectorId = rangeLockSector.Id;
             }
         }
 

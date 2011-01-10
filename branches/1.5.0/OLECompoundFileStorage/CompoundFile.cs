@@ -408,6 +408,8 @@ namespace OleCompoundFileStorage
             int sCount = 0;
             int sSize = GetSectorSize();
 
+            CheckForLockSector();
+
             sourceStream.Seek(0, SeekOrigin.Begin);
             sourceStream.Write((byte[])Array.CreateInstance(typeof(byte), GetSectorSize()), 0, sSize);
 
@@ -816,9 +818,23 @@ namespace OleCompoundFileStorage
         }
 
         internal bool _transactionLock = false;
+        internal int lockSectorId = -1;
+        internal bool _transactionLockSet = false;
 
+        private void CheckForLockSector()
+        {
+            if (header.MajorVersion == (ushort)CFSVersion.Ver_4)
+            {
+                if (_transactionLock && !_transactionLockSet)
+                {
+                    StreamView fatStream = new StreamView(GetFatSectorChain(),GetSectorSize(),sourceStream);
 
-
+                    fatStream.Seek(lockSectorId * 4, SeekOrigin.Begin);
+                    fatStream.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
+                    _transactionLockSet = true;
+                }
+            }
+        }
         /// <summary>
         /// Allocate space, setup sectors id and refresh header
         /// for the new or updated FAT sector chain.
@@ -840,15 +856,7 @@ namespace OleCompoundFileStorage
 
             for (int i = 0; i < sectorChain.Count - 1; i++)
             {
-                if (header.MajorVersion == (ushort)CFSVersion.Ver_4)
-                {
-                    if (sectorChain[i].Type == SectorType.RangeLockSector)
-                    {
-                        fatStream.Seek(sectorChain[i].Id * 4, SeekOrigin.Begin);
-                        fatStream.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
-                        continue;
-                    }
-                }
+               
 
                 Sector sN = sectorChain[i + 1];
                 Sector sC = sectorChain[i];

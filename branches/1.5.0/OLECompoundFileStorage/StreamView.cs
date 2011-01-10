@@ -232,7 +232,7 @@ namespace OleCompoundFileStorage
         {
             this.length = value;
 
-            long delta = value - (this.sectorChain.Count * sectorSize);
+            long delta = value - ((long)this.sectorChain.Count * (long)sectorSize);
 
             if (delta > 0)
             {
