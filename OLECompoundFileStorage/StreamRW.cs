@@ -46,7 +46,9 @@ namespace OleCompoundFileStorage
         public long ReadInt64()
         {
             this.stream.Read(buffer, 0, 8);
-            return (long)(buffer[0] | (buffer[1] << 8) | (buffer[2] << 16) | (buffer[3] << 24) | (buffer[4] << 32) | (buffer[5] << 40) | (buffer[6] << 48) | (buffer[7] << 56));
+            uint ls = (uint)(buffer[0] | (buffer[1] << 8) | (buffer[2] << 16) | (buffer[3] << 24));
+            uint ms = (uint)((buffer[4]) | (buffer[5] << 8) | (buffer[6] << 16) | (buffer[7] << 24));
+            return (long)((ms << 32) | ls);
         }
 
         public ulong ReadUInt64()

@@ -369,18 +369,20 @@ namespace OleCfsTest
 
             Random r = new Random();
 
-            byte[] buffer = Helpers.GetBuffer(r.Next(3, 4095), 0x0A);
+            byte[] buffer = Helpers.GetBuffer(31, 0x0A);
 
             cf.RootStorage.AddStream("MyStream").SetData(buffer);
             cf.Commit();
             cf.Close();
             FileStream larger = new FileStream(dstFilename, FileMode.Open);
             FileStream smaller = new FileStream(srcFilename, FileMode.Open);
+            
+            // Equal condition if minisector can be "allocated"
+            // within the existing standard sector border
+            Assert.IsTrue(larger.Length >= smaller.Length); 
 
-            Assert.IsTrue(larger.Length > smaller.Length);
             larger.Close();
             smaller.Close();
-
         }
 
         [TestMethod]
@@ -618,24 +620,22 @@ namespace OleCfsTest
 
             cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs", UpdateMode.Update, false, false);
             CFStream cfst = cf.RootStorage.GetStream("MySuperLargeStream");
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 42; i++)
             {
                 cfst.AppendData(b);
                 cf.Commit(true);
-                //Console.WriteLine("     Updated " + i.ToString());
-                //Console.ReadKey();
             }
 
-            //cfst.AppendData(cmp);
-            //cf.Commit(true);
+            cfst.AppendData(cmp);
+            cf.Commit(true);
 
-            //cf.Close();
+            cf.Close();
 
 
-            //cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs");
-            //int count = 8;
-            //byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData((long)b.Length * 5L, ref count);
-
+            cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs");
+            int count = 8;
+            byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData((long)b.Length * 42L, ref count);
+            Assert.IsTrue(Helpers.CompareBuffer(cmp, data));
             cf.Close();
 
         }
