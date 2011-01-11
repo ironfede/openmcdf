@@ -408,7 +408,8 @@ namespace OleCompoundFileStorage
             int sCount = 0;
             int sSize = GetSectorSize();
 
-            CheckForLockSector();
+            if (header.MajorVersion != (ushort)CFSVersion.Ver_3)
+                CheckForLockSector();
 
             sourceStream.Seek(0, SeekOrigin.Begin);
             sourceStream.Write((byte[])Array.CreateInstance(typeof(byte), GetSectorSize()), 0, sSize);
@@ -556,10 +557,9 @@ namespace OleCompoundFileStorage
 
             int n_sector = Ceiling((double)((stream.Length - GetSectorSize()) / GetSectorSize()));
 
-            if (((long)GetSectorSize() * (long)(n_sector)) > 0x7FFFFF00)
-            {
-                this._transactionLockSet = true;
-            }
+            if (stream.Length > 0x7FFFFF0)
+                this._transactionLockAllocated = true;
+
 
             sectors = new SectorCollection(n_sector, GetSectorSize(), this);
 
@@ -822,26 +822,26 @@ namespace OleCompoundFileStorage
             SetFATSectorChain(sectorChain);
         }
 
-        internal bool _transactionLock = false;
-        internal int lockSectorId = -1;
-        internal bool _transactionLockSet = false;
+        internal bool _transactionLockAdded = false;
+        internal int _lockSectorId = -1;
+        internal bool _transactionLockAllocated = false;
 
         /// <summary>
         /// Check for transaction lock sector addition and mark it in the FAT.
         /// </summary>
         private void CheckForLockSector()
         {
-            if (header.MajorVersion == (ushort)CFSVersion.Ver_4)
+            //If transaction lock has been added and not yet allocated in the FAT...
+            if (_transactionLockAdded && !_transactionLockAllocated)
             {
-                if (_transactionLock && !_transactionLockSet)
-                {
-                    StreamView fatStream = new StreamView(GetFatSectorChain(),GetSectorSize(),sourceStream);
+                StreamView fatStream = new StreamView(GetFatSectorChain(), GetSectorSize(), sourceStream);
 
-                    fatStream.Seek(lockSectorId * 4, SeekOrigin.Begin);
-                    fatStream.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
-                    _transactionLockSet = true;
-                }
+                fatStream.Seek(_lockSectorId * 4, SeekOrigin.Begin);
+                fatStream.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
+
+                _transactionLockAllocated = true;
             }
+
         }
         /// <summary>
         /// Allocate space, setup sectors id and refresh header
@@ -857,14 +857,11 @@ namespace OleCompoundFileStorage
                     GetSectorSize(),
                     header.FATSectorsNumber * GetSectorSize(), sourceStream
                     );
-
-            //AssureLength(fatStream, (sectorChain.Count * 4));
-
+          
             // Write FAT chain values --
 
             for (int i = 0; i < sectorChain.Count - 1; i++)
             {
-               
 
                 Sector sN = sectorChain[i + 1];
                 Sector sC = sectorChain[i];
@@ -875,8 +872,6 @@ namespace OleCompoundFileStorage
 
             fatStream.Seek(sectorChain[sectorChain.Count - 1].Id * 4, SeekOrigin.Begin);
             fatStream.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
-
-            //SetDIFATSectorChain(fatStream.BaseSectorChain);
 
             // Merge chain to CFS
             SetDIFATSectorChain(fatStream.BaseSectorChain);
@@ -949,8 +944,6 @@ namespace OleCompoundFileStorage
 
             StreamView difatStream
                 = new StreamView(difatSectors, GetSectorSize(), sourceStream);
-
-            //AssureLength(difatStream, nDIFATSectors * GetSectorSize());
 
             // Write DIFAT Sectors (if required)
             // Save room for the following chaining
@@ -1041,19 +1034,6 @@ namespace OleCompoundFileStorage
             header.FATSectorsNumber = fatSv.BaseSectorChain.Count;
         }
 
-        ///// <summary>
-        ///// Check for sector chain having enough sectors
-        ///// to get an amount of <typeparamref name="length"/>  bytes
-        ///// </summary>
-        ///// <param name="streamView">StreamView decorator for a sector chain</param>
-        ///// <param name="length">Amount of bytes to check for</param>
-        //private static void AssureLength(StreamView streamView, int length)
-        //{
-        //    if (streamView != null && streamView.Length < length)
-        //    {
-        //        streamView.SetLength(length);
-        //    }
-        //}
 
         /// <summary>
         /// Get the DIFAT Sector chain
@@ -1207,7 +1187,6 @@ namespace OleCompoundFileStorage
             List<Sector> result
                    = new List<Sector>();
 
-
             int nextSecID = secID;
 
             List<Sector> fatSectors = GetFatSectorChain();
@@ -1257,7 +1236,9 @@ namespace OleCompoundFileStorage
 
                 StreamView miniFATView
                     = new StreamView(miniFAT, GetSectorSize(), header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE, sourceStream);
-                StreamView miniStreamView = new StreamView(miniStream, GetSectorSize(), rootStorage.Size, sourceStream);
+                
+                StreamView miniStreamView = 
+                    new StreamView(miniStream, GetSectorSize(), rootStorage.Size, sourceStream);
 
                 BinaryReader miniFATReader = new BinaryReader(miniFATView);
 
@@ -1275,7 +1256,6 @@ namespace OleCompoundFileStorage
                     ms.Type = SectorType.Mini;
 
                     miniStreamView.Seek(nextSecID * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
-
                     miniStreamView.Read(ms.GetData(), 0, Sector.MINISECTOR_SIZE);
 
                     result.Add(ms);
@@ -1374,7 +1354,6 @@ namespace OleCompoundFileStorage
             directoryEntries.Add(de);
             de.SID = directoryEntries.Count - 1;
         }
-
 
 
         internal BinarySearchTree<IDirectoryEntry> GetChildrenTree(int sid)
@@ -1764,7 +1743,7 @@ namespace OleCompoundFileStorage
             List<Sector> sectorChain
                 = GetSectorChain(directoryEntry.StartSetc, _st);
 
-           
+
 
             Stack<Sector> freeList = FindFreeSectors(_st); // Collect available free sectors
 
