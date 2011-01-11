@@ -81,16 +81,18 @@ namespace OleCompoundFileStorage
 
         }
 
+        private const int MAX_SECTOR_V4_COUNT_LOCK_RANGE = 524287;
+
         private void CheckTransactionLockSector()
         {
-            if (!owner._transactionLock && (((long)sectorSize * (long)(sectors.Count + 2)) > 0x7FFFFF00))
+            if (!owner._transactionLockAdded && ((sectors.Count - 2) > MAX_SECTOR_V4_COUNT_LOCK_RANGE))
             {
                 Sector rangeLockSector = new Sector(sectorSize, owner.sourceStream);
                 rangeLockSector.Id = sectors.Count - 1;
                 rangeLockSector.Type = SectorType.RangeLockSector;
                 sectors.Add(new Sector(sectorSize, owner.sourceStream));
-                owner._transactionLock = true;
-                owner.lockSectorId = rangeLockSector.Id;
+                owner._transactionLockAdded = true;
+                owner._lockSectorId = rangeLockSector.Id;
             }
         }
 
