@@ -125,6 +125,7 @@ namespace OleCompoundFileStorage
         private bool eraseFreeSectors = false;
 
         private SectorCollection sectors = new SectorCollection();
+        //private ArrayList sectors = new ArrayList();
 
         private Header header;
 
@@ -213,7 +214,8 @@ namespace OleCompoundFileStorage
         /// </code>
         /// </example>
         /// <remarks>
-        /// Sector recycling reduces data writing performances but avoids space wasting.
+        /// Sector recycling reduces data writing performances but avoids space wasting in scenarios with frequently
+        /// data manipulation of the same streams.
         /// </remarks>
         public CompoundFile(CFSVersion cfsVersion, bool sectorRecycle, bool eraseFreeSectors)
         {
@@ -255,7 +257,7 @@ namespace OleCompoundFileStorage
         /// </example>
         /// <remarks>
         /// File will be open in read-only mode: it has to be saved
-        /// with a different filename. You have to provide a wrapping implementation
+        /// with a different filename. A wrapping implementation has to be provided 
         /// in order to remove/substitute an existing file. Version will be
         /// automatically recognized from the file. Sector recycle is turned off
         /// to achieve the best reading/writing performance in most common scenarios.
@@ -282,7 +284,7 @@ namespace OleCompoundFileStorage
         /// <code>
         /// String srcFilename = "data_YOU_CAN_CHANGE.xls";
         /// 
-        /// CompoundFile cf = new CompoundFile(srcFilename, UpdateMode.Transacted, true);
+        /// CompoundFile cf = new CompoundFile(srcFilename, UpdateMode.Update, true, true);
         ///
         /// Random r = new Random();
         ///
@@ -575,7 +577,7 @@ namespace OleCompoundFileStorage
 
 
             sectors = new SectorCollection();
-
+            //sectors = new ArrayList();
             for (int i = 0; i < n_sector; i++)
             {
                 sectors.Add(null);
@@ -833,7 +835,7 @@ namespace OleCompoundFileStorage
 
 
                     sectors.Add(s);
-                    //s.Id = sectors.Count - 1;
+                    s.Id = sectors.Count - 1;
                 }
             }
 
@@ -910,7 +912,7 @@ namespace OleCompoundFileStorage
                 if (s.Id == -1)
                 {
                     sectors.Add(s);
-                    //s.Id = sectors.Count - 1;
+                    s.Id = sectors.Count - 1;
                     s.Type = SectorType.FAT;
                 }
             }
@@ -991,7 +993,7 @@ namespace OleCompoundFileStorage
                 if (difatStream.BaseSectorChain[i].Id == -1)
                 {
                     sectors.Add(difatStream.BaseSectorChain[i]);
-                    //difatStream.BaseSectorChain[i].Id = sectors.Count - 1;
+                    difatStream.BaseSectorChain[i].Id = sectors.Count - 1;
                     difatStream.BaseSectorChain[i].Type = SectorType.DIFAT;
                 }
             }
@@ -1552,6 +1554,8 @@ namespace OleCompoundFileStorage
         /// Saves the in-memory image of Compound File to a file.
         /// </summary>
         /// <param name="fileName">File name to write the compound file to</param>
+        /// <exception cref="T:OleCompoundFileStorage.CFException">Raised if destination file is not seekable</exception>
+
         public void Save(String fileName)
         {
             if (_disposed)
@@ -1581,13 +1585,28 @@ namespace OleCompoundFileStorage
 
         /// <summary>
         /// Saves the in-memory image of Compound File to a stream.
+        /// </summary>        
         /// <remarks>
         /// Destination Stream must be seekable.
         /// </remarks>
-        /// </summary>
         /// <param name="stream">The stream to save compound File to</param>
         /// <exception cref="T:OleCompoundFileStorage.CFException">Raised if destination stream is not seekable</exception>
         /// <exception cref="T:OleCompoundFileStorage.CFDisposedException">Raised if Compound File Storage has been already disposed</exception>
+        /// <example>
+        /// <code>
+        ///    MemoryStream ms = new MemoryStream(size);
+        ///
+        ///    CompoundFile cf = new CompoundFile();
+        ///    CFStorage st = cf.RootStorage.AddStorage("MyStorage");
+        ///    CFStream sm = st.AddStream("MyStream");
+        ///
+        ///    byte[] b = new byte[]{0x00,0x01,0x02,0x03};
+        ///
+        ///    sm.SetData(b);
+        ///    cf.Save(ms);
+        ///    cf.Close();
+        /// </code>
+        /// </example>
         public void Save(Stream stream)
         {
             if (_disposed)
@@ -1617,6 +1636,7 @@ namespace OleCompoundFileStorage
                         // in a differential way but ALL sectors need to be 
                         // persisted on the destination stream
                         s = new Sector(GetSectorSize(), sourceStream);
+                        s.Id = i;
                         sectors[i] = s;
                     }
 
@@ -1638,27 +1658,36 @@ namespace OleCompoundFileStorage
         /// </summary>
         /// <param name="sType">Type of sector to look for</param>
         /// <returns>A stack of available sectors or minisectors already allocated</returns>
-        internal Stack<Sector> FindFreeSectors(SectorType sType)
+        internal Queue<Sector> FindFreeSectors(SectorType sType)
         {
-            Stack<Sector> freeList = new Stack<Sector>();
+            Queue<Sector> freeList = new Queue<Sector>();
 
             if (sType == SectorType.Normal)
             {
 
                 List<Sector> FatChain = GetSectorChain(-1, SectorType.FAT);
-                StreamView fatStream = new StreamView(FatChain, GetSectorSize(), sourceStream);
+                StreamView fatStream = new StreamView(FatChain, GetSectorSize(), header.FATSectorsNumber * GetSectorSize(), sourceStream);
 
-                int ptr = 0;
+                int idx = 0;
 
-                while (ptr < sectors.Count)
+                while (idx < sectors.Count)
                 {
                     int id = fatStream.ReadInt32();
-                    ptr += 4;
 
                     if (id == Sector.FREESECT)
                     {
-                        freeList.Push(sectors[ptr - 4] as Sector);
+                        if (sectors[idx] == null)
+                        {
+                            Sector s = new Sector(GetSectorSize(), sourceStream);
+                            s.Id = idx;
+                            sectors[idx] = s;
+
+                        }
+
+                        freeList.Enqueue(sectors[idx] as Sector);
                     }
+
+                    idx++;
                 }
             }
             else
@@ -1697,7 +1726,7 @@ namespace OleCompoundFileStorage
                         miniStreamView.Seek(ms.Id * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
                         miniStreamView.Read(ms.GetData(), 0, Sector.MINISECTOR_SIZE);
 
-                        freeList.Push(ms);
+                        freeList.Enqueue(ms);
                     }
                 }
             }
@@ -1763,7 +1792,7 @@ namespace OleCompoundFileStorage
 
 
 
-            Stack<Sector> freeList = FindFreeSectors(_st); // Collect available free sectors
+            Queue<Sector> freeList = FindFreeSectors(_st); // Collect available free sectors
 
             StreamView sv = new StreamView(sectorChain, _sectorSize, buffer.Length, freeList, sourceStream);
 
@@ -1850,7 +1879,7 @@ namespace OleCompoundFileStorage
             List<Sector> sectorChain
                 = GetSectorChain(directoryEntry.StartSetc, _st);
 
-            Stack<Sector> freeList = null;
+            Queue<Sector> freeList = null;
 
             if (this.sectorRecycle)
                 freeList = FindFreeSectors(_st); // Collect available free sectors
@@ -2138,7 +2167,7 @@ namespace OleCompoundFileStorage
         }
 
         /// <summary>
-        /// Compress free space removing unallocated sectors from compound file
+        /// Compress free space by removing unallocated sectors from compound file
         /// effectively reducing its size. 
         /// This method is meant to be called after multiple structures
         /// removal in order to avoid space wasting.
@@ -2146,11 +2175,42 @@ namespace OleCompoundFileStorage
         /// <remarks>
         /// This method will cause a full load and cloning
         /// of sectors introducing a slightly performance penalty.
+        /// Current implementation supports compression only for ver. 3 compound files.
         /// </remarks>
+        /// <example>
+        /// <code>
+        /// 
+        ///  //This code has been extracted from unit test
+        ///  
+        ///  String FILENAME = "MultipleStorage3.cfs";
+        ///
+        ///  FileInfo srcFile = new FileInfo(FILENAME);
+        ///
+        ///  CompoundFile cf = new CompoundFile(FILENAME);
+        ///
+        ///  CFStorage st = cf.RootStorage.GetStorage("MyStorage");
+        ///  st = st.GetStorage("AnotherStorage");
+        ///
+        ///  Assert.IsNotNull(st);
+        ///  st.Delete("Another2Stream"); //17Kb
+        ///
+        ///  cf.CompressFreeSpace();
+        ///  cf.Save("MultipleStorage_Deleted_Compress.cfs");
+        ///
+        ///  cf.Close();
+        ///  FileInfo dstFile = new FileInfo("MultipleStorage_Deleted_Compress.cfs");
+        ///
+        ///  Assert.IsTrue(srcFile.Length > dstFile.Length);
+        /// </code>
+        /// </example>
         public void CompressFreeSpace()
         {
+            if (header.MajorVersion != (ushort)CFSVersion.Ver_3)
+                throw new CFException("Current implementation of free space compression does not support version 4 of Compound File Format");
+
             using (CompoundFile tempCF = new CompoundFile((CFSVersion)this.header.MajorVersion, this.sectorRecycle, this.eraseFreeSectors))
             {
+  
                 DoCompression(this.RootStorage, tempCF.RootStorage);
 
                 MemoryStream tmpMS = new MemoryStream();

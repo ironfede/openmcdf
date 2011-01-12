@@ -376,10 +376,10 @@ namespace OleCfsTest
             cf.Close();
             FileStream larger = new FileStream(dstFilename, FileMode.Open);
             FileStream smaller = new FileStream(srcFilename, FileMode.Open);
-            
+
             // Equal condition if minisector can be "allocated"
             // within the existing standard sector border
-            Assert.IsTrue(larger.Length >= smaller.Length); 
+            Assert.IsTrue(larger.Length >= smaller.Length);
 
             larger.Close();
             smaller.Close();
@@ -606,6 +606,9 @@ namespace OleCfsTest
 
         }
 
+
+#if LARGETEST
+
         [TestMethod]
         public void Test_APPEND_DATA_TO_CREATE_LARGE_STREAM()
         {
@@ -639,6 +642,48 @@ namespace OleCfsTest
             cf.Close();
 
         }
+#endif
+
+        [TestMethod]
+        public void Test_DELETE_STREAM_SECTOR_REUSE()
+        {
+            CompoundFile cf = null;
+            CFStream st = null;
+
+            byte[] b = Helpers.GetBuffer(1024 * 1024 * 2); //2MB buffer
+            //byte[] b = Helpers.GetBuffer(5000); 
+            byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
+
+            cf = new CompoundFile(CFSVersion.Ver_4, false, false);
+            st = cf.RootStorage.AddStream("AStream");
+            st.AppendData(b);
+            cf.Save("SectorRecycle.cfs");
+            cf.Close();
+
+
+            cf = new CompoundFile("SectorRecycle.cfs", UpdateMode.Update, true, false);
+            cf.RootStorage.Delete("AStream");
+            cf.Commit(true);
+            cf.Close();
+
+            cf = new CompoundFile("SectorRecycle.cfs", UpdateMode.ReadOnly, false, false); //No sector recycle
+            st = cf.RootStorage.AddStream("BStream");
+            st.AppendData(Helpers.GetBuffer(1024 * 1024 * 1));
+            cf.Save("SectorRecycleLarger.cfs");
+            cf.Close();
+
+            Assert.IsFalse((new FileInfo("SectorRecycle.cfs").Length) >= (new FileInfo("SectorRecycleLarger.cfs").Length));
+
+            cf = new CompoundFile("SectorRecycle.cfs", UpdateMode.ReadOnly, true, false);
+            st = cf.RootStorage.AddStream("BStream");
+            st.AppendData(Helpers.GetBuffer(1024 * 1024 * 1));
+            cf.Save("SectorRecycleSmaller.cfs");
+            cf.Close();
+
+            Assert.IsTrue((new FileInfo("SectorRecycle.cfs").Length) >= (new FileInfo("SectorRecycleSmaller.cfs").Length));
+
+        }
+
 
 
         [TestMethod]

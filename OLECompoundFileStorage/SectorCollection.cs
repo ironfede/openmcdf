@@ -108,9 +108,6 @@ namespace OleCompoundFileStorage
                 count++;
             }
 
-            if (item != null)
-                item.Id = count - 1;
-
             return count - 1;
         }
 

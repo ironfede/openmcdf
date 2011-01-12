@@ -31,15 +31,15 @@ namespace OleCfsMemoryTest
             //cf.Close();
 
             //TestMultipleStreamCommit();
-            StressMemory();
-            //DummyFile();
+            //StressMemory();
+            DummyFile();
             //Console.WriteLine("CLOSED");
             //Console.ReadKey();
         }
 
         private static void StressMemory()
         {
-            byte[] b = GetBuffer(1024 * 1024 * 20); //2GB buffer
+            byte[] b = GetBuffer(1024 * 1024 * 50); //2GB buffer
             byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
 
             CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, false, false);
@@ -55,7 +55,7 @@ namespace OleCfsMemoryTest
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 42; i++)
             {
 
                 cfst.AppendData(b);
@@ -84,7 +84,7 @@ namespace OleCfsMemoryTest
             int count = 8;
             sw.Reset();
             sw.Start();
-            byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData(b.Length * 2L, ref count);
+            byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData(b.Length * 42L, ref count);
             sw.Stop();
             Console.Write(data.Length);
             cf.Close();
@@ -102,11 +102,11 @@ namespace OleCfsMemoryTest
 
             Stopwatch sw = new Stopwatch();
 
-            byte[] b = GetBuffer(1024 * 1024 * 20); //2GB buffer
+            byte[] b = GetBuffer(1024 * 1024 * 50); //2GB buffer
 
             fs = new FileStream("myDummyFile", FileMode.Open);
             sw.Start();
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 42; i++)
             {
 
                 fs.Seek(b.Length * i, SeekOrigin.Begin);
