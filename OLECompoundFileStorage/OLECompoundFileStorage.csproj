@@ -51,6 +51,7 @@
     <Compile Include="DirectoryEntry.cs" />
     <Compile Include="Header.cs" />
     <Compile Include="CFStream.cs" />
+    <Compile Include="SectorCollection.cs" />
     <Compile Include="StreamRW.cs" />
     <Compile Include="IDirectoryEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -60,7 +61,6 @@
     <Compile Include="RBTree\RedBlackNode.cs" />
     <Compile Include="CompoundFile.cs" />
     <Compile Include="Sector.cs" />
-    <Compile Include="SectorCollection.cs" />
     <Compile Include="StreamView.cs" />
   </ItemGroup>
   <ItemGroup>

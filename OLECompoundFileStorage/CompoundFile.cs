@@ -36,6 +36,8 @@ namespace OleCompoundFileStorage
         }
     }
 
+
+
     /// <summary>
     /// Binary File Format Version. Sector size  is 512 byte for version 3,
     /// 4096 for version 4
@@ -122,7 +124,7 @@ namespace OleCompoundFileStorage
         /// </summary>
         private bool eraseFreeSectors = false;
 
-        private SectorCollection sectors;
+        private SectorCollection sectors = new SectorCollection();
 
         private Header header;
 
@@ -158,7 +160,8 @@ namespace OleCompoundFileStorage
 
             this.header = new Header();
             this.sectorRecycle = false;
-            this.sectors = new SectorCollection(0, GetSectorSize(), this);
+
+            this.sectors.OnSizeLimitReached += new SizeLimitReached(OnSizeLimitReached);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
@@ -171,6 +174,17 @@ namespace OleCompoundFileStorage
             rootStorage.StgColor = StgColor.Black;
 
             this.AddDirectoryEntry(rootStorage);
+        }
+
+        void OnSizeLimitReached()
+        {
+            Sector rangeLockSector = new Sector(GetSectorSize(), sourceStream);
+            sectors.Add(rangeLockSector);
+
+            rangeLockSector.Type = SectorType.RangeLockSector;
+
+            _transactionLockAdded = true;
+            _lockSectorId = rangeLockSector.Id;
         }
 
         /// <summary>
@@ -205,7 +219,6 @@ namespace OleCompoundFileStorage
         {
             this.header = new Header((ushort)cfsVersion);
             this.sectorRecycle = sectorRecycle;
-            this.sectors = new SectorCollection(0, GetSectorSize(), this);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
@@ -561,7 +574,12 @@ namespace OleCompoundFileStorage
                 this._transactionLockAllocated = true;
 
 
-            sectors = new SectorCollection(n_sector, GetSectorSize(), this);
+            sectors = new SectorCollection();
+
+            for (int i = 0; i < n_sector; i++)
+            {
+                sectors.Add(null);
+            }
 
             LoadDirectories();
 
@@ -857,7 +875,7 @@ namespace OleCompoundFileStorage
                     GetSectorSize(),
                     header.FATSectorsNumber * GetSectorSize(), sourceStream
                     );
-          
+
             // Write FAT chain values --
 
             for (int i = 0; i < sectorChain.Count - 1; i++)
@@ -1236,8 +1254,8 @@ namespace OleCompoundFileStorage
 
                 StreamView miniFATView
                     = new StreamView(miniFAT, GetSectorSize(), header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE, sourceStream);
-                
-                StreamView miniStreamView = 
+
+                StreamView miniStreamView =
                     new StreamView(miniStream, GetSectorSize(), rootStorage.Size, sourceStream);
 
                 BinaryReader miniFATReader = new BinaryReader(miniFATView);

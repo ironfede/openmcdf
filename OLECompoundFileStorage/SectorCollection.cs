@@ -1,31 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using System.Collections;
-using System.IO;
+using System.Collections.Generic;
+
 
 namespace OleCompoundFileStorage
 {
+    public delegate void SizeLimitReached();
+
+    /// <summary>
+    /// Heap Friendly collection
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     internal class SectorCollection : IList<Sector>
     {
-        CompoundFile owner;
-        ArrayList sectors = null;
-        int sectorSize = 0;
+        private const int MAX_SECTOR_V4_COUNT_LOCK_RANGE = 524287; //0x7FFFFF00 for Version 4
+        private const int ROW_SIZE = 4096;
 
-        internal SectorCollection(int capacity, int sectorSize, CompoundFile owner)
+        private int count = 0;
+
+        public event SizeLimitReached OnSizeLimitReached;
+
+        private List<ArrayList> largeArraySlices = new List<ArrayList>();
+
+        public SectorCollection()
         {
-            this.owner = owner;
-            this.sectorSize = sectorSize;
 
-            sectors = new ArrayList(capacity);
+        }
 
-            for (int i = 0; i < capacity; i++)
+        private bool sizeLimitReached = false;
+        private void DoSizeLimitReached()
+        {
+            if (!sizeLimitReached && (count - 1 > MAX_SECTOR_V4_COUNT_LOCK_RANGE))
             {
-                sectors.Add(null);
+                if (OnSizeLimitReached != null)
+                    OnSizeLimitReached();
+
+                sizeLimitReached = true;
             }
         }
 
-        #region IList<Sector> Members
+        #region IList<T> Members
 
         public int IndexOf(Sector item)
         {
@@ -46,59 +61,75 @@ namespace OleCompoundFileStorage
         {
             get
             {
-                Sector s = sectors[index] as Sector;
+                int itemIndex = index / ROW_SIZE;
+                int itemOffset = index % ROW_SIZE;
 
-                return s;
+                if ((index > -1) && (index < count))
+                {
+                    return (Sector)largeArraySlices[itemIndex][itemOffset];
+                }
+                else
+                    throw new ArgumentOutOfRangeException("index", index, "Argument out of range");
             }
 
             set
             {
-                sectors[index] = value;
-            }
-        }
+                int itemIndex = index / ROW_SIZE;
+                int itemOffset = index % ROW_SIZE;
 
-        public void ReleaseStreamedSector(int index)
-        {
-            Sector s = (Sector)sectors[index];
-
-            if (s != null)
-            {
-                s.ReleaseData();
-                s.DirtyFlag = false;
+                if (index > -1 && index < count)
+                {
+                    largeArraySlices[itemIndex][itemOffset] = value;
+                }
+                else
+                    throw new ArgumentOutOfRangeException("index", index, "Argument out of range");
             }
         }
 
         #endregion
 
-        #region ICollection<Sector> Members
+        #region ICollection<T> Members
+
+        private int add(Sector item)
+        {
+            int itemIndex = count / ROW_SIZE;
+            int itemOffset = count % ROW_SIZE;
+
+            if (itemIndex < largeArraySlices.Count)
+            {
+                largeArraySlices[itemIndex].Add(item);
+                count++;
+            }
+            else
+            {
+                ArrayList ar = new ArrayList(ROW_SIZE);
+                ar.Add(item);
+                largeArraySlices.Add(ar);
+                count++;
+            }
+
+            if (item != null)
+                item.Id = count - 1;
+
+            return count - 1;
+        }
 
         public void Add(Sector item)
         {
-            CheckTransactionLockSector();
+            DoSizeLimitReached();
 
-            this.sectors.Add(item);
-            item.Id = sectors.Count - 1;
+            add(item);
 
-        }
-
-        private const int MAX_SECTOR_V4_COUNT_LOCK_RANGE = 524287;
-
-        private void CheckTransactionLockSector()
-        {
-            if (!owner._transactionLockAdded && ((sectors.Count - 2) > MAX_SECTOR_V4_COUNT_LOCK_RANGE))
-            {
-                Sector rangeLockSector = new Sector(sectorSize, owner.sourceStream);
-                rangeLockSector.Id = sectors.Count - 1;
-                rangeLockSector.Type = SectorType.RangeLockSector;
-                sectors.Add(new Sector(sectorSize, owner.sourceStream));
-                owner._transactionLockAdded = true;
-                owner._lockSectorId = rangeLockSector.Id;
-            }
         }
 
         public void Clear()
         {
-            this.sectors.Clear();
+            //foreach (ArrayList slice in largeArraySlices)
+            //{
+            //    largeArraySlices.Clear();
+            //}
+
+            count = 0;
         }
 
         public bool Contains(Sector item)
@@ -113,12 +144,15 @@ namespace OleCompoundFileStorage
 
         public int Count
         {
-            get { return sectors.Count; }
+            get
+            {
+                return count;
+            }
         }
 
         public bool IsReadOnly
         {
-            get { return true; }
+            get { return false; }
         }
 
         public bool Remove(Sector item)
@@ -128,11 +162,19 @@ namespace OleCompoundFileStorage
 
         #endregion
 
-        #region IEnumerable<Sector> Members
+        #region IEnumerable<T> Members
 
         public IEnumerator<Sector> GetEnumerator()
         {
-            return sectors.GetEnumerator() as IEnumerator<Sector>;
+
+            for (int i = 0; i < largeArraySlices.Count; i++)
+            {
+                for (int j = 0; j < largeArraySlices[i].Count; j++)
+                {
+                    yield return (Sector)largeArraySlices[i][j];
+
+                }
+            }
         }
 
         #endregion
@@ -141,7 +183,13 @@ namespace OleCompoundFileStorage
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return sectors.GetEnumerator();
+            for (int i = 0; i < largeArraySlices.Count; i++)
+            {
+                for (int j = 0; j < largeArraySlices[i].Count; j++)
+                {
+                    yield return largeArraySlices[i][j];
+                }
+            }
         }
 
         #endregion
