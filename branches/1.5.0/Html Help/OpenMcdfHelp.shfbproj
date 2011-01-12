@@ -46,11 +46,12 @@
     <ApiFilter>
       <Filter entryType="Namespace" fullName="BinaryTrees" isExposed="False" />
 <Filter entryType="Namespace" fullName="OleCompoundFileStorage" isExposed="True">
-  <Filter entryType="Class" fullName="OleCompoundFileStorage.DirectoryEntry" filterName="DirectoryEntry" isExposed="False" />
+  <Filter entryType="Delegate" fullName="OleCompoundFileStorage.SizeLimitReached" filterName="SizeLimitReached" isExposed="False" />
   <Filter entryType="Enumeration" fullName="OleCompoundFileStorage.StgColor" filterName="StgColor" isExposed="False" />
   <Filter entryType="Enumeration" fullName="OleCompoundFileStorage.StgType" filterName="StgType" isExposed="False" />
 </Filter>
 <Filter entryType="Namespace" fullName="RBTree" isExposed="False" /></ApiFilter>
+    <HelpFileVersion>1.5.0.0</HelpFileVersion>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->

@@ -30,7 +30,6 @@ namespace OleCompoundFileStorage
     /// </summary>
     public class CFStream : CFItem
     {
-
         internal CFStream(CompoundFile sectorManager)
             : base(sectorManager)
         {
@@ -131,9 +130,12 @@ namespace OleCompoundFileStorage
         /// </summary>
         /// <example>
         /// <code>
-        ///     CompoundFile cf2 = new CompoundFile("AFileName.cfs");
-        ///     CFStream st = cf2.RootStorage.GetStream("MyStream");
-        ///     byte[] buffer = st.GetData();
+        /// CompoundFile cf = new CompoundFile("AFileName.cfs");
+        /// CFStream st = cf.RootStorage.GetStream("MyStream");
+        /// int count = 8;
+        /// // The stream is supposed to have a length greater than offset + count
+        /// byte[] data = st.GetData(20, ref count);  
+        /// cf.Close();
         /// </code>
         /// </example>
         /// <returns>Array of byte containing stream data</returns>
@@ -151,6 +153,9 @@ namespace OleCompoundFileStorage
         /// Copy data from an existing stream.
         /// </summary>
         /// <param name="input">A stream to read from</param>
+        /// <remarks>
+        /// Input stream is NOT closed after method invocation.
+        /// </remarks>
         public void CopyFrom(Stream input)
         {
             CheckDisposed();
