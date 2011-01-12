@@ -12,6 +12,7 @@ namespace OleCompoundFileStorage
 
         public StreamRW(Stream stream)
         {
+
             this.stream = stream;
         }
 
