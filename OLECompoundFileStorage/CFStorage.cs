@@ -65,7 +65,7 @@ namespace OleCompoundFileStorage
                 {
                     if (this.CompoundFile.HasSourceStream)
                     {
-                        children = LoadChildren(this.dirEntry.SID);
+                        children = LoadChildren(this.DirEntry.SID);
                     }
                     else
                     {
@@ -90,8 +90,8 @@ namespace OleCompoundFileStorage
         internal CFStorage(CompoundFile compFile)
             : base(compFile)
         {
-            this.dirEntry = new DirectoryEntry(StgType.StgStorage);
-            this.dirEntry.StgColor = StgColor.Black;
+            this.DirEntry = new DirectoryEntry(StgType.StgStorage);
+            this.DirEntry.StgColor = StgColor.Black;
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace OleCompoundFileStorage
             if (dirEntry == null || dirEntry.SID < 0)
                 throw new CFException("Attempting to create a CFStorage using an unitialized directory");
 
-            this.dirEntry = dirEntry;
+            this.DirEntry = dirEntry;
         }
 
 
@@ -135,7 +135,7 @@ namespace OleCompoundFileStorage
             // Add object to Siblings tree
             this.Children.Add(cfo);
             CompoundFile.RefreshIterative(Children.Root);
-            this.dirEntry.Child = Children.Root.Value.SID;
+            this.DirEntry.Child = Children.Root.Value.SID;
 
             return cfo as CFStream;
         }
@@ -229,12 +229,12 @@ namespace OleCompoundFileStorage
             CFStorage cfo = new CFStorage(this.CompoundFile);
             ((IDirectoryEntry)cfo).SetEntryName(storageName);
 
-            CompoundFile.AddDirectoryEntry(cfo);
+            CompoundFile.InsertNewDirectoryEntry(cfo);
 
             // Add object to Siblings tree
             Children.Add(cfo);
             CompoundFile.RefreshIterative(Children.Root);
-            this.dirEntry.Child = Children.Root.Value.SID;
+            this.DirEntry.Child = Children.Root.Value.SID;
 
             return cfo;
         }
@@ -354,9 +354,9 @@ namespace OleCompoundFileStorage
 
                     // Rethread the root of siblings tree...
                     if (this.Children.Root != null)
-                        this.dirEntry.Child = this.Children.Root.Value.SID;
+                        this.DirEntry.Child = this.Children.Root.Value.SID;
                     else
-                        this.dirEntry.Child = DirectoryEntry.NOSTREAM;
+                        this.DirEntry.Child = DirectoryEntry.NOSTREAM;
 
                     // ...and now remove directory (storage) entry
                     this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);
@@ -373,9 +373,9 @@ namespace OleCompoundFileStorage
 
                     // Rethread the root of siblings tree...
                     if (this.Children.Root != null)
-                        this.dirEntry.Child = this.Children.Root.Value.SID;
+                        this.DirEntry.Child = this.Children.Root.Value.SID;
                     else
-                        this.dirEntry.Child = DirectoryEntry.NOSTREAM;
+                        this.DirEntry.Child = DirectoryEntry.NOSTREAM;
 
                     // Remove directory entry
                     this.CompoundFile.RemoveDirectoryEntry(foundObj.SID);

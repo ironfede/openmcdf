@@ -50,8 +50,6 @@ namespace OleCompoundFileStorage
             get { return (stream != null && size != MINISECTOR_SIZE) ? (this.id * size) + size < stream.Length : false; }
         }
 
-        //public const int HEADER = unchecked((int)0xEEEEEEEE);
-
         private int size = 0;
         private Stream stream;
 
