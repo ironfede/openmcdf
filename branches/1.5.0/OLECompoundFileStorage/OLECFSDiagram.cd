@@ -3,153 +3,139 @@
   <Comment CommentText="Stream Decorator for sector chains">
     <Position X="0.542" Y="2.042" Height="0.344" Width="2.085" />
   </Comment>
-  <Comment CommentText="Implements directory entry behaviour">
-    <Position X="4.113" Y="2.903" Height="0.34" Width="2.169" />
+  <Comment CommentText="Concrete directory implementation, not exposed to the API">
+    <Position X="1" Y="4" Height="0.455" Width="2.294" />
   </Comment>
-  <Comment CommentText="Decorator objects for directory entries">
-    <Position X="8.708" Y="3.609" Height="0.75" Width="1.7" />
+  <Comment CommentText="Decorator for directory entries used in the API">
+    <Position X="4.281" Y="3.89" Height="0.406" Width="1.815" />
   </Comment>
-  <Class Name="OLECompoundFileStorage.CompoundFile">
-    <Position X="12" Y="0.5" Width="1.5" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-      <Compartment Name="Properties" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
-    <AssociationLine Name="header" Type="OLECompoundFileStorage.Header">
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.193" Y="0.07" />
-      </MemberNameLabel>
-    </AssociationLine>
-    <AssociationLine Name="directory" Type="OLECompoundFileStorage.Directory">
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.133" Y="0.11" />
-      </MemberNameLabel>
-    </AssociationLine>
+  <Comment CommentText="Compound file header">
+    <Position X="6.188" Y="0.865" Height="0.281" Width="1.387" />
+  </Comment>
+  <Comment CommentText="Internal interface, not exposed to API">
+    <Position X="4.802" Y="2.042" Height="0.42" Width="1.44" />
+  </Comment>
+  <Class Name="OleCompoundFileStorage.Header" Collapsed="true">
+    <Position X="5.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>ARAGAIQBEgAQABBwAAJAAIgAAEAEAmRAAIAEAGGABCA=</HashCode>
-      <FileName>CompoundFile.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="header" />
-      <Field Name="directory" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="OLECompoundFileStorage.Header" Collapsed="true">
-    <Position X="9.25" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>gAAEAAAQABQIAgEUgEIBYgDg0GEAwUAAABAAAAEQgCA=</HashCode>
+      <HashCode>gAAEAAAQIBQIAgEUgEIBYgDg0GEAwUAAABAAAAGQgCA=</HashCode>
       <FileName>Header.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="OLECompoundFileStorage.CFStream">
-    <Position X="5.25" Y="4.5" Width="1.5" />
+  <Class Name="OleCompoundFileStorage.CFStorage" Collapsed="true">
+    <Position X="4.75" Y="5" Width="1.5" />
     <Compartments>
       <Compartment Name="Properties" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
+    <InheritanceLine Type="OleCompoundFileStorage.CFItem" ManuallyRouted="true" FixedFromPoint="true">
+      <Path>
+        <Point X="6.375" Y="4.009" />
+        <Point X="6.375" Y="4.625" />
+        <Point X="5.5" Y="4.625" />
+        <Point X="5.5" Y="5" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAAAAAABFAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>CFStream.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="OLECompoundFileStorage.Directory">
-    <Position X="9.25" Y="1.5" Width="1.5" />
-    <Compartments>
-      <Compartment Name="Methods" Collapsed="true" />
-    </Compartments>
-    <AssociationLine Name="DirectoryEntries" Type="OLECompoundFileStorage.IDirectoryEntry">
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-1.53" Y="0.575" />
-      </MemberNameLabel>
-    </AssociationLine>
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAEAAAAIAAAAAQAAAAAAAAAAAAAAAAQEAAAA=</HashCode>
-      <FileName>Directory.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsCollectionAssociation>
-      <Property Name="DirectoryEntries" />
-    </ShowAsCollectionAssociation>
-  </Class>
-  <Class Name="OLECompoundFileStorage.CFStorage">
-    <Position X="8.25" Y="4.5" Width="1.5" />
-    <Compartments>
-      <Compartment Name="Properties" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
-      <Compartment Name="Fields" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>AAAAAAAABAAAAEYAAAQEIBAAAAAABAAAAAACAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAEYAAAQEIBAAAAEABAAAAAACAAAAAAA=</HashCode>
       <FileName>CFStorage.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="OLECompoundFileStorage.Sector">
-    <Position X="7.5" Y="8.5" Width="1.5" />
-    <Compartments>
-      <Compartment Name="Fields" Collapsed="true" />
-      <Compartment Name="Methods" Collapsed="true" />
-      <Compartment Name="Properties" Collapsed="true" />
-    </Compartments>
-    <TypeIdentifier>
-      <HashCode>AAAiQBAAAAAAgAAAAAAAIAAAAAADAJAAAwAQAAAACog=</HashCode>
-      <FileName>Sector.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="OLECompoundFileStorage.StreamView" Collapsed="true">
+  <Class Name="OleCompoundFileStorage.StreamView" Collapsed="true">
     <Position X="1" Y="1.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAQAAgGkgAIABgAAAAAAQAAAAAAAGIACA=</HashCode>
+      <HashCode>AAAAAAACAAAAQAAgGkoAIABgAAAAAAQACAAAAAGIACA=</HashCode>
       <FileName>StreamView.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="OLECompoundFileStorage.CFSItem" Collapsed="true">
-    <Position X="6.75" Y="3.5" Width="1.5" />
+  <Class Name="OleCompoundFileStorage.DirectoryEntry" Collapsed="true">
+    <Position X="1.5" Y="3.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AYIAAAgBEAgAgA2EAAAAACQAACAAARAAAgYCAAAAAiA=</HashCode>
-      <FileName>CFSItem.cs</FileName>
-    </TypeIdentifier>
-    <Lollipop Position="1.066" />
-  </Class>
-  <Class Name="OLECompoundFileStorage.DirectoryEntry" Collapsed="true">
-    <Position X="5" Y="2.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>QIQAwEAAkAAAgMQAAIDAgAQkEACAACwgAAAsIAHEAAA=</HashCode>
+      <HashCode>QIQAwEAAkAAAgMQAgIDAgAQkEADAAKwgAAAsIAHEAAA=</HashCode>
       <FileName>DirectoryEntry.cs</FileName>
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Interface Name="OLECompoundFileStorage.IDirectoryEntry">
-    <Position X="6.25" Y="0.5" Width="1.5" />
+  <Class Name="OleCompoundFileStorage.CompoundFile" Collapsed="true" BaseTypeListCollapsed="true">
+    <Position X="1" Y="0.5" Width="1.5" />
+    <AssociationLine Name="header" Type="OleCompoundFileStorage.Header">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.055" Y="0.631" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="directoryEntries" Type="OleCompoundFileStorage.IDirectoryEntry" ManuallyRouted="true">
+      <Path>
+        <Point X="1.75" Y="1.009" />
+        <Point X="1.75" Y="1.259" />
+        <Point X="2.75" Y="1.259" />
+        <Point X="2.75" Y="1.815" />
+        <Point X="5.75" Y="1.815" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.641" Y="-0.065" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AXUGoNQFUmEEQBB0AARISIgAAEEEAmRARslBQeWQBAA=</HashCode>
+      <FileName>CompoundFile.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="header" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Field Name="directoryEntries" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="OleCompoundFileStorage.CFItem" Collapsed="true">
+    <Position X="5.75" Y="3.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <AssociationLine Name="DirEntry" Type="OleCompoundFileStorage.IDirectoryEntry" FixedToPoint="true">
+      <Path>
+        <Point X="6.5" Y="3.5" />
+        <Point X="6.5" Y="2.13" />
+      </Path>
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="-0.807" Y="0.539" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>QQIEAAgBFAgAgA2kgAAAgCQAACAAAZAAAwYCCAAAAiQ=</HashCode>
+      <FileName>CFItem.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="DirEntry" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.292" />
+  </Class>
+  <Class Name="OleCompoundFileStorage.CFStream" Collapsed="true">
+    <Position X="7" Y="5" Width="1.5" />
+    <InheritanceLine Type="OleCompoundFileStorage.CFItem" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="6.625" Y="4.009" />
+        <Point X="6.625" Y="4.625" />
+        <Point X="7.562" Y="4.625" />
+        <Point X="7.562" Y="5" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAABEAAAACAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>CFStream.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="OleCompoundFileStorage.IDirectoryEntry" Collapsed="true">
+    <Position X="5.75" Y="1.5" Width="1.5" />
     <Compartments>
       <Compartment Name="Properties" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>QAAAQAAAEAAAgMAAAIAAgAQkAAAAACwAAAAAIAHEAAA=</HashCode>
+      <HashCode>QAAAQAAAEAAAgMAAAAAAgAQkAAAAACwAAAAAIAHEAAA=</HashCode>
       <FileName>IDirectoryEntry.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Enum Name="OLECompoundFileStorage.StgType" Collapsed="true">
-    <Position X="2.75" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AQAAAAAAAAAAAAAAAAAAAAAAgAAAgAAAAAAAAIAAEAg=</HashCode>
-      <FileName>DirectoryEntry.cs</FileName>
-    </TypeIdentifier>
-  </Enum>
-  <Enum Name="OLECompoundFileStorage.StgColor" Collapsed="true">
-    <Position X="1" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAIAAAAAAAABAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>DirectoryEntry.cs</FileName>
-    </TypeIdentifier>
-  </Enum>
-  <Enum Name="OLECompoundFileStorage.SectorType" Collapsed="true">
-    <Position X="2.75" Y="1.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAACAAAAAAAAAAAAAAAAAAAIAQAAAAAAAAAAACA=</HashCode>
-      <FileName>Sector.cs</FileName>
-    </TypeIdentifier>
-  </Enum>
   <Font Name="Tahoma" Size="8.25" />
 </ClassDiagram>

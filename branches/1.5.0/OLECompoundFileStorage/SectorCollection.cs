@@ -9,13 +9,14 @@ namespace OleCompoundFileStorage
     public delegate void SizeLimitReached();
 
     /// <summary>
-    /// Heap Friendly collection
+    /// Ad-hoc Heap Friendly sector collection to avoid using 
+    /// large array that may create som problem to GC collection 
+    /// (see http://www.simple-talk.com/dotnet/.net-framework/the-dangers-of-the-large-object-heap/ )
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     internal class SectorCollection : IList<Sector>
     {
         private const int MAX_SECTOR_V4_COUNT_LOCK_RANGE = 524287; //0x7FFFFF00 for Version 4
-        private const int ROW_SIZE = 4096;
+        private const int SLICE_SIZE = 4096;
 
         private int count = 0;
 
@@ -61,8 +62,8 @@ namespace OleCompoundFileStorage
         {
             get
             {
-                int itemIndex = index / ROW_SIZE;
-                int itemOffset = index % ROW_SIZE;
+                int itemIndex = index / SLICE_SIZE;
+                int itemOffset = index % SLICE_SIZE;
 
                 if ((index > -1) && (index < count))
                 {
@@ -74,8 +75,8 @@ namespace OleCompoundFileStorage
 
             set
             {
-                int itemIndex = index / ROW_SIZE;
-                int itemOffset = index % ROW_SIZE;
+                int itemIndex = index / SLICE_SIZE;
+                int itemOffset = index % SLICE_SIZE;
 
                 if (index > -1 && index < count)
                 {
@@ -92,8 +93,7 @@ namespace OleCompoundFileStorage
 
         private int add(Sector item)
         {
-            int itemIndex = count / ROW_SIZE;
-            int itemOffset = count % ROW_SIZE;
+            int itemIndex = count / SLICE_SIZE;
 
             if (itemIndex < largeArraySlices.Count)
             {
@@ -102,7 +102,7 @@ namespace OleCompoundFileStorage
             }
             else
             {
-                ArrayList ar = new ArrayList(ROW_SIZE);
+                ArrayList ar = new ArrayList(SLICE_SIZE);
                 ar.Add(item);
                 largeArraySlices.Add(ar);
                 count++;
@@ -121,10 +121,12 @@ namespace OleCompoundFileStorage
 
         public void Clear()
         {
-            //foreach (ArrayList slice in largeArraySlices)
-            //{
-            //    largeArraySlices.Clear();
-            //}
+            foreach (ArrayList slice in largeArraySlices)
+            {
+                slice.Clear();
+            }
+
+            largeArraySlices.Clear();
 
             count = 0;
         }

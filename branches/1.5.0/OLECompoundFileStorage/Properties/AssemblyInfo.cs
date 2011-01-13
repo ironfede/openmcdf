@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("OLECompoundFileStorage")]
+[assembly: AssemblyTitle("OLECompoundFileStorage (Alpha 2)")]
 [assembly: AssemblyDescription("MS Compound File Storage .NET Implementation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Federico Blaseotto")]

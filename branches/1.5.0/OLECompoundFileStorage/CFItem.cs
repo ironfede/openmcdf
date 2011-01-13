@@ -47,7 +47,13 @@ namespace OleCompoundFileStorage
 
         #region IDirectoryEntry Members
 
-        internal IDirectoryEntry dirEntry;
+        private IDirectoryEntry dirEntry;
+
+        internal IDirectoryEntry DirEntry
+        {
+            get { return dirEntry; }
+            set { dirEntry = value; }
+        }
 
         int IDirectoryEntry.Child
         {

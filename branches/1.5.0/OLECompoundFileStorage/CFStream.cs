@@ -33,9 +33,9 @@ namespace OleCompoundFileStorage
         internal CFStream(CompoundFile sectorManager)
             : base(sectorManager)
         {
-            this.dirEntry = new DirectoryEntry(StgType.StgStream);
-            sectorManager.AddDirectoryEntry(this);
-            this.dirEntry.StgColor = StgColor.Black;
+            this.DirEntry = new DirectoryEntry(StgType.StgStream);
+            sectorManager.InsertNewDirectoryEntry(this);
+            this.DirEntry.StgColor = StgColor.Black;
         }
 
         internal CFStream(CompoundFile sectorManager, IDirectoryEntry dirEntry)
@@ -44,7 +44,7 @@ namespace OleCompoundFileStorage
             if (dirEntry == null || dirEntry.SID < 0)
                 throw new CFException("Attempting to add a CFStream using an unitialized directory");
 
-            this.dirEntry = dirEntry as DirectoryEntry;
+            this.DirEntry = dirEntry as DirectoryEntry;
         }
 
         /// <summary>

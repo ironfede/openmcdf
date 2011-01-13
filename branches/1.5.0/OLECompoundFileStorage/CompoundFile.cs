@@ -124,11 +124,29 @@ namespace OleCompoundFileStorage
         /// </summary>
         private bool eraseFreeSectors = false;
 
+        /// <summary>
+        /// Initial capacity of the flushing queue used
+        /// to optimize commit writing operations
+        /// </summary>
+        private const int FLUSHING_QUEUE_SIZE = 6000;
+
+        /// <summary>
+        /// Maximum size of the flushing buffer used
+        /// to optimize commit writing operations
+        /// </summary>
+        private const int FLUSHING_BUFFER_MAX_SIZE = 1024 * 1024 * 16;
+
         private SectorCollection sectors = new SectorCollection();
         //private ArrayList sectors = new ArrayList();
 
+        /// <summary>
+        /// CompoundFile header
+        /// </summary>
         private Header header;
 
+        /// <summary>
+        /// Compound underlying stream. Null when new CF has been created.
+        /// </summary>
         internal Stream sourceStream = null;
 
 
@@ -174,7 +192,7 @@ namespace OleCompoundFileStorage
             rootStorage.StgType = StgType.StgRoot;
             rootStorage.StgColor = StgColor.Black;
 
-            this.AddDirectoryEntry(rootStorage);
+            this.InsertNewDirectoryEntry(rootStorage);
         }
 
         void OnSizeLimitReached()
@@ -232,7 +250,7 @@ namespace OleCompoundFileStorage
             rootStorage.StgType = StgType.StgRoot;
             rootStorage.StgColor = StgColor.Black;
 
-            this.AddDirectoryEntry(rootStorage);
+            this.InsertNewDirectoryEntry(rootStorage);
         }
 
 
@@ -313,7 +331,7 @@ namespace OleCompoundFileStorage
         /// <summary>
         /// Load an existing compound file.
         /// </summary>
-        /// <param name="fileName">Compound file to read from</param>
+        /// <param name="stream">A stream containing a compound file to read</param>
         /// <param name="sectorRecycle">If true, recycle unused sectors</param>
         /// <param name="updateMode">Select the update mode of the underlying data file</param>
         /// <example>
@@ -351,7 +369,7 @@ namespace OleCompoundFileStorage
         /// <summary>
         /// Load an existing compound file from a stream.
         /// </summary>
-        /// <param name="fileName">Streamed compound file</param>
+        /// <param name="stream">Streamed compound file</param>
         /// <example>
         /// <code>
         /// //A xls file should have a Workbook stream
@@ -388,15 +406,16 @@ namespace OleCompoundFileStorage
         /// <remarks>
         /// This method can be used
         /// only if the supporting stream has been opened in 
-        /// <see cref="T:OleCompoundFileStorage.UpdateMode">Transacted mode</see>.
+        /// <see cref="T:OleCompoundFileStorage.UpdateMode">Update mode</see>.
         /// </remarks>
         public void Commit()
         {
             Commit(false);
         }
 
-        private byte[] buffer = new byte[4096 * 8000];
-        private Queue<Sector> flushingQueue = new Queue<Sector>();
+
+        private byte[] buffer = new byte[FLUSHING_BUFFER_MAX_SIZE];
+        private Queue<Sector> flushingQueue = new Queue<Sector>(FLUSHING_QUEUE_SIZE);
 
 
         /// <summary>
@@ -429,13 +448,14 @@ namespace OleCompoundFileStorage
             sourceStream.Seek(0, SeekOrigin.Begin);
             sourceStream.Write((byte[])Array.CreateInstance(typeof(byte), GetSectorSize()), 0, sSize);
 
-            SaveDirectory();
+            CommitDirectory();
 
             bool gap = true;
             int bufOffset = 0;
 
             for (int i = 0; i < sectors.Count; i++)
             {
+                #region Old flat write...
                 // Note:
                 // Here sectors should not be loaded dynamically because
                 // if they are null it means that no change has involved them;
@@ -468,6 +488,7 @@ namespace OleCompoundFileStorage
                 //    }
                 //}
 
+                #endregion
 
                 Sector s = sectors[i] as Sector;
 
@@ -477,20 +498,23 @@ namespace OleCompoundFileStorage
                     //First of a block of contiguous sectors, mark id, start enqueuing
 
                     if (gap)
+                    {
                         sId = s.Id;
+                        gap = false;
+                    }
 
                     flushingQueue.Enqueue(s);
 
-                    gap = false;
+
                 }
                 else
                 {
+                    //Found a gap, stop enqueuing, flush a write operation
+
+                    gap = true;
                     sCount = flushingQueue.Count;
 
                     if (sCount == 0) continue;
-
-                    //Found a gap, flush a write operation
-                    gap = true;
 
                     bufOffset = 0;
                     while (flushingQueue.Count > 0)
@@ -502,7 +526,6 @@ namespace OleCompoundFileStorage
                         if (releaseMemory)
                         {
                             r.ReleaseData();
-                            r = null;
                         }
 
                         bufOffset += sSize;
@@ -510,6 +533,7 @@ namespace OleCompoundFileStorage
 
                     sourceStream.Seek(((long)sSize + (long)sId * (long)sSize), SeekOrigin.Begin);
                     sourceStream.Write(buffer, 0, sCount * sSize);
+
                     //Console.WriteLine("W - " + (int)(sCount * sSize ));
 
                 }
@@ -1352,11 +1376,11 @@ namespace OleCompoundFileStorage
             }
         }
 
-        internal void AddDirectoryEntry(IDirectoryEntry de)
+        internal void InsertNewDirectoryEntry(IDirectoryEntry de)
         {
             // If we are not adding an invalid dirEntry as
             // in a normal loading from file (invalid dirs MAY pad a sector)
-            if (de != null && de.StgType != StgType.StgInvalid)
+            if (de != null)
             {
                 // Find first available invalid slot (if any) to reuse it
                 for (int i = 0; i < directoryEntries.Count; i++)
@@ -1474,7 +1498,9 @@ namespace OleCompoundFileStorage
                 = new DirectoryEntry(StgType.StgInvalid);
 
                 de.Read(dirReader);
-                this.AddDirectoryEntry(de);
+                directoryEntries.Add(de);
+                de.SID = directoryEntries.Count - 1;
+                //this.AddDirectoryEntry(de);
             }
         }
 
@@ -1510,7 +1536,10 @@ namespace OleCompoundFileStorage
             RefreshIterative(node.Right);
         }
 
-        private void SaveDirectory()
+        /// <summary>
+        ///  Commit directory entries change on the Current Source stream
+        /// </summary>
+        private void CommitDirectory()
         {
             const int DIRECTORY_SIZE = 128;
 
@@ -1518,7 +1547,6 @@ namespace OleCompoundFileStorage
                 = GetSectorChain(header.FirstDirectorySectorID, SectorType.Normal);
 
             StreamView sv = new StreamView(directorySectors, GetSectorSize(), 0, sourceStream);
-
 
             foreach (IDirectoryEntry di in directoryEntries)
             {
@@ -1621,7 +1649,7 @@ namespace OleCompoundFileStorage
             {
                 stream.Write((byte[])Array.CreateInstance(typeof(byte), GetSectorSize()), 0, GetSectorSize());
 
-                SaveDirectory();
+                CommitDirectory();
 
                 for (int i = 0; i < sectors.Count; i++)
                 {
@@ -2175,6 +2203,9 @@ namespace OleCompoundFileStorage
         /// <remarks>
         /// This method will cause a full load and cloning
         /// of sectors introducing a slightly performance penalty.
+        /// If Compound File has a source stream AND its <see cref="T:OleCompoundFileStorage.UpdateMode">Update mode</see> 
+        /// is 'Update' then also the source stream will be compressed, otherwise the  <see cref="M:OleCompoundFileStorage.Save">Save</see> 
+        /// has to be called in order to persist compressed data.
         /// Current implementation supports compression only for ver. 3 compound files.
         /// </remarks>
         /// <example>
@@ -2210,17 +2241,33 @@ namespace OleCompoundFileStorage
 
             using (CompoundFile tempCF = new CompoundFile((CFSVersion)this.header.MajorVersion, this.sectorRecycle, this.eraseFreeSectors))
             {
-  
+
                 DoCompression(this.RootStorage, tempCF.RootStorage);
 
-                MemoryStream tmpMS = new MemoryStream();
+                MemoryStream tmpMS = new MemoryStream((int)sourceStream.Length); //This could be a problem for v4
 
                 tempCF.Save(tmpMS);
                 tempCF.Close();
 
-                tmpMS.Seek(0, SeekOrigin.Begin);
+                if (sourceStream != null && this.updateMode == UpdateMode.Update)
+                {
+                    // If we were based on a stream, we update
+                    // the stream and do reload from the compressed one...
 
-                this.LoadStream(tmpMS);
+                    sourceStream.Seek(0, SeekOrigin.Begin);
+                    tmpMS.WriteTo(sourceStream);
+
+                    sourceStream.Seek(0, SeekOrigin.Begin);
+                    sourceStream.SetLength(tmpMS.Length);
+                    this.LoadStream(sourceStream);
+                    tmpMS.Close();
+
+                }
+                else
+                    // Otherwise we load from the memory stream
+                    this.LoadStream(tmpMS);
+
+
             }
         }
 

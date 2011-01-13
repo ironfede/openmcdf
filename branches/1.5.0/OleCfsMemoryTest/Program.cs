@@ -31,15 +31,91 @@ namespace OleCfsMemoryTest
             //cf.Close();
 
             //TestMultipleStreamCommit();
+            TestCode2();
             //StressMemory();
-            DummyFile();
+            //DummyFile();
             //Console.WriteLine("CLOSED");
             //Console.ReadKey();
         }
 
+        private static void TestCode2()
+        {
+            byte[] bA = GetBuffer(5000, 0x0A);
+            byte[] bB = GetBuffer(25000, 0x0B);
+
+            var cf = new CompoundFile(CFSVersion.Ver_3, true, false);
+            var myStream = cf.RootStorage.AddStream("A");
+            myStream.SetData(bA);
+
+            myStream = cf.RootStorage.AddStream("B");
+            myStream.SetData(bB);
+
+            cf.Save("a.cfs");
+            cf.Close();
+
+            cf = new CompoundFile("a.cfs", UpdateMode.Update, true, true);
+            cf.RootStorage.Delete("B");
+            cf.CompressFreeSpace();
+            cf.Save("b.cfs");
+        }
+
+        private static void TestCode()
+        {
+            byte[] bA = GetBuffer(5000, 0x0A);
+            byte[] bB = GetBuffer(5000, 0x0B);
+            byte[] bC = GetBuffer(6000, 0x0C);
+            byte[] bD = GetBuffer(4500, 0x0D);
+
+            var cf = new CompoundFile(CFSVersion.Ver_3, true, false);
+            var myStream = cf.RootStorage.AddStream("A");
+
+            myStream.SetData(bA);
+            cf.Save("a.cfs");
+            cf.Close();
+
+            cf = new CompoundFile("a.cfs");
+            cf.Save("b.cfs");
+
+            cf = new CompoundFile("b.cfs", UpdateMode.Update, true, false);
+            myStream = cf.RootStorage.AddStream("B");
+            myStream.SetData(bB);
+            myStream = cf.RootStorage.AddStream("C");
+            myStream.SetData(bC);
+            myStream = cf.RootStorage.AddStream("D");
+            myStream.SetData(bD);
+            cf.Commit();
+
+            cf.RootStorage.Delete("A");
+            cf.Commit();
+
+            cf.Save("c.cfs");
+            cf.Close();
+
+            cf = new CompoundFile("c.cfs", UpdateMode.Update, true, false);
+            cf.CompressFreeSpace();
+            cf.Commit();
+            cf.Save("d.cfs");
+            cf.Close();
+
+
+            cf = new CompoundFile("c.cfs", UpdateMode.Update, true, false);
+            myStream = cf.RootStorage.GetStream("C");
+            var data = myStream.GetData();
+            Console.WriteLine(data[0] + " : " + data[data.Length - 1]);
+
+            myStream = cf.RootStorage.GetStream("B");
+            data = myStream.GetData();
+            Console.WriteLine(data[0] + " : " + data[data.Length - 1]);
+
+            Console.ReadKey();
+        }
+
         private static void StressMemory()
         {
-            byte[] b = GetBuffer(1024 * 1024 * 50); //2GB buffer
+            const int N_LOOP = 20;
+            const int MB_SIZE = 10;
+
+            byte[] b = GetBuffer(1024 * 1024 * MB_SIZE); //2GB buffer
             byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
 
             CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, false, false);
@@ -55,7 +131,7 @@ namespace OleCfsMemoryTest
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            for (int i = 0; i < 42; i++)
+            for (int i = 0; i < N_LOOP; i++)
             {
 
                 cfst.AppendData(b);
@@ -84,7 +160,7 @@ namespace OleCfsMemoryTest
             int count = 8;
             sw.Reset();
             sw.Start();
-            byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData(b.Length * 42L, ref count);
+            byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData(b.Length * (long)N_LOOP, ref count);
             sw.Stop();
             Console.Write(data.Length);
             cf.Close();
