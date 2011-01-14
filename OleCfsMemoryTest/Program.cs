@@ -66,14 +66,14 @@ namespace OleCfsMemoryTest
 
         private static void TestCode()
         {
-            byte[] bA = GetBuffer(500000, 0x0A);
-            byte[] bB = GetBuffer(5000, 0x0B);
-            byte[] bC = GetBuffer(6000, 0x0C);
-            byte[] bD = GetBuffer(4500, 0x0D);
-            byte[] bE = GetBuffer(7000, 0x1A);
-            byte[] bF = GetBuffer(13000, 0x1B);
-            byte[] bG = GetBuffer(600000, 0x1C);
-            byte[] bH = GetBuffer(4500, 0x1D);
+            byte[] bA = GetBuffer(10*1024*1024, 0x0A);
+            byte[] bB = GetBuffer(12 * 1024 * 1024, 0x0B);
+            byte[] bC = GetBuffer(11 * 1024 * 1024, 0x0C);
+            byte[] bD = GetBuffer(9 * 1024 * 1024, 0x0D);
+            byte[] bE = GetBuffer(8 * 1024 * 1024, 0x1A);
+            byte[] bF = GetBuffer(16 * 1024 * 1024, 0x1B);
+            byte[] bG = GetBuffer(14 * 1024 * 1024, 0x1C);
+            byte[] bH = GetBuffer(12 * 1024 * 1024, 0x1D);
 
             var cf = new CompoundFile(CFSVersion.Ver_3, true, false);
             var myStream = cf.RootStorage.AddStream("A");
@@ -109,7 +109,7 @@ namespace OleCfsMemoryTest
 
             cf.Close();
            
-            CompoundFile.ShrinkCompoundFile("d.cfs");
+            //CompoundFile.ShrinkCompoundFile("d.cfs");
 
             cf = new CompoundFile("c.cfs", UpdateMode.Update, true, false);
             myStream = cf.RootStorage.GetStream("C");
@@ -120,6 +120,8 @@ namespace OleCfsMemoryTest
             data = myStream.GetData();
             Console.WriteLine(data[0] + " : " + data[data.Length - 1]);
 
+            CFStream b = cf.RootStorage.GetStream("B");
+            byte[] l = b.GetData();
             Console.ReadKey();
         }
 
