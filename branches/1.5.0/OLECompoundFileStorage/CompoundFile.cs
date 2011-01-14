@@ -2103,7 +2103,7 @@ namespace OleCompoundFileStorage
 
         private bool closeStream = true;
 
-        public void Close(bool closeStream)
+        internal void Close(bool closeStream)
         {
             ((IDisposable)this).Dispose();
         }

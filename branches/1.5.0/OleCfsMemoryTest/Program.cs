@@ -31,7 +31,7 @@ namespace OleCfsMemoryTest
             //cf.Close();
 
             //TestMultipleStreamCommit();
-            TestCode2();
+            TestCode();
             //StressMemory();
             //DummyFile();
             //Console.WriteLine("CLOSED");
@@ -66,10 +66,14 @@ namespace OleCfsMemoryTest
 
         private static void TestCode()
         {
-            byte[] bA = GetBuffer(5000, 0x0A);
+            byte[] bA = GetBuffer(500000, 0x0A);
             byte[] bB = GetBuffer(5000, 0x0B);
             byte[] bC = GetBuffer(6000, 0x0C);
             byte[] bD = GetBuffer(4500, 0x0D);
+            byte[] bE = GetBuffer(7000, 0x1A);
+            byte[] bF = GetBuffer(13000, 0x1B);
+            byte[] bG = GetBuffer(600000, 0x1C);
+            byte[] bH = GetBuffer(4500, 0x1D);
 
             var cf = new CompoundFile(CFSVersion.Ver_3, true, false);
             var myStream = cf.RootStorage.AddStream("A");
@@ -78,9 +82,7 @@ namespace OleCfsMemoryTest
             cf.Save("a.cfs");
             cf.Close();
 
-            cf = new CompoundFile("a.cfs");
-            cf.Save("b.cfs");
-            cf.Close();
+            File.Copy("a.cfs", "b.cfs", true);
 
             cf = new CompoundFile("b.cfs", UpdateMode.Update, true, false);
             myStream = cf.RootStorage.AddStream("B");
@@ -89,13 +91,21 @@ namespace OleCfsMemoryTest
             myStream.SetData(bC);
             myStream = cf.RootStorage.AddStream("D");
             myStream.SetData(bD);
+            myStream = cf.RootStorage.AddStream("E");
+            myStream.SetData(bE);
+            myStream = cf.RootStorage.AddStream("F");
+            myStream.SetData(bF);
+            myStream = cf.RootStorage.AddStream("G");
+            myStream.SetData(bG);
+            myStream = cf.RootStorage.AddStream("H");
+            myStream.SetData(bH);
             cf.Commit();
 
             cf.RootStorage.Delete("A");
-            cf.Commit();
+            cf.Commit(); //Persist changes to b.cfs
 
-            cf.Save("c.cfs");
-            cf.Save("d.cfs");
+            cf.Save("c.cfs"); //copy to c.cfs
+            cf.Save("d.cfs"); //copy to d.cfs
 
             cf.Close();
            
