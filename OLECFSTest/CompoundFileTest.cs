@@ -64,7 +64,7 @@ namespace OleCfsTest
         [TestMethod]
         public void Test_COMPRESS_SPACE()
         {
-            String FILENAME = "MultipleStorage3.cfs";
+            String FILENAME = "MultipleStorage3.cfs"; // 22Kb
 
             FileInfo srcFile = new FileInfo(FILENAME);
 
@@ -76,11 +76,11 @@ namespace OleCfsTest
             st = st.GetStorage("AnotherStorage");
             
             Assert.IsNotNull(st);
-            st.Delete("Another2Stream"); //17Kb
+            st.Delete("Another2Stream"); 
             cf.Commit();
             cf.Close();
 
-            CompoundFile.ShrinkCompoundFile("MultipleStorage_Deleted_Compress.cfs");
+            CompoundFile.ShrinkCompoundFile("MultipleStorage_Deleted_Compress.cfs"); // -> 7Kb
 
             FileInfo dstFile = new FileInfo("MultipleStorage_Deleted_Compress.cfs");
 
