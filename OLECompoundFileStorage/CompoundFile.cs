@@ -63,8 +63,8 @@ namespace OleCompoundFileStorage
         /// <summary>
         /// ReadOnly update mode prevents overwriting
         /// of the opened file. 
-        /// Data changes have to be persisted on a different
-        /// file when required.
+        /// Data changes are allowed but they have to be 
+        /// persisted on a different file when required.
         /// </summary>
         ReadOnly,
         /// <summary>
@@ -233,12 +233,13 @@ namespace OleCompoundFileStorage
         /// </example>
         /// <remarks>
         /// Sector recycling reduces data writing performances but avoids space wasting in scenarios with frequently
-        /// data manipulation of the same streams.
+        /// data manipulation of the same streams. The new compound file is open in Update mode.
         /// </remarks>
         public CompoundFile(CFSVersion cfsVersion, bool sectorRecycle, bool eraseFreeSectors)
         {
             this.header = new Header((ushort)cfsVersion);
             this.sectorRecycle = sectorRecycle;
+            this.updateMode = UpdateMode.Update;
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
@@ -2196,17 +2197,14 @@ namespace OleCompoundFileStorage
 
         /// <summary>
         /// Compress free space by removing unallocated sectors from compound file
-        /// effectively reducing its size. 
+        /// effectively reducing stream or file size.
         /// This method is meant to be called after multiple structures
         /// removal in order to avoid space wasting.
         /// </summary>
         /// <remarks>
-        /// This method will cause a full load and cloning
-        /// of sectors introducing a slightly performance penalty.
-        /// If Compound File has a source stream AND its <see cref="T:OleCompoundFileStorage.UpdateMode">Update mode</see> 
-        /// is 'Update' then also the source stream will be compressed, otherwise the  <see cref="M:OleCompoundFileStorage.Save">Save</see> 
-        /// has to be called in order to persist compressed data.
-        /// Current implementation supports compression only for ver. 3 compound files.
+        /// Compound File MUST have a source stream AND its <see cref="T:OleCompoundFileStorage.UpdateMode">Update mode</see> 
+        /// MUST be Update, otherwise a <see cref="T:OleCompoundFileStorage.CFInvalidOperation">CFInvalidOperation</see> will be raised.
+        /// Current implementation supports compression only for ver. 3 compound files in
         /// </remarks>
         /// <example>
         /// <code>
@@ -2217,7 +2215,7 @@ namespace OleCompoundFileStorage
         ///
         ///  FileInfo srcFile = new FileInfo(FILENAME);
         ///
-        ///  CompoundFile cf = new CompoundFile(FILENAME);
+        ///  CompoundFile cf = new CompoundFile(FILENAME, UpdateMode.Update, true, false);
         ///
         ///  CFStorage st = cf.RootStorage.GetStorage("MyStorage");
         ///  st = st.GetStorage("AnotherStorage");
@@ -2236,12 +2234,14 @@ namespace OleCompoundFileStorage
         /// </example>
         public void CompressFreeSpace()
         {
+            if (updateMode == UpdateMode.ReadOnly)
+                throw new CFInvalidOperation("Compression can be used only in Update Mode because it modifies underlying stream");
+
             if (header.MajorVersion != (ushort)CFSVersion.Ver_3)
                 throw new CFException("Current implementation of free space compression does not support version 4 of Compound File Format");
 
             using (CompoundFile tempCF = new CompoundFile((CFSVersion)this.header.MajorVersion, this.sectorRecycle, this.eraseFreeSectors))
             {
-
                 DoCompression(this.RootStorage, tempCF.RootStorage);
 
                 MemoryStream tmpMS = new MemoryStream((int)sourceStream.Length); //This could be a problem for v4
@@ -2251,7 +2251,7 @@ namespace OleCompoundFileStorage
 
                 if (sourceStream != null && this.updateMode == UpdateMode.Update)
                 {
-                    // If we were based on a stream, we update
+                    // If we were based on a writable stream, we update
                     // the stream and do reload from the compressed one...
 
                     sourceStream.Seek(0, SeekOrigin.Begin);
@@ -2259,15 +2259,11 @@ namespace OleCompoundFileStorage
 
                     sourceStream.Seek(0, SeekOrigin.Begin);
                     sourceStream.SetLength(tmpMS.Length);
+
                     this.LoadStream(sourceStream);
                     tmpMS.Close();
 
                 }
-                else
-                    // Otherwise we load from the memory stream
-                    this.LoadStream(tmpMS);
-
-
             }
         }
 
