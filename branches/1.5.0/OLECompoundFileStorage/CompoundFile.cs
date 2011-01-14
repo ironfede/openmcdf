@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define FLAT_WRITE
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
@@ -1645,10 +1647,11 @@ namespace OleCompoundFileStorage
                 throw new CFException("Cannot save on a non-seekable stream");
 
             CheckForLockSector();
+            int sSize = GetSectorSize();
 
             try
             {
-                stream.Write((byte[])Array.CreateInstance(typeof(byte), GetSectorSize()), 0, GetSectorSize());
+                stream.Write((byte[])Array.CreateInstance(typeof(byte), sSize), 0, sSize);
 
                 CommitDirectory();
 
@@ -1664,16 +1667,19 @@ namespace OleCompoundFileStorage
                         // sectors because we are NOT modifying the source
                         // in a differential way but ALL sectors need to be 
                         // persisted on the destination stream
-                        s = new Sector(GetSectorSize(), sourceStream);
+                        s = new Sector(sSize, sourceStream);
                         s.Id = i;
                         sectors[i] = s;
                     }
 
-                    stream.Write(s.GetData(), 0, GetSectorSize());
+
+                    stream.Write(s.GetData(), 0, sSize);
+
                 }
 
                 stream.Seek(0, SeekOrigin.Begin);
                 header.Write(stream);
+                stream.Flush();
             }
             catch (Exception ex)
             {
@@ -2269,8 +2275,7 @@ namespace OleCompoundFileStorage
         }
 
         /// <summary>
-        /// Compress free space by removing unallocated sectors from compound file
-        /// reducing its size.
+        /// Remove unallocated sectors from compound file in order to reduce its size.
         /// </summary>
         /// <remarks>
         /// Current implementation supports compression only for ver. 3 compound files.
@@ -2306,7 +2311,7 @@ namespace OleCompoundFileStorage
         /// </example>
         public static void ShrinkCompoundFile(String fileName)
         {
-            FileStream fs = new FileStream(fileName,FileMode.Open, FileAccess.ReadWrite);
+            FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite);
             ShrinkCompoundFile(fs);
             fs.Close();
         }
