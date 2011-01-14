@@ -2095,6 +2095,13 @@ namespace OleCompoundFileStorage
             ((IDisposable)this).Dispose();
         }
 
+        private bool closeStream = true;
+
+        public void Close(bool closeStream)
+        {
+            ((IDisposable)this).Dispose();
+        }
+
         #region IDisposable Members
 
         private bool _disposed;//false
@@ -2141,7 +2148,7 @@ namespace OleCompoundFileStorage
                             this.buffer = null;
                         }
 
-                        if (this.sourceStream != null)
+                        if (this.sourceStream != null && closeStream)
                             this.sourceStream.Close();
                     }
                 }
@@ -2198,73 +2205,110 @@ namespace OleCompoundFileStorage
         /// <summary>
         /// Compress free space by removing unallocated sectors from compound file
         /// effectively reducing stream or file size.
-        /// This method is meant to be called after multiple structures
-        /// removal in order to avoid space wasting.
         /// </summary>
         /// <remarks>
-        /// Compound File MUST have a source stream AND its <see cref="T:OleCompoundFileStorage.UpdateMode">Update mode</see> 
-        /// MUST be Update, otherwise a <see cref="T:OleCompoundFileStorage.CFInvalidOperation">CFInvalidOperation</see> will be raised.
-        /// Current implementation supports compression only for ver. 3 compound files in
+        /// Current implementation supports compression only for ver. 3 compound files.
         /// </remarks>
         /// <example>
         /// <code>
         /// 
         ///  //This code has been extracted from unit test
         ///  
-        ///  String FILENAME = "MultipleStorage3.cfs";
+        ///    String FILENAME = "MultipleStorage3.cfs";
         ///
-        ///  FileInfo srcFile = new FileInfo(FILENAME);
+        ///    FileInfo srcFile = new FileInfo(FILENAME);
         ///
-        ///  CompoundFile cf = new CompoundFile(FILENAME, UpdateMode.Update, true, false);
+        ///    File.Copy(FILENAME, "MultipleStorage_Deleted_Compress.cfs", true);
         ///
-        ///  CFStorage st = cf.RootStorage.GetStorage("MyStorage");
-        ///  st = st.GetStorage("AnotherStorage");
+        ///    CompoundFile cf = new CompoundFile("MultipleStorage_Deleted_Compress.cfs", UpdateMode.Update, true, true);
         ///
-        ///  Assert.IsNotNull(st);
-        ///  st.Delete("Another2Stream"); //17Kb
+        ///    CFStorage st = cf.RootStorage.GetStorage("MyStorage");
+        ///    st = st.GetStorage("AnotherStorage");
+        ///    
+        ///    Assert.IsNotNull(st);
+        ///    st.Delete("Another2Stream"); //17Kb
+        ///    cf.Commit();
+        ///    cf.Close();
         ///
-        ///  cf.CompressFreeSpace();
-        ///  cf.Save("MultipleStorage_Deleted_Compress.cfs");
+        ///    CompoundFile.ShrinkCompoundFile("MultipleStorage_Deleted_Compress.cfs");
         ///
-        ///  cf.Close();
-        ///  FileInfo dstFile = new FileInfo("MultipleStorage_Deleted_Compress.cfs");
+        ///    FileInfo dstFile = new FileInfo("MultipleStorage_Deleted_Compress.cfs");
         ///
-        ///  Assert.IsTrue(srcFile.Length > dstFile.Length);
+        ///    Assert.IsTrue(srcFile.Length > dstFile.Length);
+        ///
         /// </code>
         /// </example>
-        public void CompressFreeSpace()
+        public static void ShrinkCompoundFile(Stream s)
         {
-            if (updateMode == UpdateMode.ReadOnly)
-                throw new CFInvalidOperation("Compression can be used only in Update Mode because it modifies underlying stream");
+            CompoundFile cf = new CompoundFile(s);
 
-            if (header.MajorVersion != (ushort)CFSVersion.Ver_3)
+            if (cf.header.MajorVersion != (ushort)CFSVersion.Ver_3)
                 throw new CFException("Current implementation of free space compression does not support version 4 of Compound File Format");
 
-            using (CompoundFile tempCF = new CompoundFile((CFSVersion)this.header.MajorVersion, this.sectorRecycle, this.eraseFreeSectors))
+            using (CompoundFile tempCF = new CompoundFile((CFSVersion)cf.header.MajorVersion, cf.sectorRecycle, cf.eraseFreeSectors))
             {
-                DoCompression(this.RootStorage, tempCF.RootStorage);
+                DoCompression(cf.RootStorage, tempCF.RootStorage);
 
-                MemoryStream tmpMS = new MemoryStream((int)sourceStream.Length); //This could be a problem for v4
+                MemoryStream tmpMS = new MemoryStream((int)cf.sourceStream.Length); //This could be a problem for v4
 
                 tempCF.Save(tmpMS);
                 tempCF.Close();
 
-                if (sourceStream != null && this.updateMode == UpdateMode.Update)
-                {
-                    // If we were based on a writable stream, we update
-                    // the stream and do reload from the compressed one...
+                // If we were based on a writable stream, we update
+                // the stream and do reload from the compressed one...
 
-                    sourceStream.Seek(0, SeekOrigin.Begin);
-                    tmpMS.WriteTo(sourceStream);
+                s.Seek(0, SeekOrigin.Begin);
+                tmpMS.WriteTo(s);
 
-                    sourceStream.Seek(0, SeekOrigin.Begin);
-                    sourceStream.SetLength(tmpMS.Length);
+                s.Seek(0, SeekOrigin.Begin);
+                s.SetLength(tmpMS.Length);
 
-                    this.LoadStream(sourceStream);
-                    tmpMS.Close();
-
-                }
+                tmpMS.Close();
+                cf.Close(false);
             }
+        }
+
+        /// <summary>
+        /// Compress free space by removing unallocated sectors from compound file
+        /// reducing its size.
+        /// </summary>
+        /// <remarks>
+        /// Current implementation supports compression only for ver. 3 compound files.
+        /// </remarks>
+        /// <example>
+        /// <code>
+        /// 
+        ///  //This code has been extracted from unit test
+        ///  
+        ///    String FILENAME = "MultipleStorage3.cfs";
+        ///
+        ///    FileInfo srcFile = new FileInfo(FILENAME);
+        ///
+        ///    File.Copy(FILENAME, "MultipleStorage_Deleted_Compress.cfs", true);
+        ///
+        ///    CompoundFile cf = new CompoundFile("MultipleStorage_Deleted_Compress.cfs", UpdateMode.Update, true, true);
+        ///
+        ///    CFStorage st = cf.RootStorage.GetStorage("MyStorage");
+        ///    st = st.GetStorage("AnotherStorage");
+        ///    
+        ///    Assert.IsNotNull(st);
+        ///    st.Delete("Another2Stream"); //17Kb
+        ///    cf.Commit();
+        ///    cf.Close();
+        ///
+        ///    CompoundFile.ShrinkCompoundFile("MultipleStorage_Deleted_Compress.cfs");
+        ///
+        ///    FileInfo dstFile = new FileInfo("MultipleStorage_Deleted_Compress.cfs");
+        ///
+        ///    Assert.IsTrue(srcFile.Length > dstFile.Length);
+        ///
+        /// </code>
+        /// </example>
+        public static void ShrinkCompoundFile(String fileName)
+        {
+            FileStream fs = new FileStream(fileName,FileMode.Open, FileAccess.ReadWrite);
+            ShrinkCompoundFile(fs);
+            fs.Close();
         }
 
         /// <summary>
@@ -2272,7 +2316,7 @@ namespace OleCompoundFileStorage
         /// </summary>
         /// <param name="currSrcStorage">Current source storage to clone</param>
         /// <param name="currDstStorage">Current cloned destination storage</param>
-        private void DoCompression(CFStorage currSrcStorage, CFStorage currDstStorage)
+        private static void DoCompression(CFStorage currSrcStorage, CFStorage currDstStorage)
         {
             VisitedEntryAction va =
                 delegate(CFItem item)
