@@ -31,7 +31,7 @@ namespace OleCfsMemoryTest
             //cf.Close();
 
             //TestMultipleStreamCommit();
-            TestCode2();
+            TestCode();
             //StressMemory();
             //DummyFile();
             //Console.WriteLine("CLOSED");
@@ -94,9 +94,7 @@ namespace OleCfsMemoryTest
 
             cf.Close();
            
-            cf = new CompoundFile("d.cfs", UpdateMode.Update, true, false);
-            cf.CompressFreeSpace();
-            cf.Close();
+            CompoundFile.ShrinkCompoundFile("d.cfs");
 
             cf = new CompoundFile("c.cfs", UpdateMode.Update, true, false);
             myStream = cf.RootStorage.GetStream("C");
