@@ -93,8 +93,6 @@ namespace OleCfsMemoryTest
             cf.Save("d.cfs");
 
             cf.Close();
-
-           
            
             cf = new CompoundFile("d.cfs", UpdateMode.Update, true, false);
             cf.CompressFreeSpace();
