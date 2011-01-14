@@ -68,20 +68,20 @@ namespace OleCfsTest
 
             FileInfo srcFile = new FileInfo(FILENAME);
 
+            File.Copy(FILENAME, "MultipleStorage_Deleted_Compress.cfs", true);
 
-            CompoundFile cf = new CompoundFile(FILENAME);
+            CompoundFile cf = new CompoundFile("MultipleStorage_Deleted_Compress.cfs", UpdateMode.Update, true, true);
 
             CFStorage st = cf.RootStorage.GetStorage("MyStorage");
             st = st.GetStorage("AnotherStorage");
-
+            
             Assert.IsNotNull(st);
-
             st.Delete("Another2Stream"); //17Kb
-
-            cf.CompressFreeSpace();
-            cf.Save("MultipleStorage_Deleted_Compress.cfs");
-
+            cf.Commit();
             cf.Close();
+
+            CompoundFile.ShrinkCompoundFile("MultipleStorage_Deleted_Compress.cfs");
+
             FileInfo dstFile = new FileInfo("MultipleStorage_Deleted_Compress.cfs");
 
             Assert.IsTrue(srcFile.Length > dstFile.Length);
@@ -119,7 +119,7 @@ namespace OleCfsTest
         {
             String filename = "WRITE_AND_READ_CFS_V4.cfs";
 
-            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, true,true);
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, true, true);
 
             CFStorage st = cf.RootStorage.AddStorage("MyStorage");
             CFStream sm = st.AddStream("MyStream");
@@ -144,7 +144,7 @@ namespace OleCfsTest
         {
             String filename = "WRITE_COMMIT_READ_CFS_V4.cfs";
 
-            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, true,true);
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, true, true);
 
             CFStorage st = cf.RootStorage.AddStorage("MyStorage");
             CFStream sm = st.AddStream("MyStream");
