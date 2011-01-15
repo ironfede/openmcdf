@@ -10,7 +10,7 @@ namespace OleCompoundFileStorage
 
     /// <summary>
     /// Ad-hoc Heap Friendly sector collection to avoid using 
-    /// large array that may create som problem to GC collection 
+    /// large array that may create some problem to GC collection 
     /// (see http://www.simple-talk.com/dotnet/.net-framework/the-dangers-of-the-large-object-heap/ )
     /// </summary>
     internal class SectorCollection : IList<Sector>

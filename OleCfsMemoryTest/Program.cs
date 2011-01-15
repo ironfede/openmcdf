@@ -14,21 +14,6 @@ namespace OleCfsMemoryTest
     {
         static void Main(string[] args)
         {
-            ////for (int i = 0; i < 1000; i++)
-            ////{
-            //CompoundFile cf = new CompoundFile(@"C:\Documents and Settings\Federico\Desktop\openmcdf\OleCfsMemoryTest\testfile\INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS.cfs");
-            //AddNodes("", cf.RootStorage);
-
-
-            ////}
-            //Console.WriteLine("TRAVERSED");
-            //Console.ReadKey();
-
-            //cf.Save(@"C:\OUIOIUIO");
-            //Console.WriteLine("SAVED");
-            //Console.ReadKey();
-
-            //cf.Close();
 
             //TestMultipleStreamCommit();
             TestCode();
@@ -36,32 +21,6 @@ namespace OleCfsMemoryTest
             //DummyFile();
             //Console.WriteLine("CLOSED");
             //Console.ReadKey();
-        }
-
-        private static void TestCode2()
-        {
-            byte[] bA = GetBuffer(5000000, 0x0A);
-            byte[] bB = GetBuffer(25000, 0x0B);
-
-            var cf = new CompoundFile(CFSVersion.Ver_3, true, false);
-            var myStream = cf.RootStorage.AddStream("A");
-            myStream.SetData(bA);
-
-            myStream = cf.RootStorage.AddStream("B");
-            myStream.SetData(bB);
-
-            Stopwatch s = new Stopwatch();
-            s.Start();
-            cf.Save("a.cfs");
-
-            cf.Close();
-            s.Stop();
-            Console.WriteLine(s.ElapsedMilliseconds);
-
-            cf = new CompoundFile("a.cfs", UpdateMode.Update, true, true);
-            cf.RootStorage.Delete("B");
-            //cf.CompressFreeSpace();
-            cf.Save("b.cfs");
         }
 
         private static void TestCode()
@@ -154,13 +113,13 @@ namespace OleCfsMemoryTest
 
             CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, false, false);
             CFStream st = cf.RootStorage.AddStream("MySuperLargeStream");
-            cf.Save("MEGALARGESSIMUSFILE.cfs");
+            cf.Save("LARGE.cfs");
             cf.Close();
 
             //Console.WriteLine("Closed save");
             //Console.ReadKey();
 
-            cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs", UpdateMode.Update, false, false);
+            cf = new CompoundFile("LARGE.cfs", UpdateMode.Update, false, false);
             CFStream cfst = cf.RootStorage.GetStream("MySuperLargeStream");
 
             Stopwatch sw = new Stopwatch();
@@ -190,7 +149,7 @@ namespace OleCfsMemoryTest
             //Console.WriteLine("Closed Transacted");
             //Console.ReadKey();
 
-            cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs");
+            cf = new CompoundFile("LARGE.cfs");
             int count = 8;
             sw.Reset();
             sw.Start();
