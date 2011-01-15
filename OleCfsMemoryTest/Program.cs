@@ -66,53 +66,71 @@ namespace OleCfsMemoryTest
 
         private static void TestCode()
         {
-            byte[] bA = GetBuffer(10*1024*1024, 0x0A);
-            byte[] bB = GetBuffer(12 * 1024 * 1024, 0x0B);
-            byte[] bC = GetBuffer(11 * 1024 * 1024, 0x0C);
-            byte[] bD = GetBuffer(9 * 1024 * 1024, 0x0D);
-            byte[] bE = GetBuffer(8 * 1024 * 1024, 0x1A);
+            byte[] bA = GetBuffer(20 * 1024 * 1024, 0x0A);
+            byte[] bB = GetBuffer(5 * 1024, 0x0B);
+            byte[] bC = GetBuffer(5 * 1024, 0x0C);
+            byte[] bD = GetBuffer(5 * 1024, 0x0D);
+            byte[] bE = GetBuffer(8 * 1024 * 1024 + 1, 0x1A);
             byte[] bF = GetBuffer(16 * 1024 * 1024, 0x1B);
             byte[] bG = GetBuffer(14 * 1024 * 1024, 0x1C);
             byte[] bH = GetBuffer(12 * 1024 * 1024, 0x1D);
+            byte[] bE2 = GetBuffer(8 * 1024 * 1024, 0x2A);
+
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
             var cf = new CompoundFile(CFSVersion.Ver_3, true, false);
-            var myStream = cf.RootStorage.AddStream("A");
+            cf.RootStorage.AddStream("A").SetData(bA);
+            cf.Save("OneStream.cfs");
 
-            myStream.SetData(bA);
-            cf.Save("a.cfs");
             cf.Close();
 
-            File.Copy("a.cfs", "b.cfs", true);
+            cf = new CompoundFile("OneStream.cfs", UpdateMode.ReadOnly, true, false);
 
-            cf = new CompoundFile("b.cfs", UpdateMode.Update, true, false);
-            myStream = cf.RootStorage.AddStream("B");
-            myStream.SetData(bB);
-            myStream = cf.RootStorage.AddStream("C");
-            myStream.SetData(bC);
-            myStream = cf.RootStorage.AddStream("D");
-            myStream.SetData(bD);
-            myStream = cf.RootStorage.AddStream("E");
-            myStream.SetData(bE);
-            myStream = cf.RootStorage.AddStream("F");
-            myStream.SetData(bF);
-            myStream = cf.RootStorage.AddStream("G");
-            myStream.SetData(bG);
-            myStream = cf.RootStorage.AddStream("H");
-            myStream.SetData(bH);
+            cf.RootStorage.AddStream("B").SetData(bB);
+            cf.RootStorage.AddStream("C").SetData(bC);
+            cf.RootStorage.AddStream("D").SetData(bD);
+            cf.RootStorage.AddStream("E").SetData(bE);
+            cf.RootStorage.AddStream("F").SetData(bF);
+            cf.RootStorage.AddStream("G").SetData(bG);
+            cf.RootStorage.AddStream("H").SetData(bH);
+
+            cf.Save("8_Streams.cfs");
+
+            cf.Close();
+
+            File.Copy("8_Streams.cfs", "6_Streams.cfs", true);
+
+            cf = new CompoundFile("6_Streams.cfs", UpdateMode.Update, true, false);
+            cf.RootStorage.Delete("D");
+            cf.RootStorage.Delete("G");
             cf.Commit();
 
-            cf.RootStorage.Delete("A");
-            cf.Commit(); //Persist changes to b.cfs
-
-            cf.Save("c.cfs"); //copy to c.cfs
-            cf.Save("d.cfs"); //copy to d.cfs
-
             cf.Close();
-           
-            //CompoundFile.ShrinkCompoundFile("d.cfs");
 
-            cf = new CompoundFile("c.cfs", UpdateMode.Update, true, false);
-            myStream = cf.RootStorage.GetStream("C");
+            File.Copy("6_Streams.cfs", "6_Streams_Shrinked.cfs", true);
+
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
+            cf.RootStorage.AddStream("ZZZ").SetData(bF);
+            cf.RootStorage.GetStream("E").AppendData(bE2);
+            cf.Commit();
+            cf.Close();
+
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
+            cf.RootStorage.AddStorage("MyStorage").AddStream("ANS").AppendData(bE);
+            cf.Commit();
+            cf.Close();
+
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
+            cf.RootStorage.AddStorage("AnotherStorage").AddStream("ANS").AppendData(bE);
+            cf.RootStorage.Delete("MyStorage");
+            cf.Commit();
+            cf.Close();
+
+            CompoundFile.ShrinkCompoundFile("6_Streams_Shrinked.cfs");
+
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.ReadOnly, true, false);
+            var myStream = cf.RootStorage.GetStream("C");
             var data = myStream.GetData();
             Console.WriteLine(data[0] + " : " + data[data.Length - 1]);
 
@@ -120,8 +138,9 @@ namespace OleCfsMemoryTest
             data = myStream.GetData();
             Console.WriteLine(data[0] + " : " + data[data.Length - 1]);
 
-            CFStream b = cf.RootStorage.GetStream("B");
-            byte[] l = b.GetData();
+            sw.Stop();
+            Console.WriteLine(sw.ElapsedMilliseconds);
+
             Console.ReadKey();
         }
 
