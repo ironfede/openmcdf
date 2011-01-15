@@ -301,6 +301,7 @@ namespace OleCompoundFileStorage
         /// <param name="fileName">Compound file to read from</param>
         /// <param name="sectorRecycle">If true, recycle unused sectors</param>
         /// <param name="updateMode">Select the update mode of the underlying data file</param>
+        /// <param name="eraseFreeSectors">If true, overwrite with zeros unallocated sectors</param>
         /// <example>
         /// <code>
         /// String srcFilename = "data_YOU_CAN_CHANGE.xls";
@@ -337,6 +338,7 @@ namespace OleCompoundFileStorage
         /// <param name="stream">A stream containing a compound file to read</param>
         /// <param name="sectorRecycle">If true, recycle unused sectors</param>
         /// <param name="updateMode">Select the update mode of the underlying data file</param>
+        /// <param name="eraseFreeSectors">If true, overwrite with zeros unallocated sectors</param>
         /// <example>
         /// <code>
         /// String srcFilename = "data_YOU_CAN_CHANGE.xls";
@@ -1358,6 +1360,7 @@ namespace OleCompoundFileStorage
         /// The entry point object that represents the 
         /// root of the structures tree to get or set storage or
         /// stream data.
+        /// </summary>
         /// <example>
         /// <code>
         /// 
@@ -1378,7 +1381,6 @@ namespace OleCompoundFileStorage
         ///    ncf.Close();
         /// </code>
         /// </example>
-        /// </summary>
         public CFStorage RootStorage
         {
             get
@@ -1682,11 +1684,14 @@ namespace OleCompoundFileStorage
                         // persisted on the destination stream
                         s = new Sector(sSize, sourceStream);
                         s.Id = i;
-                        sectors[i] = s;
+                        
+                        //sectors[i] = s;
                     }
 
 
                     stream.Write(s.GetData(), 0, sSize);
+                    
+                    s.ReleaseData();
 
                 }
 
