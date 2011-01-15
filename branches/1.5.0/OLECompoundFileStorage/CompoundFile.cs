@@ -458,40 +458,43 @@ namespace OleCompoundFileStorage
 
             for (int i = 0; i < sectors.Count; i++)
             {
-                #region Old flat write...
-                // Note:
-                // Here sectors should not be loaded dynamically because
-                // if they are null it means that no change has involved them;
+#if FLAT_WRITE
 
-                //    Sector s = (Sector)sectors[i];
+                //Note:
+                //Here sectors should not be loaded dynamically because
+                //if they are null it means that no change has involved them;
 
-                //    if (s != null && s.DirtyFlag)
-                //    {
-                //        if (gap)
-                //            stream.Seek((long)((long)(sSize) + (long)i * (long)sSize), SeekOrigin.Begin);
+                Sector s = (Sector)sectors[i];
 
-                //        stream.Write(s.GetData(), 0, sSize);
-                //        stream.Flush();
-                //        s.DirtyFlag = false;
-                //        gap = false;
+                if (s != null && s.DirtyFlag)
+                {
+                    if (gap)
+                        sourceStream.Seek((long)((long)(sSize) + (long)i * (long)sSize), SeekOrigin.Begin);
 
-                //    }
-                //    else
-                //    {
-                //        gap = true;
-                //        continue;
-                //    }
-                //    if (releaseMemory)
-                //    {
-                //        s.ReleaseData();
-                //        s = null;
-                //        sectors[i] = null;
+                    sourceStream.Write(s.GetData(), 0, sSize);
+                    sourceStream.Flush();
+                    s.DirtyFlag = false;
+                    gap = false;
 
-                //        //GC.Collect();
-                //    }
-                //}
+                }
+                else
+                {
+                    gap = true;
+                    continue;
+                }
+                if (releaseMemory)
+                {
+                    s.ReleaseData();
+                    s = null;
+                    sectors[i] = null;
 
-                #endregion
+                    //GC.Collect();
+                }
+
+
+
+#else
+               
 
                 Sector s = sectors[i] as Sector;
 
@@ -537,11 +540,15 @@ namespace OleCompoundFileStorage
                     sourceStream.Seek(((long)sSize + (long)sId * (long)sSize), SeekOrigin.Begin);
                     sourceStream.Write(buffer, 0, sCount * sSize);
 
+               
+
                     //Console.WriteLine("W - " + (int)(sCount * sSize ));
 
                 }
+#endif
             }
 
+#if !FLAT_WRITE
             sCount = flushingQueue.Count;
             bufOffset = 0;
 
@@ -567,7 +574,7 @@ namespace OleCompoundFileStorage
                 //Console.WriteLine("W - " + (int)(sCount * sSize));
             }
 
-
+#endif
 
             // Seek to beginning position and save header (first 512 or 4096 bytes)
             sourceStream.Seek(0, SeekOrigin.Begin);
@@ -1210,6 +1217,7 @@ namespace OleCompoundFileStorage
                         s = new Sector(GetSectorSize(), sourceStream);
                         s.Type = SectorType.FAT;
                         s.Id = nextSecID;
+                        sectors[nextSecID] = s;///UUU
                     }
 
                     result.Add(s);
@@ -1565,6 +1573,11 @@ namespace OleCompoundFileStorage
                 delta++;
             }
 
+            foreach (Sector s in directorySectors)
+            {
+                s.Type = SectorType.Directory;
+            }
+
             SetNormalSectorChain(directorySectors);
 
             header.FirstDirectorySectorID = directorySectors[0].Id;
@@ -1679,7 +1692,6 @@ namespace OleCompoundFileStorage
 
                 stream.Seek(0, SeekOrigin.Begin);
                 header.Write(stream);
-                stream.Flush();
             }
             catch (Exception ex)
             {

@@ -25,7 +25,7 @@ namespace OleCompoundFileStorage
 {
     internal enum SectorType
     {
-        Normal, Mini, FAT, DIFAT, RangeLockSector
+        Normal, Mini, FAT, DIFAT, RangeLockSector, Directory
     }
 
     internal class Sector : IDisposable
@@ -106,9 +106,9 @@ namespace OleCompoundFileStorage
         public byte[] GetData()
         {
             if (this.data == null)
-            { 
+            {
                 data = new byte[size];
-                
+
                 if (IsStreamed)
                 {
                     stream.Seek((long)size + (long)this.id * (long)size, SeekOrigin.Begin);
