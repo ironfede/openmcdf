@@ -34,6 +34,7 @@ namespace OleCfsMemoryTest
             byte[] bG = GetBuffer(14 * 1024 * 1024, 0x1C);
             byte[] bH = GetBuffer(12 * 1024 * 1024, 0x1D);
             byte[] bE2 = GetBuffer(8 * 1024 * 1024, 0x2A);
+            byte[] bMini = GetBuffer(1027, 0xEE);
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -87,6 +88,18 @@ namespace OleCfsMemoryTest
             cf.Close();
 
             CompoundFile.ShrinkCompoundFile("6_Streams_Shrinked.cfs");
+
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
+            cf.RootStorage.AddStorage("MiniStorage").AddStream("miniSt").AppendData(bMini);
+            cf.RootStorage.GetStorage("MiniStorage").AddStream("miniSt2").AppendData(bMini);
+            cf.Commit();
+            cf.Close();
+
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
+            cf.RootStorage.GetStorage("MiniStorage").Delete("miniSt");
+            cf.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").AppendData(bE);
+            cf.Commit();
+            cf.Close();
 
             cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.ReadOnly, true, false);
             var myStream = cf.RootStorage.GetStream("C");
