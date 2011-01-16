@@ -1684,13 +1684,13 @@ namespace OleCompoundFileStorage
                         // persisted on the destination stream
                         s = new Sector(sSize, sourceStream);
                         s.Id = i;
-                        
+
                         //sectors[i] = s;
                     }
 
 
                     stream.Write(s.GetData(), 0, sSize);
-                    
+
                     s.ReleaseData();
 
                 }
@@ -1820,18 +1820,18 @@ namespace OleCompoundFileStorage
             // otherwise they will be overwritten.
 
 
-            byte[] temp = null;
+            byte[] tempMini = null;
 
             if (directoryEntry.StartSetc != Sector.ENDOFCHAIN)
             {
                 if ((directoryEntry.Size + buffer.Length) > header.MinSizeStandardStream && directoryEntry.Size < header.MinSizeStandardStream)
                 {
-                    temp = new byte[directoryEntry.Size];
+                    tempMini = new byte[directoryEntry.Size];
 
                     StreamView miniData
                         = new StreamView(GetMiniSectorChain(directoryEntry.StartSetc), Sector.MINISECTOR_SIZE, sourceStream);
 
-                    miniData.Read(temp, 0, (int)directoryEntry.Size);
+                    miniData.Read(tempMini, 0, (int)directoryEntry.Size);
                     FreeMiniChain(GetMiniSectorChain(directoryEntry.StartSetc), this.eraseFreeSectors);
 
                     directoryEntry.StartSetc = Sector.ENDOFCHAIN;
@@ -1842,21 +1842,23 @@ namespace OleCompoundFileStorage
             List<Sector> sectorChain
                 = GetSectorChain(directoryEntry.StartSetc, _st);
 
-
-
             Queue<Sector> freeList = FindFreeSectors(_st); // Collect available free sectors
 
-            StreamView sv = new StreamView(sectorChain, _sectorSize, buffer.Length, freeList, sourceStream);
+            StreamView sv = new StreamView(sectorChain, _sectorSize, tempMini != null ? buffer.Length + tempMini.Length : buffer.Length, freeList, sourceStream);
 
-
-
-            if (temp != null)
+            // If stream was a ministream, copy ministream data
+            // in the new stream
+            if (tempMini != null)
             {
                 sv.Seek(0, SeekOrigin.Begin);
-                sv.Write(temp, 0, temp.Length);
+                sv.Write(tempMini, 0, tempMini.Length);
+            }
+            else
+            {
+                sv.Seek(directoryEntry.Size, SeekOrigin.Begin);
             }
 
-            sv.Seek(directoryEntry.Size, SeekOrigin.Begin);
+            // Write appended data
             sv.Write(buffer, 0, buffer.Length);
 
             switch (_st)
@@ -1875,6 +1877,9 @@ namespace OleCompoundFileStorage
             {
                 directoryEntry.StartSetc = sv.BaseSectorChain[0].Id;
                 directoryEntry.Size = (long)(buffer.Length) + directoryEntry.Size;
+
+                if (tempMini != null)
+                    directoryEntry.Size += tempMini.Length;
             }
             else
             {
