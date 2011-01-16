@@ -102,6 +102,7 @@ namespace OleCfsMemoryTest
             cf.Close();
 
             cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.ReadOnly, true, false);
+
             var myStream = cf.RootStorage.GetStream("C");
             var data = myStream.GetData();
             Console.WriteLine(data[0] + " : " + data[data.Length - 1]);
@@ -109,6 +110,8 @@ namespace OleCfsMemoryTest
             myStream = cf.RootStorage.GetStream("B");
             data = myStream.GetData();
             Console.WriteLine(data[0] + " : " + data[data.Length - 1]);
+
+            cf.Close();
 
             sw.Stop();
             Console.WriteLine(sw.ElapsedMilliseconds);
