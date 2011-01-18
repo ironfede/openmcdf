@@ -124,26 +124,21 @@ namespace OleCompoundFileStorage
         //    this.data = b;
         //}
 
-        public void FillData(byte b)
-        {
-            if (data != null)
-            {
-                for (int i = 0; i < data.Length; i++)
-                {
-                    data[i] = b;
-                }
-            }
-        }
+        //public void FillData(byte b)
+        //{
+        //    if (data != null)
+        //    {
+        //        for (int i = 0; i < data.Length; i++)
+        //        {
+        //            data[i] = b;
+        //        }
+        //    }
+        //}
 
         public void ZeroData()
         {
-            if (this.data != null)
-            {
-                for (int i = 0; i < this.data.Length; i++)
-                {
-                    data[i] = 0x00;
-                }
-            }
+            data = new byte[size];
+            dirtyFlag = true;
         }
 
         internal void ReleaseData()
