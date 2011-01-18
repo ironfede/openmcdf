@@ -439,7 +439,7 @@ namespace OleCompoundFileStorage
                     this.dirEntry.StorageCLSID = value;
                 }
                 else
-                    throw new CFException("Object class GUID can only beset on Root and Storage entries");
+                    throw new CFException("Object class GUID can only be set on Root and Storage entries");
             }
         }
 

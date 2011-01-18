@@ -199,6 +199,7 @@ namespace OleCompoundFileStorage
 
         void OnSizeLimitReached()
         {
+
             Sector rangeLockSector = new Sector(GetSectorSize(), sourceStream);
             sectors.Add(rangeLockSector);
 
@@ -1471,7 +1472,7 @@ namespace OleCompoundFileStorage
                 CFStorage cfs = new CFStorage(this, directoryEntries[de.SID]);
                 bst.Add(cfs);
 
-                // If try to load children them
+                // If children try to load  them
                 if (((IDirectoryEntry)cfs).Child != DirectoryEntry.NOSTREAM)
                 {
                     BinarySearchTree<IDirectoryEntry> bstSib
@@ -2275,6 +2276,9 @@ namespace OleCompoundFileStorage
 
             using (CompoundFile tempCF = new CompoundFile((CFSVersion)cf.header.MajorVersion, cf.sectorRecycle, cf.eraseFreeSectors))
             {
+                //Copy Root CLSID
+                tempCF.RootStorage.CLSID = new Guid(cf.RootStorage.CLSID.ToByteArray());
+
                 DoCompression(cf.RootStorage, tempCF.RootStorage);
 
                 MemoryStream tmpMS = new MemoryStream((int)cf.sourceStream.Length); //This could be a problem for v4
@@ -2358,7 +2362,7 @@ namespace OleCompoundFileStorage
                     {
                         CFStorage itemAsStorage = item as CFStorage;
                         CFStorage strg = ((CFStorage)currDstStorage).AddStorage(itemAsStorage.Name);
-                        strg.CLSID = itemAsStorage.CLSID;
+                        strg.CLSID = new Guid(itemAsStorage.CLSID.ToByteArray());
                         DoCompression(itemAsStorage, strg); // recursion, one level deeper
                     }
                 };

@@ -25,15 +25,17 @@ namespace OleCfsMemoryTest
 
         private static void TestCode()
         {
-            byte[] bA = GetBuffer(20 * 1024 * 1024, 0x0A);
+            const int N_FACTOR = 1;
+
+            byte[] bA = GetBuffer(20 * 1024 * N_FACTOR, 0x0A);
             byte[] bB = GetBuffer(5 * 1024, 0x0B);
             byte[] bC = GetBuffer(5 * 1024, 0x0C);
             byte[] bD = GetBuffer(5 * 1024, 0x0D);
-            byte[] bE = GetBuffer(8 * 1024 * 1024 + 1, 0x1A);
-            byte[] bF = GetBuffer(16 * 1024 * 1024, 0x1B);
-            byte[] bG = GetBuffer(14 * 1024 * 1024, 0x1C);
-            byte[] bH = GetBuffer(12 * 1024 * 1024, 0x1D);
-            byte[] bE2 = GetBuffer(8 * 1024 * 1024, 0x2A);
+            byte[] bE = GetBuffer(8 * 1024 * N_FACTOR + 1, 0x1A);
+            byte[] bF = GetBuffer(16 * 1024 * N_FACTOR, 0x1B);
+            byte[] bG = GetBuffer(14 * 1024 * N_FACTOR, 0x1C);
+            byte[] bH = GetBuffer(12 * 1024 * N_FACTOR, 0x1D);
+            byte[] bE2 = GetBuffer(8 * 1024 * N_FACTOR, 0x2A);
             byte[] bMini = GetBuffer(1027, 0xEE);
 
             Stopwatch sw = new Stopwatch();
@@ -61,7 +63,7 @@ namespace OleCfsMemoryTest
 
             File.Copy("8_Streams.cfs", "6_Streams.cfs", true);
 
-            cf = new CompoundFile("6_Streams.cfs", UpdateMode.Update, true, false);
+            cf = new CompoundFile("6_Streams.cfs", UpdateMode.Update, true, true);
             cf.RootStorage.Delete("D");
             cf.RootStorage.Delete("G");
             cf.Commit();
@@ -73,6 +75,11 @@ namespace OleCfsMemoryTest
             cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
             cf.RootStorage.AddStream("ZZZ").SetData(bF);
             cf.RootStorage.GetStream("E").AppendData(bE2);
+            cf.Commit();
+            cf.Close();
+
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
+            cf.RootStorage.CLSID = new Guid("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
             cf.Commit();
             cf.Close();
 
@@ -97,6 +104,8 @@ namespace OleCfsMemoryTest
 
             cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
             cf.RootStorage.GetStorage("MiniStorage").Delete("miniSt");
+
+
             cf.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").AppendData(bE);
             cf.Commit();
             cf.Close();
