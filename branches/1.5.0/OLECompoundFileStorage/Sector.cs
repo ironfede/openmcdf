@@ -21,7 +21,7 @@ using System.Collections.Specialized;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OleCompoundFileStorage
+namespace OpenMcdf
 {
     internal enum SectorType
     {

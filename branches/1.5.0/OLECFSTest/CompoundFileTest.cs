@@ -3,11 +3,11 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OleCompoundFileStorage;
+using OpenMcdf;
 using System.IO;
 using System.Diagnostics;
 
-namespace OleCfsTest
+namespace OpenMcdfTest
 {
     /// <summary>
     /// Summary description for CompoundFileTest
@@ -420,10 +420,39 @@ namespace OleCfsTest
             Assert.IsTrue(d2.Length == 1);
             Assert.IsTrue(d2[0] == 0xEE);
 
+            try
+            {
+                cfTest.RootStorage.GetStorage("MiniStorage").GetStream("miniSt");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is CFItemNotFound);
+            }
+
             cfTest.Close();
 
             //##############
 
+            //Phase 7
+
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
+
+            cf.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").SetData(bA);
+            cf.Commit();
+            cf.Close();
+           
+
+            //Test Phase 7
+
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
+            d2 = cf.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").GetData();
+            Assert.IsNotNull(d2);
+            Assert.IsTrue(d2.Length == bA.Length);
+           
+            cf.Close();
+
+            //##############
+          
             cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.ReadOnly, true, false);
 
             var myStream = cf.RootStorage.GetStream("C");

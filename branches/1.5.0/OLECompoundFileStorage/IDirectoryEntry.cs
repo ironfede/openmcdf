@@ -17,7 +17,7 @@ using BinaryTrees;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OleCompoundFileStorage
+namespace OpenMcdf
 {
     internal interface IDirectoryEntry : IComparable
     {

@@ -21,7 +21,7 @@ using BinaryTrees;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OleCompoundFileStorage
+namespace OpenMcdf
 {
     public enum StgType : int
     {

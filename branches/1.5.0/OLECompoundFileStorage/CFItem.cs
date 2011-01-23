@@ -20,11 +20,32 @@ using BinaryTrees;
 */
 
 
-namespace OleCompoundFileStorage
+namespace OpenMcdf
 {
     /// <summary>
-    /// Abstract base class for Structured Storage entities
+    /// Abstract base class for Structured Storage entities.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// 
+    /// const String STORAGE_NAME = "report.xls";
+    /// CompoundFile cf = new CompoundFile(STORAGE_NAME);
+    ///
+    /// FileStream output = new FileStream("LogEntries.txt", FileMode.Create);
+    /// TextWriter tw = new StreamWriter(output);
+    ///
+    /// // CFItem represents both storage and stream items
+    /// VisitedEntryAction va = delegate(CFItem item)
+    /// {
+    ///      tw.WriteLine(item.Name);
+    /// };
+    ///
+    /// cf.RootStorage.VisitEntries(va, true);
+    ///
+    /// tw.Close();
+    /// 
+    /// </code>
+    /// </example>
     public abstract class CFItem : IDirectoryEntry, IComparable
     {
         private CompoundFile compoundFile;
@@ -301,7 +322,7 @@ namespace OleCompoundFileStorage
         }
 
         /// <summary>
-        /// Gets entity name
+        /// Get entity name
         /// </summary>
         public String Name
         {
@@ -329,16 +350,6 @@ namespace OleCompoundFileStorage
             }
         }
 
-        ///// <summary>
-        ///// Structured Storage item type: stream, storage or root entity.
-        ///// </summary>
-        //public StgType ItemType
-        //{
-        //    get
-        //    {
-        //        return this.dirEntry.StgType;
-        //    }
-        //}
 
         /// <summary>
         /// Return true if item is Storage
@@ -424,7 +435,7 @@ namespace OleCompoundFileStorage
         }
 
         /// <summary>
-        /// Object class Guid for Root and Storage entries.
+        /// Get/Set Object class Guid for Root and Storage entries.
         /// </summary>
         public Guid CLSID
         {
