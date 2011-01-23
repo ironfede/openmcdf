@@ -22,7 +22,7 @@ using System.Diagnostics;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OleCompoundFileStorage
+namespace OpenMcdf
 {
     /// <summary>
     /// Stream decorator for a Sector or miniSector chain

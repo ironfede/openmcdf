@@ -1,9 +1,9 @@
-﻿using OleCompoundFileStorage;
+﻿using OpenMcdf;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using System;
 
-namespace OleCfsTest
+namespace OpenMcdfTest
 {
 
 

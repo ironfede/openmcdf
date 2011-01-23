@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-namespace OleCompoundFileStorage
+namespace OpenMcdf
 {
     public delegate void SizeLimitReached();
 

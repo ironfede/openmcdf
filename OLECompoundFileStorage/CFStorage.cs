@@ -19,7 +19,7 @@ using BinaryTrees;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OleCompoundFileStorage
+namespace OpenMcdf
 {
     /// <summary>
     /// Action to apply to  visited items in the OLE structured storage
@@ -119,6 +119,22 @@ namespace OleCompoundFileStorage
         /// </summary>
         /// <param name="streamName">The new stream name</param>
         /// <returns>The new <see cref="T:OLECompoundFileStorage.CFStream">stream</see> reference</returns>
+        /// <example>
+        /// <code>
+        /// 
+        ///  String filename = "A_NEW_COMPOUND_FILE_YOU_CAN_WRITE_TO.cfs";
+        ///
+        ///  CompoundFile cf = new CompoundFile();
+        ///
+        ///  CFStorage st = cf.RootStorage.AddStorage("MyStorage");
+        ///  CFStream sm = st.AddStream("MyStream");
+        ///  byte[] b = Helpers.GetBuffer(220, 0x0A);
+        ///  sm.SetData(b);
+        ///
+        ///  cf.Save(filename);
+        ///  
+        /// </code>
+        /// </example>
         public CFStream AddStream(String streamName)
         {
             CheckDisposed();
@@ -209,13 +225,17 @@ namespace OleCompoundFileStorage
         /// <example>
         /// <code>
         /// 
-        /// CompoundFile cf = new CompoundFile();
+        ///  String filename = "A_NEW_COMPOUND_FILE_YOU_CAN_WRITE_TO.cfs";
         ///
-        /// CFStorage st = cf.RootStorage.AddStorage("NameOfStorage");
-        /// cf.Save("NewFileName.cfs");
-        /// 
-        /// cf.Close();
+        ///  CompoundFile cf = new CompoundFile();
         ///
+        ///  CFStorage st = cf.RootStorage.AddStorage("MyStorage");
+        ///  CFStream sm = st.AddStream("MyStream");
+        ///  byte[] b = Helpers.GetBuffer(220, 0x0A);
+        ///  sm.SetData(b);
+        ///
+        ///  cf.Save(filename);
+        ///  
         /// </code>
         /// </example>
         public CFStorage AddStorage(String storageName)
@@ -307,13 +327,17 @@ namespace OleCompoundFileStorage
         /// Remove an entry from the current storage and compound file.
         /// </summary>
         /// <param name="entryName">The name of the entry in the current storage to delete</param>
-        /// <param name="overwrite">If true, entry associated data will be overwritten with zeroes</param>
-        /// <remarks>
-        /// If 'overwrite' parameter is set, entry name is overwritten with a '_DELETED_NAME_[random]'
-        /// string and associated contents are overwritten with zeros: data cannot be recovered.
-        /// When 'overwrite' is not set, entry is simply invalidated but its data and name will be still
-        /// present in the compound file with a slightly performance enhanchement of the operation.
-        /// </remarks>
+        /// <example>
+        /// <code>
+        /// cf = new CompoundFile("A_FILE_YOU_CAN_CHANGE.cfs", UpdateMode.Update, true, false);
+        /// cf.RootStorage.Delete("AStream"); // AStream item is assumed to exist.
+        /// cf.Commit(true);
+        /// cf.Close();
+        /// </code>
+        /// </example>
+        /// <exception cref="T:OleCompoundFileStorage.CFDisposedException">Raised if trying to delete item from a closed compound file</exception>
+        /// <exception cref="T:OleCompoundFileStorage.CFItemNotFound">Raised if item to delete is not found</exception>
+        /// <exception cref="T:OleCompoundFileStorage.CFException">Raised if trying to delete root storage</exception>
         public void Delete(String entryName)
         {
             CheckDisposed();

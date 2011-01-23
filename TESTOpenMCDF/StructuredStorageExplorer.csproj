@@ -77,9 +77,9 @@
     <Content Include="img\storage.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OLECompoundFileStorage\OleCompoundFileStorage.csproj">
+    <ProjectReference Include="..\OLECompoundFileStorage\OpenMcdf.csproj">
       <Project>{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}</Project>
-      <Name>OleCompoundFileStorage</Name>
+      <Name>OpenMcdf</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

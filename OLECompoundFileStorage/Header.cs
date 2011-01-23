@@ -19,7 +19,7 @@ using System.IO;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OleCompoundFileStorage
+namespace OpenMcdf
 {
     internal class Header
     {
