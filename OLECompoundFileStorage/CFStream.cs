@@ -24,7 +24,7 @@ namespace OpenMcdf
 {
 
     /// <summary>
-    /// OLE structured storage <see cref="T:OLECompoundFileStorage.CFStream">stream</see> Object
+    /// OLE structured storage <see cref="T:OpenMcdf.CFStream">stream</see> Object
     /// It is contained inside a Storage object in a file-directory
     /// relationship and indexed by its name.
     /// </summary>
@@ -113,7 +113,7 @@ namespace OpenMcdf
         /// </code>
         /// </example>
         /// <returns>Array of byte containing stream data</returns>
-        /// <exception cref="T:OLECompoundFileStorage.CFDisposedException">
+        /// <exception cref="T:OpenMcdf.CFDisposedException">
         /// Raised when the owner compound file has been closed.
         /// </exception>
         public Byte[] GetData()
@@ -139,7 +139,7 @@ namespace OpenMcdf
         /// </code>
         /// </example>
         /// <returns>Array of byte containing stream data</returns>
-        /// <exception cref="T:OLECompoundFileStorage.CFDisposedException">
+        /// <exception cref="T:OpenMcdf.CFDisposedException">
         /// Raised when the owner compound file has been closed.
         /// </exception>
         public Byte[] GetData(long offset, ref int count)

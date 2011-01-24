@@ -60,7 +60,7 @@ namespace OpenMcdfMemTest
             cf.Save("8_Streams.cfs");
 
             cf.Close();
-
+         
             File.Copy("8_Streams.cfs", "6_Streams.cfs", true);
 
             cf = new CompoundFile("6_Streams.cfs", UpdateMode.Update, true, true);
