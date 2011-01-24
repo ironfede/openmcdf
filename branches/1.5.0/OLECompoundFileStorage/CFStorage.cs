@@ -115,10 +115,10 @@ namespace OpenMcdf
         }
 
         /// <summary>
-        /// Create a new child stream inside the current <see cref="T:OLECompoundFileStorage.CFStorage">storage</see>
+        /// Create a new child stream inside the current <see cref="T:OpenMcdf.CFStorage">storage</see>
         /// </summary>
         /// <param name="streamName">The new stream name</param>
-        /// <returns>The new <see cref="T:OLECompoundFileStorage.CFStream">stream</see> reference</returns>
+        /// <returns>The new <see cref="T:OpenMcdf.CFStream">stream</see> reference</returns>
         /// <example>
         /// <code>
         /// 
@@ -158,14 +158,26 @@ namespace OpenMcdf
 
 
         /// <summary>
-        /// Get a named <see cref="T:OLECompoundFileStorage.CFStream">stream</see> contained in the current storage if existing.
+        /// Get a named <see cref="T:OpenMcdf.CFStream">stream</see> contained in the current storage if existing.
         /// </summary>
         /// <param name="streamName">Name of the stream to look for</param>
         /// <returns>A stream reference if existing</returns>
-        /// <exception cref="T:OLECompoundFileStorage.CFItemNotFound">
-        /// If no entry with the given name can be found in direct children of the current
-        /// storage, a CFItemNotFound exception is raised.
-        /// </exception>
+        /// <exception cref="T:OpenMcdf.CFDisposedException">Raised if trying to delete item from a closed compound file</exception>
+        /// <exception cref="T:OpenMcdf.CFItemNotFound">Raised if item to delete is not found</exception>
+        /// <example>
+        /// <code>
+        /// String filename = "report.xls";
+        ///
+        /// CompoundFile cf = new CompoundFile(filename);
+        /// CFStream foundStream = cf.RootStorage.GetStream("Workbook");
+        ///
+        /// byte[] temp = foundStream.GetData();
+        ///
+        /// Assert.IsNotNull(temp);
+        ///
+        /// cf.Close();
+        /// </code>
+        /// </example>
         public CFStream GetStream(String streamName)
         {
             CheckDisposed();
@@ -194,10 +206,20 @@ namespace OpenMcdf
         /// </summary>
         /// <param name="storageName">Name of the storage to look for</param>
         /// <returns>A storage reference if existing.</returns>
-        /// <exception cref="T:OLECompoundFileStorage.CFItemNotFound">
-        /// If no entry with the given name can be found in direct children of the current
-        /// storage, a CFItemNotFound exception is raised.
-        /// </exception>
+        /// <exception cref="T:OpenMcdf.CFDisposedException">Raised if trying to delete item from a closed compound file</exception>
+        /// <exception cref="T:OpenMcdf.CFItemNotFound">Raised if item to delete is not found</exception>
+        /// <example>
+        /// <code>
+        /// 
+        /// String FILENAME = "MultipleStorage2.cfs";
+        /// CompoundFile cf = new CompoundFile(FILENAME, UpdateMode.ReadOnly, false, false);
+        ///
+        /// CFStorage st = cf.RootStorage.GetStorage("MyStorage");
+        ///
+        /// Assert.IsNotNull(st);
+        /// cf.Close();
+        /// </code>
+        /// </example>
         public CFStorage GetStorage(String storageName)
         {
             CheckDisposed();
@@ -218,10 +240,12 @@ namespace OpenMcdf
 
 
         /// <summary>
-        /// Create new child storage "directory" inside the current storage.
+        /// Create new child storage directory inside the current storage.
         /// </summary>
         /// <param name="storageName">The new storage name</param>
-        /// <returns>Reference to the new <see cref="T:OLECompoundFileStorage.CFStorage">storage</see> </returns>
+        /// <returns>Reference to the new <see cref="T:OpenMcdf.CFStorage">storage</see></returns>
+        /// <exception cref="T:OpenMcdf.CFDisposedException">Raised when adding a storage to a closed compound file</exception>
+        /// <exception cref="T:OpenMcdf.CFException">Raised when adding a storage with null or empty name</exception>
         /// <example>
         /// <code>
         /// 
@@ -278,8 +302,27 @@ namespace OpenMcdf
         /// <summary>
         /// Visit all entities contained in the storage applying a user provided action
         /// </summary>
-        /// <param name="action">User action to apply to visited entities</param>
+        /// <exception cref="T:OpenMcdf.CFDisposedException">Raised when visiting items of a closed compound file</exception>
+        /// <param name="action">User <see cref="T:OpenMcdf.VisitedEntryAction">action</see> to apply to visited entities</param>
         /// <param name="recursive"> Visiting recursion level. True means substorages are visited recursively, false indicates that only the direct children of this storage are visited</param>
+        /// <example>
+        /// <code>
+        /// const String STORAGE_NAME = "report.xls";
+        /// CompoundFile cf = new CompoundFile(STORAGE_NAME);
+        ///
+        /// FileStream output = new FileStream("LogEntries.txt", FileMode.Create);
+        /// TextWriter tw = new StreamWriter(output);
+        ///
+        /// VisitedEntryAction va = delegate(CFItem item)
+        /// {
+        ///     tw.WriteLine(item.Name);
+        /// };
+        ///
+        /// cf.RootStorage.VisitEntries(va, true);
+        ///
+        /// tw.Close();
+        /// </code>
+        /// </example>
         public void VisitEntries(VisitedEntryAction action, bool recursive)
         {
             CheckDisposed();
@@ -335,9 +378,9 @@ namespace OpenMcdf
         /// cf.Close();
         /// </code>
         /// </example>
-        /// <exception cref="T:OleCompoundFileStorage.CFDisposedException">Raised if trying to delete item from a closed compound file</exception>
-        /// <exception cref="T:OleCompoundFileStorage.CFItemNotFound">Raised if item to delete is not found</exception>
-        /// <exception cref="T:OleCompoundFileStorage.CFException">Raised if trying to delete root storage</exception>
+        /// <exception cref="T:OpenMcdf.CFDisposedException">Raised if trying to delete item from a closed compound file</exception>
+        /// <exception cref="T:OpenMcdf.CFItemNotFound">Raised if item to delete is not found</exception>
+        /// <exception cref="T:OpenMcdf.CFException">Raised if trying to delete root storage</exception>
         public void Delete(String entryName)
         {
             CheckDisposed();

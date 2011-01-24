@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("OleCfsMemoryTest")]
+[assembly: AssemblyTitle("OpenMcdfMemTest")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("-")]
-[assembly: AssemblyProduct("OleCfsMemoryTest")]
-[assembly: AssemblyCopyright("Copyright © - 2010")]
+[assembly: AssemblyCompany("Federico Blaseotto")]
+[assembly: AssemblyProduct("OpenMcdfMemTest")]
+[assembly: AssemblyCopyright("Copyright © 2010-2011, Federico Blaseotto")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

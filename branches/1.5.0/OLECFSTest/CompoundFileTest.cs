@@ -179,6 +179,7 @@ namespace OpenMcdfTest
             Assert.IsNotNull(temp);
 
             cf.Close();
+
         }
 
         [TestMethod]

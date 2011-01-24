@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("StucturedStorageExplorer")]
-[assembly: AssemblyCopyright("Copyright © Federico Blaseotto 2010")]
+[assembly: AssemblyCopyright("Copyright © 2010-2011, Federico Blaseotto")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

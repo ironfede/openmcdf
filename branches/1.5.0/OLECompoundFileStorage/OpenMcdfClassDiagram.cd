@@ -15,41 +15,33 @@
   <Comment CommentText="Internal interface, not exposed to API">
     <Position X="4.802" Y="2.042" Height="0.42" Width="1.44" />
   </Comment>
-  <Class Name="OleCompoundFileStorage.Header" Collapsed="true">
+  <Class Name="OpenMcdf.Header" Collapsed="true">
     <Position X="5.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>gAAEAAAQIBQIAgEUgEIBYgDg0GEAwUAAABAAAAGQgCA=</HashCode>
       <FileName>Header.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="OleCompoundFileStorage.CFStorage" Collapsed="true">
+  <Class Name="OpenMcdf.CFStorage" Collapsed="true">
     <Position X="4.75" Y="5" Width="1.5" />
     <Compartments>
       <Compartment Name="Properties" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
-    <InheritanceLine Type="OleCompoundFileStorage.CFItem" ManuallyRouted="true" FixedFromPoint="true">
-      <Path>
-        <Point X="6.375" Y="4.009" />
-        <Point X="6.375" Y="4.625" />
-        <Point X="5.5" Y="4.625" />
-        <Point X="5.5" Y="5" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAEYAAAQEIBAAAAEABAAAAAACAAAAAAA=</HashCode>
       <FileName>CFStorage.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="OleCompoundFileStorage.StreamView" Collapsed="true">
+  <Class Name="OpenMcdf.StreamView" Collapsed="true">
     <Position X="1" Y="1.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAACAAAAQAAgGkoAIABgAAAAAAQACAAAAAGIACA=</HashCode>
       <FileName>StreamView.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="OleCompoundFileStorage.DirectoryEntry" Collapsed="true">
+  <Class Name="OpenMcdf.DirectoryEntry" Collapsed="true">
     <Position X="1.5" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>QIQAwEAAkAAAgMQAgIDAgAQkEADAAKwgAAAsIAHEAAA=</HashCode>
@@ -57,14 +49,14 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="OleCompoundFileStorage.CompoundFile" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="OpenMcdf.CompoundFile" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="1" Y="0.5" Width="1.5" />
-    <AssociationLine Name="header" Type="OleCompoundFileStorage.Header">
+    <AssociationLine Name="header" Type="OpenMcdf.Header">
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.055" Y="0.631" />
+        <Position X="1.33" Y="0.11" />
       </MemberNameLabel>
     </AssociationLine>
-    <AssociationLine Name="directoryEntries" Type="OleCompoundFileStorage.IDirectoryEntry" ManuallyRouted="true">
+    <AssociationLine Name="directoryEntries" Type="OpenMcdf.IDirectoryEntry" ManuallyRouted="true">
       <Path>
         <Point X="1.75" Y="1.009" />
         <Point X="1.75" Y="1.259" />
@@ -77,7 +69,7 @@
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>AXUGoNQFUmEEQBB0AARISIgAAEEEAmRARslBQeWQBAA=</HashCode>
+      <HashCode>ATUGoNQFUmMEQBB0AARISIAAEAEEAmRARs1BQeeQBCA=</HashCode>
       <FileName>CompoundFile.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -88,12 +80,12 @@
     </ShowAsCollectionAssociation>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="OleCompoundFileStorage.CFItem" Collapsed="true">
+  <Class Name="OpenMcdf.CFItem" Collapsed="true">
     <Position X="5.75" Y="3.5" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <AssociationLine Name="DirEntry" Type="OleCompoundFileStorage.IDirectoryEntry" FixedToPoint="true">
+    <AssociationLine Name="DirEntry" Type="OpenMcdf.IDirectoryEntry" FixedToPoint="true">
       <Path>
         <Point X="6.5" Y="3.5" />
         <Point X="6.5" Y="2.13" />
@@ -111,22 +103,14 @@
     </ShowAsAssociation>
     <Lollipop Position="0.292" />
   </Class>
-  <Class Name="OleCompoundFileStorage.CFStream" Collapsed="true">
+  <Class Name="OpenMcdf.CFStream" Collapsed="true">
     <Position X="7" Y="5" Width="1.5" />
-    <InheritanceLine Type="OleCompoundFileStorage.CFItem" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
-      <Path>
-        <Point X="6.625" Y="4.009" />
-        <Point X="6.625" Y="4.625" />
-        <Point X="7.562" Y="4.625" />
-        <Point X="7.562" Y="5" />
-      </Path>
-    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAAAABEAAAACAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>CFStream.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Interface Name="OleCompoundFileStorage.IDirectoryEntry" Collapsed="true">
+  <Interface Name="OpenMcdf.IDirectoryEntry" Collapsed="true">
     <Position X="5.75" Y="1.5" Width="1.5" />
     <Compartments>
       <Compartment Name="Properties" Collapsed="true" />

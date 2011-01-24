@@ -72,7 +72,7 @@ namespace OpenMcdf
         /// <summary>
         /// Update mode allows subsequent data changing operations
         /// to be persisted directly on the opened file or stream
-        /// using the <see cref="M:OleCompoundFileStorage.CompoundFile.Commit">Commit</see>
+        /// using the <see cref="M:OpenMcdf.CompoundFile.Commit">Commit</see>
         /// method when required. Warning: this option may cause existing data loss if misused.
         /// </summary>
         Update
@@ -342,22 +342,23 @@ namespace OpenMcdf
         /// <param name="eraseFreeSectors">If true, overwrite with zeros unallocated sectors</param>
         /// <example>
         /// <code>
-        /// String srcFilename = "data_YOU_CAN_CHANGE.xls";
         /// 
-        /// CompoundFile cf = new CompoundFile(srcFilename, UpdateMode.Update, true, true);
+        /// String filename = "reportREAD.xls";
+        ///   
+        /// FileStream fs = new FileStream(filename, FileMode.Open);
+        /// CompoundFile cf = new CompoundFile(fs, UpdateMode.ReadOnly, false, false);
+        /// CFStream foundStream = cf.RootStorage.GetStream("Workbook");
         ///
-        /// Random r = new Random();
+        /// byte[] temp = foundStream.GetData();
         ///
-        /// byte[] buffer = GetBuffer(r.Next(3, 4095), 0x0A);
+        /// Assert.IsNotNull(temp);
         ///
-        /// cf.RootStorage.AddStream("MyStream").SetData(buffer);
-        /// 
-        /// //This will persist data to the underlying media.
-        /// cf.Commit();
         /// cf.Close();
         ///
         /// </code>
         /// </example>
+        /// <exception cref="T:OpenMcdf.CFException">Raised when trying to open a non-seekable stream</exception>
+        /// <exception cref="T:OpenMcdf.CFException">Raised stream is null</exception>
         public CompoundFile(Stream stream, UpdateMode updateMode, bool sectorRecycle, bool eraseFreeSectors)
         {
             this.sectorRecycle = sectorRecycle;
@@ -378,10 +379,11 @@ namespace OpenMcdf
         /// <param name="stream">Streamed compound file</param>
         /// <example>
         /// <code>
-        /// //A xls file should have a Workbook stream
-        /// String filename = "report.xls";
-        ///
-        /// CompoundFile cf = new CompoundFile(filename);
+        /// 
+        /// String filename = "reportREAD.xls";
+        ///   
+        /// FileStream fs = new FileStream(filename, FileMode.Open);
+        /// CompoundFile cf = new CompoundFile(fs);
         /// CFStream foundStream = cf.RootStorage.GetStream("Workbook");
         ///
         /// byte[] temp = foundStream.GetData();
@@ -389,11 +391,13 @@ namespace OpenMcdf
         /// Assert.IsNotNull(temp);
         ///
         /// cf.Close();
+        ///
         /// </code>
         /// </example>
+        /// <exception cref="T:OpenMcdf.CFException">Raised when trying to open a non-seekable stream</exception>
+        /// <exception cref="T:OpenMcdf.CFException">Raised stream is null</exception>
         public CompoundFile(Stream stream)
         {
-
             LoadStream(stream);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
@@ -412,7 +416,7 @@ namespace OpenMcdf
         /// <remarks>
         /// This method can be used
         /// only if the supporting stream has been opened in 
-        /// <see cref="T:OleCompoundFileStorage.UpdateMode">Update mode</see>.
+        /// <see cref="T:OpenMcdf.UpdateMode">Update mode</see>.
         /// </remarks>
         public void Commit()
         {
@@ -432,7 +436,7 @@ namespace OpenMcdf
         /// <remarks>
         /// This method can be used only if 
         /// the supporting stream has been opened in 
-        /// <see cref="T:OleCompoundFileStorage.UpdateMode">Update mode</see>.
+        /// <see cref="T:OpenMcdf.UpdateMode">Update mode</see>.
         /// </remarks>
         public void Commit(bool releaseMemory)
         {
@@ -1601,7 +1605,7 @@ namespace OpenMcdf
         /// Saves the in-memory image of Compound File to a file.
         /// </summary>
         /// <param name="fileName">File name to write the compound file to</param>
-        /// <exception cref="T:OleCompoundFileStorage.CFException">Raised if destination file is not seekable</exception>
+        /// <exception cref="T:OpenMcdf.CFException">Raised if destination file is not seekable</exception>
 
         public void Save(String fileName)
         {
@@ -1637,8 +1641,8 @@ namespace OpenMcdf
         /// Destination Stream must be seekable.
         /// </remarks>
         /// <param name="stream">The stream to save compound File to</param>
-        /// <exception cref="T:OleCompoundFileStorage.CFException">Raised if destination stream is not seekable</exception>
-        /// <exception cref="T:OleCompoundFileStorage.CFDisposedException">Raised if Compound File Storage has been already disposed</exception>
+        /// <exception cref="T:OpenMcdf.CFException">Raised if destination stream is not seekable</exception>
+        /// <exception cref="T:OpenMcdf.CFDisposedException">Raised if Compound File Storage has been already disposed</exception>
         /// <example>
         /// <code>
         ///    MemoryStream ms = new MemoryStream(size);
@@ -2090,12 +2094,12 @@ namespace OpenMcdf
         }
 
         /// <summary>
-        /// Close the Compound File object <see cref="T:OLECompoundFileStorage.CompoundFile">CompoundFile</see> and
+        /// Close the Compound File object <see cref="T:OpenMcdf.CompoundFile">CompoundFile</see> and
         /// free all associated resources (e.g. open file handle and allocated memory).
         /// <remarks>
-        /// When the <see cref="T:OLECompoundFileStorage.CompoundFile.Close()">Close</see> method is called,
+        /// When the <see cref="T:OpenMcdf.CompoundFile.Close()">Close</see> method is called,
         /// all the associated stream and storage objects are invalidated:
-        /// any operation invoked on them will produce a <see cref="T:OLECompoundFileStorage.CFDisposedException">CFDisposedException</see>.
+        /// any operation invoked on them will produce a <see cref="T:OpenMcdf.CFDisposedException">CFDisposedException</see>.
         /// </remarks>
         /// </summary>
         /// <example>
