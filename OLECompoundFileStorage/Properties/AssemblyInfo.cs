@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("OpenMcdf (RC1)")]
+[assembly: AssemblyTitle("OpenMcdf (RC2)")]
 [assembly: AssemblyDescription("MS Compound File Storage .NET Implementation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Federico Blaseotto")]
