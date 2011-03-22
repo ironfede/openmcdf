@@ -75,6 +75,7 @@ namespace OpenMcdfTest
             byte[] temp = foundStream.GetData();
 
             Assert.IsNotNull(temp);
+            Assert.IsTrue(temp.Length > 0);
 
             cf.Close();
         }
@@ -82,17 +83,41 @@ namespace OpenMcdfTest
         [TestMethod]
         public void Test_WRITE_STREAM()
         {
-            byte[] b = new byte[10000];
-            for (int i = 0; i < 10000; i++)
-            {
-                b[i % 120] = (byte)i;
-            }
+            const int BUFFER_LENGTH = 10000;
+
+            byte[] b = Helpers.GetBuffer(BUFFER_LENGTH);
 
             CompoundFile cf = new CompoundFile();
             CFStream myStream = cf.RootStorage.AddStream("MyStream");
 
             Assert.IsNotNull(myStream);
+            Assert.IsTrue(myStream.Size == 0);
+
             myStream.SetData(b);
+
+            Assert.IsTrue(myStream.Size == BUFFER_LENGTH, "Stream size differs from buffer size");
+
+            cf.Close();
+        }
+
+        [TestMethod]
+        public void Test_WRITE_MINI_STREAM()
+        {
+            const int BUFFER_LENGTH = 1023; // < 4096
+
+            byte[] b = Helpers.GetBuffer(BUFFER_LENGTH);
+
+            CompoundFile cf = new CompoundFile();
+            CFStream myStream = cf.RootStorage.AddStream("MyMiniStream");
+
+            Assert.IsNotNull(myStream);
+            Assert.IsTrue(myStream.Size == 0);
+
+            myStream.SetData(b);
+
+            Assert.IsTrue(myStream.Size == BUFFER_LENGTH, "Mini Stream size differs from buffer size");
+
+            cf.Close();
         }
 
         [TestMethod]
@@ -144,6 +169,8 @@ namespace OpenMcdfTest
             CFStream oStream = cfo.RootStorage.GetStream("MyStream");
 
             Assert.IsNotNull(oStream);
+            Assert.IsTrue(oStream.Size == 0);
+
             try
             {
                 oStream.SetData(Helpers.GetBuffer(30));
@@ -157,15 +184,14 @@ namespace OpenMcdfTest
             {
                 cfo.Close();
             }
-
         }
 
 
         [TestMethod]
         public void Test_WRITE_STREAM_WITH_DIFAT()
         {
-            const int SIZE = 15388609; //Incredible condition of 'resonance' between FAT and DIFAT sec number
-            //const int SIZE = 15345665; // 64 -> 65 NOT working
+            //const int SIZE = 15388609; //Incredible condition of 'resonance' between FAT and DIFAT sec number
+            const int SIZE = 15345665; // 64 -> 65 NOT working (in the past ;-)  )
             byte[] b = Helpers.GetBuffer(SIZE, 0);
 
             CompoundFile cf = new CompoundFile();
@@ -196,7 +222,7 @@ namespace OpenMcdfTest
             //const int SMALLER_SIZE = 290;
             const int MEGA_SIZE = 18000000;
 
-            byte[] ba = Helpers.GetBuffer(BIGGER_SIZE, 10);
+            byte[] ba1 = Helpers.GetBuffer(BIGGER_SIZE, 1);
             byte[] ba2 = Helpers.GetBuffer(BIGGER_SIZE, 2);
             byte[] ba3 = Helpers.GetBuffer(BIGGER_SIZE, 3);
             byte[] ba4 = Helpers.GetBuffer(BIGGER_SIZE, 4);
@@ -209,7 +235,7 @@ namespace OpenMcdfTest
             CFStream myStream = cfa.RootStorage.AddStream("MyFirstStream");
             Assert.IsNotNull(myStream);
 
-            myStream.SetData(ba);
+            myStream.SetData(ba1);
             Assert.IsTrue(myStream.Size == BIGGER_SIZE);
 
             CFStream myStream2 = cfa.RootStorage.AddStream("MySecondStream");
@@ -265,20 +291,22 @@ namespace OpenMcdfTest
         [TestMethod]
         public void Test_RE_WRITE_SMALLER_STREAM()
         {
+            const int BUFFER_LENGTH = 8000;
+
             String filename = "report.xls";
 
-            byte[] b = new byte[8000];
-            for (int i = 0; i < 8000; i++)
-            {
-                b[i % 120] = (byte)i;
-            }
+            byte[] b = Helpers.GetBuffer(BUFFER_LENGTH);
 
             CompoundFile cf = new CompoundFile(filename);
             CFStream foundStream = cf.RootStorage.GetStream("Workbook");
             foundStream.SetData(b);
-
+            cf.Save("reportRW_SMALL.xls");
             cf.Close();
 
+            cf = new CompoundFile("reportRW_SMALL.xls");
+            byte[] c = cf.RootStorage.GetStream("Workbook").GetData();
+            Assert.IsTrue(c.Length == BUFFER_LENGTH);
+            cf.Close();
         }
 
         [TestMethod]
@@ -288,10 +316,16 @@ namespace OpenMcdfTest
 
             CompoundFile cf = new CompoundFile(filename);
             CFStream foundStream = cf.RootStorage.GetStream("\x05SummaryInformation");
-            byte[] b = new byte[foundStream.Size];
+            int TEST_LENGTH = (int)foundStream.Size - 20;
+            byte[] b = Helpers.GetBuffer(TEST_LENGTH);
             foundStream.SetData(b);
 
             cf.Save("RE_WRITE_SMALLER_MINI_STREAM.xls");
+            cf.Close();
+
+            cf = new CompoundFile("RE_WRITE_SMALLER_MINI_STREAM.xls");
+            byte[] c = cf.RootStorage.GetStream("\x05SummaryInformation").GetData();
+            Assert.IsTrue(c.Length == TEST_LENGTH);
             cf.Close();
         }
 
@@ -484,6 +518,52 @@ namespace OpenMcdfTest
                 SingleWriteReadMatchingSTREAMED(i + r.Next(0, 3));
             }
 
+        }
+
+        [TestMethod]
+        public void Test_DELETE_ZERO_LENGTH_STREAM()
+        {
+            byte[] b = new byte[0];
+
+            CompoundFile cf = new CompoundFile();
+
+            string zeroLengthName = "MyZeroStream";
+            CFStream myStream = cf.RootStorage.AddStream(zeroLengthName);
+
+            Assert.IsNotNull(myStream);
+
+            try
+            {
+                myStream.SetData(b);
+            }
+            catch
+            {
+                Assert.Fail("Failed setting zero length stream");
+            }
+
+            string filename = "DeleteZeroLengthStream.cfs";
+            cf.Save(filename);
+            cf.Close();
+
+            CompoundFile cf2 = new CompoundFile(filename);
+
+            // Execption in next line!
+            cf2.RootStorage.Delete(zeroLengthName);
+
+            CFStream zeroStream2 = null;
+
+            try
+            {
+                zeroStream2 = cf2.RootStorage.GetStream(zeroLengthName);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsNull(zeroStream2);
+                Assert.IsInstanceOfType(ex, typeof(CFItemNotFound));
+            }
+
+            cf2.Save("MultipleDeleteMiniStream");
+            cf2.Close();
         }
 
         //[TestMethod]

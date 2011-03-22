@@ -6,7 +6,11 @@ using System.Collections.Generic;
 
 namespace OpenMcdf
 {
-    public delegate void SizeLimitReached();
+    /// <summary>
+    /// Action to implement when transaction support - sector
+    /// has to be written to the underlying stream (see specs).
+    /// </summary>
+    public delegate void Ver3SizeLimitReached();
 
     /// <summary>
     /// Ad-hoc Heap Friendly sector collection to avoid using 
@@ -20,7 +24,7 @@ namespace OpenMcdf
 
         private int count = 0;
 
-        public event SizeLimitReached OnSizeLimitReached;
+        public event Ver3SizeLimitReached OnSizeLimitReached;
 
         private List<ArrayList> largeArraySlices = new List<ArrayList>();
 

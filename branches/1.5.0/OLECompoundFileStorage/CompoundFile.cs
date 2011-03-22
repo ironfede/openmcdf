@@ -1,15 +1,4 @@
-﻿#define FLAT_WRITE
-
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using BinaryTrees;
-using System.Collections;
-using System.Security.AccessControl;
-using System.Threading;
-
-/*
+﻿/*
      The contents of this file are subject to the Mozilla Public License
      Version 1.1 (the "License"); you may not use this file except in
      compliance with the License. You may obtain a copy of the License at
@@ -25,6 +14,17 @@ using System.Threading;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
+#define FLAT_WRITE // No optimization on the number of write operations
+
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.IO;
+using BinaryTrees;
+using System.Collections;
+using System.Security.AccessControl;
+using System.Threading;
+
 namespace OpenMcdf
 {
     internal class DirEntryComparer : IComparer<IDirectoryEntry>
@@ -37,8 +37,6 @@ namespace OpenMcdf
             //Compare X < Y --> -1
         }
     }
-
-
 
     /// <summary>
     /// Binary File Format Version. Sector size  is 512 byte for version 3,
@@ -153,9 +151,9 @@ namespace OpenMcdf
 
 
         /// <summary>
-        /// Create a new, blank, standard compound file.
-        /// Version of created compound file is setted to 3 and sector recycle is turned off
-        /// to achieve the best reading/writing performance in most common scenarios.
+        /// Create a blank, version 3 compound file.
+        /// Sector recycle is turned off to achieve the best reading/writing 
+        /// performance in most common scenarios.
         /// </summary>
         /// <example>
         /// <code>
@@ -182,7 +180,7 @@ namespace OpenMcdf
             this.header = new Header();
             this.sectorRecycle = false;
 
-            this.sectors.OnSizeLimitReached += new SizeLimitReached(OnSizeLimitReached);
+            this.sectors.OnSizeLimitReached += new Ver3SizeLimitReached(OnSizeLimitReached);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
@@ -242,7 +240,7 @@ namespace OpenMcdf
         {
             this.header = new Header((ushort)cfsVersion);
             this.sectorRecycle = sectorRecycle;
-            this.updateMode = UpdateMode.Update;
+            
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
@@ -423,9 +421,10 @@ namespace OpenMcdf
             Commit(false);
         }
 
-
+#if !FLAT_WRITE
         private byte[] buffer = new byte[FLUSHING_BUFFER_MAX_SIZE];
         private Queue<Sector> flushingQueue = new Queue<Sector>(FLUSHING_QUEUE_SIZE);
+#endif
 
 
         /// <summary>
@@ -2072,18 +2071,21 @@ namespace OpenMcdf
 
             if (directoryEntries[sid].StgType == StgType.StgStream)
             {
-                // Clear the associated stream (or ministream)
-                if (directoryEntries[sid].Size < header.MinSizeStandardStream)
+                // Clear the associated stream (or ministream) if required
+                if (directoryEntries[sid].Size > 0) //thanks to Mark Bosold for this !
                 {
-                    List<Sector> miniChain
-                        = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Mini);
-                    FreeMiniChain(miniChain, this.eraseFreeSectors);
-                }
-                else
-                {
-                    List<Sector> chain
-                        = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Normal);
-                    FreeChain(chain, this.eraseFreeSectors);
+                    if (directoryEntries[sid].Size < header.MinSizeStandardStream)
+                    {
+                        List<Sector> miniChain
+                            = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Mini);
+                        FreeMiniChain(miniChain, this.eraseFreeSectors);
+                    }
+                    else
+                    {
+                        List<Sector> chain
+                            = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Normal);
+                        FreeChain(chain, this.eraseFreeSectors);
+                    }
                 }
             }
 
@@ -2178,7 +2180,9 @@ namespace OpenMcdf
                             this.directoryEntries = null;
                             this.fileName = null;
                             this.lockObject = null;
+#if !FLAT_WRITE
                             this.buffer = null;
+#endif
                         }
 
                         if (this.sourceStream != null && closeStream)
