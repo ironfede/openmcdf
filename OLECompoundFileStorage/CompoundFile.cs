@@ -180,7 +180,7 @@ namespace OpenMcdf
             this.header = new Header();
             this.sectorRecycle = false;
 
-            this.sectors.OnSizeLimitReached += new Ver3SizeLimitReached(OnSizeLimitReached);
+            this.sectors.OnVer3SizeLimitReached += new Ver3SizeLimitReached(OnSizeLimitReached);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
@@ -867,13 +867,6 @@ namespace OpenMcdf
             {
                 if (s.Id == -1)
                 {
-                    //int freeId =fatScan.GetFreeSectorID();
-
-                    //if (freeId != Sector.ENDOFCHAIN)
-                    //{
-                    //}
-
-
                     sectors.Add(s);
                     s.Id = sectors.Count - 1;
                 }
@@ -987,7 +980,7 @@ namespace OpenMcdf
                 nCurrentSectors++;
 
                 //... so, adding a FAT sector may induce DIFAT sectors to increase by one
-                // and consequently this may induce ANOTHER FAT sector (TO-THINK: Could this condition occure ?)
+                // and consequently this may induce ANOTHER FAT sector (TO-THINK: May this condition occure ?)
                 if (nDIFATSectors * DIFAT_SECTOR_FAT_ENTRIES_COUNT <
                     (header.FATSectorsNumber > HEADER_DIFAT_ENTRIES_COUNT ?
                     header.FATSectorsNumber - HEADER_DIFAT_ENTRIES_COUNT :
@@ -1116,7 +1109,6 @@ namespace OpenMcdf
                     s = new Sector(GetSectorSize(), sourceStream);
                     s.Type = SectorType.DIFAT;
                     s.Id = header.FirstDIFATSectorID;
-                    //header.FirstDIFATSectorID = s.Id;  ?
                     sectors[header.FirstDIFATSectorID] = s;
                 }
 
@@ -1514,10 +1506,10 @@ namespace OpenMcdf
                 DirectoryEntry de
                 = new DirectoryEntry(StgType.StgInvalid);
 
+                //We are not inserting dirs. Do not use 'InsertNewDirectoryEntry'
                 de.Read(dirReader);
                 directoryEntries.Add(de);
                 de.SID = directoryEntries.Count - 1;
-                //this.AddDirectoryEntry(de);
             }
         }
 

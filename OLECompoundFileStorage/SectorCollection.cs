@@ -24,7 +24,7 @@ namespace OpenMcdf
 
         private int count = 0;
 
-        public event Ver3SizeLimitReached OnSizeLimitReached;
+        public event Ver3SizeLimitReached OnVer3SizeLimitReached;
 
         private List<ArrayList> largeArraySlices = new List<ArrayList>();
 
@@ -34,12 +34,12 @@ namespace OpenMcdf
         }
 
         private bool sizeLimitReached = false;
-        private void DoSizeLimitReached()
+        private void DoCheckSizeLimitReached()
         {
             if (!sizeLimitReached && (count - 1 > MAX_SECTOR_V4_COUNT_LOCK_RANGE))
             {
-                if (OnSizeLimitReached != null)
-                    OnSizeLimitReached();
+                if (OnVer3SizeLimitReached != null)
+                    OnVer3SizeLimitReached();
 
                 sizeLimitReached = true;
             }
@@ -117,7 +117,7 @@ namespace OpenMcdf
 
         public void Add(Sector item)
         {
-            DoSizeLimitReached();
+            DoCheckSizeLimitReached();
 
             add(item);
 
