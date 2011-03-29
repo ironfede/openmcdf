@@ -562,7 +562,7 @@ namespace OpenMcdfTest
                 Assert.IsInstanceOfType(ex, typeof(CFItemNotFound));
             }
 
-            cf2.Save("MultipleDeleteMiniStream");
+            cf2.Save("MultipleDeleteMiniStream.cfs");
             cf2.Close();
         }
 
