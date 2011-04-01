@@ -108,6 +108,8 @@ namespace OpenMcdf
             this.DirEntry = dirEntry;
         }
 
+       
+
 
         private BinarySearchTree<IDirectoryEntry> LoadChildren(int SID)
         {
@@ -143,12 +145,13 @@ namespace OpenMcdf
                 throw new CFException("Stream name cannot be null or empty");
 
             // Add new Stream directory entry
-            IDirectoryEntry cfo = new CFStream(this.CompoundFile);
+            CFStream cfo = new CFStream(this.CompoundFile);
 
-            cfo.SetEntryName(streamName);
+            ((IDirectoryEntry)cfo).SetEntryName(streamName);
             //cfo.SID = compoundFile.AddDirectoryEntry(cfo);
 
             // Add object to Siblings tree
+
             this.Children.Add(cfo);
             CompoundFile.RefreshIterative(Children.Root);
             this.DirEntry.Child = Children.Root.Value.SID;
@@ -277,6 +280,7 @@ namespace OpenMcdf
 
             // Add object to Siblings tree
             Children.Add(cfo);
+          
             CompoundFile.RefreshIterative(Children.Root);
             this.DirEntry.Child = Children.Root.Value.SID;
 
@@ -363,8 +367,8 @@ namespace OpenMcdf
         //{
         //    Delete(name, typeof(CFStorage));
         //}
- 
-        
+
+
 
         /// <summary>
         /// Remove an entry from the current storage and compound file.

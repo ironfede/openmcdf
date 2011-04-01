@@ -9,6 +9,7 @@ using OpenMcdf;
 using System.IO;
 using System.Resources;
 using System.Globalization;
+using StructuredStorageExplorer.Properties;
 
 // Author Federico Blaseotto
 
@@ -246,9 +247,11 @@ namespace StructuredStorageExplorer
             return pathParts[pathParts.Length - 1];
 
         }
-        private CFItem SelectedPathToStorage()
+
+
+        private CFStorage SelectedStorage(bool getParent)
         {
-            CFItem result = null;
+            CFStorage result = null;
 
             //Remove size indicator from node path
             string path = treeView1.SelectedNode.FullPath;
@@ -264,11 +267,13 @@ namespace StructuredStorageExplorer
             {
                 result = cf.RootStorage;
 
+                int navTo = getParent ? pathParts.Length - 1 : pathParts.Length;
+
                 //Navigate into the storage, following path parts
-                for (int i = 1; i < pathParts.Length; i++)
+                for (int i = 1; i < navTo; i++)
                 {
                     if (result.IsStorage || result.IsRoot)
-                        result = ((CFStorage)result).GetStorage(pathParts[i]);
+                        result = result.GetStorage(pathParts[i]);
                 }
             }
             catch (Exception ex)
@@ -277,6 +282,54 @@ namespace StructuredStorageExplorer
             }
 
             return result;
+        }
+
+        private CFItem SelectedStream(bool getParent)
+        {
+            CFItem result = null;
+            CFStorage strg = null;
+
+            //Remove size indicator from node path
+            string path = treeView1.SelectedNode.FullPath;
+            int index = treeView1.SelectedNode.FullPath.IndexOf(" (", 0);
+
+            if (index != -1)
+                path = path.Remove(index);
+
+            // Get the parts to navigate
+            string[] pathParts = path.Split('\\');
+
+            try
+            {
+                strg = cf.RootStorage;
+                int navTo = getParent ? pathParts.Length - 1 : pathParts.Length;
+
+                //Navigate into the storage, following path parts
+                for (int i = 1; i < navTo; i++)
+                {
+                    if (strg.IsStorage || strg.IsRoot)
+                        strg = strg.GetStorage(pathParts[i]);
+                }
+
+                if (getParent)
+                    result = strg;
+                else
+                    result = strg.GetStream(pathParts[pathParts.Length - 1]);
+            }
+            catch (Exception ex)
+            {
+                result = null;
+            }
+
+            return result;
+        }
+
+        private CFItem SelectedItem(bool getParent)
+        {
+            if (treeView1.SelectedNode.ImageIndex == 0)
+                return SelectedStorage(getParent);
+            else
+                return SelectedStream(getParent);
         }
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -295,9 +348,9 @@ namespace StructuredStorageExplorer
             //    return;
             //}
 
-            CFItem selectedStorage = SelectedPathToStorage();
-            if (selectedStorage.IsStorage)
-                ((CFStorage)selectedStorage).Delete(SelectedItemName());
+            CFItem selectedItem = SelectedItem(true);
+            if (selectedItem.IsStorage || selectedItem.IsRoot)
+                ((CFStorage)selectedItem).Delete(SelectedItemName());
 
             RefreshTree();
 
@@ -317,20 +370,27 @@ namespace StructuredStorageExplorer
 
         private void tmCommitEnabled_Click(object sender, EventArgs e)
         {
+            firstTimeChecked = Properties.Settings.Default.CommitEnabled;
+
             if (firstTimeChecked)
             {
                 if (MessageBox.Show("Enabling update mode could lead to unwanted loss of data. Are you sure to continue ?", "Update mode is going to be enabled", MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2) == DialogResult.Yes)
                 {
-                    this.updateCurrentFileToolStripMenuItem.Enabled = tmCommitEnabled.Checked;
-                    OpenFile();
+
+                    Settings.Default.CommitEnabled = false;
+                    Settings.Default.Save();
+
                 }
                 else
                 {
-                    firstTimeChecked = false;
-                    tmCommitEnabled.CheckState = CheckState.Unchecked;
 
+                    tmCommitEnabled.CheckState = CheckState.Unchecked;
+                    return;
                 }
             }
+
+            this.updateCurrentFileToolStripMenuItem.Enabled = tmCommitEnabled.Checked;
+            OpenFile();
         }
 
         private void updateCurrentFileToolStripMenuItem_Click(object sender, EventArgs e)
@@ -343,7 +403,8 @@ namespace StructuredStorageExplorer
             string streamName = String.Empty;
             if (Utils.InputBox("Add stream", "Insert stream name", ref streamName) == DialogResult.OK)
             {
-                CFItem cfs = SelectedPathToStorage();
+                CFItem cfs = SelectedItem(false);
+
                 if (cfs != null && (cfs.IsStorage || cfs.IsRoot))
                 {
                     ((CFStorage)cfs).AddStream(streamName);
@@ -358,7 +419,7 @@ namespace StructuredStorageExplorer
             string fileName = String.Empty;
             if (openDataFileDialog.ShowDialog() == DialogResult.OK)
             {
-                CFItem cfs = SelectedPathToStorage();
+                CFItem cfs = SelectedItem(true);
                 CFStream s = ((CFStorage)cfs).GetStream(SelectedItemName());
 
 
@@ -389,7 +450,7 @@ namespace StructuredStorageExplorer
             string storage = String.Empty;
             if (Utils.InputBox("Add storage", "Insert storage name", ref storage) == DialogResult.OK)
             {
-                CFItem cfs = SelectedPathToStorage();
+                CFItem cfs = SelectedItem(true);
                 if (cfs != null && (cfs.IsStorage || cfs.IsRoot))
                 {
                     ((CFStorage)cfs).AddStorage(storage);
