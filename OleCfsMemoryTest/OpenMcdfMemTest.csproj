@@ -8,8 +8,8 @@
     <ProjectGuid>{E2BAD82D-3040-462B-BAA2-6E608A9054F4}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OleCfsMemoryTest</RootNamespace>
-    <AssemblyName>OleCfsMemoryTest</AssemblyName>
+    <RootNamespace>OpenMcdfMemTest</RootNamespace>
+    <AssemblyName>OpenMcdfMemTest</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,10 +40,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OLECompoundFileStorage\OLECompoundFileStorage.csproj">
+    <ProjectReference Include="..\OLECompoundFileStorage\OpenMcdf.csproj">
       <Project>{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}</Project>
-      <Name>OLECompoundFileStorage</Name>
+      <Name>OpenMcdf</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="testfile\report.xls" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

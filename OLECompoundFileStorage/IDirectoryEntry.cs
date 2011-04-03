@@ -1,4 +1,5 @@
 ﻿using System;
+using BinaryTrees;
 
 /*
      The contents of this file are subject to the Mozilla Public License
@@ -16,7 +17,7 @@
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OleCompoundFileStorage
+namespace OpenMcdf
 {
     internal interface IDirectoryEntry : IComparable
     {
@@ -28,7 +29,7 @@ namespace OleCompoundFileStorage
         byte[] ModifyDate { get; set; }
         string Name { get; }
         ushort NameLength { get; set; }
-        void Read(System.IO.BinaryReader br);
+        void Read(System.IO.Stream stream);
         int RightSibling { get; set; }
         void SetEntryName(string entryName);
         int SID { get; set; }
@@ -38,7 +39,6 @@ namespace OleCompoundFileStorage
         StgColor StgColor { get; set; }
         StgType StgType { get; set; }
         Guid StorageCLSID { get; set; }
-        byte[] ToByteArray();
-        void Write(System.IO.BinaryWriter bw);
+        void Write(System.IO.Stream stream);
     }
 }

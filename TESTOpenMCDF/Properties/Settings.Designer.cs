@@ -22,5 +22,17 @@ namespace StructuredStorageExplorer.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CommitEnabled {
+            get {
+                return ((bool)(this["CommitEnabled"]));
+            }
+            set {
+                this["CommitEnabled"] = value;
+            }
+        }
     }
 }

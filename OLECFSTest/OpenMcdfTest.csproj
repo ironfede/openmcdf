@@ -7,8 +7,8 @@
     <ProjectGuid>{FD339266-8842-40B4-9230-F8E84FC42AC2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OleCfsTest</RootNamespace>
-    <AssemblyName>OleCfsTest</AssemblyName>
+    <RootNamespace>OpenMcdfTest</RootNamespace>
+    <AssemblyName>OpenMcdfTest</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -36,19 +36,24 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CFSStreamTest.cs" />
     <Compile Include="CFSTorageTest.cs" />
+    <Compile Include="CompoundFileTest.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SectorCollectionTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="AuthoringTests.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OLECompoundFileStorage\OleCompoundFileStorage.csproj">
+    <ProjectReference Include="..\OLECompoundFileStorage\OpenMcdf.csproj">
       <Project>{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}</Project>
-      <Name>OleCompoundFileStorage</Name>
+      <Name>OpenMcdf</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

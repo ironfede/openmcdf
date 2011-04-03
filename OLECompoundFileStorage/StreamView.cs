@@ -22,20 +22,21 @@ using System.Diagnostics;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OleCompoundFileStorage
+namespace OpenMcdf
 {
     /// <summary>
     /// Stream decorator for a Sector or miniSector chain
     /// </summary>
     internal class StreamView : Stream
     {
-        private int sectorSize = Sector.SECTOR_SIZE;
+        private int sectorSize;
 
         private long position;
 
         private List<Sector> sectorChain;
+        private Stream stream;
 
-        public StreamView(List<Sector> sectorChain, int sectorSize)
+        public StreamView(List<Sector> sectorChain, int sectorSize, Stream stream)
         {
             if (sectorChain == null)
                 throw new CFException("Sector Chain cannot be null");
@@ -45,10 +46,18 @@ namespace OleCompoundFileStorage
 
             this.sectorChain = sectorChain;
             this.sectorSize = sectorSize;
+            this.stream = stream;
         }
 
-        public StreamView(List<Sector> sectorChain, int sectorSize, long length)
-            : this(sectorChain, sectorSize)
+        public StreamView(List<Sector> sectorChain, int sectorSize, long length, Queue<Sector> availableSectors, Stream stream)
+            : this(sectorChain, sectorSize, stream)
+        {
+            adjustLength(length, availableSectors);
+        }
+
+
+        public StreamView(List<Sector> sectorChain, int sectorSize, long length, Stream stream)
+            : this(sectorChain, sectorSize, stream)
         {
             adjustLength(length);
         }
@@ -109,6 +118,14 @@ namespace OleCompoundFileStorage
             base.Close();
         }
 
+        private byte[] buf = new byte[4];
+
+        public int ReadInt32()
+        {
+            this.Read(buf, 0, 4);
+            return (((this.buf[0] | (this.buf[1] << 8)) | (this.buf[2] << 16)) | (this.buf[3] << 24));
+        }
+
         public override int Read(byte[] buffer, int offset, int count)
         {
             int nRead = 0;
@@ -117,7 +134,7 @@ namespace OleCompoundFileStorage
             if (sectorChain != null && sectorChain.Count > 0)
             {
                 // First sector
-                int secIndex = (int)position / sectorSize;
+                int secIndex = (int)(position / (long)sectorSize);
 
                 // Bytes to read count is the min between request count
                 // and sector border
@@ -129,7 +146,7 @@ namespace OleCompoundFileStorage
                 if (secIndex < sectorChain.Count)
                 {
                     Buffer.BlockCopy(
-                        sectorChain[secIndex].Data,
+                        sectorChain[secIndex].GetData(),
                         (int)(position % sectorSize),
                         buffer,
                         offset,
@@ -147,7 +164,7 @@ namespace OleCompoundFileStorage
                     nToRead = sectorSize;
 
                     Buffer.BlockCopy(
-                        sectorChain[secIndex].Data,
+                        sectorChain[secIndex].GetData(),
                         0,
                         buffer,
                         offset + nRead,
@@ -164,7 +181,7 @@ namespace OleCompoundFileStorage
                 if (nToRead != 0)
                 {
                     Buffer.BlockCopy(
-                        sectorChain[secIndex].Data,
+                        sectorChain[secIndex].GetData(),
                         0,
                         buffer,
                         offset + nRead,
@@ -191,22 +208,31 @@ namespace OleCompoundFileStorage
                 case SeekOrigin.Begin:
                     position = offset;
                     break;
+
                 case SeekOrigin.Current:
                     position += offset;
                     break;
+
                 case SeekOrigin.End:
                     position = Length - offset;
                     break;
             }
+
+            adjustLength(position);
 
             return position;
         }
 
         private void adjustLength(long value)
         {
+            adjustLength(value, null);
+        }
+
+        private void adjustLength(long value, Queue<Sector> availableSectors)
+        {
             this.length = value;
 
-            long delta = value - (this.sectorChain.Count * sectorSize);
+            long delta = value - ((long)this.sectorChain.Count * (long)sectorSize);
 
             if (delta > 0)
             {
@@ -216,7 +242,17 @@ namespace OleCompoundFileStorage
 
                 while (nSec > 0)
                 {
-                    Sector t = new Sector(sectorSize);
+                    Sector t = null;
+
+                    if (availableSectors == null || availableSectors.Count == 0)
+                    {
+                        t = new Sector(sectorSize, stream);
+                    }
+                    else
+                    {
+                        t = availableSectors.Dequeue();
+                    }
+
                     sectorChain.Add(t);
                     nSec--;
                 }
@@ -259,25 +295,27 @@ namespace OleCompoundFileStorage
 
             // Assure length
             if ((position + count) > length)
-                SetLength((position + count));
+                adjustLength((position + count));
 
             if (sectorChain != null)
             {
                 // First sector
-                int secOffset = (int)position / sectorSize;
+                int secOffset = (int)(position / (long)sectorSize);
                 int secShift = (int)position % sectorSize;
 
-                roundByteWritten = Math.Min(sectorSize - ((int)position % sectorSize), count);
+                roundByteWritten = (int)Math.Min(sectorSize - (int)(position % (long)sectorSize), count);
 
                 if (secOffset < sectorChain.Count)
                 {
                     Buffer.BlockCopy(
                         buffer,
                         offset,
-                        sectorChain[secOffset].Data,
+                        sectorChain[secOffset].GetData(),
                         secShift,
                         roundByteWritten
                         );
+
+                    sectorChain[secOffset].DirtyFlag = true;
                 }
 
                 byteWritten += roundByteWritten;
@@ -292,10 +330,12 @@ namespace OleCompoundFileStorage
                     Buffer.BlockCopy(
                         buffer,
                         offset,
-                        sectorChain[secOffset].Data,
+                        sectorChain[secOffset].GetData(),
                         0,
                         roundByteWritten
                         );
+
+                    sectorChain[secOffset].DirtyFlag = true;
 
                     byteWritten += roundByteWritten;
                     offset += roundByteWritten;
@@ -310,10 +350,12 @@ namespace OleCompoundFileStorage
                     Buffer.BlockCopy(
                         buffer,
                         offset,
-                        sectorChain[secOffset].Data,
+                        sectorChain[secOffset].GetData(),
                         0,
                         roundByteWritten
                         );
+
+                    sectorChain[secOffset].DirtyFlag = true;
 
                     offset += roundByteWritten;
                     byteWritten += roundByteWritten;

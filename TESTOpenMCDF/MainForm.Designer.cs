@@ -34,12 +34,19 @@
             this.tbFileName = new System.Windows.Forms.TextBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.importDataStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exportDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addStreamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.updateCurrentFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tmCommitEnabled = new System.Windows.Forms.ToolStripMenuItem();
+            this.openDataFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.addStorageStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -86,22 +93,39 @@
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.importDataStripMenuItem1,
             this.exportDataToolStripMenuItem,
+            this.addStorageStripMenuItem1,
+            this.addStreamToolStripMenuItem,
             this.removeToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(155, 48);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(157, 136);
+            // 
+            // importDataStripMenuItem1
+            // 
+            this.importDataStripMenuItem1.Name = "importDataStripMenuItem1";
+            this.importDataStripMenuItem1.Size = new System.Drawing.Size(179, 22);
+            this.importDataStripMenuItem1.Text = "Import data...";
+            this.importDataStripMenuItem1.Click += new System.EventHandler(this.importDataStripMenuItem1_Click);
             // 
             // exportDataToolStripMenuItem
             // 
             this.exportDataToolStripMenuItem.Name = "exportDataToolStripMenuItem";
-            this.exportDataToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.exportDataToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.exportDataToolStripMenuItem.Text = "Export data...";
             this.exportDataToolStripMenuItem.Click += new System.EventHandler(this.exportDataToolStripMenuItem_Click);
+            // 
+            // addStreamToolStripMenuItem
+            // 
+            this.addStreamToolStripMenuItem.Name = "addStreamToolStripMenuItem";
+            this.addStreamToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.addStreamToolStripMenuItem.Text = "Add stream...";
+            this.addStreamToolStripMenuItem.Click += new System.EventHandler(this.addStreamToolStripMenuItem_Click);
             // 
             // removeToolStripMenuItem
             // 
             this.removeToolStripMenuItem.Name = "removeToolStripMenuItem";
-            this.removeToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.removeToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
             this.removeToolStripMenuItem.Text = "Remove";
             this.removeToolStripMenuItem.Click += new System.EventHandler(this.removeToolStripMenuItem_Click);
             // 
@@ -123,7 +147,10 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveAsToolStripMenuItem});
+            this.saveAsToolStripMenuItem,
+            this.toolStripSeparator1,
+            this.updateCurrentFileToolStripMenuItem,
+            this.tmCommitEnabled});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -131,9 +158,37 @@
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
             this.saveAsToolStripMenuItem.Text = "Save As...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
+            // 
+            // updateCurrentFileToolStripMenuItem
+            // 
+            this.updateCurrentFileToolStripMenuItem.Enabled = false;
+            this.updateCurrentFileToolStripMenuItem.Name = "updateCurrentFileToolStripMenuItem";
+            this.updateCurrentFileToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.updateCurrentFileToolStripMenuItem.Text = "Update current file";
+            this.updateCurrentFileToolStripMenuItem.Click += new System.EventHandler(this.updateCurrentFileToolStripMenuItem_Click);
+            // 
+            // tmCommitEnabled
+            // 
+            this.tmCommitEnabled.CheckOnClick = true;
+            this.tmCommitEnabled.Name = "tmCommitEnabled";
+            this.tmCommitEnabled.Size = new System.Drawing.Size(190, 22);
+            this.tmCommitEnabled.Text = "Update mode enabled";
+            this.tmCommitEnabled.Click += new System.EventHandler(this.tmCommitEnabled_Click);
+            // 
+            // addStorageStripMenuItem1
+            // 
+            this.addStorageStripMenuItem1.Name = "addStorageStripMenuItem1";
+            this.addStorageStripMenuItem1.Size = new System.Drawing.Size(156, 22);
+            this.addStorageStripMenuItem1.Text = "Add storage...";
+            this.addStorageStripMenuItem1.Click += new System.EventHandler(this.addStorageStripMenuItem1_Click);
             // 
             // MainForm
             // 
@@ -147,6 +202,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.Text = "Structured Storage eXplorer";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.contextMenuStrip1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -168,6 +224,13 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem tmCommitEnabled;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
+        private System.Windows.Forms.ToolStripMenuItem updateCurrentFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem addStreamToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem importDataStripMenuItem1;
+        private System.Windows.Forms.OpenFileDialog openDataFileDialog;
+        private System.Windows.Forms.ToolStripMenuItem addStorageStripMenuItem1;
     }
 }
 

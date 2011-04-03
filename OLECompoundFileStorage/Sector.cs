@@ -21,16 +21,15 @@ using System.Collections.Specialized;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OleCompoundFileStorage
+namespace OpenMcdf
 {
     internal enum SectorType
     {
-        Normal, Mini, FAT, DIFAT
+        Normal, Mini, FAT, DIFAT, RangeLockSector, Directory
     }
 
-    internal class Sector
+    internal class Sector : IDisposable
     {
-        public static int SECTOR_SIZE = 512;
         public static int MINISECTOR_SIZE = 64;
 
         public const int FREESECT = unchecked((int)0xFFFFFFFF);
@@ -38,31 +37,42 @@ namespace OleCompoundFileStorage
         public const int FATSECT = unchecked((int)0xFFFFFFFD);
         public const int DIFSECT = unchecked((int)0xFFFFFFFC);
 
-        private bool isAllocated; //false
-        public bool IsAllocated
+        private bool dirtyFlag = false;
+
+        public bool DirtyFlag
         {
-            get { return isAllocated; }
+            get { return dirtyFlag; }
+            set { dirtyFlag = value; }
         }
 
-        public const int HEADER = unchecked((int)0xEEEEEEEE);
+        public bool IsStreamed
+        {
+            get { return (stream != null && size != MINISECTOR_SIZE) ? (this.id * size) + size < stream.Length : false; }
+        }
 
         private int size = 0;
+        private Stream stream;
+
+
+        public Sector(int size, Stream stream)
+        {
+            this.size = size;
+            this.stream = stream;
+        }
+
+        public Sector(int size, byte[] data)
+        {
+            this.size = size;
+            this.data = data;
+            this.stream = null;
+        }
 
         public Sector(int size)
         {
             this.size = size;
-            //this.data = new byte[size];
-
-            //for (int i = 0; i < size; i++)
-            //{
-            //    data[i] = 0xFF;
-            //}
-
+            this.data = null;
+            this.stream = null;
         }
-
-        //public Sector()
-        //{
-        //}
 
         private SectorType type;
 
@@ -79,7 +89,6 @@ namespace OleCompoundFileStorage
             get { return id; }
             set
             {
-                isAllocated = true;
                 id = value;
             }
         }
@@ -88,70 +97,103 @@ namespace OleCompoundFileStorage
         {
             get
             {
-                if (data != null)
-                    return data.Length;
-                else
-                    return 0;
+                return size;
             }
         }
 
         private byte[] data;
 
-        public byte[] Data
+        public byte[] GetData()
         {
-            get
+            if (this.data == null)
             {
-                if (this.data == null)
+                data = new byte[size];
+
+                if (IsStreamed)
                 {
-                    data = new byte[size];
-                }
-
-                return data;
-            }
-
-            //set
-            //{
-            //    this.data = value;
-            //    size = this.data.Length;
-            //}
-
-        }
-
-        public void FillData(byte b)
-        {
-            if (data != null)
-            {
-                for (int i = 0; i < data.Length; i++)
-                {
-                    data[i] = b;
+                    stream.Seek((long)size + (long)this.id * (long)size, SeekOrigin.Begin);
+                    stream.Read(data, 0, size);
                 }
             }
+
+            return data;
         }
 
-        public static Sector LoadSector(int secID, BinaryReader reader, int size)
-        {
-            Sector s = null;
+        //public void SetSectorData(byte[] b)
+        //{
+        //    this.data = b;
+        //}
 
-            s = new Sector(size);
-            s.Id = secID;
-            reader.BaseStream.Position = 512 + secID * size;
-            s.data = reader.ReadBytes(size);
-
-            return s;
-        }
+        //public void FillData(byte b)
+        //{
+        //    if (data != null)
+        //    {
+        //        for (int i = 0; i < data.Length; i++)
+        //        {
+        //            data[i] = b;
+        //        }
+        //    }
+        //}
 
         public void ZeroData()
         {
-            if (this.data != null)
-            {
-                for (int i = 0; i < this.data.Length; i++)
-                {
-                    data[i] = 0x00;
-                }
-            }
+            data = new byte[size];
+            dirtyFlag = true;
         }
 
+        internal void ReleaseData()
+        {
+            this.data = null;
+        }
 
+        private object lockObject = new Object();
+
+        /// <summary>
+        /// When called from user code, release all resources, otherwise, in the case runtime called it,
+        /// only unmanagd resources are released.
+        /// </summary>
+        /// <param name="disposing">If true, method has been called from User code, if false it's been called from .net runtime</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            try
+            {
+                if (!_disposed)
+                {
+                    lock (lockObject)
+                    {
+                        if (disposing)
+                        {
+                            // Call from user code...
+
+
+                        }
+
+                        this.data = null;
+                        this.dirtyFlag = false;
+                        this.id = Sector.ENDOFCHAIN;
+                        this.size = 0;
+
+                    }
+                }
+            }
+            finally
+            {
+                _disposed = true;
+            }
+
+        }
+
+        #region IDisposable Members
+
+        private bool _disposed;//false
+
+        void IDisposable.Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 
 

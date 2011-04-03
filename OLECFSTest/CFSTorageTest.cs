@@ -3,10 +3,10 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OleCompoundFileStorage;
+using OpenMcdf;
 using System.IO;
 
-namespace OleCfsTest
+namespace OpenMcdfTest
 {
     /// <summary>
     /// Summary description for CFTorageTest
@@ -196,7 +196,7 @@ namespace OleCfsTest
         public void Test_DELETE_DIRECTORY()
         {
             String FILENAME = "MultipleStorage2.cfs";
-            CompoundFile cf = new CompoundFile(FILENAME);
+            CompoundFile cf = new CompoundFile(FILENAME, UpdateMode.ReadOnly, false, false);
 
             CFStorage st = cf.RootStorage.GetStorage("MyStorage");
 
@@ -210,9 +210,27 @@ namespace OleCfsTest
         }
 
         [TestMethod]
-        public void Test_DELETE_STREAM()
+        public void Test_DELETE_MINISTREAM_STREAM()
         {
             String FILENAME = "MultipleStorage2.cfs";
+            CompoundFile cf = new CompoundFile(FILENAME);
+
+            CFStorage found = null;
+            VisitedEntryAction action = delegate(CFItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; };
+            cf.RootStorage.VisitEntries(action, true);
+
+            Assert.IsNotNull(found);
+
+            found.Delete("AnotherStream");
+
+            cf.Save("MultipleDeleteMiniStream");
+            cf.Close();
+        }
+
+        [TestMethod]
+        public void Test_DELETE_STREAM()
+        {
+            String FILENAME = "MultipleStorage3.cfs";
             CompoundFile cf = new CompoundFile(FILENAME);
 
             CFStorage found = null;
@@ -226,8 +244,6 @@ namespace OleCfsTest
             cf.Save("MultipleDeleteStream");
             cf.Close();
         }
-
-        
 
         [TestMethod]
         public void Test_CHECK_DISPOSED_()

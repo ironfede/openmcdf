@@ -20,11 +20,32 @@ using BinaryTrees;
 */
 
 
-namespace OleCompoundFileStorage
+namespace OpenMcdf
 {
     /// <summary>
-    /// Abstract base class for Structured Storage entities
+    /// Abstract base class for Structured Storage entities.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// 
+    /// const String STORAGE_NAME = "report.xls";
+    /// CompoundFile cf = new CompoundFile(STORAGE_NAME);
+    ///
+    /// FileStream output = new FileStream("LogEntries.txt", FileMode.Create);
+    /// TextWriter tw = new StreamWriter(output);
+    ///
+    /// // CFItem represents both storage and stream items
+    /// VisitedEntryAction va = delegate(CFItem item)
+    /// {
+    ///      tw.WriteLine(item.Name);
+    /// };
+    ///
+    /// cf.RootStorage.VisitEntries(va, true);
+    ///
+    /// tw.Close();
+    /// 
+    /// </code>
+    /// </example>
     public abstract class CFItem : IDirectoryEntry, IComparable
     {
         private CompoundFile compoundFile;
@@ -47,7 +68,13 @@ namespace OleCompoundFileStorage
 
         #region IDirectoryEntry Members
 
-        internal IDirectoryEntry dirEntry;
+        private IDirectoryEntry dirEntry;
+
+        internal IDirectoryEntry DirEntry
+        {
+            get { return dirEntry; }
+            set { dirEntry = value; }
+        }
 
         int IDirectoryEntry.Child
         {
@@ -130,9 +157,9 @@ namespace OleCompoundFileStorage
             }
         }
 
-        void IDirectoryEntry.Read(System.IO.BinaryReader br)
+        void IDirectoryEntry.Read(System.IO.Stream stream)
         {
-            this.dirEntry.Read(br);
+            this.dirEntry.Read(stream);
         }
 
         int IDirectoryEntry.RightSibling
@@ -238,14 +265,14 @@ namespace OleCompoundFileStorage
             }
         }
 
-        byte[] IDirectoryEntry.ToByteArray()
-        {
-            return this.dirEntry.ToByteArray();
-        }
+        //byte[] IDirectoryEntry.ToByteArray()
+        //{
+        //    return this.dirEntry.ToByteArray();
+        //}
 
-        void IDirectoryEntry.Write(System.IO.BinaryWriter bw)
+        void IDirectoryEntry.Write(System.IO.Stream stream)
         {
-            this.dirEntry.Write(bw);
+            this.dirEntry.Write(stream);
         }
 
 
@@ -295,7 +322,7 @@ namespace OleCompoundFileStorage
         }
 
         /// <summary>
-        /// Entity Name
+        /// Get entity name
         /// </summary>
         public String Name
         {
@@ -323,16 +350,6 @@ namespace OleCompoundFileStorage
             }
         }
 
-        ///// <summary>
-        ///// Structured Storage item type: stream, storage or root entity.
-        ///// </summary>
-        //public StgType ItemType
-        //{
-        //    get
-        //    {
-        //        return this.dirEntry.StgType;
-        //    }
-        //}
 
         /// <summary>
         /// Return true if item is Storage
@@ -391,7 +408,10 @@ namespace OleCompoundFileStorage
 
             set
             {
-                this.dirEntry.CreationDate = BitConverter.GetBytes((value.ToFileTime()));
+                if (this.dirEntry.StgType != StgType.StgStream && this.dirEntry.StgType != StgType.StgRoot)
+                    this.dirEntry.CreationDate = BitConverter.GetBytes((value.ToFileTime()));
+                else
+                    throw new CFException("Creation Date can only be set on storage entries");
             }
         }
 
@@ -407,8 +427,34 @@ namespace OleCompoundFileStorage
 
             set
             {
-                this.dirEntry.ModifyDate = BitConverter.GetBytes((value.ToFileTime()));
+                if (this.dirEntry.StgType != StgType.StgStream && this.dirEntry.StgType != StgType.StgRoot)
+                    this.dirEntry.ModifyDate = BitConverter.GetBytes((value.ToFileTime()));
+                else
+                    throw new CFException("Modify Date can only be set on storage entries");
             }
         }
+
+        /// <summary>
+        /// Get/Set Object class Guid for Root and Storage entries.
+        /// </summary>
+        public Guid CLSID
+        {
+            get
+            {
+                return this.dirEntry.StorageCLSID;
+            }
+            set
+            {
+                if (this.dirEntry.StgType != StgType.StgStream)
+                {
+                    this.dirEntry.StorageCLSID = value;
+                }
+                else
+                    throw new CFException("Object class GUID can only be set on Root and Storage entries");
+            }
+        }
+
+       
+
     }
 }

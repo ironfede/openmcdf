@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("OLECompoundFileStorage")]
+[assembly: AssemblyTitle("OpenMcdf")]
 [assembly: AssemblyDescription("MS Compound File Storage .NET Implementation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Federico Blaseotto")]
-[assembly: AssemblyProduct("OLECompoundFileStorage")]
-[assembly: AssemblyCopyright("Copyright © Federico Blaseotto 2010")]
+[assembly: AssemblyProduct("OpenMcdf")]
+[assembly: AssemblyCopyright("Copyright © 2010-2011, Federico Blaseotto")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,6 +32,6 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.4.2.*")]
+[assembly: AssemblyVersion("1.5.0.*")]
 
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("OLECFSTest")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("OpenMcdfTest")]

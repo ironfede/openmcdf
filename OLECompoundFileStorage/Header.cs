@@ -19,7 +19,7 @@ using System.IO;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OleCompoundFileStorage
+namespace OpenMcdf
 {
     internal class Header
     {
@@ -73,7 +73,7 @@ namespace OleCompoundFileStorage
         public ushort SectorShift
         {
             get { return sectorShift; }
-            set { sectorShift = value; }
+            
         }
 
         //32 2 Size of a short-sector in the short-stream container stream (➜6.1) in power-of-two (sssz),
@@ -83,7 +83,6 @@ namespace OleCompoundFileStorage
         public ushort MiniSectorShift
         {
             get { return miniSectorShift; }
-            set { miniSectorShift = value; }
         }
 
         //34 10 Not used
@@ -191,82 +190,124 @@ namespace OleCompoundFileStorage
 
 
         public Header()
+            : this(3)
         {
+
+        }
+
+
+        public Header(ushort version)
+        {
+
+            switch (version)
+            {
+                case 3:
+                    this.majorVersion = 3;
+                    this.sectorShift = 0x0009;
+                    break;
+
+                case 4:
+                    this.majorVersion = 4;
+                    this.sectorShift = 0x000C;
+                    break;
+
+                default:
+                    throw new CFException("Invalid Compound File Format version");
+
+
+            }
+
             for (int i = 0; i < 109; i++)
             {
                 difat[i] = Sector.FREESECT;
             }
+
+
         }
 
-        public void Write(BinaryWriter bw)
+        public void Write(Stream stream)
         {
-            bw.Write(headerSignature);
-            bw.Write(clsid);
-            bw.Write(minorVersion);
-            bw.Write(majorVersion);
-            bw.Write(byteOrder);
-            bw.Write(sectorShift);
-            bw.Write(miniSectorShift);
-            bw.Write(unUsed);
-            bw.Write(directorySectorsNumber);
-            bw.Write(fatSectorsNumber);
-            bw.Write(firstDirectorySectorID);
-            bw.Write(unUsed2);
-            bw.Write(minSizeStandardStream);
-            bw.Write(firstMiniFATSectorID);
-            bw.Write(miniFATSectorsNumber);
-            bw.Write(firstDIFATSectorID);
-            bw.Write(difatSectorsNumber);
+            StreamRW rw = new StreamRW(stream);
+
+            rw.Write(headerSignature);
+            rw.Write(clsid);
+            rw.Write(minorVersion);
+            rw.Write(majorVersion);
+            rw.Write(byteOrder);
+            rw.Write(sectorShift);
+            rw.Write(miniSectorShift);
+            rw.Write(unUsed);
+            rw.Write(directorySectorsNumber);
+            rw.Write(fatSectorsNumber);
+            rw.Write(firstDirectorySectorID);
+            rw.Write(unUsed2);
+            rw.Write(minSizeStandardStream);
+            rw.Write(firstMiniFATSectorID);
+            rw.Write(miniFATSectorsNumber);
+            rw.Write(firstDIFATSectorID);
+            rw.Write(difatSectorsNumber);
 
             foreach (int i in difat)
             {
-                bw.Write(i);
+                rw.Write(i);
             }
+
+            if (majorVersion == 4)
+            {
+                byte[] zeroHead = new byte[3584];
+                rw.Write(zeroHead);
+            }
+
+            rw.Close();
         }
 
-        public void Read(BinaryReader br)
+        public void Read(Stream stream)
         {
-            headerSignature = br.ReadBytes(8);
+            StreamRW rw = new StreamRW(stream);
+
+            headerSignature = rw.ReadBytes(8);
             CheckSignature();
-            clsid = br.ReadBytes(16);
-            minorVersion = br.ReadUInt16();
-            majorVersion = br.ReadUInt16();
+            clsid = rw.ReadBytes(16);
+            minorVersion = rw.ReadUInt16();
+            majorVersion = rw.ReadUInt16();
             CheckVersion();
-            byteOrder = br.ReadUInt16();
-            sectorShift = br.ReadUInt16();
-            miniSectorShift = br.ReadUInt16();
-            unUsed = br.ReadBytes(6);
-            directorySectorsNumber = br.ReadInt32();
-            fatSectorsNumber = br.ReadInt32();
-            firstDirectorySectorID = br.ReadInt32();
-            unUsed2 = br.ReadUInt32();
-            minSizeStandardStream = br.ReadUInt32();
-            firstMiniFATSectorID = br.ReadInt32();
-            miniFATSectorsNumber = br.ReadUInt32();
-            firstDIFATSectorID = br.ReadInt32();
-            difatSectorsNumber = br.ReadUInt32();
+            byteOrder = rw.ReadUInt16();
+            sectorShift = rw.ReadUInt16();
+            miniSectorShift = rw.ReadUInt16();
+            unUsed = rw.ReadBytes(6);
+            directorySectorsNumber = rw.ReadInt32();
+            fatSectorsNumber = rw.ReadInt32();
+            firstDirectorySectorID = rw.ReadInt32();
+            unUsed2 = rw.ReadUInt32();
+            minSizeStandardStream = rw.ReadUInt32();
+            firstMiniFATSectorID = rw.ReadInt32();
+            miniFATSectorsNumber = rw.ReadUInt32();
+            firstDIFATSectorID = rw.ReadInt32();
+            difatSectorsNumber = rw.ReadUInt32();
 
             for (int i = 0; i < 109; i++)
             {
-                this.DIFAT[i] = br.ReadInt32();
+                this.DIFAT[i] = rw.ReadInt32();
             }
+
+            rw.Close();
         }
 
-        private UInt16 SUPPORTED_VERSION = 0x0003;
+
         private void CheckVersion()
         {
-            if(this.majorVersion!= SUPPORTED_VERSION)
-                throw  new CFFileFormatException("Unsupported version. OLECFS only supports Compound Files with major version equal to 3 ");
+            if (this.majorVersion != 3 && this.majorVersion != 4)
+                throw new CFFileFormatException("Unsupported Binary File Format version: OpenMcdf only supports Compound Files with major version equal to 3 or 4 ");
         }
 
         /// <summary>
         /// Structured Storage signature
         /// </summary>
         private byte[] OLE_CFS_SIGNATURE = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
-        
+
         private void CheckSignature()
         {
-            for (int i = 0; i<headerSignature.Length;i++)
+            for (int i = 0; i < headerSignature.Length; i++)
             {
                 if (headerSignature[i] != OLE_CFS_SIGNATURE[i])
                     throw new CFFileFormatException("Invalid OLE structured storage file");

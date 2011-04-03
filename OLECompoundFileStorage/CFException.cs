@@ -19,7 +19,7 @@ using System.Runtime.Serialization;
      The Initial Developer of the Original Code is Federico Blaseotto.
 */
 
-namespace OleCompoundFileStorage
+namespace OpenMcdf
 {
     /// <summary>
     /// OpenMCDF base exception.
@@ -52,12 +52,12 @@ namespace OleCompoundFileStorage
     }
 
     /// <summary>
-    /// Exception raised when a data setter/getter method is invoked
+    /// Raised when a data setter/getter method is invoked
     /// on a stream or storage object after the disposal of the owner
     /// compound file object.
     /// </summary>
     [Serializable]
-    public class CFDisposedException : InvalidOperationException
+    public class CFDisposedException : CFException
     {
         public CFDisposedException()
             : base()
@@ -84,7 +84,7 @@ namespace OleCompoundFileStorage
     }
 
     /// <summary>
-    /// Exception raised when opening a file with invalid header
+    /// Raised when opening a file with invalid header
     /// or not supported COM/OLE Structured storage version.
     /// </summary>
     [Serializable]
@@ -115,7 +115,7 @@ namespace OleCompoundFileStorage
     }
 
     /// <summary>
-    /// Exception raised when a named stream or a storage object
+    /// Raised when a named stream or a storage object
     /// are not found in a parent storage.
     /// </summary>
     [Serializable]
@@ -138,6 +138,36 @@ namespace OleCompoundFileStorage
         }
 
         public CFItemNotFound(string message, Exception innerException)
+            : base(message, innerException)
+        {
+
+        }
+
+    }
+
+    /// <summary>
+    /// Raised when a method call is invalid for the current object state
+    /// </summary>
+    [Serializable]
+    public class CFInvalidOperation : CFException
+    {
+         public CFInvalidOperation()
+            : base()
+        {
+        }
+
+        protected CFInvalidOperation(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+        public CFInvalidOperation(string message)
+            : base(message, null)
+        {
+
+        }
+
+        public CFInvalidOperation(string message, Exception innerException)
             : base(message, innerException)
         {
 
