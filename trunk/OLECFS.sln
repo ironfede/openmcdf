@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OleCompoundFileStorage", "OLECompoundFileStorage\OleCompoundFileStorage.csproj", "{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf", "OLECompoundFileStorage\OpenMcdf.csproj", "{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructuredStorageExplorer", "TESTOpenMCDF\StructuredStorageExplorer.csproj", "{4F6323A8-9C06-4D94-808F-EBD69B8370D7}"
 EndProject
@@ -15,12 +15,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{
 	ProjectSection(SolutionItems) = preProject
 		TestFiles\MultipleStorage.cfs = TestFiles\MultipleStorage.cfs
 		TestFiles\MultipleStorage2.cfs = TestFiles\MultipleStorage2.cfs
+		TestFiles\MultipleStorage3.cfs = TestFiles\MultipleStorage3.cfs
 		TestFiles\report.xls = TestFiles\report.xls
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OleCfsTest", "OLECFSTest\OleCfsTest.csproj", "{FD339266-8842-40B4-9230-F8E84FC42AC2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdfTest", "OLECFSTest\OpenMcdfTest.csproj", "{FD339266-8842-40B4-9230-F8E84FC42AC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OleCfsMemoryTest", "OleCfsMemoryTest\OleCfsMemoryTest.csproj", "{E2BAD82D-3040-462B-BAA2-6E608A9054F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdfMemTest", "OleCfsMemoryTest\OpenMcdfMemTest.csproj", "{E2BAD82D-3040-462B-BAA2-6E608A9054F4}"
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution

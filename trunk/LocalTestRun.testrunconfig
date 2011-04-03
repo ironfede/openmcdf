@@ -5,6 +5,8 @@
     <DeploymentItem filename="TestFiles\MultipleStorage.cfs" />
     <DeploymentItem filename="TestFiles\report.xls" />
     <DeploymentItem filename="TestFiles\MultipleStorage2.cfs" />
+    <DeploymentItem filename="TestFiles\reportREAD.xls" />
+    <DeploymentItem filename="TestFiles\MultipleStorage3.cfs" />
   </Deployment>
   <TestTypeSpecific />
 </TestRunConfiguration>
