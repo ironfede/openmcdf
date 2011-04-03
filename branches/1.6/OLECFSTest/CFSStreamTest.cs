@@ -121,22 +121,6 @@ namespace OpenMcdfTest
         }
 
         [TestMethod]
-        public void Test_CHECK_PARENT_ITEM()
-        {
-            String filename = "report.xls";
-
-            CompoundFile cf = new CompoundFile(filename);
-            CFStream foundStream = cf.RootStorage.GetStream("Workbook");
-
-            byte[] temp = foundStream.GetData();
-
-            Assert.IsNotNull(temp);
-            Assert.IsTrue(temp.Length > 0);
-
-            cf.Close();
-        }
-
-        [TestMethod]
         public void Test_ZERO_LENGTH_WRITE_STREAM()
         {
             byte[] b = new byte[0];

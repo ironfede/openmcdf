@@ -75,6 +75,7 @@ namespace StructuredStorageExplorer
 
             TreeNode root = null;
             root = treeView1.Nodes.Add("Root Entry", "Root");
+            root.ImageIndex = 0;
 
             //Recursive function to get all storage and streams
             AddNodes(root, cf.RootStorage);
@@ -249,7 +250,7 @@ namespace StructuredStorageExplorer
         }
 
 
-        private CFStorage SelectedStorage(bool getParent)
+        private CFStorage SelectedStorage(bool getSelectedParent)
         {
             CFStorage result = null;
 
@@ -267,7 +268,7 @@ namespace StructuredStorageExplorer
             {
                 result = cf.RootStorage;
 
-                int navTo = getParent ? pathParts.Length - 1 : pathParts.Length;
+                int navTo = getSelectedParent ? pathParts.Length - 1 : pathParts.Length;
 
                 //Navigate into the storage, following path parts
                 for (int i = 1; i < navTo; i++)

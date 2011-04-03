@@ -92,6 +92,7 @@ namespace OpenMcdf
         {
             this.DirEntry = new DirectoryEntry(StgType.StgStorage);
             this.DirEntry.StgColor = StgColor.Black;
+            compFile.InsertNewDirectoryEntry(this.DirEntry);
         }
 
         /// <summary>
@@ -276,7 +277,7 @@ namespace OpenMcdf
             CFStorage cfo = new CFStorage(this.CompoundFile);
             ((IDirectoryEntry)cfo).SetEntryName(storageName);
 
-            CompoundFile.InsertNewDirectoryEntry(cfo);
+            
 
             // Add object to Siblings tree
             Children.Add(cfo);
