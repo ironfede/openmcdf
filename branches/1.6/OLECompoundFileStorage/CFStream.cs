@@ -30,6 +30,7 @@ namespace OpenMcdf
     /// </summary>
     public class CFStream : CFItem
     {
+
         internal CFStream(CompoundFile sectorManager)
             : base(sectorManager)
         {

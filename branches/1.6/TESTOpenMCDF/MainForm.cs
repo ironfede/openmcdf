@@ -277,8 +277,10 @@ namespace StructuredStorageExplorer
                         result = result.GetStorage(pathParts[i]);
                 }
             }
-            catch (Exception ex)
+            catch
             {
+                MessageBox.Show("Please, select a node");
+
                 result = null;
             }
 
@@ -327,6 +329,8 @@ namespace StructuredStorageExplorer
 
         private CFItem SelectedItem(bool getParent)
         {
+            if (treeView1.SelectedNode == null) return null;
+
             if (treeView1.SelectedNode.ImageIndex == 0)
                 return SelectedStorage(getParent);
             else
@@ -341,17 +345,10 @@ namespace StructuredStorageExplorer
                 return;
             }
 
-            //No export if storage
-            //if (treeView1.SelectedNode == null || treeView1.SelectedNode.ImageIndex < 1)
-            //{
-            //    MessageBox.Show("Only stream data can be exported", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            CFStorage selectedItem = SelectedItem(true) as CFStorage;
 
-            //    return;
-            //}
-
-            CFItem selectedItem = SelectedItem(true);
-            if (selectedItem.IsStorage || selectedItem.IsRoot)
-                ((CFStorage)selectedItem).Delete(SelectedItemName());
+            if (selectedItem != null && (selectedItem.IsStorage || selectedItem.IsRoot))
+                selectedItem.Delete(SelectedItemName());
 
             RefreshTree();
 
@@ -364,7 +361,6 @@ namespace StructuredStorageExplorer
             {
                 cf.Save(saveFileDialog1.FileName);
             }
-
         }
 
         private bool firstTimeChecked = true;
@@ -391,6 +387,7 @@ namespace StructuredStorageExplorer
             }
 
             this.updateCurrentFileToolStripMenuItem.Enabled = tmCommitEnabled.Checked;
+
             OpenFile();
         }
 
@@ -408,42 +405,18 @@ namespace StructuredStorageExplorer
 
                 if (cfs != null && (cfs.IsStorage || cfs.IsRoot))
                 {
-                    ((CFStorage)cfs).AddStream(streamName);
+                    try
+                    {
+                        ((CFStorage)cfs).AddStream(streamName);
+                    }
+                    catch (CFDuplicatedItemException)
+                    {
+                        MessageBox.Show("Cannot insert a duplicated item", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
 
                 RefreshTree();
             }
-        }
-
-        private void importDataStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            string fileName = String.Empty;
-            if (openDataFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                CFItem cfs = SelectedItem(true);
-                CFStream s = ((CFStorage)cfs).GetStream(SelectedItemName());
-
-
-                if (cfs != null)
-                {
-
-
-                    FileStream f = new FileStream(openDataFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    byte[] data = new byte[f.Length];
-                    f.Read(data, 0, (int)f.Length);
-                    f.Flush();
-                    f.Close();
-                    s.SetData(data);
-                }
-
-                RefreshTree();
-            }
-        }
-
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (cf != null)
-                cf.Close();
         }
 
         private void addStorageStripMenuItem1_Click(object sender, EventArgs e)
@@ -454,12 +427,54 @@ namespace StructuredStorageExplorer
                 CFItem cfs = SelectedItem(true);
                 if (cfs != null && (cfs.IsStorage || cfs.IsRoot))
                 {
-                    ((CFStorage)cfs).AddStorage(storage);
+                    try
+                    {
+                        ((CFStorage)cfs).AddStorage(storage);
+                    }
+                    catch (CFDuplicatedItemException)
+                    {
+                        MessageBox.Show("Cannot insert a duplicated item", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
 
                 RefreshTree();
             }
         }
+
+        private void importDataStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            string fileName = String.Empty;
+
+            if (openDataFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                CFStorage cfs = SelectedItem(true) as CFStorage;
+
+                if (cfs != null)
+                {
+                    CFStream s = cfs.GetStream(SelectedItemName());
+
+                    if (cfs != null && s != null)
+                    {
+                        FileStream f = new FileStream(openDataFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+                        byte[] data = new byte[f.Length];
+                        f.Read(data, 0, (int)f.Length);
+                        f.Flush();
+                        f.Close();
+                        s.SetData(data);
+                    }
+
+                    RefreshTree();
+                }
+            }
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (cf != null)
+                cf.Close();
+        }
+
+
 
 
 

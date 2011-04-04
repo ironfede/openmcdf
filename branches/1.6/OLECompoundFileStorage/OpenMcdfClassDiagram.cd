@@ -1,29 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Comment CommentText="Stream Decorator for sector chains">
-    <Position X="0.542" Y="2.042" Height="0.344" Width="2.085" />
+    <Position X="0.75" Y="3.813" Height="0.344" Width="2.085" />
   </Comment>
   <Comment CommentText="Concrete directory implementation, not exposed to the API">
-    <Position X="1" Y="4" Height="0.455" Width="2.294" />
+    <Position X="0.5" Y="5.25" Height="0.455" Width="2.294" />
   </Comment>
-  <Comment CommentText="Decorator for directory entries used in the API">
-    <Position X="4.281" Y="3.89" Height="0.406" Width="1.815" />
+  <Comment CommentText="Bridge for directory entries used in the API">
+    <Position X="6.156" Y="2.859" Height="0.406" Width="1.815" />
   </Comment>
   <Comment CommentText="Compound file header">
-    <Position X="6.188" Y="0.865" Height="0.281" Width="1.387" />
+    <Position X="4.021" Y="0.875" Height="0.281" Width="1.387" />
   </Comment>
   <Comment CommentText="Internal interface, not exposed to API">
-    <Position X="4.802" Y="2.042" Height="0.42" Width="1.44" />
+    <Position X="4.104" Y="2.542" Height="0.42" Width="1.44" />
   </Comment>
   <Class Name="OpenMcdf.Header" Collapsed="true">
-    <Position X="5.75" Y="0.5" Width="1.5" />
+    <Position X="3.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>gAAEAAAQIBQIAgEUgEIBYgDg0GEAwUAAABAAAAGQgCA=</HashCode>
       <FileName>Header.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="OpenMcdf.CFStorage" Collapsed="true">
-    <Position X="4.75" Y="5" Width="1.5" />
+    <Position X="5" Y="5" Width="1.5" />
     <Compartments>
       <Compartment Name="Properties" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
@@ -35,14 +35,14 @@
     </TypeIdentifier>
   </Class>
   <Class Name="OpenMcdf.StreamView" Collapsed="true">
-    <Position X="1" Y="1.5" Width="1.5" />
+    <Position X="1" Y="3.25" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAACAAAAQAAgGkoAIABgAAAAAAQACAAAAAGIACA=</HashCode>
       <FileName>StreamView.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="OpenMcdf.DirectoryEntry" Collapsed="true">
-    <Position X="1.5" Y="3.5" Width="1.5" />
+    <Position X="1" Y="4.75" Width="1.5" />
     <TypeIdentifier>
       <HashCode>QIQAwEAAkAAAgMQAgIDAgAQkEADAAKwgAAAsIAHEAAA=</HashCode>
       <FileName>DirectoryEntry.cs</FileName>
@@ -51,25 +51,24 @@
   </Class>
   <Class Name="OpenMcdf.CompoundFile" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="1" Y="0.5" Width="1.5" />
-    <AssociationLine Name="header" Type="OpenMcdf.Header">
-      <MemberNameLabel ManuallyPlaced="true">
-        <Position X="1.33" Y="0.11" />
-      </MemberNameLabel>
-    </AssociationLine>
     <AssociationLine Name="directoryEntries" Type="OpenMcdf.IDirectoryEntry" ManuallyRouted="true">
       <Path>
-        <Point X="1.75" Y="1.009" />
-        <Point X="1.75" Y="1.259" />
-        <Point X="2.75" Y="1.259" />
-        <Point X="2.75" Y="1.815" />
-        <Point X="5.75" Y="1.815" />
+        <Point X="2.5" Y="0.913" />
+        <Point X="2.875" Y="0.913" />
+        <Point X="2.875" Y="2.315" />
+        <Point X="3.5" Y="2.315" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="0.641" Y="-0.065" />
+        <Position X="0.131" Y="0.81" />
+      </MemberNameLabel>
+    </AssociationLine>
+    <AssociationLine Name="header" Type="OpenMcdf.Header">
+      <MemberNameLabel ManuallyPlaced="true">
+        <Position X="0.361" Y="0.225" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>ATUGoNQFUmMEQBB0AARISIAAEAEEAmRARs1BQeeQBCA=</HashCode>
+      <HashCode>ATUGgNQFUmMEQBB0AARISIAAEAEEAmRARs0BQeeQBCA=</HashCode>
       <FileName>CompoundFile.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -81,21 +80,25 @@
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
   <Class Name="OpenMcdf.CFItem" Collapsed="true">
-    <Position X="5.75" Y="3.5" Width="1.5" />
+    <Position X="6.25" Y="2" Width="1.5" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
+      <Compartment Name="Fields" Collapsed="true" />
+      <Compartment Name="Properties" Collapsed="true" />
     </Compartments>
-    <AssociationLine Name="DirEntry" Type="OpenMcdf.IDirectoryEntry" FixedToPoint="true">
+    <AssociationLine Name="DirEntry" Type="OpenMcdf.IDirectoryEntry" ManuallyRouted="true" FixedFromPoint="true" FixedToPoint="true">
       <Path>
-        <Point X="6.5" Y="3.5" />
-        <Point X="6.5" Y="2.13" />
+        <Point X="6.25" Y="2.313" />
+        <Point X="5.625" Y="2.313" />
+        <Point X="5.625" Y="2.312" />
+        <Point X="5" Y="2.312" />
       </Path>
       <MemberNameLabel ManuallyPlaced="true">
-        <Position X="-0.807" Y="0.539" />
+        <Position X="0.268" Y="0.11" />
       </MemberNameLabel>
     </AssociationLine>
     <TypeIdentifier>
-      <HashCode>QQIEAAgBFAgAgA2kgAAAgCQAACAAAZAAAwYCCAAAAiQ=</HashCode>
+      <HashCode>QAAEAAAABAAAgAUggAAAgAQAAAAAAIAAAQACCAAAAiQ=</HashCode>
       <FileName>CFItem.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -104,14 +107,14 @@
     <Lollipop Position="0.292" />
   </Class>
   <Class Name="OpenMcdf.CFStream" Collapsed="true">
-    <Position X="7" Y="5" Width="1.5" />
+    <Position X="7.5" Y="5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAABEAAAACAEAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>CFStream.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Interface Name="OpenMcdf.IDirectoryEntry" Collapsed="true">
-    <Position X="5.75" Y="1.5" Width="1.5" />
+    <Position X="3.5" Y="2" Width="1.5" />
     <Compartments>
       <Compartment Name="Properties" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />

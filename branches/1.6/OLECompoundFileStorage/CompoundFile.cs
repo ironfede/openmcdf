@@ -27,12 +27,12 @@ using System.Threading;
 
 namespace OpenMcdf
 {
-    internal class DirEntryComparer : IComparer<IDirectoryEntry>
+    internal class CFItemComparer : IComparer<CFItem>
     {
-        public int Compare(IDirectoryEntry x, IDirectoryEntry y)
+        public int Compare(CFItem x, CFItem y)
         {
             // X CompareTo Y : X > Y --> 1 ; X < Y  --> -1
-            return (x.CompareTo(y));
+            return (x.DirEntry.CompareTo(y.DirEntry));
 
             //Compare X < Y --> -1
         }
@@ -188,11 +188,11 @@ namespace OpenMcdf
             //Root -- 
             rootStorage = new CFStorage(this);
 
-            rootStorage.SetEntryName("Root Entry");
-            rootStorage.StgType = StgType.StgRoot;
-            rootStorage.StgColor = StgColor.Black;
+            rootStorage.DirEntry.SetEntryName("Root Entry");
+            rootStorage.DirEntry.StgType = StgType.StgRoot;
+            rootStorage.DirEntry.StgColor = StgColor.Black;
 
-            this.InsertNewDirectoryEntry(rootStorage);
+            this.InsertNewDirectoryEntry(rootStorage.DirEntry);
         }
 
         void OnSizeLimitReached()
@@ -240,7 +240,7 @@ namespace OpenMcdf
         {
             this.header = new Header((ushort)cfsVersion);
             this.sectorRecycle = sectorRecycle;
-            
+
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
@@ -248,11 +248,11 @@ namespace OpenMcdf
             //Root -- 
             rootStorage = new CFStorage(this);
 
-            rootStorage.SetEntryName("Root Entry");
-            rootStorage.StgType = StgType.StgRoot;
-            rootStorage.StgColor = StgColor.Black;
+            rootStorage.DirEntry.SetEntryName("Root Entry");
+            rootStorage.DirEntry.StgType = StgType.StgRoot;
+            rootStorage.DirEntry.StgColor = StgColor.Black;
 
-            this.InsertNewDirectoryEntry(rootStorage);
+            this.InsertNewDirectoryEntry(rootStorage.DirEntry);
         }
 
 
@@ -724,7 +724,7 @@ namespace OpenMcdf
                     miniStreamView.Write(s.GetData(), 0, Sector.MINISECTOR_SIZE);
                     s.Id = (int)(miniStreamView.Position - Sector.MINISECTOR_SIZE) / Sector.MINISECTOR_SIZE;
 
-                    this.rootStorage.Size = miniStreamView.Length;
+                    this.rootStorage.DirEntry.Size = miniStreamView.Length;
                 }
             }
 
@@ -753,7 +753,7 @@ namespace OpenMcdf
             //Update HEADER and root storage when ministream changes
             if (miniFAT.Count > 0)
             {
-                ((IDirectoryEntry)this.rootStorage).StartSetc = miniStream[0].Id;
+                this.rootStorage.DirEntry.StartSetc = miniStream[0].Id;
                 header.MiniFATSectorsNumber = (uint)miniFAT.Count;
                 header.FirstMiniFATSectorID = miniFAT[0].Id;
             }
@@ -850,7 +850,7 @@ namespace OpenMcdf
             //Update HEADER and root storage when ministream changes
             if (miniFAT.Count > 0)
             {
-                ((IDirectoryEntry)this.rootStorage).StartSetc = miniStream[0].Id;
+                this.rootStorage.DirEntry.StartSetc = miniStream[0].Id;
                 header.MiniFATSectorsNumber = (uint)miniFAT.Count;
                 header.FirstMiniFATSectorID = miniFAT[0].Id;
             }
@@ -1350,7 +1350,7 @@ namespace OpenMcdf
             }
         }
 
-        private IDirectoryEntry rootStorage;
+        private CFStorage rootStorage;
 
         /// <summary>
         /// The entry point object that represents the 
@@ -1408,11 +1408,16 @@ namespace OpenMcdf
             de.SID = directoryEntries.Count - 1;
         }
 
-
-        internal BinarySearchTree<IDirectoryEntry> GetChildrenTree(int sid)
+        internal void ResetDirectoryEntry(int sid)
         {
-            BinarySearchTree<IDirectoryEntry> bst
-                = new BinarySearchTree<IDirectoryEntry>(new DirEntryComparer());
+            directoryEntries[sid] = new DirectoryEntry(StgType.StgInvalid);
+        }
+
+
+        internal BinarySearchTree<CFItem> GetChildrenTree(int sid)
+        {
+            BinarySearchTree<CFItem> bst
+                = new BinarySearchTree<CFItem>(new CFItemComparer());
 
             // Load children from their original tree.
             DoLoadChildren(bst, directoryEntries[sid]);
@@ -1423,7 +1428,7 @@ namespace OpenMcdf
             return bst;
         }
 
-        private void DoLoadChildren(BinarySearchTree<IDirectoryEntry> bst, IDirectoryEntry de)
+        private void DoLoadChildren(BinarySearchTree<CFItem> bst, IDirectoryEntry de)
         {
             if (de.Child != DirectoryEntry.NOSTREAM)
             {
@@ -1439,20 +1444,37 @@ namespace OpenMcdf
                     // Add the storage child
                     bst.Add(cfs);
 
-                    BinarySearchTree<IDirectoryEntry> bstChild
-                        = new BinarySearchTree<IDirectoryEntry>(new DirEntryComparer());
+                    BinarySearchTree<CFItem> bstChild
+                        = new BinarySearchTree<CFItem>(new CFItemComparer());
 
                     cfs.SetChildrenTree(bstChild);
 
                     // Recursive call to load __direct__ children
-                    DoLoadChildren(bstChild, cfs);
+                    DoLoadChildren(bstChild, cfs.DirEntry);
                 }
 
-                DoLoadSiblings(bst, directoryEntries[de.Child]);
+                LoadSiblings(bst, directoryEntries[de.Child]);
             }
         }
 
-        private void DoLoadSiblings(BinarySearchTree<IDirectoryEntry> bst, IDirectoryEntry de)
+        // Doubling methods allows iterative behavior while avoiding
+        // to insert duplicate items
+        private void LoadSiblings(BinarySearchTree<CFItem> bst, IDirectoryEntry de)
+        {
+            if (de.LeftSibling != DirectoryEntry.NOSTREAM)
+            {
+                // If there're more left siblings load them...
+                DoLoadSiblings(bst, directoryEntries[de.LeftSibling]);
+            }
+
+            if (de.RightSibling != DirectoryEntry.NOSTREAM)
+            {
+                // If there're more right siblings load them...
+                DoLoadSiblings(bst, directoryEntries[de.RightSibling]);
+            }
+        }
+
+        private void DoLoadSiblings(BinarySearchTree<CFItem> bst, IDirectoryEntry de)
         {
             if (de.LeftSibling != DirectoryEntry.NOSTREAM)
             {
@@ -1468,12 +1490,12 @@ namespace OpenMcdf
                 bst.Add(cfs);
 
                 // If children try to load  them
-                if (((IDirectoryEntry)cfs).Child != DirectoryEntry.NOSTREAM)
+                if (cfs.DirEntry.Child != DirectoryEntry.NOSTREAM)
                 {
-                    BinarySearchTree<IDirectoryEntry> bstSib
-                        = new BinarySearchTree<IDirectoryEntry>(new DirEntryComparer());
+                    BinarySearchTree<CFItem> bstSib
+                        = new BinarySearchTree<CFItem>(new CFItemComparer());
                     cfs.SetChildrenTree(bstSib);
-                    DoLoadChildren(bstSib, cfs);
+                    DoLoadChildren(bstSib, cfs.DirEntry);
                 }
             }
 
@@ -1513,31 +1535,31 @@ namespace OpenMcdf
             }
         }
 
-        internal void RefreshSIDs(BinaryTreeNode<IDirectoryEntry> Node)
+        internal void RefreshSIDs(BinaryTreeNode<CFItem> Node)
         {
             if (Node.Value != null)
             {
-                if (Node.Left != null && (Node.Left.Value.StgType != StgType.StgInvalid))
+                if (Node.Left != null && (Node.Left.Value.DirEntry.StgType != StgType.StgInvalid))
                 {
-                    Node.Value.LeftSibling = Node.Left.Value.SID;
+                    Node.Value.DirEntry.LeftSibling = Node.Left.Value.DirEntry.SID;
                 }
                 else
                 {
-                    Node.Value.LeftSibling = DirectoryEntry.NOSTREAM;
+                    Node.Value.DirEntry.LeftSibling = DirectoryEntry.NOSTREAM;
                 }
 
-                if (Node.Right != null && (Node.Right.Value.StgType != StgType.StgInvalid))
+                if (Node.Right != null && (Node.Right.Value.DirEntry.StgType != StgType.StgInvalid))
                 {
-                    Node.Value.RightSibling = Node.Right.Value.SID;
+                    Node.Value.DirEntry.RightSibling = Node.Right.Value.DirEntry.SID;
                 }
                 else
                 {
-                    Node.Value.RightSibling = DirectoryEntry.NOSTREAM;
+                    Node.Value.DirEntry.RightSibling = DirectoryEntry.NOSTREAM;
                 }
             }
         }
 
-        internal void RefreshIterative(BinaryTreeNode<IDirectoryEntry> node)
+        internal void RefreshIterative(BinaryTreeNode<CFItem> node)
         {
             if (node == null) return;
             RefreshSIDs(node);
@@ -1782,9 +1804,9 @@ namespace OpenMcdf
             return freeList;
         }
 
-        internal void SetData(IDirectoryEntry directoryEntry, Byte[] buffer)
+        internal void SetData(CFItem cfItem, Byte[] buffer)
         {
-            SetStreamData(directoryEntry, buffer);
+            SetStreamData(cfItem, buffer);
         }
 
         /// <summary>
@@ -1792,7 +1814,7 @@ namespace OpenMcdf
         /// </summary>
         /// <param name="directoryEntry"></param>
         /// <param name="buffer"></param>
-        internal void AppendData(IDirectoryEntry directoryEntry, Byte[] buffer)
+        internal void AppendData(CFItem cfItem, Byte[] buffer)
         {
             //CheckFileLength();
 
@@ -1801,6 +1823,8 @@ namespace OpenMcdf
 
             //Quick and dirty :-)
             if (buffer.Length == 0) return;
+
+            IDirectoryEntry directoryEntry = cfItem.DirEntry;
 
             SectorType _st = SectorType.Normal;
             int _sectorSize = GetSectorSize();
@@ -1884,7 +1908,7 @@ namespace OpenMcdf
             }
         }
 
-        private void SetStreamData(IDirectoryEntry directoryEntry, Byte[] buffer)
+        private void SetStreamData(CFItem cfItem, Byte[] buffer)
         {
             //CheckFileLength();
 
@@ -1893,6 +1917,8 @@ namespace OpenMcdf
 
             //Quick and dirty :-)
             if (buffer.Length == 0) return;
+
+            IDirectoryEntry directoryEntry = cfItem.DirEntry;
 
             SectorType _st = SectorType.Normal;
             int _sectorSize = GetSectorSize();
@@ -1978,7 +2004,7 @@ namespace OpenMcdf
         {
 
             byte[] result = null;
-            IDirectoryEntry de = cFStream as IDirectoryEntry;
+            IDirectoryEntry de = cFStream.DirEntry;
 
             count = (int)Math.Min((long)(de.Size - offset), (long)count);
 
@@ -2015,7 +2041,7 @@ namespace OpenMcdf
 
             byte[] result = null;
 
-            IDirectoryEntry de = cFStream as IDirectoryEntry;
+            IDirectoryEntry de = cFStream.DirEntry;
 
             //IDirectoryEntry root = directoryEntries[0];
 

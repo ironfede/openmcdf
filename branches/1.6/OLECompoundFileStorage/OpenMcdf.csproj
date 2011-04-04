@@ -47,6 +47,7 @@
     <Compile Include="BinaryTree\TraversalMethods.cs" />
     <Compile Include="CFException.cs" />
     <Compile Include="CFItem.cs" />
+    <Compile Include="CFMock.cs" />
     <Compile Include="CFStorage.cs" />
     <Compile Include="DirectoryEntry.cs" />
     <Compile Include="Header.cs" />

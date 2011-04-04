@@ -686,6 +686,26 @@ namespace OpenMcdfTest
 
         }
 
+        [TestMethod]
+        public void Test_COPY_FROM_STREAM()
+        {
+            byte[] b = Helpers.GetBuffer(100);
+            MemoryStream ms = new MemoryStream(b);
+
+            CompoundFile cf = new CompoundFile();
+            CFStream st = cf.RootStorage.AddStream("MyImportedStream");
+            st.CopyFrom(ms);
+            ms.Close();
+            cf.Save("COPY_FROM_STREAM.cfs");
+            cf.Close();
+
+            cf = new CompoundFile("COPY_FROM_STREAM.cfs");
+            byte[] data = cf.RootStorage.GetStream("MyImportedStream").GetData();
+            
+            Assert.IsTrue(Helpers.CompareBuffer(b, data));
+
+        }
+
 
 #if LARGETEST
 
