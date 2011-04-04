@@ -175,6 +175,36 @@ namespace OpenMcdf
 
     }
 
+    /// <summary>
+    /// Raised when trying to insert a duplicated CFItem
+    /// </summary>
+    [Serializable]
+    public class CFDuplicatedItemException : CFException
+    {
+        public CFDuplicatedItemException()
+            : base()
+        {
+        }
+
+        protected CFDuplicatedItemException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+        }
+
+        public CFDuplicatedItemException(string message)
+            : base(message, null)
+        {
+
+        }
+
+        public CFDuplicatedItemException(string message, Exception innerException)
+            : base(message, innerException)
+        {
+
+        }
+
+    }
+
 
 
 }

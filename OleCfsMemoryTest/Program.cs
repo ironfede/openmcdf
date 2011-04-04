@@ -25,7 +25,7 @@ namespace OpenMcdfMemTest
 
         private static void TestCode()
         {
-            const int N_FACTOR = 1;
+            const int N_FACTOR = 1000;
 
             byte[] bA = GetBuffer(20 * 1024 * N_FACTOR, 0x0A);
             byte[] bB = GetBuffer(5 * 1024, 0x0B);
