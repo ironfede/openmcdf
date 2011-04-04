@@ -46,7 +46,7 @@ namespace OpenMcdf
     /// 
     /// </code>
     /// </example>
-    public abstract class CFItem : IDirectoryEntry, IComparable
+    public abstract class CFItem : IComparable
     {
         private CompoundFile compoundFile;
 
@@ -59,6 +59,10 @@ namespace OpenMcdf
         {
             if (compoundFile.IsClosed)
                 throw new CFDisposedException("Owner Compound file has been closed and owned items have been invalidated");
+        }
+
+        protected CFItem()
+        {
         }
 
         protected CFItem(CompoundFile compoundFile)
@@ -76,204 +80,16 @@ namespace OpenMcdf
             set { dirEntry = value; }
         }
 
-        int IDirectoryEntry.Child
-        {
-            get
-            {
-                return this.dirEntry.Child;
 
-            }
-            set
-            {
-                this.dirEntry.Child = value;
-            }
-        }
 
-        internal int CompareTo(IDirectoryEntry other)
+        internal int CompareTo(CFItem other)
         {
-            return this.dirEntry.CompareTo(other);
-        }
-
-        byte[] IDirectoryEntry.CreationDate
-        {
-            get
-            {
-                return this.dirEntry.CreationDate;
-            }
-            set
-            {
-                this.dirEntry.CreationDate = value;
-            }
-        }
-
-        byte[] IDirectoryEntry.EntryName
-        {
-            get { return this.dirEntry.EntryName; }
-        }
-
-        string IDirectoryEntry.GetEntryName()
-        {
-            return this.dirEntry.GetEntryName();
-        }
-
-        int IDirectoryEntry.LeftSibling
-        {
-            get
-            {
-                return this.dirEntry.LeftSibling;
-            }
-            set
-            {
-                this.dirEntry.LeftSibling = value;
-            }
-        }
-
-        byte[] IDirectoryEntry.ModifyDate
-        {
-            get
-            {
-                return this.dirEntry.ModifyDate;
-            }
-            set
-            {
-                this.dirEntry.ModifyDate = value;
-            }
-        }
-
-        string IDirectoryEntry.Name
-        {
-            get { return this.dirEntry.Name; }
-        }
-
-        ushort IDirectoryEntry.NameLength
-        {
-            get
-            {
-                return this.dirEntry.NameLength;
-            }
-            set
-            {
-                this.dirEntry.NameLength = value;
-            }
-        }
-
-        void IDirectoryEntry.Read(System.IO.Stream stream)
-        {
-            this.dirEntry.Read(stream);
-        }
-
-        int IDirectoryEntry.RightSibling
-        {
-            get
-            {
-                return this.dirEntry.RightSibling;
-            }
-            set
-            {
-                this.dirEntry.RightSibling = value;
-            }
-        }
-
-        void IDirectoryEntry.SetEntryName(string entryName)
-        {
-            this.dirEntry.SetEntryName(entryName);
-        }
-
-        int IDirectoryEntry.SID
-        {
-            get
-            {
-                return this.dirEntry.SID;
-            }
-            set
-            {
-                this.dirEntry.SID = value;
-            }
-        }
-
-        long IDirectoryEntry.Size
-        {
-            get
-            {
-                return this.dirEntry.Size;
-            }
-            set
-            {
-                this.dirEntry.Size = value;
-            }
+            return this.dirEntry.CompareTo(other.DirEntry);
         }
 
 
 
-        int IDirectoryEntry.StartSetc
-        {
-            get
-            {
-                return this.dirEntry.StartSetc;
-            }
-            set
-            {
-                this.dirEntry.StartSetc = value;
-            }
-        }
-
-        int IDirectoryEntry.StateBits
-        {
-            get
-            {
-                return this.dirEntry.StateBits;
-            }
-            set
-            {
-                this.dirEntry.StateBits = value;
-            }
-        }
-
-        StgColor IDirectoryEntry.StgColor
-        {
-            get
-            {
-                return this.dirEntry.StgColor;
-            }
-            set
-            {
-                this.dirEntry.StgColor = value;
-            }
-        }
-
-        StgType IDirectoryEntry.StgType
-        {
-            get
-            {
-                return this.dirEntry.StgType;
-            }
-            set
-            {
-                this.dirEntry.StgType = value;
-            }
-        }
-
-        Guid IDirectoryEntry.StorageCLSID
-        {
-            get
-            {
-                return this.dirEntry.StorageCLSID;
-            }
-            set
-            {
-                this.dirEntry.StorageCLSID = value;
-            }
-        }
-
-        //byte[] IDirectoryEntry.ToByteArray()
-        //{
-        //    return this.dirEntry.ToByteArray();
-        //}
-
-        void IDirectoryEntry.Write(System.IO.Stream stream)
-        {
-            this.dirEntry.Write(stream);
-        }
+    
 
 
 
@@ -283,7 +99,7 @@ namespace OpenMcdf
 
         public int CompareTo(object obj)
         {
-            return this.dirEntry.CompareTo(obj as IDirectoryEntry);
+            return this.dirEntry.CompareTo(((CFItem)obj).DirEntry);
         }
 
         #endregion
@@ -453,8 +269,5 @@ namespace OpenMcdf
                     throw new CFException("Object class GUID can only be set on Root and Storage entries");
             }
         }
-
-       
-
     }
 }

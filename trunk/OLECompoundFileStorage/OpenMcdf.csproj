@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\OpenMcdf.xml</DocumentationFile>
+    <NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -47,6 +48,7 @@
     <Compile Include="BinaryTree\TraversalMethods.cs" />
     <Compile Include="CFException.cs" />
     <Compile Include="CFItem.cs" />
+    <Compile Include="CFMock.cs" />
     <Compile Include="CFStorage.cs" />
     <Compile Include="DirectoryEntry.cs" />
     <Compile Include="Header.cs" />

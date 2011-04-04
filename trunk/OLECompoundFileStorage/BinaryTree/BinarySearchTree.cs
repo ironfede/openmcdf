@@ -113,7 +113,8 @@ namespace BinaryTrees
                 result = comparer.Compare(current.Value, data);
                 if (result == 0)
                     // they are equal - attempting to enter a duplicate - do nothing
-                    return;
+                    //return;
+                    throw new BSTDuplicatedException();
                 else if (result < 0)
                 {
                     // current.Value < data, must add n to current's right subtree
@@ -534,6 +535,13 @@ namespace BinaryTrees
             throw new NotImplementedException();
         }
 
+    }
 
+    public class BSTDuplicatedException : ApplicationException
+    {
+        public BSTDuplicatedException()
+            : base("Duplicated item already present in BSTree")
+        {
+        }
     }
 }
