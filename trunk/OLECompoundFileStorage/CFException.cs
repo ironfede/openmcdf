@@ -176,8 +176,13 @@ namespace OpenMcdf
     }
 
     /// <summary>
-    /// Raised when trying to insert a duplicated CFItem
+    /// Raised when trying to add a duplicated CFItem
     /// </summary>
+    /// <remarks>
+    /// Items are compared by name as indicated by specs.
+    /// Two items with the same name CANNOT be added within a storage or 
+    /// sub-storage, 
+    /// </remarks>
     [Serializable]
     public class CFDuplicatedItemException : CFException
     {

@@ -36,6 +36,7 @@
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.importDataStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.exportDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.addStorageStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.addStreamToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.removeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
@@ -46,7 +47,7 @@
             this.updateCurrentFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tmCommitEnabled = new System.Windows.Forms.ToolStripMenuItem();
             this.openDataFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.addStorageStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.newStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -99,33 +100,41 @@
             this.addStreamToolStripMenuItem,
             this.removeToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(157, 136);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(157, 114);
+            this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
             // 
             // importDataStripMenuItem1
             // 
             this.importDataStripMenuItem1.Name = "importDataStripMenuItem1";
-            this.importDataStripMenuItem1.Size = new System.Drawing.Size(179, 22);
+            this.importDataStripMenuItem1.Size = new System.Drawing.Size(156, 22);
             this.importDataStripMenuItem1.Text = "Import data...";
             this.importDataStripMenuItem1.Click += new System.EventHandler(this.importDataStripMenuItem1_Click);
             // 
             // exportDataToolStripMenuItem
             // 
             this.exportDataToolStripMenuItem.Name = "exportDataToolStripMenuItem";
-            this.exportDataToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.exportDataToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.exportDataToolStripMenuItem.Text = "Export data...";
             this.exportDataToolStripMenuItem.Click += new System.EventHandler(this.exportDataToolStripMenuItem_Click);
+            // 
+            // addStorageStripMenuItem1
+            // 
+            this.addStorageStripMenuItem1.Name = "addStorageStripMenuItem1";
+            this.addStorageStripMenuItem1.Size = new System.Drawing.Size(156, 22);
+            this.addStorageStripMenuItem1.Text = "Add storage...";
+            this.addStorageStripMenuItem1.Click += new System.EventHandler(this.addStorageStripMenuItem1_Click);
             // 
             // addStreamToolStripMenuItem
             // 
             this.addStreamToolStripMenuItem.Name = "addStreamToolStripMenuItem";
-            this.addStreamToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.addStreamToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.addStreamToolStripMenuItem.Text = "Add stream...";
             this.addStreamToolStripMenuItem.Click += new System.EventHandler(this.addStreamToolStripMenuItem_Click);
             // 
             // removeToolStripMenuItem
             // 
             this.removeToolStripMenuItem.Name = "removeToolStripMenuItem";
-            this.removeToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.removeToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
             this.removeToolStripMenuItem.Text = "Remove";
             this.removeToolStripMenuItem.Click += new System.EventHandler(this.removeToolStripMenuItem_Click);
             // 
@@ -147,10 +156,11 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.saveAsToolStripMenuItem,
-            this.toolStripSeparator1,
+            this.newStripMenuItem1,
+            this.tmCommitEnabled,
             this.updateCurrentFileToolStripMenuItem,
-            this.tmCommitEnabled});
+            this.toolStripSeparator1,
+            this.saveAsToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.fileToolStripMenuItem.Text = "File";
@@ -183,12 +193,12 @@
             this.tmCommitEnabled.Text = "Update mode enabled";
             this.tmCommitEnabled.Click += new System.EventHandler(this.tmCommitEnabled_Click);
             // 
-            // addStorageStripMenuItem1
+            // newStripMenuItem1
             // 
-            this.addStorageStripMenuItem1.Name = "addStorageStripMenuItem1";
-            this.addStorageStripMenuItem1.Size = new System.Drawing.Size(156, 22);
-            this.addStorageStripMenuItem1.Text = "Add storage...";
-            this.addStorageStripMenuItem1.Click += new System.EventHandler(this.addStorageStripMenuItem1_Click);
+            this.newStripMenuItem1.Name = "newStripMenuItem1";
+            this.newStripMenuItem1.Size = new System.Drawing.Size(190, 22);
+            this.newStripMenuItem1.Text = "New Compound File";
+            this.newStripMenuItem1.Click += new System.EventHandler(this.newStripMenuItem1_Click);
             // 
             // MainForm
             // 
@@ -231,6 +241,7 @@
         private System.Windows.Forms.ToolStripMenuItem importDataStripMenuItem1;
         private System.Windows.Forms.OpenFileDialog openDataFileDialog;
         private System.Windows.Forms.ToolStripMenuItem addStorageStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem newStripMenuItem1;
     }
 }
 

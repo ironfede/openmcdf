@@ -65,8 +65,31 @@ namespace StructuredStorageExplorer
                 treeView1.Nodes.Clear();
                 tbFileName.Text = openFileDialog1.FileName;
                 LoadFile(openFileDialog1.FileName, tmCommitEnabled.Checked);
+                canUpdate = true;
                 saveAsToolStripMenuItem.Enabled = true;
             }
+        }
+
+        private bool canUpdate = false;
+
+        private void CreateNewFile()
+        {
+            if (cf != null)
+                cf.Close();
+
+            if (fs != null)
+                fs.Close();
+
+            tbFileName.Text = String.Empty;
+
+            cf = new CompoundFile();
+            canUpdate = false;
+            saveAsToolStripMenuItem.Enabled = true;
+
+            tmCommitEnabled.Enabled = false;
+            updateCurrentFileToolStripMenuItem.Enabled = false;
+
+            RefreshTree();
         }
 
         private void RefreshTree()
@@ -393,7 +416,11 @@ namespace StructuredStorageExplorer
 
         private void updateCurrentFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            cf.Commit();
+            if (canUpdate)
+                cf.Commit();
+            else
+                MessageBox.Show("Cannot update a compound document that is not based on a stream or on a file", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
         }
 
         private void addStreamToolStripMenuItem_Click(object sender, EventArgs e)
@@ -414,6 +441,7 @@ namespace StructuredStorageExplorer
                         MessageBox.Show("Cannot insert a duplicated item", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
+
 
                 RefreshTree();
             }
@@ -472,6 +500,31 @@ namespace StructuredStorageExplorer
         {
             if (cf != null)
                 cf.Close();
+        }
+
+        private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+        {
+            CFItem s = SelectedItem(false);
+            if (s is CFStorage)
+            {
+                addStorageStripMenuItem1.Enabled = true;
+                addStreamToolStripMenuItem.Enabled = true;
+                importDataStripMenuItem1.Enabled = false;
+                exportDataToolStripMenuItem.Enabled = false;
+
+            }
+            else
+            {
+                addStorageStripMenuItem1.Enabled = false;
+                addStreamToolStripMenuItem.Enabled = false;
+                importDataStripMenuItem1.Enabled = true;
+                exportDataToolStripMenuItem.Enabled = true;
+            }
+        }
+
+        private void newStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            CreateNewFile();
         }
 
 
