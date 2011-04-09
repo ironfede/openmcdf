@@ -16,14 +16,15 @@
     <!-- SHFB properties -->
     <OutputPath>.\Help\</OutputPath>
     <HtmlHelpName>OpenMCDF</HtmlHelpName>
-    <CopyrightText>Copyright 2010 &amp;#169%3b Federico Blaseotto</CopyrightText>
+    <CopyrightText>Copyright 2010 - 2011 &amp;#169%3b Federico Blaseotto</CopyrightText>
     <FooterText>Open MCDF</FooterText>
     <HeaderText>Open MCDF</HeaderText>
     <HelpTitle>Open MCDF</HelpTitle>
     <MissingTags>Summary, AutoDocumentCtors</MissingTags>
     <DocumentationSources>
       <DocumentationSource sourceFile="..\OLECompoundFileStorage\bin\Debug\OpenMcdf.dll" />
-<DocumentationSource sourceFile="..\OLECompoundFileStorage\bin\Debug\OpenMcdf.XML" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\OLECompoundFileStorage\bin\Debug\OpenMcdf.XML" />
+    </DocumentationSources>
     <FeedbackEMailAddress>ironfede%40users.sourceforge.net</FeedbackEMailAddress>
     <BuildLogFile>
     </BuildLogFile>
@@ -45,12 +46,13 @@
     <ApiFilter>
       <Filter entryType="Namespace" fullName="BinaryTrees" isExposed="False" />
 <Filter entryType="Namespace" fullName="OpenMcdf" isExposed="True">
-  <Filter entryType="Delegate" fullName="OpenMcdf.SizeLimitReached" filterName="SizeLimitReached" isExposed="False" />
   <Filter entryType="Enumeration" fullName="OpenMcdf.StgColor" filterName="StgColor" isExposed="False" />
   <Filter entryType="Enumeration" fullName="OpenMcdf.StgType" filterName="StgType" isExposed="False" />
+  <Filter entryType="Delegate" fullName="OpenMcdf.Ver3SizeLimitReached" filterName="Ver3SizeLimitReached" isExposed="False" />
 </Filter>
 <Filter entryType="Namespace" fullName="RBTree" isExposed="False" /></ApiFilter>
-    <HelpFileVersion>1.5.0.0</HelpFileVersion>
+    <HelpFileVersion>1.5.1.0</HelpFileVersion>
+    <CollectionTocStyle>Hierarchical</CollectionTocStyle>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
        order for Visual Studio to perform the build. -->
