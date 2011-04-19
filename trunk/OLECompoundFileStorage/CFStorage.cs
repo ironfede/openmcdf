@@ -24,7 +24,7 @@ namespace OpenMcdf
     /// <summary>
     /// Action to apply to  visited items in the OLE structured storage
     /// </summary>
-    /// <param name="item">Currently visited item</param>
+    /// <param name="item">Currently visited <see cref="T:OpenMcdf.CFItem">item</see></param>
     /// <example>
     /// <code>
     /// 
@@ -109,10 +109,6 @@ namespace OpenMcdf
             this.DirEntry = dirEntry;
         }
 
-       
-
-
-
         private BinarySearchTree<CFItem> LoadChildren(int SID)
         {
             return this.CompoundFile.GetChildrenTree(SID);
@@ -123,6 +119,9 @@ namespace OpenMcdf
         /// </summary>
         /// <param name="streamName">The new stream name</param>
         /// <returns>The new <see cref="T:OpenMcdf.CFStream">stream</see> reference</returns>
+        /// <exception cref="T:OpenMcdf.CFDuplicatedItemException">Raised when adding an item with the same name of an existing one</exception>
+        /// <exception cref="T:OpenMcdf.CFDisposedException">Raised when adding a stream to a closed compound file</exception>
+        /// <exception cref="T:OpenMcdf.CFException">Raised when adding a stream with null or empty name</exception>
         /// <example>
         /// <code>
         /// 
@@ -262,6 +261,7 @@ namespace OpenMcdf
         /// </summary>
         /// <param name="storageName">The new storage name</param>
         /// <returns>Reference to the new <see cref="T:OpenMcdf.CFStorage">storage</see></returns>
+        /// <exception cref="T:OpenMcdf.CFDuplicatedItemException">Raised when adding an item with the same name of an existing one</exception>
         /// <exception cref="T:OpenMcdf.CFDisposedException">Raised when adding a storage to a closed compound file</exception>
         /// <exception cref="T:OpenMcdf.CFException">Raised when adding a storage with null or empty name</exception>
         /// <example>
@@ -306,7 +306,7 @@ namespace OpenMcdf
                 throw new CFDuplicatedItemException("An entry with name '" + storageName + "' is already present in storage '" + this.Name + "' ");
             }
 
-          
+
             CompoundFile.RefreshIterative(Children.Root);
             this.DirEntry.Child = Children.Root.Value.DirEntry.SID;
             return cfo;
@@ -422,7 +422,7 @@ namespace OpenMcdf
             this.Children.TryFind(tmp, out foundObj);
 
             if (foundObj == null)
-                throw new CFItemNotFound("Entry named [" + entryName + "] not found");
+                throw new CFItemNotFound("Entry named [" + entryName + "] was not found");
 
             //if (foundObj.GetType() != typeCheck)
             //    throw new CFException("Entry named [" + entryName + "] has not the correct type");

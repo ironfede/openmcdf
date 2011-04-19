@@ -21,6 +21,9 @@ using System.Text;
 namespace OpenMcdf
 {
 
+    /// <summary>
+    /// Used as internal template object for binary tree searches.
+    /// </summary>
     internal class CFMock: CFItem
     {
         internal CFMock(String dirName, StgType dirType): base()
