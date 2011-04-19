@@ -180,8 +180,8 @@ namespace OpenMcdf
     /// </summary>
     /// <remarks>
     /// Items are compared by name as indicated by specs.
-    /// Two items with the same name CANNOT be added within a storage or 
-    /// sub-storage, 
+    /// Two items with the same name CANNOT be added within 
+    /// the same storage or sub-storage. 
     /// </remarks>
     [Serializable]
     public class CFDuplicatedItemException : CFException

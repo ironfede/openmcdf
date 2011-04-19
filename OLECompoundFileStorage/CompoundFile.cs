@@ -49,7 +49,7 @@ namespace OpenMcdf
         /// </summary>
         Ver_3 = 3,
         /// <summary>
-        /// Compound file version 4 - Sector size is 4096 bytes.
+        /// Compound file version 4 - Sector size is 4096 bytes. Using this version could bring some compatibility problem with existing applications.
         /// </summary>
         Ver_4 = 4
     }
@@ -1408,6 +1408,10 @@ namespace OpenMcdf
             de.SID = directoryEntries.Count - 1;
         }
 
+        /// <summary>
+        /// Reset a directory entry setting it to StgInvalid in the Directory.
+        /// </summary>
+        /// <param name="sid">Sid of the directory to invalidate</param>
         internal void ResetDirectoryEntry(int sid)
         {
             directoryEntries[sid] = new DirectoryEntry(StgType.StgInvalid);
