@@ -39,7 +39,7 @@ namespace OpenMcdf
         Black = 1
     }
 
-    internal class DirectoryEntry :  IComparable, IDirectoryEntry 
+    internal class DirectoryEntry : IComparable, IDirectoryEntry
     {
 
         private int sid = -1;
@@ -121,8 +121,8 @@ namespace OpenMcdf
             byte[] temp = Encoding.Unicode.GetBytes(entryName);
             newName = new byte[64];
             Buffer.BlockCopy(temp, 0, newName, 0, temp.Length);
+            newName[temp.Length] = 0x00;
             newName[temp.Length + 1] = 0x00;
-            newName[temp.Length + 2] = 0x00;
 
             this.entryName = newName;
             this.nameLength = (ushort)(temp.Length + 2);
