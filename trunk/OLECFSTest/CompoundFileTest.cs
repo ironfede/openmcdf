@@ -90,6 +90,58 @@ namespace OpenMcdfTest
         }
 
         [TestMethod]
+        public void Test_ENTRY_NAME_LENGTH()
+        {
+            //Thanks to Mark Bosold for bug fix and unit
+
+            CompoundFile cf = new CompoundFile();
+
+            // Cannot be equal.
+            string maxCharactersStreamName = "1234567890123456789A12345678901"; // 31 chars
+            string maxCharactersStorageName = "1234567890123456789012345678901"; // 31 chars
+
+            // Try Storage entry name with max characters.
+            Assert.IsNotNull(cf.RootStorage.AddStorage(maxCharactersStorageName));
+            CFStorage strg = cf.RootStorage.GetStorage(maxCharactersStorageName);
+            Assert.IsNotNull(strg);
+            Assert.IsTrue(strg.Name == maxCharactersStorageName);
+
+
+            // Try Stream entry name with max characters.
+            Assert.IsNotNull(cf.RootStorage.AddStream(maxCharactersStreamName));
+            CFStream strm = cf.RootStorage.GetStream(maxCharactersStreamName);
+            Assert.IsNotNull(strm);
+            Assert.IsTrue(strm.Name == maxCharactersStreamName);
+
+            string tooManyCharactersEntryName = "12345678901234567890123456789012"; // 32 chars
+
+            try
+            {
+                // Try Storage entry name with too many characters.
+                cf.RootStorage.AddStorage(tooManyCharactersEntryName);
+                Assert.Fail();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is CFException);
+            }
+
+            try
+            {
+                // Try Stream entry name with too many characters.
+                cf.RootStorage.AddStream(tooManyCharactersEntryName);
+                Assert.Fail();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is CFException);
+            }
+
+            cf.Save("EntryNameLength");
+            cf.Close();
+        }
+
+        [TestMethod]
         public void Test_DELETE_WITHOUT_COMPRESSION()
         {
             String FILENAME = "MultipleStorage3.cfs";
