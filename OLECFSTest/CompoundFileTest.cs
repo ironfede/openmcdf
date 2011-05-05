@@ -251,6 +251,15 @@ namespace OpenMcdfTest
         }
 
         [TestMethod]
+        public void Test_OPEN_COMPOUND_BUG_FIX_133()
+        {
+            var f = new CompoundFile("testbad.ole");
+            CFStream cfs = f.RootStorage.GetStream("\x01Ole10Native");
+            byte[] data = cfs.GetData();
+            Assert.IsTrue(data.Length == 18140);
+        }
+
+        [TestMethod]
         public void Test_FUNCTIONAL_BEHAVIOUR()
         {
             const int N_FACTOR = 1;

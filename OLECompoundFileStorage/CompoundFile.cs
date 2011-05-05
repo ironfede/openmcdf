@@ -610,7 +610,7 @@ namespace OpenMcdf
 
             header.Read(stream);
 
-            int n_sector = Ceiling((double)((stream.Length - GetSectorSize()) / GetSectorSize()));
+            int n_sector = Ceiling(((double)(stream.Length - GetSectorSize()) / (double)GetSectorSize()));
 
             if (stream.Length > 0x7FFFFF0)
                 this._transactionLockAllocated = true;
