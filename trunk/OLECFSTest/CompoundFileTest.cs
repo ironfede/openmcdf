@@ -231,7 +231,23 @@ namespace OpenMcdfTest
             Assert.IsNotNull(temp);
 
             cf.Close();
+        }
 
+        [TestMethod]
+        public void Test_MULTIPLE_SAVE()
+        {
+            var file = new CompoundFile();
+            
+            file.Save("test.mdf");
+
+            var meta = file.
+                RootStorage.
+                AddStream("meta");
+
+            meta.AppendData(BitConverter.GetBytes(DateTime.Now.ToBinary()));
+            meta.AppendData(BitConverter.GetBytes(DateTime.Now.ToBinary()));
+
+            file.Save("test.mdf");
         }
 
         [TestMethod]
