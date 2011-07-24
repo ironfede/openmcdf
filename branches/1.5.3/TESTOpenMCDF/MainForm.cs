@@ -330,15 +330,15 @@ namespace StructuredStorageExplorer
             return result;
         }
 
-        private CFItem SelectedItem(bool getParent)
-        {
-            if (treeView1.SelectedNode == null) return null;
+        //private CFItem SelectedItem(bool getParent)
+        //{
+        //    if (treeView1.SelectedNode == null) return null;
 
-            if (treeView1.SelectedNode.ImageIndex == 0)
-                return SelectedStorage(getParent);
-            else
-                return SelectedStream(getParent);
-        }
+        //    if (treeView1.SelectedNode.ImageIndex == 0)
+        //        return SelectedStorage(getParent);
+        //    else
+        //        return SelectedStream(getParent);
+        //}
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -406,7 +406,7 @@ namespace StructuredStorageExplorer
             string streamName = String.Empty;
             if (Utils.InputBox("Add stream", "Insert stream name", ref streamName) == DialogResult.OK)
             {
-                CFItem cfs = SelectedItem(false);
+                CFItem cfs = treeView1.SelectedNode.Tag as CFItem;
 
                 if (cfs != null && (cfs.IsStorage || cfs.IsRoot))
                 {
@@ -428,9 +428,11 @@ namespace StructuredStorageExplorer
         private void addStorageStripMenuItem1_Click(object sender, EventArgs e)
         {
             string storage = String.Empty;
+
             if (Utils.InputBox("Add storage", "Insert storage name", ref storage) == DialogResult.OK)
             {
-                CFItem cfs = SelectedItem(true);
+                CFItem cfs = treeView1.SelectedNode.Tag as CFItem;
+
                 if (cfs != null && (cfs.IsStorage || cfs.IsRoot))
                 {
                     try
