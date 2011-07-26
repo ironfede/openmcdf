@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="StreamDataProvider.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -76,6 +77,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="img\disk.png" />
     <Content Include="lib\Be.Windows.Forms.HexBox.dll" />
     <Content Include="img\folder.png" />
     <Content Include="img\page_white.png" />
