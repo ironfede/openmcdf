@@ -261,7 +261,11 @@ namespace StructuredStorageExplorer
         private void updateCurrentFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (canUpdate)
+            {
+                if (hexEditor.ByteProvider != null && hexEditor.ByteProvider.HasChanges())
+                    hexEditor.ByteProvider.ApplyChanges();
                 cf.Commit();
+            }
             else
                 MessageBox.Show("Cannot update a compound document that is not based on a stream or on a file", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -379,7 +383,7 @@ namespace StructuredStorageExplorer
             TreeNode n = treeView1.GetNodeAt(e.X, e.Y);
 
             if (n != null)
-            { 
+            {
                 if (this.hexEditor.ByteProvider != null && this.hexEditor.ByteProvider.HasChanges())
                 {
                     if (MessageBox.Show("Do you want to save pending changes ?", "Save changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
@@ -411,7 +415,7 @@ namespace StructuredStorageExplorer
 
                 propertyGrid1.SelectedObject = n.Tag;
 
-               
+
 
                 CFStream targetStream = n.Tag as CFStream;
                 if (targetStream != null)
@@ -427,9 +431,9 @@ namespace StructuredStorageExplorer
 
         void hexEditor_ByteProviderChanged(object sender, EventArgs e)
         {
-          
+
         }
 
-        
+
     }
 }

@@ -176,7 +176,6 @@
             // 
             // updateCurrentFileToolStripMenuItem
             // 
-            this.updateCurrentFileToolStripMenuItem.Enabled = false;
             this.updateCurrentFileToolStripMenuItem.Image = global::StructuredStorageExplorer.Properties.Resources.disk;
             this.updateCurrentFileToolStripMenuItem.Name = "updateCurrentFileToolStripMenuItem";
             this.updateCurrentFileToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
