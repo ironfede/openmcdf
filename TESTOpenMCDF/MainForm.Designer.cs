@@ -29,9 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.btnOpenFile = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.tbFileName = new System.Windows.Forms.TextBox();
             this.treeView1 = new System.Windows.Forms.TreeView();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.importDataStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,27 +40,28 @@
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.updateCurrentFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tmCommitEnabled = new System.Windows.Forms.ToolStripMenuItem();
-            this.openDataFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.openFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.updateCurrentFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openDataFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.fileNameLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.hexEditor = new Be.Windows.Forms.HexBox();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
+            this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.Panel2.SuspendLayout();
+            this.splitContainer2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // btnOpenFile
-            // 
-            this.btnOpenFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnOpenFile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnOpenFile.Location = new System.Drawing.Point(495, 38);
-            this.btnOpenFile.Name = "btnOpenFile";
-            this.btnOpenFile.Size = new System.Drawing.Size(75, 23);
-            this.btnOpenFile.TabIndex = 0;
-            this.btnOpenFile.Text = "Open file...";
-            this.btnOpenFile.UseVisualStyleBackColor = true;
-            this.btnOpenFile.Click += new System.EventHandler(this.btnOpenFile_Click);
             // 
             // openFileDialog1
             // 
@@ -70,26 +69,15 @@
                 "db|MSI Setup files (*.msi)|*.msi|All files (*.*)|*.*";
             this.openFileDialog1.Title = "Open OLE Structured Storae file";
             // 
-            // tbFileName
-            // 
-            this.tbFileName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbFileName.Enabled = false;
-            this.tbFileName.Location = new System.Drawing.Point(12, 40);
-            this.tbFileName.Name = "tbFileName";
-            this.tbFileName.Size = new System.Drawing.Size(477, 20);
-            this.tbFileName.TabIndex = 2;
-            // 
             // treeView1
             // 
-            this.treeView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
             this.treeView1.ContextMenuStrip = this.contextMenuStrip1;
-            this.treeView1.Location = new System.Drawing.Point(12, 67);
+            this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(558, 274);
+            this.treeView1.Size = new System.Drawing.Size(241, 240);
             this.treeView1.TabIndex = 4;
+            this.treeView1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseUp);
             // 
             // contextMenuStrip1
             // 
@@ -149,66 +137,142 @@
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(582, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(729, 24);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openFileMenuItem,
             this.newStripMenuItem1,
-            this.tmCommitEnabled,
+            this.toolStripSeparator2,
             this.updateCurrentFileToolStripMenuItem,
-            this.toolStripSeparator1,
             this.saveAsToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(35, 20);
             this.fileToolStripMenuItem.Text = "File";
             // 
-            // saveAsToolStripMenuItem
+            // openFileMenuItem
             // 
-            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.saveAsToolStripMenuItem.Text = "Save As...";
-            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
-            // 
-            // updateCurrentFileToolStripMenuItem
-            // 
-            this.updateCurrentFileToolStripMenuItem.Enabled = false;
-            this.updateCurrentFileToolStripMenuItem.Name = "updateCurrentFileToolStripMenuItem";
-            this.updateCurrentFileToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.updateCurrentFileToolStripMenuItem.Text = "Update current file";
-            this.updateCurrentFileToolStripMenuItem.Click += new System.EventHandler(this.updateCurrentFileToolStripMenuItem_Click);
-            // 
-            // tmCommitEnabled
-            // 
-            this.tmCommitEnabled.CheckOnClick = true;
-            this.tmCommitEnabled.Name = "tmCommitEnabled";
-            this.tmCommitEnabled.Size = new System.Drawing.Size(190, 22);
-            this.tmCommitEnabled.Text = "Update mode enabled";
-            this.tmCommitEnabled.Click += new System.EventHandler(this.tmCommitEnabled_Click);
+            this.openFileMenuItem.Image = global::StructuredStorageExplorer.Properties.Resources.folder;
+            this.openFileMenuItem.Name = "openFileMenuItem";
+            this.openFileMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.openFileMenuItem.Text = "Open...";
+            this.openFileMenuItem.Click += new System.EventHandler(this.openFileMenuItem_Click);
             // 
             // newStripMenuItem1
             // 
+            this.newStripMenuItem1.Image = global::StructuredStorageExplorer.Properties.Resources.page_white;
             this.newStripMenuItem1.Name = "newStripMenuItem1";
-            this.newStripMenuItem1.Size = new System.Drawing.Size(190, 22);
+            this.newStripMenuItem1.Size = new System.Drawing.Size(179, 22);
             this.newStripMenuItem1.Text = "New Compound File";
             this.newStripMenuItem1.Click += new System.EventHandler(this.newStripMenuItem1_Click);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(176, 6);
+            // 
+            // updateCurrentFileToolStripMenuItem
+            // 
+            this.updateCurrentFileToolStripMenuItem.Image = global::StructuredStorageExplorer.Properties.Resources.disk;
+            this.updateCurrentFileToolStripMenuItem.Name = "updateCurrentFileToolStripMenuItem";
+            this.updateCurrentFileToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.updateCurrentFileToolStripMenuItem.Text = "Save";
+            this.updateCurrentFileToolStripMenuItem.Click += new System.EventHandler(this.updateCurrentFileToolStripMenuItem_Click);
+            // 
+            // saveAsToolStripMenuItem
+            // 
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(179, 22);
+            this.saveAsToolStripMenuItem.Text = "Save As...";
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileNameLabel});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 509);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(729, 22);
+            this.statusStrip1.TabIndex = 6;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // fileNameLabel
+            // 
+            this.fileNameLabel.Name = "fileNameLabel";
+            this.fileNameLabel.Size = new System.Drawing.Size(0, 17);
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.treeView1);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.propertyGrid1);
+            this.splitContainer1.Size = new System.Drawing.Size(243, 485);
+            this.splitContainer1.SplitterDistance = 242;
+            this.splitContainer1.TabIndex = 5;
+            // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(241, 237);
+            this.propertyGrid1.TabIndex = 0;
+            this.propertyGrid1.ToolbarVisible = false;
+            // 
+            // splitContainer2
+            // 
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer2.Name = "splitContainer2";
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.splitContainer1);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.hexEditor);
+            this.splitContainer2.Size = new System.Drawing.Size(729, 485);
+            this.splitContainer2.SplitterDistance = 243;
+            this.splitContainer2.TabIndex = 7;
+            // 
+            // hexEditor
+            // 
+            this.hexEditor.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.hexEditor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.hexEditor.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.hexEditor.LineInfoForeColor = System.Drawing.Color.Empty;
+            this.hexEditor.LineInfoVisible = true;
+            this.hexEditor.Location = new System.Drawing.Point(0, 0);
+            this.hexEditor.Name = "hexEditor";
+            this.hexEditor.ShadowSelectionColor = System.Drawing.Color.FromArgb(((int)(((byte)(100)))), ((int)(((byte)(60)))), ((int)(((byte)(188)))), ((int)(((byte)(255)))));
+            this.hexEditor.Size = new System.Drawing.Size(482, 485);
+            this.hexEditor.StringViewVisible = true;
+            this.hexEditor.TabIndex = 0;
+            this.hexEditor.UseFixedBytesPerLine = true;
+            this.hexEditor.VScrollBarVisible = true;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(582, 382);
+            this.ClientSize = new System.Drawing.Size(729, 531);
+            this.Controls.Add(this.splitContainer2);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.treeView1);
-            this.Controls.Add(this.tbFileName);
-            this.Controls.Add(this.btnOpenFile);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.Text = "Structured Storage eXplorer";
@@ -216,6 +280,14 @@
             this.contextMenuStrip1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.ResumeLayout(false);
+            this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel2.ResumeLayout(false);
+            this.splitContainer2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -223,9 +295,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Button btnOpenFile;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.TextBox tbFileName;
         private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem exportDataToolStripMenuItem;
@@ -234,14 +304,20 @@
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem tmCommitEnabled;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem updateCurrentFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addStreamToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importDataStripMenuItem1;
         private System.Windows.Forms.OpenFileDialog openDataFileDialog;
         private System.Windows.Forms.ToolStripMenuItem addStorageStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem newStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem openFileMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel fileNameLabel;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.SplitContainer splitContainer2;
+        private Be.Windows.Forms.HexBox hexEditor;
     }
 }
 

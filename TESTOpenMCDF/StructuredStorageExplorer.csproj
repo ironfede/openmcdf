@@ -33,6 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Be.Windows.Forms.HexBox, Version=1.4.6.13072, Culture=neutral, PublicKeyToken=e0e5adf0ebc99863, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -41,7 +42,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InputBox.cs" />
+    <Compile Include="StreamDataProvider.cs" />
+    <Compile Include="Utils.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -75,6 +77,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="img\disk.png" />
+    <Content Include="lib\Be.Windows.Forms.HexBox.dll" />
+    <Content Include="img\folder.png" />
+    <Content Include="img\page_white.png" />
     <Content Include="img\stream.png" />
     <Content Include="img\storage.png" />
   </ItemGroup>
