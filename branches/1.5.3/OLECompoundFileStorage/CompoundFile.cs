@@ -2248,18 +2248,43 @@ namespace OpenMcdf
             }
         }
 
-        internal int FindSID(String entryName)
+        private IList<IDirectoryEntry> FindDirectoryEntries(String entryName)
         {
-            int result = -1;
+            List<IDirectoryEntry> result = new List<IDirectoryEntry>();
 
-            int count = 0;
-
-            foreach (DirectoryEntry d in directoryEntries)
+            foreach (IDirectoryEntry d in directoryEntries)
             {
-                if (d.GetEntryName() == entryName)
-                    return count;
+                if (d.GetEntryName() == entryName && d.StgType != StgType.StgInvalid)
+                    result.Add(d);
+            }
 
-                count++;
+            return result;
+        }
+
+
+
+        /// <summary>
+        /// Get a list of all entries with a given name contained in the document.
+        /// </summary>
+        /// <param name="entryName">Name of entries to retrive</param>
+        /// <returns>A list of name-matching entries</returns>
+        /// <remarks>This function is aimed to speed up entity lookup in 
+        /// flat-structure files (only one or little more known entries)
+        /// without the performance penalty related to entities hierarchy constraints.
+        /// There is no implied hierarchy in the returned list.
+        /// </remarks>
+        public IList<CFItem> GetAllNamedEntries(String entryName)
+        {
+            IList<IDirectoryEntry> r = FindDirectoryEntries(entryName);
+            List<CFItem> result = new List<CFItem>();
+
+            foreach (IDirectoryEntry id in r)
+            {
+                if (id.GetEntryName() == entryName && id.StgType != StgType.StgInvalid)
+                {
+                    CFItem i = id.StgType == StgType.StgStorage ? (CFItem)new CFStorage(this, id) : (CFItem)new CFStream(this, id);
+                    result.Add(i);
+                }
             }
 
             return result;

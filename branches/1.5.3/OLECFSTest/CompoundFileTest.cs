@@ -237,7 +237,7 @@ namespace OpenMcdfTest
         public void Test_MULTIPLE_SAVE()
         {
             var file = new CompoundFile();
-            
+
             file.Save("test.mdf");
 
             var meta = file.
@@ -518,7 +518,7 @@ namespace OpenMcdfTest
             cf.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").SetData(bA);
             cf.Commit();
             cf.Close();
-           
+
 
             //Test Phase 7
 
@@ -526,11 +526,11 @@ namespace OpenMcdfTest
             d2 = cf.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").GetData();
             Assert.IsNotNull(d2);
             Assert.IsTrue(d2.Length == bA.Length);
-           
+
             cf.Close();
 
             //##############
-          
+
             cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.ReadOnly, true, false);
 
             var myStream = cf.RootStorage.GetStream("C");
@@ -547,5 +547,15 @@ namespace OpenMcdfTest
             Console.WriteLine(sw.ElapsedMilliseconds);
 
         }
+
+        [TestMethod]
+        public void Test_RETRIVE_ALL_NAMED_ENTRIES()
+        {
+            var f = new CompoundFile("MultipleStorage4.cfs");
+            IList<CFItem> result = f.GetAllNamedEntries("MyStream");
+
+            Assert.IsTrue(result.Count == 2);
+        }
+
     }
 }
