@@ -554,7 +554,7 @@ namespace OpenMcdfTest
             var f = new CompoundFile("MultipleStorage4.cfs");
             IList<CFItem> result = f.GetAllNamedEntries("MyStream");
 
-            Assert.IsTrue(result.Count == 2);
+            Assert.IsTrue(result.Count == 3);
         }
 
     }
