@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Be.Windows.Forms.HexBox, Version=1.4.6.13072, Culture=neutral, PublicKeyToken=e0e5adf0ebc99863, processorArchitecture=MSIL" />
+    <Reference Include="Be.Windows.Forms.HexBox, Version=1.4.8.1494, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
