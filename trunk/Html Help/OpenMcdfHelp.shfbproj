@@ -45,13 +45,14 @@
     <VisibleItems>InheritedMembers, InheritedFrameworkMembers</VisibleItems>
     <ApiFilter>
       <Filter entryType="Namespace" fullName="BinaryTrees" isExposed="False" />
-<Filter entryType="Namespace" fullName="OpenMcdf" isExposed="True">
-  <Filter entryType="Enumeration" fullName="OpenMcdf.StgColor" filterName="StgColor" isExposed="False" />
-  <Filter entryType="Enumeration" fullName="OpenMcdf.StgType" filterName="StgType" isExposed="False" />
-  <Filter entryType="Delegate" fullName="OpenMcdf.Ver3SizeLimitReached" filterName="Ver3SizeLimitReached" isExposed="False" />
-</Filter>
-<Filter entryType="Namespace" fullName="RBTree" isExposed="False" /></ApiFilter>
-    <HelpFileVersion>1.5.1.0</HelpFileVersion>
+      <Filter entryType="Namespace" fullName="OpenMcdf" isExposed="True">
+        <Filter entryType="Enumeration" fullName="OpenMcdf.StgColor" filterName="StgColor" isExposed="False" />
+        <Filter entryType="Enumeration" fullName="OpenMcdf.StgType" filterName="StgType" isExposed="False" />
+        <Filter entryType="Delegate" fullName="OpenMcdf.Ver3SizeLimitReached" filterName="Ver3SizeLimitReached" isExposed="False" />
+      </Filter>
+      <Filter entryType="Namespace" fullName="RBTree" isExposed="False" />
+    </ApiFilter>
+    <HelpFileVersion>1.5.3.0</HelpFileVersion>
     <CollectionTocStyle>Hierarchical</CollectionTocStyle>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
