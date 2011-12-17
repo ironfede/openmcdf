@@ -39,6 +39,7 @@ namespace StructuredStorageExplorer
             treeView1.ImageList.Images.Add(streamImage);
 
             saveAsToolStripMenuItem.Enabled = false;
+            updateCurrentFileToolStripMenuItem.Enabled = false ;
 
         }
 
@@ -59,6 +60,7 @@ namespace StructuredStorageExplorer
                 LoadFile(openFileDialog1.FileName, true);
                 canUpdate = true;
                 saveAsToolStripMenuItem.Enabled = true;
+                updateCurrentFileToolStripMenuItem.Enabled = true;
             }
         }
 
@@ -248,13 +250,14 @@ namespace StructuredStorageExplorer
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            saveFileDialog1.FilterIndex = 2;
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 cf.Save(saveFileDialog1.FileName);
             }
         }
 
-        private bool firstTimeChecked = true;
+        //private bool firstTimeChecked = true;
 
 
 

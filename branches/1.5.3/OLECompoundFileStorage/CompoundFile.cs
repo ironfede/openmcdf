@@ -447,8 +447,12 @@ namespace OpenMcdf
 
             //try
             //{
+#if !FLAT_WRITE
+
             int sId = -1;
             int sCount = 0;
+            int bufOffset = 0;
+#endif
             int sSize = GetSectorSize();
 
             if (header.MajorVersion != (ushort)CFSVersion.Ver_3)
@@ -460,7 +464,7 @@ namespace OpenMcdf
             CommitDirectory();
 
             bool gap = true;
-            int bufOffset = 0;
+            
 
             for (int i = 0; i < sectors.Count; i++)
             {
@@ -1215,7 +1219,7 @@ namespace OpenMcdf
                         s = new Sector(GetSectorSize(), sourceStream);
                         s.Type = SectorType.FAT;
                         s.Id = nextSecID;
-                        sectors[nextSecID] = s;///UUU
+                        sectors[nextSecID] = s;//UUU
                     }
 
                     result.Add(s);
