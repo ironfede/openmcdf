@@ -73,6 +73,7 @@
             // 
             this.treeView1.ContextMenuStrip = this.contextMenuStrip1;
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeView1.HideSelection = false;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(241, 240);
@@ -129,7 +130,7 @@
             // saveFileDialog1
             // 
             this.saveFileDialog1.DefaultExt = "*.bin";
-            this.saveFileDialog1.Filter = "Exported data files (*.bin) | *.bin|All files (*.*)|*.*";
+            this.saveFileDialog1.Filter = "Exported data files (*.bin)|*.bin|All files (*.*)|*.*";
             // 
             // menuStrip1
             // 
