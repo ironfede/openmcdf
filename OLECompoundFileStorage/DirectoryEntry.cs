@@ -285,8 +285,8 @@ namespace OpenMcdf
             }
             else
             {
-                String thisName = Encoding.Unicode.GetString(this.EntryName).ToUpper(CultureInfo.InvariantCulture);
-                String otherName = Encoding.Unicode.GetString(otherDir.EntryName).ToUpper(CultureInfo.InvariantCulture);
+                String thisName = Encoding.Unicode.GetString(this.EntryName, 0, this.NameLength).ToUpper(CultureInfo.InvariantCulture);
+                String otherName = Encoding.Unicode.GetString(otherDir.EntryName, 0, otherDir.NameLength).ToUpper(CultureInfo.InvariantCulture);
 
                 for (int z = 0; z < thisName.Length; z++)
                 {
