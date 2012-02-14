@@ -241,7 +241,7 @@ namespace OpenMcdf
             this.header = new Header((ushort)cfsVersion);
             this.sectorRecycle = sectorRecycle;
 
-
+            
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
@@ -1386,6 +1386,14 @@ namespace OpenMcdf
             get
             {
                 return rootStorage as CFStorage;
+            }
+        }
+
+        public CFSVersion Version
+        {
+            get
+            {
+                return (CFSVersion)this.header.MajorVersion;
             }
         }
 
