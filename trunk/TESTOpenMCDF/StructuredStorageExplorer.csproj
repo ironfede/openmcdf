@@ -33,7 +33,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Be.Windows.Forms.HexBox, Version=1.4.8.1494, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="Be.Windows.Forms.HexBox, Version=1.4.8.41924, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
@@ -78,11 +78,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="img\disk.png" />
-    <Content Include="lib\Be.Windows.Forms.HexBox.dll" />
     <Content Include="img\folder.png" />
     <Content Include="img\page_white.png" />
     <Content Include="img\stream.png" />
     <Content Include="img\storage.png" />
+    <Content Include="lib\Be.Windows.Forms.HexBox.dll" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OLECompoundFileStorage\OpenMcdf.csproj">
