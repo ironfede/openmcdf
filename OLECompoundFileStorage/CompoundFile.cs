@@ -252,7 +252,7 @@ namespace OpenMcdf
             rootStorage.DirEntry.StgType = StgType.StgRoot;
             rootStorage.DirEntry.StgColor = StgColor.Black;
 
-            this.InsertNewDirectoryEntry(rootStorage.DirEntry);
+            //this.InsertNewDirectoryEntry(rootStorage.DirEntry);
         }
 
 
