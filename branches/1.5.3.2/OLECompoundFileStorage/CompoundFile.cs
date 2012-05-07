@@ -241,7 +241,7 @@ namespace OpenMcdf
             this.header = new Header((ushort)cfsVersion);
             this.sectorRecycle = sectorRecycle;
 
-            
+
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
@@ -464,7 +464,7 @@ namespace OpenMcdf
             CommitDirectory();
 
             bool gap = true;
-            
+
 
             for (int i = 0; i < sectors.Count; i++)
             {
@@ -1446,7 +1446,7 @@ namespace OpenMcdf
 
         private void DoLoadChildren(BinarySearchTree<CFItem> bst, IDirectoryEntry de)
         {
-            if (de.Child != DirectoryEntry.NOSTREAM )
+            if (de.Child != DirectoryEntry.NOSTREAM)
             {
                 if (directoryEntries[de.Child].StgType == StgType.StgInvalid) return;
 
@@ -1492,7 +1492,11 @@ namespace OpenMcdf
 
         private void DoLoadSiblings(BinarySearchTree<CFItem> bst, IDirectoryEntry de)
         {
-            if (de.LeftSibling != DirectoryEntry.NOSTREAM)
+            if (
+                (de.LeftSibling != DirectoryEntry.NOSTREAM) && //if de has siblings
+                (de.LeftSibling < directoryEntries.Count) && // if this siblings id does not overflow current list
+                (directoryEntries[de.LeftSibling].StgType != StgType.StgInvalid) //if this sibling is valid...
+                )
             {
                 // If there're more left siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.LeftSibling]);
@@ -1516,7 +1520,11 @@ namespace OpenMcdf
             }
 
 
-            if (de.RightSibling != DirectoryEntry.NOSTREAM)
+            if (
+                (de.RightSibling != DirectoryEntry.NOSTREAM) &&
+                (de.RightSibling < directoryEntries.Count) && 
+                (directoryEntries[de.RightSibling].StgType != StgType.StgInvalid)
+                )
             {
                 // If there're more right siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.RightSibling]);
