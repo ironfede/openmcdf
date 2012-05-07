@@ -252,7 +252,7 @@ namespace OpenMcdf
             rootStorage.DirEntry.StgType = StgType.StgRoot;
             rootStorage.DirEntry.StgColor = StgColor.Black;
 
-            this.InsertNewDirectoryEntry(rootStorage.DirEntry);
+            //this.InsertNewDirectoryEntry(rootStorage.DirEntry);
         }
 
 
@@ -1446,7 +1446,7 @@ namespace OpenMcdf
 
         private void DoLoadChildren(BinarySearchTree<CFItem> bst, IDirectoryEntry de)
         {
-            if (de.Child != DirectoryEntry.NOSTREAM)
+            if (de.Child != DirectoryEntry.NOSTREAM )
             {
                 if (directoryEntries[de.Child].StgType == StgType.StgInvalid) return;
 
