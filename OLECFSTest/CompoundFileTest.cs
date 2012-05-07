@@ -262,13 +262,13 @@ namespace OpenMcdfTest
         [TestMethod]
         public void Test_COMPARE_DIR_ENTRY_NAME_BUG_FIX_ID_3487353()
         {
-            var f = new CompoundFile("report_name_fix.xls",UpdateMode.Update,true,true);
+            var f = new CompoundFile("report_name_fix.xls", UpdateMode.Update, true, true);
             CFStream cfs = f.RootStorage.AddStream("Poorbook");
             cfs.AppendData(Helpers.GetBuffer(20));
             f.Commit();
             f.Close();
 
-            f = new CompoundFile("report_name_fix.xls",UpdateMode.Update,true,true);
+            f = new CompoundFile("report_name_fix.xls", UpdateMode.Update, true, true);
             cfs = f.RootStorage.GetStream("Workbook");
             Assert.IsTrue(cfs.Name == "Workbook");
             f.RootStorage.Delete("PoorBook");
@@ -283,7 +283,7 @@ namespace OpenMcdfTest
             var f = new CompoundFile("report_name_fix.xls");
             CFSVersion ver = f.Version;
 
-            Assert.IsTrue(ver== CFSVersion.Ver_3);
+            Assert.IsTrue(ver == CFSVersion.Ver_3);
 
             f.Close();
         }
@@ -585,6 +585,16 @@ namespace OpenMcdfTest
 
             Assert.IsTrue(result.Count == 3);
         }
+
+        //[TestMethod]
+        //public void Test_REM()
+        //{
+        //    var f = new CompoundFile();
+
+        //    byte[] bB = Helpers.GetBuffer(5 * 1024, 0x0B); 
+        //    f.RootStorage.AddStream("Test").AppendData(bB);
+        //    f.Save("Astorage.cfs");
+        //}
 
     }
 }
