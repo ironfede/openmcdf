@@ -390,6 +390,15 @@ namespace OpenMcdf
             leftSibling = rw.ReadInt32();
             rightSibling = rw.ReadInt32();
             child = rw.ReadInt32();
+
+            // Thank you to bugaccount (BugTrack id 3519554)
+            if (stgType == StgType.StgInvalid)
+            {
+                leftSibling = NOSTREAM;
+                rightSibling = NOSTREAM;
+                child = NOSTREAM;
+            }
+
             storageCLSID = new Guid(rw.ReadBytes(16));
             stateBits = rw.ReadInt32();
             creationDate = rw.ReadBytes(8);
