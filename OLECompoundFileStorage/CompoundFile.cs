@@ -334,6 +334,57 @@ namespace OpenMcdf
         /// <summary>
         /// Load an existing compound file.
         /// </summary>
+        /// <param name="fileName">Compound file to read from</param>
+        /// <param name="sectorRecycle">If true, recycle unused sectors</param>
+        /// <param name="updateMode">Select the update mode of the underlying data file</param>
+        /// <param name="eraseFreeSectors">If true, overwrite with zeros unallocated sectors</param>
+        /// <param name="noValidationException">If true, no <see cref="T:OpenMcdf.CFCorruptedFileException">CFCorruptedFileException</see>
+        ///  will be thrown even if corrupted file is loaded. Please note that this option is could pose a potential security threat</param>
+
+        /// <example>
+        /// <code>
+        /// String srcFilename = "data_YOU_CAN_CHANGE.xls";
+        /// 
+        /// CompoundFile cf = new CompoundFile(srcFilename, UpdateMode.Update, true, true, true);
+        ///
+        /// // If "data_YOU_CAN_CHANGE.xls" is a corrupted file, no CFCorruptedFileException will be thrown
+        /// 
+        /// Random r = new Random();
+        ///
+        /// byte[] buffer = GetBuffer(r.Next(3, 4095), 0x0A);
+        ///
+        /// cf.RootStorage.AddStream("MyStream").SetData(buffer);
+        /// 
+        /// //This will persist data to the underlying media.
+        /// cf.Commit();
+        /// cf.Close();
+        ///
+        /// </code>
+        /// </example>
+        public CompoundFile(String fileName, UpdateMode updateMode, bool sectorRecycle, bool eraseFreeSectors, bool noValidationException)
+        {
+            this.sectorRecycle = sectorRecycle;
+            this.updateMode = updateMode;
+            this.eraseFreeSectors = eraseFreeSectors;
+            this.validationExceptionEnabled = !noValidationException;
+
+            LoadFile(fileName);
+
+            DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
+            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
+        }
+
+        private bool validationExceptionEnabled = true;
+
+        public bool ValidationExceptionEnabled
+        {
+            get { return validationExceptionEnabled; }
+        }
+
+
+        /// <summary>
+        /// Load an existing compound file.
+        /// </summary>
         /// <param name="stream">A stream containing a compound file to read</param>
         /// <param name="sectorRecycle">If true, recycle unused sectors</param>
         /// <param name="updateMode">Select the update mode of the underlying data file</param>
@@ -1492,11 +1543,7 @@ namespace OpenMcdf
 
         private void DoLoadSiblings(BinarySearchTree<CFItem> bst, IDirectoryEntry de)
         {
-            if (
-                (de.LeftSibling != DirectoryEntry.NOSTREAM) && //if de has siblings
-                (de.LeftSibling < directoryEntries.Count) && // if this siblings id does not overflow current list
-                (directoryEntries[de.LeftSibling].StgType != StgType.StgInvalid) //if this sibling is valid...
-                )
+            if (ValidateSibling(de.LeftSibling))
             {
                 // If there're more left siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.LeftSibling]);
@@ -1520,15 +1567,39 @@ namespace OpenMcdf
             }
 
 
-            if (
-                (de.RightSibling != DirectoryEntry.NOSTREAM) &&
-                (de.RightSibling < directoryEntries.Count) && 
-                (directoryEntries[de.RightSibling].StgType != StgType.StgInvalid)
-                )
+            if (ValidateSibling(de.RightSibling))
             {
                 // If there're more right siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.RightSibling]);
             }
+        }
+
+        private bool ValidateSibling(int sid)
+        {
+            bool flag = true;
+
+            if (sid != DirectoryEntry.NOSTREAM)
+            {  //if de has siblings
+                flag &= (sid < directoryEntries.Count);// if this siblings id does not overflow current list
+
+                if (!flag && this.validationExceptionEnabled)
+                {
+                    this.Close();
+                    throw new CFCorruptedFileException("A Directory Entry references the non-existent sid number " + sid.ToString());
+                }
+
+                flag &= (directoryEntries[sid].StgType != StgType.StgInvalid); //if this sibling is valid...
+
+                if (!flag && this.validationExceptionEnabled)
+                {
+                    this.Close();
+                    throw new CFCorruptedFileException("A Directory Entry has a valid reference to an Invalid Storage Type directory");
+                }
+
+                return flag;
+            }
+            else
+                return false;
         }
 
 

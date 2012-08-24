@@ -112,6 +112,85 @@ namespace OpenMcdfTest
 
         }
 
+        [TestMethod]
+        public void Test_VISIT_ENTRIES_CORRUPTED_FILE()
+        {
+            CompoundFile f = null;
+
+            try
+            {
+                f = new CompoundFile("mime001.doc", UpdateMode.ReadOnly, false, false, false);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is CFCorruptedFileException);
+                Assert.IsTrue(f != null && f.IsClosed);
+            }
+
+            FileStream output = null;
+
+            try
+            {
+                output = new FileStream("LogEntriesCorrupted_1.txt", FileMode.Create);
+
+                TextWriter tw = new StreamWriter(output);
+
+                VisitedEntryAction va = delegate(CFItem item)
+                   {
+                       tw.WriteLine(item.Name);
+                   };
+
+                f.RootStorage.VisitEntries(va, true);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is CFCorruptedFileException);
+                Assert.IsTrue(f != null && f.IsClosed);
+
+            }
+            finally
+            {
+                if (output != null)
+                    output.Close();
+            }
+
+            try
+            {
+                f = new CompoundFile("mime001.doc", UpdateMode.ReadOnly, false, false, true);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is CFCorruptedFileException);
+                Assert.IsTrue(f != null && f.IsClosed);
+            }
+
+            try
+            {
+                output = new FileStream("LogEntriesCorrupted_1.txt", FileMode.Create);
+
+                TextWriter tw = new StreamWriter(output);
+
+                VisitedEntryAction va = delegate(CFItem item)
+                {
+                    tw.WriteLine(item.Name);
+                };
+
+                f.RootStorage.VisitEntries(va, true);
+            }
+            catch (Exception ex)
+            {
+                Assert.IsFalse(ex is CFCorruptedFileException);
+                
+
+            }
+            finally
+            {
+                if (output != null)
+                    output.Close();
+            }
+        }
+
+
         //[TestMethod]
         //public void Test_OPEN_STORAGE_THUMBSDB()
         //{
