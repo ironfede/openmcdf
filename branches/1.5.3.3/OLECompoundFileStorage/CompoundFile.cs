@@ -363,10 +363,11 @@ namespace OpenMcdf
         /// </example>
         public CompoundFile(String fileName, UpdateMode updateMode, bool sectorRecycle, bool eraseFreeSectors, bool noValidationException)
         {
+            this.validationExceptionEnabled = !noValidationException;
+
             this.sectorRecycle = sectorRecycle;
             this.updateMode = updateMode;
             this.eraseFreeSectors = eraseFreeSectors;
-            this.validationExceptionEnabled = !noValidationException;
 
             LoadFile(fileName);
 
@@ -420,8 +421,48 @@ namespace OpenMcdf
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
         }
 
+        /// <summary>
+        /// Load an existing compound file.
+        /// </summary>
+        /// <param name="stream">A stream containing a compound file to read</param>
+        /// <param name="sectorRecycle">If true, recycle unused sectors</param>
+        /// <param name="updateMode">Select the update mode of the underlying data file</param>
+        /// <param name="eraseFreeSectors">If true, overwrite with zeros unallocated sectors</param>
+        /// <param name="noValidationException">If true, openMcdf will try to ignore invalid references or format in order to load a possibly corrupted file anyway </param>
+        /// <remarks>The 'noValidationEcxception' parameter could possibly lead to security issues so it's recommanded to use it only on trusted sources</remarks>
+        /// <example>
+        /// <code>
+        /// 
+        /// String filename = "reportREAD.xls";
+        ///   
+        /// FileStream fs = new FileStream(filename, FileMode.Open);
+        /// CompoundFile cf = new CompoundFile(fs, UpdateMode.ReadOnly, false, false, false, true);
+        /// CFStream foundStream = cf.RootStorage.GetStream("Workbook");
+        ///
+        /// byte[] temp = foundStream.GetData(); //if 'reportRead.xls' is corrupted, openMcdf will try to lad it anyway [noValidationException set true]
+        ///
+        /// Assert.IsNotNull(temp);
+        ///
+        /// cf.Close();
+        ///
+        /// </code>
+        /// </example>
+        /// <exception cref="T:OpenMcdf.CFException">Raised when trying to open a non-seekable stream</exception>
+        /// <exception cref="T:OpenMcdf.CFException">Raised stream is null</exception>
+        public CompoundFile(Stream stream, UpdateMode updateMode, bool sectorRecycle, bool eraseFreeSectors, bool noValidationException)
+        {
+            this.validationExceptionEnabled = !noValidationException;
 
+            this.sectorRecycle = sectorRecycle;
+            this.updateMode = updateMode;
+            this.eraseFreeSectors = eraseFreeSectors;
 
+            LoadStream(stream);
+
+            DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
+            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
+
+        }
         /// <summary>
         /// Load an existing compound file from a stream.
         /// </summary>
@@ -657,31 +698,40 @@ namespace OpenMcdf
         /// <param name="stream">Stream to load compound file from</param>
         private void Load(Stream stream)
         {
-
-            this.header = new Header();
-            this.directoryEntries = new List<IDirectoryEntry>();
-
-            this.sourceStream = stream;
-
-            header.Read(stream);
-
-            int n_sector = Ceiling(((double)(stream.Length - GetSectorSize()) / (double)GetSectorSize()));
-
-            if (stream.Length > 0x7FFFFF0)
-                this._transactionLockAllocated = true;
-
-
-            sectors = new SectorCollection();
-            //sectors = new ArrayList();
-            for (int i = 0; i < n_sector; i++)
+            try
             {
-                sectors.Add(null);
+                this.header = new Header();
+                this.directoryEntries = new List<IDirectoryEntry>();
+
+                this.sourceStream = stream;
+
+                header.Read(stream);
+
+                int n_sector = Ceiling(((double)(stream.Length - GetSectorSize()) / (double)GetSectorSize()));
+
+                if (stream.Length > 0x7FFFFF0)
+                    this._transactionLockAllocated = true;
+
+
+                sectors = new SectorCollection();
+                //sectors = new ArrayList();
+                for (int i = 0; i < n_sector; i++)
+                {
+                    sectors.Add(null);
+                }
+
+                LoadDirectories();
+
+                this.rootStorage
+                    = new CFStorage(this, directoryEntries[0]);
             }
+            catch (Exception)
+            {
+                if (stream != null)
+                    stream.Close();
 
-            LoadDirectories();
-
-            this.rootStorage
-                = new CFStorage(this, directoryEntries[0]);
+                throw;
+            }
         }
 
         private void LoadFile(String fileName)
@@ -1149,6 +1199,8 @@ namespace OpenMcdf
         /// <returns>A list of DIFAT sectors</returns>
         private List<Sector> GetDifatSectorChain()
         {
+            uint validationCount = 0;
+
             List<Sector> result
                 = new List<Sector>();
 
@@ -1157,6 +1209,8 @@ namespace OpenMcdf
 
             if (header.DIFATSectorsNumber != 0)
             {
+                validationCount = header.DIFATSectorsNumber;
+
                 Sector s = sectors[header.FirstDIFATSectorID] as Sector;
 
                 if (s == null) //Lazy loading
@@ -1169,7 +1223,7 @@ namespace OpenMcdf
 
                 result.Add(s);
 
-                while (true)
+                while (true && validationCount >= 0)
                 {
                     nextSecID = BitConverter.ToInt32(s.GetData(), GetSectorSize() - 4);
 
@@ -1178,6 +1232,14 @@ namespace OpenMcdf
                     // only ENDOFCHAIN should break DIFAT chain but 
                     // a lot of existing compound files use FREESECT as DIFAT chain termination
                     if (nextSecID == Sector.FREESECT || nextSecID == Sector.ENDOFCHAIN) break;
+
+                    validationCount--;
+
+                    if (validationCount < 0)
+                    {
+                        this.Close();
+                        throw new CFCorruptedFileException("DIFAT sectors count mismatched. Corrupted compound file");
+                    }
 
                     s = sectors[nextSecID] as Sector;
 
@@ -1576,30 +1638,48 @@ namespace OpenMcdf
 
         private bool ValidateSibling(int sid)
         {
-            bool flag = true;
-
             if (sid != DirectoryEntry.NOSTREAM)
-            {  //if de has siblings
-                flag &= (sid < directoryEntries.Count);// if this siblings id does not overflow current list
-
-                if (!flag && this.validationExceptionEnabled)
+            {
+                // if this siblings id does not overflow current list
+                if (sid >= directoryEntries.Count)
                 {
-                    this.Close();
-                    throw new CFCorruptedFileException("A Directory Entry references the non-existent sid number " + sid.ToString());
+                    if (this.validationExceptionEnabled)
+                    {
+                        this.Close();
+                        throw new CFCorruptedFileException("A Directory Entry references the non-existent sid number " + sid.ToString());
+                    }
+                    else
+                        return false;
                 }
 
-                flag &= (directoryEntries[sid].StgType != StgType.StgInvalid); //if this sibling is valid...
-
-                if (!flag && this.validationExceptionEnabled)
+                //if this sibling is valid...
+                if (directoryEntries[sid].StgType == StgType.StgInvalid)
                 {
-                    this.Close();
-                    throw new CFCorruptedFileException("A Directory Entry has a valid reference to an Invalid Storage Type directory");
+                    if (this.validationExceptionEnabled)
+                    {
+                        this.Close();
+                        throw new CFCorruptedFileException("A Directory Entry has a valid reference to an Invalid Storage Type directory");
+                    }
+                    else
+                        return false;
                 }
 
-                return flag;
+                if (!Enum.IsDefined(typeof(StgType), directoryEntries[sid].StgType))
+                {
+
+                    if (this.validationExceptionEnabled)
+                    {
+                        this.Close();
+                        throw new CFCorruptedFileException("A Directory Entry has an invalid Storage Type");
+                    }
+                    else
+                        return false;
+                }
+
+                return true; //No fault condition encountered for sid being validated
             }
-            else
-                return false;
+
+            return false; 
         }
 
 
