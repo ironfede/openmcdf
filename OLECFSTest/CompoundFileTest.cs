@@ -586,7 +586,27 @@ namespace OpenMcdfTest
             Assert.IsTrue(result.Count == 3);
         }
 
-      
+        [TestMethod]
+        public void Test_DIFAT_VALIDATION_CHECK()
+        {
+            CompoundFile f = null;
+            try
+            {
+                f = new CompoundFile();
+                CFStream st = f.RootStorage.AddStream("LargeStream");
+                st.AppendData(Helpers.GetBuffer(20000000)); //Forcing creation of two DIFAT sectors
+                f.Save("LargeFile.cfs");
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.Contains("DIFAT sectors count mismatched"))
+                    Assert.Fail();
+            }
+            finally
+            {
+                f.Close();
+            }
+        }
 
         //[TestMethod]
         //public void Test_REM()
