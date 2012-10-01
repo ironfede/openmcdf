@@ -42,6 +42,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.closeStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.updateCurrentFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -147,6 +148,7 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openFileMenuItem,
             this.newStripMenuItem1,
+            this.closeStripMenuItem1,
             this.toolStripSeparator2,
             this.updateCurrentFileToolStripMenuItem,
             this.saveAsToolStripMenuItem});
@@ -169,6 +171,13 @@
             this.newStripMenuItem1.Size = new System.Drawing.Size(179, 22);
             this.newStripMenuItem1.Text = "New Compound File";
             this.newStripMenuItem1.Click += new System.EventHandler(this.newStripMenuItem1_Click);
+            // 
+            // closeStripMenuItem1
+            // 
+            this.closeStripMenuItem1.Name = "closeStripMenuItem1";
+            this.closeStripMenuItem1.Size = new System.Drawing.Size(179, 22);
+            this.closeStripMenuItem1.Text = "Close file";
+            this.closeStripMenuItem1.Click += new System.EventHandler(this.closeStripMenuItem1_Click);
             // 
             // toolStripSeparator2
             // 
@@ -319,6 +328,7 @@
         private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private Be.Windows.Forms.HexBox hexEditor;
+        private System.Windows.Forms.ToolStripMenuItem closeStripMenuItem1;
     }
 }
 
