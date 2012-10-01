@@ -72,6 +72,9 @@ namespace StructuredStorageExplorer
             fileNameLabel.Text = String.Empty;
             saveAsToolStripMenuItem.Enabled = false ;
             updateCurrentFileToolStripMenuItem.Enabled = false;
+
+            propertyGrid1.SelectedObject = null;
+            hexEditor.ByteProvider = null;
         }
 
         private bool canUpdate = false;
@@ -136,6 +139,7 @@ namespace StructuredStorageExplorer
             catch (Exception ex)
             {
                 treeView1.Nodes.Clear();
+                fileNameLabel.Text = String.Empty;
                 MessageBox.Show("Internal error: " + ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -437,6 +441,14 @@ namespace StructuredStorageExplorer
 
         private void closeStripMenuItem1_Click(object sender, EventArgs e)
         {
+            if (this.hexEditor.ByteProvider != null && this.hexEditor.ByteProvider.HasChanges())
+            {
+                if (MessageBox.Show("Do you want to save pending changes ?", "Save changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    this.hexEditor.ByteProvider.ApplyChanges();
+                }
+            }
+
             CloseCurrentFile();
         }
 

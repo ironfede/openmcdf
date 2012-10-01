@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("OpenMcdf")]
-[assembly: AssemblyDescription("MS Compound File Storage .NET Implementation")]
+[assembly: AssemblyTitle("OpenMcdfPerfTest")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Federico Blaseotto")]
-[assembly: AssemblyProduct("OpenMcdf")]
-[assembly: AssemblyCopyright("Copyright © 2010-2011, Federico Blaseotto")]
+[assembly: AssemblyCompany("-")]
+[assembly: AssemblyProduct("OpenMcdfPerfTest")]
+[assembly: AssemblyCopyright("Copyright © - 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("ffc13791-ddf0-4d14-bd64-575aba119190")]
+[assembly: Guid("c3a84d86-d1be-4fdc-8294-169e1f6747d8")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,6 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.5.4.*")]
-
-[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("OpenMcdfTest")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

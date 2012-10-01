@@ -340,14 +340,12 @@ namespace OpenMcdf
         /// <param name="eraseFreeSectors">If true, overwrite with zeros unallocated sectors</param>
         /// <param name="noValidationException">If true, no <see cref="T:OpenMcdf.CFCorruptedFileException">CFCorruptedFileException</see>
         ///  will be thrown even if corrupted file is loaded. Please note that this option is could pose a potential security threat</param>
-
         /// <example>
         /// <code>
         /// String srcFilename = "data_YOU_CAN_CHANGE.xls";
         /// 
         /// CompoundFile cf = new CompoundFile(srcFilename, UpdateMode.Update, true, true, true);
         ///
-        /// // If "data_YOU_CAN_CHANGE.xls" is a corrupted file, no CFCorruptedFileException will be thrown
         /// 
         /// Random r = new Random();
         ///
@@ -741,19 +739,31 @@ namespace OpenMcdf
 
             FileStream fs = null;
 
-            if (this.updateMode == UpdateMode.ReadOnly)
+            try
             {
-                fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+                if (this.updateMode == UpdateMode.ReadOnly)
+                {
+                    fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+                }
+                else
+                {
+                    fs = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+                }
+
+                Load(fs);
 
             }
-            else
+            catch (Exception ex)
             {
-                fs = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+                if (fs != null)
+                    fs.Close();
 
+
+                throw;
             }
 
 
-            Load(fs);
         }
 
         private void LoadStream(Stream stream)
@@ -1199,7 +1209,7 @@ namespace OpenMcdf
         /// <returns>A list of DIFAT sectors</returns>
         private List<Sector> GetDifatSectorChain()
         {
-            uint validationCount = 0;
+            int validationCount = 0;
 
             List<Sector> result
                 = new List<Sector>();
@@ -1209,7 +1219,7 @@ namespace OpenMcdf
 
             if (header.DIFATSectorsNumber != 0)
             {
-                validationCount = header.DIFATSectorsNumber;
+                validationCount = (int)header.DIFATSectorsNumber;
 
                 Sector s = sectors[header.FirstDIFATSectorID] as Sector;
 
@@ -1380,7 +1390,12 @@ namespace OpenMcdf
                 result.Add(s);
 
                 fatStream.Seek(nextSecID * 4, SeekOrigin.Begin);
-                nextSecID = fatStream.ReadInt32();
+                int next = fatStream.ReadInt32();
+
+                if (next != nextSecID)
+                    nextSecID = next;
+                else
+                    throw new CFCorruptedFileException("Cyclic sector chain found. File is corrupted");
             }
 
 
@@ -1566,21 +1581,7 @@ namespace OpenMcdf
                 if (directoryEntries[de.Child].StgType == StgType.StgStream)
                     bst.Add(new CFStream(this, directoryEntries[de.Child]));
                 else
-                {
-                    CFStorage cfs
-                        = new CFStorage(this, directoryEntries[de.Child]);
-
-                    // Add the storage child
-                    bst.Add(cfs);
-
-                    BinarySearchTree<CFItem> bstChild
-                        = new BinarySearchTree<CFItem>(new CFItemComparer());
-
-                    cfs.SetChildrenTree(bstChild);
-
-                    // Recursive call to load __direct__ children
-                    DoLoadChildren(bstChild, cfs.DirEntry);
-                }
+                    bst.Add(new CFStorage(this, directoryEntries[de.Child]));
 
                 LoadSiblings(bst, directoryEntries[de.Child]);
             }
@@ -1613,21 +1614,9 @@ namespace OpenMcdf
 
             if (directoryEntries[de.SID].StgType == StgType.StgStream)
                 bst.Add(new CFStream(this, directoryEntries[de.SID]));
-            else
-            {
-                CFStorage cfs = new CFStorage(this, directoryEntries[de.SID]);
-                bst.Add(cfs);
-
-                // If children try to load  them
-                if (cfs.DirEntry.Child != DirectoryEntry.NOSTREAM)
-                {
-                    BinarySearchTree<CFItem> bstSib
-                        = new BinarySearchTree<CFItem>(new CFItemComparer());
-                    cfs.SetChildrenTree(bstSib);
-                    DoLoadChildren(bstSib, cfs.DirEntry);
-                }
-            }
-
+            else if (directoryEntries[de.SID].StgType == StgType.StgStorage)
+                bst.Add(new CFStorage(this, directoryEntries[de.SID]));
+            
 
             if (ValidateSibling(de.RightSibling))
             {
@@ -1679,7 +1668,7 @@ namespace OpenMcdf
                 return true; //No fault condition encountered for sid being validated
             }
 
-            return false; 
+            return false;
         }
 
 
