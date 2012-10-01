@@ -42,6 +42,7 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.closeStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.updateCurrentFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,7 +53,6 @@
             this.propertyGrid1 = new System.Windows.Forms.PropertyGrid();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.hexEditor = new Be.Windows.Forms.HexBox();
-            this.closeStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -172,6 +172,13 @@
             this.newStripMenuItem1.Text = "New Compound File";
             this.newStripMenuItem1.Click += new System.EventHandler(this.newStripMenuItem1_Click);
             // 
+            // closeStripMenuItem1
+            // 
+            this.closeStripMenuItem1.Name = "closeStripMenuItem1";
+            this.closeStripMenuItem1.Size = new System.Drawing.Size(179, 22);
+            this.closeStripMenuItem1.Text = "Close file";
+            this.closeStripMenuItem1.Click += new System.EventHandler(this.closeStripMenuItem1_Click);
+            // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
@@ -267,13 +274,6 @@
             this.hexEditor.TabIndex = 0;
             this.hexEditor.UseFixedBytesPerLine = true;
             this.hexEditor.VScrollBarVisible = true;
-            // 
-            // closeStripMenuItem1
-            // 
-            this.closeStripMenuItem1.Name = "closeStripMenuItem1";
-            this.closeStripMenuItem1.Size = new System.Drawing.Size(179, 22);
-            this.closeStripMenuItem1.Text = "Close";
-            this.closeStripMenuItem1.Click += new System.EventHandler(this.closeStripMenuItem1_Click);
             // 
             // MainForm
             // 

@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="img\disk.png" />
+    <Content Include="img\door_out.png" />
     <Content Include="img\folder.png" />
     <Content Include="img\page_white.png" />
     <Content Include="img\stream.png" />

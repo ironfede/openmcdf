@@ -327,5 +327,25 @@ namespace OpenMcdfTest
                 Assert.IsTrue(ex is CFDisposedException);
             }
         }
+
+        [TestMethod]
+        public void Test_LAZY_LOAD_CHILDREN_()
+        {
+            CompoundFile cf = new CompoundFile();
+            cf.RootStorage.AddStorage("Level_1")
+                .AddStorage("Level_2")
+                .AddStream("Level2Stream")
+                .SetData(Helpers.GetBuffer(100));
+
+            cf.Save("Hel1");
+
+            cf.Close();
+
+            cf = new CompoundFile("Hel1");
+            IList<CFItem> i = cf.GetAllNamedEntries("Level2Stream");
+            Assert.IsNotNull(i[0]);
+            cf.Save("Hel2");
+            cf.Close();
+        }
     }
 }
