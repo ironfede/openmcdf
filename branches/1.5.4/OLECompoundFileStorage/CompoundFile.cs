@@ -1377,7 +1377,10 @@ namespace OpenMcdf
             while (true)
             {
                 if (nextSecID == Sector.ENDOFCHAIN) break;
-
+                
+                if (nextSecID >= sectors.Count)
+                    throw new CFCorruptedFileException(String.Format("Next Sector ID reference an out of range sector. NextID : {0} while sector count {1}", nextSecID, sectors.Count));
+                
                 Sector s = sectors[nextSecID] as Sector;
                 if (s == null)
                 {
@@ -1616,7 +1619,7 @@ namespace OpenMcdf
                 bst.Add(new CFStream(this, directoryEntries[de.SID]));
             else if (directoryEntries[de.SID].StgType == StgType.StgStorage)
                 bst.Add(new CFStorage(this, directoryEntries[de.SID]));
-            
+
 
             if (ValidateSibling(de.RightSibling))
             {
