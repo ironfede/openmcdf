@@ -132,15 +132,21 @@ namespace OpenMcdfTest
 
             try
             {
-                myStream.SetData(b);
+                myStream.SetData(b); cf.Save("ZERO_LENGTH_STREAM.cfs");
             }
             catch
             {
                 Assert.Fail("Failed setting zero length stream");
             }
+            finally
+            {
+                if (cf != null)
+                    cf.Close();
+            }
 
-            cf.Save("ZERO_LENGTH_STREAM.cfs");
-            cf.Close();
+            if (File.Exists("ZERO_LENGTH_STREAM.cfs"))
+                File.Delete("ZERO_LENGTH_STREAM.cfs");
+
         }
 
         [TestMethod]
@@ -184,6 +190,13 @@ namespace OpenMcdfTest
             {
                 cfo.Close();
             }
+
+            if (File.Exists("ZERO_LENGTH_STREAM_RE.cfs"))
+                File.Delete("ZERO_LENGTH_STREAM_RE.cfs");
+
+            if (File.Exists("ZERO_LENGTH_STREAM_RE2.cfs"))
+                File.Delete("ZERO_LENGTH_STREAM_RE2.cfs");
+
         }
 
 
@@ -212,6 +225,10 @@ namespace OpenMcdfTest
             Assert.IsTrue(Helpers.CompareBuffer(b, st.GetData()));
 
             cf2.Close();
+
+            if (File.Exists("WRITE_STREAM_WITH_DIFAT.cfs"))
+                File.Delete("WRITE_STREAM_WITH_DIFAT.cfs");
+
         }
 
 
@@ -286,6 +303,14 @@ namespace OpenMcdfTest
             Assert.IsTrue(Helpers.CompareBuffer(bufferB, bufferC), "DATA INTEGRITY FAILED");
 
             cfc.Close();
+
+            if (File.Exists("WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs"))
+                File.Delete("WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs");
+
+
+            if (File.Exists("WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs"))
+                File.Delete("WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
+
         }
 
         [TestMethod]
@@ -307,6 +332,10 @@ namespace OpenMcdfTest
             byte[] c = cf.RootStorage.GetStream("Workbook").GetData();
             Assert.IsTrue(c.Length == BUFFER_LENGTH);
             cf.Close();
+
+            if (File.Exists("reportRW_SMALL.xls"))
+                File.Delete("reportRW_SMALL.xls");
+
         }
 
         [TestMethod]
@@ -327,6 +356,10 @@ namespace OpenMcdfTest
             byte[] c = cf.RootStorage.GetStream("\x05SummaryInformation").GetData();
             Assert.IsTrue(c.Length == TEST_LENGTH);
             cf.Close();
+
+            if (File.Exists("RE_WRITE_SMALLER_MINI_STREAM.xls"))
+                File.Delete("RE_WRITE_SMALLER_MINI_STREAM.xls");
+
         }
 
         [TestMethod]
@@ -346,6 +379,11 @@ namespace OpenMcdfTest
 
             cf.Commit();
             cf.Close();
+
+
+            if (File.Exists("reportOverwrite.xls"))
+                File.Delete("reportOverwrite.xls");
+
         }
 
         [TestMethod]
@@ -389,6 +427,14 @@ namespace OpenMcdfTest
 
             cf.Save(dstFilename + "PP");
             cf.Close();
+
+            if (File.Exists("reportOverwriteMultiple.xls"))
+                File.Delete("reportOverwriteMultiple.xls");
+
+            if (File.Exists("reportOverwriteMultiple.xlsPP"))
+                File.Delete("reportOverwriteMultiple.xlsPP");
+
+
         }
 
         [TestMethod]
@@ -417,6 +463,11 @@ namespace OpenMcdfTest
 
             larger.Close();
             smaller.Close();
+
+            if (File.Exists("reportOverwriteMultiple.xlsPP"))
+                File.Delete("reportOverwriteMultiple.xlsPP");
+
+
         }
 
         [TestMethod]
@@ -438,6 +489,11 @@ namespace OpenMcdfTest
 
             cf.Commit();
             cf.Close();
+
+            if (File.Exists("reportOverwrite2.xlsPP"))
+                File.Delete("reportOverwrite2.xlsPP");
+
+
         }
 
 
@@ -484,13 +540,21 @@ namespace OpenMcdfTest
             sm.SetData(b);
 
             cf.Save(filename);
+            cf.Close();
 
             CompoundFile cf2 = new CompoundFile(filename);
             CFStorage st2 = cf2.RootStorage.GetStorage("MyStorage");
             CFStream sm2 = st2.GetStream("MyStream");
+            cf2.Close();
 
             Assert.IsNotNull(sm2);
             Assert.IsTrue(sm2.Size == 220);
+
+
+            if (File.Exists(filename))
+                File.Delete(filename);
+
+
         }
 
         [TestMethod]
@@ -701,7 +765,7 @@ namespace OpenMcdfTest
 
             cf = new CompoundFile("COPY_FROM_STREAM.cfs");
             byte[] data = cf.RootStorage.GetStream("MyImportedStream").GetData();
-            
+
             Assert.IsTrue(Helpers.CompareBuffer(b, data));
 
         }

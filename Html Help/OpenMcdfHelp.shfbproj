@@ -16,7 +16,7 @@
     <!-- SHFB properties -->
     <OutputPath>.\Help\</OutputPath>
     <HtmlHelpName>OpenMCDF</HtmlHelpName>
-    <CopyrightText>Copyright 2010 - 2011 &amp;#169%3b Federico Blaseotto</CopyrightText>
+    <CopyrightText>Copyright 2010 - 2012 &amp;#169%3b Federico Blaseotto</CopyrightText>
     <FooterText>Open MCDF</FooterText>
     <HeaderText>Open MCDF</HeaderText>
     <HelpTitle>Open MCDF</HelpTitle>

@@ -77,12 +77,6 @@ namespace OpenMcdf
             }
         }
 
-        internal void SetChildrenTree(BinarySearchTree<CFItem> bst)
-        {
-            children = bst;
-        }
-
-
         /// <summary>
         /// Create a new CFStorage
         /// </summary>

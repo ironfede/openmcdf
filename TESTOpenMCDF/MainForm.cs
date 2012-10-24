@@ -39,7 +39,7 @@ namespace StructuredStorageExplorer
             treeView1.ImageList.Images.Add(streamImage);
 
             saveAsToolStripMenuItem.Enabled = false;
-            updateCurrentFileToolStripMenuItem.Enabled = false ;
+            updateCurrentFileToolStripMenuItem.Enabled = false;
 
         }
 
@@ -49,11 +49,7 @@ namespace StructuredStorageExplorer
         {
             if (!String.IsNullOrEmpty(openFileDialog1.FileName))
             {
-                if (cf != null)
-                    cf.Close();
-
-                if (fs != null)
-                    fs.Close();
+                CloseCurrentFile();
 
                 treeView1.Nodes.Clear();
                 fileNameLabel.Text = openFileDialog1.FileName;
@@ -64,9 +60,7 @@ namespace StructuredStorageExplorer
             }
         }
 
-        private bool canUpdate = false;
-
-        private void CreateNewFile()
+        private void CloseCurrentFile()
         {
             if (cf != null)
                 cf.Close();
@@ -74,7 +68,20 @@ namespace StructuredStorageExplorer
             if (fs != null)
                 fs.Close();
 
+            treeView1.Nodes.Clear();
             fileNameLabel.Text = String.Empty;
+            saveAsToolStripMenuItem.Enabled = false ;
+            updateCurrentFileToolStripMenuItem.Enabled = false;
+
+            propertyGrid1.SelectedObject = null;
+            hexEditor.ByteProvider = null;
+        }
+
+        private bool canUpdate = false;
+
+        private void CreateNewFile()
+        {
+            CloseCurrentFile();
 
             cf = new CompoundFile();
             canUpdate = false;
@@ -120,7 +127,7 @@ namespace StructuredStorageExplorer
                 //Load file
                 if (enableCommit)
                 {
-                    cf = new CompoundFile(fs, UpdateMode.Update, true, true);
+                    cf = new CompoundFile(fs, UpdateMode.Update, true, true, false);
                 }
                 else
                 {
@@ -132,6 +139,7 @@ namespace StructuredStorageExplorer
             catch (Exception ex)
             {
                 treeView1.Nodes.Clear();
+                fileNameLabel.Text = String.Empty;
                 MessageBox.Show("Internal error: " + ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -178,7 +186,6 @@ namespace StructuredStorageExplorer
 
         private void exportDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
             //No export if storage
             if (treeView1.SelectedNode == null || !((CFItem)treeView1.SelectedNode.Tag).IsStream)
             {
@@ -240,8 +247,6 @@ namespace StructuredStorageExplorer
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
-
             TreeNode n = treeView1.SelectedNode;
             ((CFStorage)n.Parent.Tag).Delete(n.Name);
 
@@ -256,10 +261,6 @@ namespace StructuredStorageExplorer
                 cf.Save(saveFileDialog1.FileName);
             }
         }
-
-        //private bool firstTimeChecked = true;
-
-
 
         private void updateCurrentFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -358,6 +359,7 @@ namespace StructuredStorageExplorer
 
         private void newStripMenuItem1_Click(object sender, EventArgs e)
         {
+            
             CreateNewFile();
         }
 
@@ -435,6 +437,19 @@ namespace StructuredStorageExplorer
         void hexEditor_ByteProviderChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void closeStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (this.hexEditor.ByteProvider != null && this.hexEditor.ByteProvider.HasChanges())
+            {
+                if (MessageBox.Show("Do you want to save pending changes ?", "Save changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                {
+                    this.hexEditor.ByteProvider.ApplyChanges();
+                }
+            }
+
+            CloseCurrentFile();
         }
 
 
