@@ -385,6 +385,7 @@ namespace OpenMcdfTest
 
 
             File.Copy("8_Streams.cfs", "6_Streams.cfs", true);
+            File.Delete("8_Streams.cfs");
 
             //###########
 
@@ -586,6 +587,83 @@ namespace OpenMcdfTest
             Assert.IsTrue(result.Count == 3);
         }
 
+
+        [TestMethod]
+        public void Test_CORRUPTED_CYCLIC_FAT_CHECK()
+        {
+            CompoundFile f = null;
+            try
+            {
+                f = new CompoundFile("CyclicFAT.cfs");
+
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is CFCorruptedFileException);
+            }
+            finally
+            {
+                if (f != null)
+                    f.Close();
+            }
+        }
+
+        [TestMethod]
+        public void Test_DIFAT_CHECK()
+        {
+            CompoundFile f = null;
+            try
+            {
+                f = new CompoundFile();
+                CFStream st = f.RootStorage.AddStream("LargeStream");
+                st.AppendData(Helpers.GetBuffer(20000000, 0x0A)); //Forcing creation of two DIFAT sectors
+                byte[] b1 = Helpers.GetBuffer(3, 0x0B);
+                st.AppendData(b1); //Forcing creation of two DIFAT sectors
+
+                f.Save("$OpenMcdf$LargeFile.cfs");
+
+                f.Close();
+
+                int cnt = 3;
+                f = new CompoundFile("$OpenMcdf$LargeFile.cfs");
+                byte[] b2 = f.RootStorage.GetStream("LargeStream").GetData(20000000, ref cnt);
+                f.Close();
+                Assert.IsTrue(Helpers.CompareBuffer(b1, b2));
+            }
+            finally
+            {
+                if (f != null)
+                    f.Close();
+
+                if (File.Exists("$OpenMcdf$LargeFile.cfs"))
+                    File.Delete("$OpenMcdf$LargeFile.cfs");
+            }
+        }
+
+        //[TestMethod]
+        //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
+        //{
+
+        //    CompoundFile cf = null;
+        //    try
+        //    {
+        //        cf = new CompoundFile("CiclycDFAT.cfs");
+        //        CFStorage s = cf.RootStorage.GetStorage("MyStorage");
+        //        CFStream st = s.GetStream("MyStream");
+        //        Assert.IsTrue(st.Size > 0);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Assert.IsTrue(ex is CFCorruptedFileException);
+        //    }
+        //    finally
+        //    {
+        //        if (cf != null)
+        //        {
+        //            cf.Close();
+        //        }
+        //    }
+        //}
         //[TestMethod]
         //public void Test_REM()
         //{
