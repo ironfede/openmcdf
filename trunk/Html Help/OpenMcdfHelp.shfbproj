@@ -22,9 +22,8 @@
     <HelpTitle>Open MCDF</HelpTitle>
     <MissingTags>Summary, AutoDocumentCtors</MissingTags>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\OLECompoundFileStorage\bin\Debug\OpenMcdf.dll" />
-      <DocumentationSource sourceFile="..\OLECompoundFileStorage\bin\Debug\OpenMcdf.XML" />
-    </DocumentationSources>
+      <DocumentationSource sourceFile="..\OLECompoundFileStorage\bin\Release\OpenMcdf.dll" />
+<DocumentationSource sourceFile="..\OLECompoundFileStorage\bin\Release\OpenMcdf.XML" /></DocumentationSources>
     <FeedbackEMailAddress>ironfede%40users.sourceforge.net</FeedbackEMailAddress>
     <BuildLogFile>
     </BuildLogFile>
@@ -52,7 +51,7 @@
       </Filter>
       <Filter entryType="Namespace" fullName="RBTree" isExposed="False" />
     </ApiFilter>
-    <HelpFileVersion>1.5.3.0</HelpFileVersion>
+    <HelpFileVersion>1.5.4.0</HelpFileVersion>
     <CollectionTocStyle>Hierarchical</CollectionTocStyle>
   </PropertyGroup>
   <!-- There are no properties for these two groups but they need to appear in
