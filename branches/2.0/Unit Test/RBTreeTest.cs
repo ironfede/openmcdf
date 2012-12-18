@@ -61,7 +61,7 @@ namespace OpenMcdfTest
         #endregion
 
         [TestMethod]
-        public void TestMethod1()
+        public void Test_RBTREE_INSERT()
         {
             RBTree.RedBlack rbTree = new RBTree.RedBlack();
 

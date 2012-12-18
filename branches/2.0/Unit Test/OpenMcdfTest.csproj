@@ -52,7 +52,7 @@
     <Content Include="AuthoringTests.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OLECompoundFileStorage\OpenMcdf.csproj">
+    <ProjectReference Include="..\src\OpenMcdf.csproj">
       <Project>{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}</Project>
       <Name>OpenMcdf</Name>
     </ProjectReference>
