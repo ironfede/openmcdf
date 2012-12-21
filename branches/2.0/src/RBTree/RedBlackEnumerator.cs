@@ -12,29 +12,26 @@ namespace RBTree
     public class RedBlackEnumerator : IEnumerator<RedBlackNode>
     {
         // the treap uses the stack to order the nodes
-        private Stack<RedBlackNode> stack;
+        private Queue<RedBlackNode> queue = new Queue<RedBlackNode>();
 
         // return in ascending order (true) or descending (false)
         private bool ascending;
 
-
-        public RedBlackEnumerator()
-        {
-            
-        }
+        private int position = -1;
+        private RedBlackNode[] nodes;
 
         public delegate void NodeAction(RedBlackNode node);
 
         internal void DoVisitInOrder(RedBlackNode node, NodeAction nodeCallback)
         {
-            if (node.Left != null) DoVisitInOrder(node.Left, nodeCallback);
+            if (node.Left != RedBlack.sentinelNode) DoVisitInOrder(node.Left, nodeCallback);
 
             if (nodeCallback != null)
             {
                 nodeCallback(node);
             }
 
-            if (node.Right != null) DoVisitInOrder(node.Right, nodeCallback);
+            if (node.Right != RedBlack.sentinelNode) DoVisitInOrder(node.Right, nodeCallback);
 
         }
 
@@ -43,24 +40,25 @@ namespace RBTree
         ///<summary>
         /// Determine order, walk the tree and push the nodes onto the stack
         ///</summary>
-        public RedBlackEnumerator(RedBlackNode tnode, bool ascending)
+        public RedBlackEnumerator(RedBlackNode tnode)
         {
-            stack = new Stack<RedBlackNode>();
-            this.ascending = ascending;
-
             NodeAction na = delegate(RedBlackNode node)
             {
-                stack.Push(node);
+                queue.Enqueue(node);
             };
 
             DoVisitInOrder(tnode, na);
+
+            nodes = queue.ToArray();
         }
+
+
         ///<summary>
         /// HasMoreElements
         ///</summary>
         public bool HasMoreElements()
         {
-            return (stack.Count > 0);
+            return (position < nodes.Length);
         }
 
         /////<summary>
@@ -133,21 +131,15 @@ namespace RBTree
         ///</summary>
         public bool MoveNext()
         {
-            if (HasMoreElements())
-            {
-                //NextElement();
-                this.stack.Pop();
-                return true;
-            }
-
-            return false;
+            position++;
+            return position < nodes.Length;
         }
 
         #region IEnumerator<RedBlackNode<T>> Members
 
         public RedBlackNode Current
         {
-            get { return this.stack.Peek(); }
+            get { return nodes[position]; }
         }
 
         #endregion
@@ -156,7 +148,8 @@ namespace RBTree
 
         public void Dispose()
         {
-            this.stack.Clear();
+            this.queue.Clear();
+            
         }
 
         #endregion
@@ -165,12 +158,12 @@ namespace RBTree
 
         object IEnumerator.Current
         {
-            get { return this.stack.Peek(); }
+            get { return nodes[position]; }
         }
 
         public void Reset()
         {
-            this.stack.Clear();
+            position = -1;
         }
 
         #endregion

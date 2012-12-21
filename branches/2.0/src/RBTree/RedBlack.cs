@@ -289,24 +289,10 @@ namespace RBTree
         {
             // elements is simply a generic name to refer to the 
             // data objects the nodes contain
-            return Elements(true);
+            return new RedBlackEnumerator(rbTree);
         }
-
-        
-        ///<summary>
-        /// Elements
-        /// Returns an enumeration of the data objects.
-        /// if(ascending is true, the objects will be returned in ascending order,
-        /// else the objects will be returned in descending order.
-        ///<summary>
-        public RedBlackEnumerator Elements()
-        {
-            return Elements(true);
-        }
-        public RedBlackEnumerator Elements(bool ascending)
-        {
-            return new RedBlackEnumerator(rbTree, ascending);
-        }
+ 
+              
         ///<summary>
         /// IsEmpty
         /// Is the tree empty?

@@ -85,5 +85,55 @@ namespace OpenMcdfTest
 
             Console.WriteLine(S.Name);
         }
+
+        [TestMethod]
+        public void Test_RBTREE_LOGN_DEEP()
+        {
+            RBTree.RedBlack rbTree = new RBTree.RedBlack();
+
+            List<CFItem> itemsToInsert = new List<CFItem>();
+
+            for (int i = 0; i < 25; i++)
+            {
+                itemsToInsert.Add(new CFMock(i.ToString(), StgType.StgStream));
+            }
+
+            foreach (var item in itemsToInsert)
+            {
+                rbTree.Add(item);
+            }
+
+            
+        }
+
+        [TestMethod]
+        public void Test_RBTREE_ENUMERATE()
+        {
+            RBTree.RedBlack rbTree = new RBTree.RedBlack();
+
+            List<CFItem> itemsToInsert = new List<CFItem>();
+
+            for (int i = 0; i < 25; i++)
+            {
+                itemsToInsert.Add(new CFMock(i.ToString(), StgType.StgStream));
+            }
+
+            foreach (var item in itemsToInsert)
+            {
+                rbTree.Add(item);
+            }
+
+            try
+            {
+                foreach (var c in rbTree)
+                {
+                    Console.WriteLine(c.Data.Name);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.Message);
+            }
+        }
     }
 }
