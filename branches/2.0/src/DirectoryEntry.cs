@@ -385,13 +385,13 @@ namespace OpenMcdf
             entryName = rw.ReadBytes(64);
             nameLength = rw.ReadUInt16();
             stgType = (StgType)rw.ReadByte();
-            rw.ReadByte();//Ignore color, only black tree
-            //stgColor = (StgColor)br.ReadByte();
+            //rw.ReadByte();//Ignore color, only black tree
+            stgColor = (StgColor)rw.ReadByte();
             leftSibling = rw.ReadInt32();
             rightSibling = rw.ReadInt32();
             child = rw.ReadInt32();
 
-            // Thank you to bugaccount (BugTrack id 3519554)
+            // Thanks to bugaccount (BugTrack id 3519554)
             if (stgType == StgType.StgInvalid)
             {
                 leftSibling = NOSTREAM;

@@ -24,6 +24,7 @@ using BinaryTrees;
 using System.Collections;
 using System.Security.AccessControl;
 using System.Threading;
+using RBTree;
 
 namespace OpenMcdf
 {
@@ -1561,10 +1562,9 @@ namespace OpenMcdf
         }
 
 
-        internal BinarySearchTree<CFItem> GetChildrenTree(int sid)
+        internal RedBlackTree GetChildrenTree(int sid)
         {
-            BinarySearchTree<CFItem> bst
-                = new BinarySearchTree<CFItem>(new CFItemComparer());
+            RedBlackTree bst = new RedBlackTree();
 
             // Load children from their original tree.
             DoLoadChildren(bst, directoryEntries[sid]);
@@ -1575,7 +1575,7 @@ namespace OpenMcdf
             return bst;
         }
 
-        private void DoLoadChildren(BinarySearchTree<CFItem> bst, IDirectoryEntry de)
+        private void DoLoadChildren(RedBlackTree bst, IDirectoryEntry de)
         {
             if (de.Child != DirectoryEntry.NOSTREAM )
             {
@@ -1592,7 +1592,7 @@ namespace OpenMcdf
 
         // Doubling methods allows iterative behavior while avoiding
         // to insert duplicate items
-        private void LoadSiblings(BinarySearchTree<CFItem> bst, IDirectoryEntry de)
+        private void LoadSiblings(RedBlackTree bst, IDirectoryEntry de)
         {
             if (de.LeftSibling != DirectoryEntry.NOSTREAM)
             {
@@ -1607,7 +1607,7 @@ namespace OpenMcdf
             }
         }
 
-        private void DoLoadSiblings(BinarySearchTree<CFItem> bst, IDirectoryEntry de)
+        private void DoLoadSiblings(RedBlackTree bst, IDirectoryEntry de)
         {
             if (ValidateSibling(de.LeftSibling))
             {
@@ -1702,33 +1702,35 @@ namespace OpenMcdf
             }
         }
 
-        internal void RefreshSIDs(BinaryTreeNode<CFItem> Node)
+        internal void RefreshSIDs(RedBlackNode Node)
         {
-            if (Node.Value != null)
+            if (Node.Data != null)
             {
-                if (Node.Left != null && (Node.Left.Value.DirEntry.StgType != StgType.StgInvalid))
+                if (!Node.Left.IsSentinel && (Node.Left.Data.DirEntry.StgType != StgType.StgInvalid))
                 {
-                    Node.Value.DirEntry.LeftSibling = Node.Left.Value.DirEntry.SID;
+                    Node.Data.DirEntry.LeftSibling = Node.Left.Data.DirEntry.SID;
                 }
                 else
                 {
-                    Node.Value.DirEntry.LeftSibling = DirectoryEntry.NOSTREAM;
+                    Node.Data.DirEntry.LeftSibling = DirectoryEntry.NOSTREAM;
                 }
 
-                if (Node.Right != null && (Node.Right.Value.DirEntry.StgType != StgType.StgInvalid))
+                if (!Node.Right.IsSentinel && (Node.Right.Data.DirEntry.StgType != StgType.StgInvalid))
                 {
-                    Node.Value.DirEntry.RightSibling = Node.Right.Value.DirEntry.SID;
+                    Node.Data.DirEntry.RightSibling = Node.Right.Data.DirEntry.SID;
                 }
                 else
                 {
-                    Node.Value.DirEntry.RightSibling = DirectoryEntry.NOSTREAM;
+                    Node.Data.DirEntry.RightSibling = DirectoryEntry.NOSTREAM;
                 }
             }
+            else
+                throw new CFException("Internal error: null data node");
         }
 
-        internal void RefreshIterative(BinaryTreeNode<CFItem> node)
+        internal void RefreshIterative(RedBlackNode node)
         {
-            if (node == null) return;
+            if (node.IsSentinel) return;
             RefreshSIDs(node);
             RefreshIterative(node.Left);
             RefreshIterative(node.Right);

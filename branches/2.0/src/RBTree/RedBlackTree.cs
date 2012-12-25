@@ -1,3 +1,7 @@
+// Original source code from CodeProject, CPOL license, by Roy Clem
+// http://www.codeproject.com/Articles/8287/Red-Black-Trees-in-C
+// Modified from Federico Blaseotto, 2012.
+
 using System.Collections;
 using System.Text;
 using System;
@@ -6,6 +10,8 @@ using OpenMcdf;
 
 namespace RBTree
 {
+    internal delegate void VisitedRBNodeAction(RedBlackNode node);
+
     ///<summary>
     ///A red-black tree must satisfy these properties:
     ///
@@ -14,7 +20,7 @@ namespace RBTree
     ///3. Red nodes can only have black children. 
     ///4. All paths from a node to its leaves contain the same number of black nodes.
     ///</summary>
-    public class RedBlack
+    public class RedBlackTree
     {
         // the number of nodes contained in the tree
         private int intCount;
@@ -32,11 +38,8 @@ namespace RBTree
         private RedBlackNode lastNodeFound;
         private Random rand = new Random();
 
-        public RedBlack()
+        static RedBlackTree()
         {
-            strIdentifier = base.ToString() + rand.Next();
-            intHashCode = rand.Next();
-
             // set up the sentinel node. the sentinel node is the key to a successfull
             // implementation and for understanding the red-black tree properties.
             sentinelNode = new RedBlackNode(null);
@@ -44,15 +47,26 @@ namespace RBTree
             sentinelNode.Right = null;
             sentinelNode.Parent = null;
             sentinelNode.Color = StgColor.Black;
+        }
+
+        public RedBlackTree()
+        {
+            strIdentifier = base.ToString() + rand.Next();
+            intHashCode = rand.Next();
 
             rbTree = sentinelNode;
             lastNodeFound = sentinelNode;
         }
 
-        public RedBlack(string strIdentifier)
+        public RedBlackTree(string strIdentifier)
         {
             intHashCode = rand.Next();
             this.strIdentifier = strIdentifier;
+        }
+
+        public RedBlackNode Root
+        {
+            get { return rbTree; }
         }
 
         ///<summary>
@@ -251,6 +265,42 @@ namespace RBTree
             if (x != sentinelNode)				// set y as x's Parent
                 x.Parent = y;
         }
+
+
+
+        /// <summary>
+        /// Try to get data using a template item.
+        /// </summary>
+        /// <param name="template">Data to search for</param>
+        /// <param name="foundItem"></param>
+        /// <returns></returns>
+        public bool TryFind(CFItem template, out CFItem foundItem)
+        {
+            int result;
+
+            RedBlackNode treeNode = rbTree;     // begin at root
+
+            // traverse tree until node is found
+            while (treeNode != sentinelNode)
+            {
+                result = template.CompareTo(treeNode.Data);
+                if (result == 0)
+                {
+                    lastNodeFound = treeNode;
+                    foundItem = treeNode.Data;
+                    return true;
+                }
+                if (result < 0)
+                    treeNode = treeNode.Left;
+                else
+                    treeNode = treeNode.Right;
+            }
+
+            foundItem = null;
+            return false;
+        }
+
+
         ///<summary>
         /// GetData
         /// Gets the data object associated with the specified key
@@ -279,8 +329,8 @@ namespace RBTree
             throw (new RedBlackException("RedBlackNode key was not found"));
         }
 
-        
-       
+
+
         ///<summary>
         /// GetEnumerator
         /// return an enumerator that returns the tree nodes in order
@@ -291,8 +341,8 @@ namespace RBTree
             // data objects the nodes contain
             return new RedBlackEnumerator(rbTree);
         }
- 
-              
+
+
         ///<summary>
         /// IsEmpty
         /// Is the tree empty?
@@ -486,7 +536,7 @@ namespace RBTree
             x.Color = StgColor.Black;
         }
 
-        
+
         ///<summary>
         /// Clear
         /// Empties or clears the tree
@@ -539,6 +589,19 @@ namespace RBTree
         public override string ToString()
         {
             return strIdentifier.ToString();
+        }
+
+
+
+        internal void VisitTreeInOrder(VisitedRBNodeAction action)
+        {
+            if (action != null)
+            {
+                foreach (RedBlackNode node in this)
+                {
+                    action(node);
+                }
+            }
         }
     }
 }

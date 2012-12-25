@@ -1,3 +1,6 @@
+// Original source code from CodeProject, CPOL license, by Roy Clem
+// http://www.codeproject.com/Articles/8287/Red-Black-Trees-in-C
+// Modified from Federico Blaseotto,2012.
 
 using System;
 using System.Collections;
@@ -14,8 +17,8 @@ namespace RBTree
         // the treap uses the stack to order the nodes
         private Queue<RedBlackNode> queue = new Queue<RedBlackNode>();
 
-        // return in ascending order (true) or descending (false)
-        private bool ascending;
+        //// return in ascending order (true) or descending (false)
+        //private bool ascending;
 
         private int position = -1;
         private RedBlackNode[] nodes;
@@ -24,14 +27,14 @@ namespace RBTree
 
         internal void DoVisitInOrder(RedBlackNode node, NodeAction nodeCallback)
         {
-            if (node.Left != RedBlack.sentinelNode) DoVisitInOrder(node.Left, nodeCallback);
+            if (node.Left != RedBlackTree.sentinelNode) DoVisitInOrder(node.Left, nodeCallback);
 
             if (nodeCallback != null)
             {
                 nodeCallback(node);
             }
 
-            if (node.Right != RedBlack.sentinelNode) DoVisitInOrder(node.Right, nodeCallback);
+            if (node.Right != RedBlackTree.sentinelNode) DoVisitInOrder(node.Right, nodeCallback);
 
         }
 
@@ -47,7 +50,8 @@ namespace RBTree
                 queue.Enqueue(node);
             };
 
-            DoVisitInOrder(tnode, na);
+            if (!tnode.IsSentinel)
+                DoVisitInOrder(tnode, na);
 
             nodes = queue.ToArray();
         }
@@ -149,7 +153,7 @@ namespace RBTree
         public void Dispose()
         {
             this.queue.Clear();
-            
+
         }
 
         #endregion

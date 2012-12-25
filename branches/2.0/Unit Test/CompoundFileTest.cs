@@ -638,6 +638,50 @@ namespace OpenMcdfTest
                 if (File.Exists("$OpenMcdf$LargeFile.cfs"))
                     File.Delete("$OpenMcdf$LargeFile.cfs");
             }
+
+        }
+
+        [TestMethod]
+        public void Test_ADD_LARGE_NUMBER_OF_ITEMS()
+        {
+            int ITEM_NUMBER = 2000;
+
+            CompoundFile f = null;
+            byte[] buffer = Helpers.GetBuffer(10, 0x0A);
+            try
+            {
+                f = new CompoundFile();
+
+                for (int i = 0; i < ITEM_NUMBER; i++)
+                {
+                    CFStream st = f.RootStorage.AddStream("Stream" + i.ToString());
+                    st.AppendData(buffer);
+                }
+
+
+                if (File.Exists("$ItemsLargeNumber.cfs"))
+                    File.Delete("$ItemsLargeNumber.cfs");
+
+                f.Save("$ItemsLargeNumber.cfs");
+                f.Close();
+
+                f = new CompoundFile("$ItemsLargeNumber.cfs");
+                CFStream cfs = f.RootStorage.GetStream("Stream" + (ITEM_NUMBER / 2).ToString());
+
+                Assert.IsTrue(cfs != null);
+                Assert.IsTrue(Helpers.CompareBuffer(cfs.GetData(), buffer));
+                f.Close();
+            }
+            catch (Exception ex)
+            {
+                Trace.Write(ex.Message);
+            }
+            finally
+            {
+                if (File.Exists("$ItemsLargeNumber.cfs"))
+                    File.Delete("$ItemsLargeNumber.cfs");
+            }
+
         }
 
         //[TestMethod]

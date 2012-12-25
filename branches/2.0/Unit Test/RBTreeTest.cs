@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenMcdf;
+using RBTree;
 
 namespace OpenMcdfTest
 {
@@ -63,7 +64,7 @@ namespace OpenMcdfTest
         [TestMethod]
         public void Test_RBTREE_INSERT()
         {
-            RBTree.RedBlack rbTree = new RBTree.RedBlack();
+            RedBlackTree rbTree = new RedBlackTree();
 
             List<CFItem> itemsToInsert = new List<CFItem>();
 
@@ -89,7 +90,7 @@ namespace OpenMcdfTest
         [TestMethod]
         public void Test_RBTREE_LOGN_DEEP()
         {
-            RBTree.RedBlack rbTree = new RBTree.RedBlack();
+            RBTree.RedBlackTree rbTree = new RBTree.RedBlackTree();
 
             List<CFItem> itemsToInsert = new List<CFItem>();
 
@@ -109,7 +110,7 @@ namespace OpenMcdfTest
         [TestMethod]
         public void Test_RBTREE_ENUMERATE()
         {
-            RBTree.RedBlack rbTree = new RBTree.RedBlack();
+            RBTree.RedBlackTree rbTree = new RBTree.RedBlackTree();
 
             List<CFItem> itemsToInsert = new List<CFItem>();
 

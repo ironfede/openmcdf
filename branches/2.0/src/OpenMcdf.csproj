@@ -57,7 +57,7 @@
     <Compile Include="StreamRW.cs" />
     <Compile Include="IDirectoryEntry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RBTree\RedBlack.cs" />
+    <Compile Include="RBTree\RedBlackTree.cs" />
     <Compile Include="RBTree\RedBlackEnumerator.cs" />
     <Compile Include="RBTree\RedBlackException.cs" />
     <Compile Include="RBTree\RedBlackNode.cs" />
@@ -67,6 +67,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenMcdfClassDiagram.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="RBTree\CPOL.htm" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

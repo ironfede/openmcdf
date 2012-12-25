@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using BinaryTrees;
+using RBTree;
 
 /*
      The contents of this file are subject to the Mozilla Public License
@@ -54,9 +55,9 @@ namespace OpenMcdf
     /// </summary>
     public class CFStorage : CFItem
     {
-        private BinarySearchTree<CFItem> children;
+        private RedBlackTree children;
 
-        internal BinarySearchTree<CFItem> Children
+        internal RedBlackTree Children
         {
             get
             {
@@ -69,7 +70,7 @@ namespace OpenMcdf
                     }
                     else
                     {
-                        children = new BinarySearchTree<CFItem>();
+                        children = new RedBlackTree();
                     }
                 }
 
@@ -103,9 +104,16 @@ namespace OpenMcdf
             this.DirEntry = dirEntry;
         }
 
-        private BinarySearchTree<CFItem> LoadChildren(int SID)
+        private RedBlackTree LoadChildren(int SID)
         {
-            return this.CompoundFile.GetChildrenTree(SID);
+            RedBlackTree childrenTree = this.CompoundFile.GetChildrenTree(SID);
+
+            if (childrenTree.Root != RedBlackTree.sentinelNode)
+                this.DirEntry.Child = childrenTree.Root.Data.DirEntry.SID;
+            else
+                this.DirEntry.Child = DirectoryEntry.NOSTREAM;
+
+            return childrenTree;
         }
 
         /// <summary>
@@ -156,7 +164,7 @@ namespace OpenMcdf
                 CompoundFile.RefreshIterative(Children.Root);
 
                 //... and set the root of the tree as new child of the current item directory entry
-                this.DirEntry.Child = Children.Root.Value.DirEntry.SID;
+                this.DirEntry.Child = Children.Root.Data.DirEntry.SID;
             }
             catch (BSTDuplicatedException)
             {
@@ -302,7 +310,7 @@ namespace OpenMcdf
 
 
             CompoundFile.RefreshIterative(Children.Root);
-            this.DirEntry.Child = Children.Root.Value.DirEntry.SID;
+            this.DirEntry.Child = Children.Root.Data.DirEntry.SID;
             return cfo;
         }
 
@@ -320,7 +328,7 @@ namespace OpenMcdf
         //}
 
 
-        private NodeAction<CFItem> internalAction;
+        private VisitedRBNodeAction internalAction;
 
         /// <summary>
         /// Visit all entities contained in the storage applying a user provided action
@@ -352,15 +360,15 @@ namespace OpenMcdf
 
             if (action != null)
             {
-                List<BinaryTreeNode<CFItem>> subStorages
-                    = new List<BinaryTreeNode<CFItem>>();
+                List<RedBlackNode> subStorages
+                    = new List<RedBlackNode>();
 
                 internalAction =
-                    delegate(BinaryTreeNode<CFItem> targetNode)
+                    delegate(RedBlackNode targetNode)
                     {
-                        action(targetNode.Value as CFItem);
+                        action(targetNode.Data as CFItem);
 
-                        if (targetNode.Value.DirEntry.Child != DirectoryEntry.NOSTREAM)
+                        if (targetNode.Data.DirEntry.Child != DirectoryEntry.NOSTREAM)
                             subStorages.Add(targetNode);
 
                         return;
@@ -369,9 +377,9 @@ namespace OpenMcdf
                 this.Children.VisitTreeInOrder(internalAction);
 
                 if (recursive && subStorages.Count > 0)
-                    foreach (BinaryTreeNode<CFItem> n in subStorages)
+                    foreach (RedBlackNode n in subStorages)
                     {
-                        ((CFStorage)n.Value).VisitEntries(action, recursive);
+                        ((CFStorage)n.Data).VisitEntries(action, recursive);
                     }
             }
         }
@@ -430,9 +438,9 @@ namespace OpenMcdf
 
                     CFStorage temp = (CFStorage)foundObj;
 
-                    foreach (CFItem de in temp.Children)
+                    foreach (RedBlackNode de in temp.Children)
                     {
-                        temp.Delete(de.Name);
+                        temp.Delete(de.Data.Name);
                     }
 
                     // Remove item from children tree
@@ -442,8 +450,8 @@ namespace OpenMcdf
                     this.CompoundFile.RefreshIterative(this.Children.Root);
 
                     // Rethread the root of siblings tree...
-                    if (this.Children.Root != null)
-                        this.DirEntry.Child = this.Children.Root.Value.DirEntry.SID;
+                    if (!this.Children.Root.IsSentinel)
+                        this.DirEntry.Child = this.Children.Root.Data.DirEntry.SID;
                     else
                         this.DirEntry.Child = DirectoryEntry.NOSTREAM;
 
@@ -461,8 +469,8 @@ namespace OpenMcdf
                     this.CompoundFile.RefreshIterative(this.Children.Root);
 
                     // Rethread the root of siblings tree...
-                    if (this.Children.Root != null)
-                        this.DirEntry.Child = this.Children.Root.Value.DirEntry.SID;
+                    if (!this.Children.Root.IsSentinel)
+                        this.DirEntry.Child = this.Children.Root.Data.DirEntry.SID;
                     else
                         this.DirEntry.Child = DirectoryEntry.NOSTREAM;
 
