@@ -644,7 +644,7 @@ namespace OpenMcdfTest
         [TestMethod]
         public void Test_ADD_LARGE_NUMBER_OF_ITEMS()
         {
-            int ITEM_NUMBER = 2000;
+            int ITEM_NUMBER = 6000;
 
             CompoundFile f = null;
             byte[] buffer = Helpers.GetBuffer(10, 0x0A);
@@ -678,8 +678,8 @@ namespace OpenMcdfTest
             }
             finally
             {
-                if (File.Exists("$ItemsLargeNumber.cfs"))
-                    File.Delete("$ItemsLargeNumber.cfs");
+                //if (File.Exists("$ItemsLargeNumber.cfs"))
+                //    File.Delete("$ItemsLargeNumber.cfs");
             }
 
         }
