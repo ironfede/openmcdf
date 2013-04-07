@@ -31,5 +31,10 @@ namespace OpenMcdf
             this.DirEntry = new DirectoryEntry(dirType);
             this.DirEntry.SetEntryName(dirName);
         }
+
+        public override string ToString()
+        {
+            return this.DirEntry.Name;
+        }
     }
 }

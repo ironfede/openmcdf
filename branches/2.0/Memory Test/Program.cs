@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using OpenMcdf;
 using System.IO;
 using System.Diagnostics;
-using System.Threading;
 
+using OpenMcdf;
 //This project is used for profiling memory and performances of OpenMCDF .
 
 namespace OpenMcdfMemTest
@@ -41,13 +38,13 @@ namespace OpenMcdfMemTest
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            var cf = new CompoundFile(CFSVersion.Ver_3, true, false);
+            var cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.SectorRecycle);
             cf.RootStorage.AddStream("A").SetData(bA);
             cf.Save("OneStream.cfs");
 
             cf.Close();
 
-            cf = new CompoundFile("OneStream.cfs", UpdateMode.ReadOnly, true, false);
+            cf = new CompoundFile("OneStream.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.SectorRecycle);
 
             cf.RootStorage.AddStream("B").SetData(bB);
             cf.RootStorage.AddStream("C").SetData(bC);
@@ -60,10 +57,10 @@ namespace OpenMcdfMemTest
             cf.Save("8_Streams.cfs");
 
             cf.Close();
-         
+
             File.Copy("8_Streams.cfs", "6_Streams.cfs", true);
 
-            cf = new CompoundFile("6_Streams.cfs", UpdateMode.Update, true, true);
+            cf = new CompoundFile("6_Streams.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle|CFSConfiguration.EraseFreeSectors);
             cf.RootStorage.Delete("D");
             cf.RootStorage.Delete("G");
             cf.Commit();
@@ -72,23 +69,23 @@ namespace OpenMcdfMemTest
 
             File.Copy("6_Streams.cfs", "6_Streams_Shrinked.cfs", true);
 
-            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             cf.RootStorage.AddStream("ZZZ").SetData(bF);
             cf.RootStorage.GetStream("E").AppendData(bE2);
             cf.Commit();
             cf.Close();
 
-            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             cf.RootStorage.CLSID = new Guid("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
             cf.Commit();
             cf.Close();
 
-            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             cf.RootStorage.AddStorage("MyStorage").AddStream("ANS").AppendData(bE);
             cf.Commit();
             cf.Close();
 
-            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             cf.RootStorage.AddStorage("AnotherStorage").AddStream("ANS").AppendData(bE);
             cf.RootStorage.Delete("MyStorage");
             cf.Commit();
@@ -96,13 +93,13 @@ namespace OpenMcdfMemTest
 
             CompoundFile.ShrinkCompoundFile("6_Streams_Shrinked.cfs");
 
-            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             cf.RootStorage.AddStorage("MiniStorage").AddStream("miniSt").AppendData(bMini);
             cf.RootStorage.GetStorage("MiniStorage").AddStream("miniSt2").AppendData(bMini);
             cf.Commit();
             cf.Close();
 
-            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.Update, true, false);
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             cf.RootStorage.GetStorage("MiniStorage").Delete("miniSt");
 
 
@@ -110,7 +107,7 @@ namespace OpenMcdfMemTest
             cf.Commit();
             cf.Close();
 
-            cf = new CompoundFile("6_Streams_Shrinked.cfs", UpdateMode.ReadOnly, true, false);
+            cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.SectorRecycle);
 
             var myStream = cf.RootStorage.GetStream("C");
             var data = myStream.GetData();
@@ -136,7 +133,7 @@ namespace OpenMcdfMemTest
             byte[] b = GetBuffer(1024 * 1024 * MB_SIZE); //2GB buffer
             byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
 
-            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, false, false);
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, CFSConfiguration.Default);
             CFStream st = cf.RootStorage.AddStream("MySuperLargeStream");
             cf.Save("LARGE.cfs");
             cf.Close();
@@ -144,7 +141,7 @@ namespace OpenMcdfMemTest
             //Console.WriteLine("Closed save");
             //Console.ReadKey();
 
-            cf = new CompoundFile("LARGE.cfs", UpdateMode.Update, false, false);
+            cf = new CompoundFile("LARGE.cfs", CFSUpdateMode.Update, CFSConfiguration.Default);
             CFStream cfst = cf.RootStorage.GetStream("MySuperLargeStream");
 
             Stopwatch sw = new Stopwatch();
@@ -178,9 +175,10 @@ namespace OpenMcdfMemTest
             int count = 8;
             sw.Reset();
             sw.Start();
-            byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData(b.Length * (long)N_LOOP, ref count);
+            byte[] data = new byte[count];
+            count = cf.RootStorage.GetStream("MySuperLargeStream").GetData(data, b.Length * (long)N_LOOP, count);
             sw.Stop();
-            Console.Write(data.Length);
+            Console.Write(count);
             cf.Close();
 
             Console.WriteLine("Closed Final " + sw.ElapsedMilliseconds);
@@ -219,7 +217,7 @@ namespace OpenMcdfMemTest
         private static void AddNodes(String depth, CFStorage cfs)
         {
 
-            VisitedEntryAction va = delegate(CFItem target)
+            Action<CFItem> va = delegate(CFItem target)
             {
 
                 String temp = target.Name + (target is CFStorage ? "" : " (" + target.Size + " bytes )");
@@ -251,7 +249,7 @@ namespace OpenMcdfMemTest
             //Console.ReadKey(); 
             File.Copy(srcFilename, dstFilename, true);
 
-            CompoundFile cf = new CompoundFile(dstFilename, UpdateMode.Update, true, false);
+            CompoundFile cf = new CompoundFile(dstFilename, CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
 
             Random r = new Random();
 

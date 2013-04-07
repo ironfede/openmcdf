@@ -36,6 +36,12 @@ namespace OpenMcdf
         private List<Sector> sectorChain;
         private Stream stream;
 
+        private List<Sector> freeSectors = new List<Sector>();
+        public IEnumerable<Sector> FreeSectors
+        {
+            get { return freeSectors; }
+        }
+
         public StreamView(List<Sector> sectorChain, int sectorSize, Stream stream)
         {
             if (sectorChain == null)
@@ -263,29 +269,35 @@ namespace OpenMcdf
                 //    sectorChain.Add(t);
                 //}
             }
-            else
-            {
-                // TODO: Freeing sector to avoid wasting space.
+            //else
+            //{
+            //    // FREE Sectors
+            //    delta = Math.Abs(delta);
 
-                // FREE Sectors
-                //delta = Math.Abs(delta);
-                //int nSec = (int)(length - delta)  / sectorSize;
+            //    int nSec = (int)Math.Floor(((double)delta / sectorSize));
 
-                //if (((int)(length - delta) % sectorSize) != 0)
-                //{
-                //    nSec++;
-                //}
-
-                //while (sectorChain.Count > nSec)
-                //{
-                //    sectorChain.RemoveAt(sectorChain.Count - 1);
-                //}
-            }
+            //    while (nSec > 0)
+            //    {
+            //        freeSectors.Add(sectorChain[sectorChain.Count - 1]);
+            //        sectorChain.RemoveAt(sectorChain.Count - 1);
+            //        nSec--;
+            //    }
+            //}
         }
 
         public override void SetLength(long value)
         {
             adjustLength(value);
+        }
+
+        public void WriteInt32(int val)
+        {
+            byte[] buffer = new byte[4];
+            buffer[0] = (byte)val;
+            buffer[1] = (byte)(val << 8);
+            buffer[2] = (byte)(val << 16);
+            buffer[3] = (byte)(val << 32);
+            Write(buffer, 0, 4);
         }
 
         public override void Write(byte[] buffer, int offset, int count)

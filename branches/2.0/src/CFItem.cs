@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using BinaryTrees;
 
 /*
      The contents of this file are subject to the Mozilla Public License
@@ -46,7 +45,7 @@ namespace OpenMcdf
     /// 
     /// </code>
     /// </example>
-    public abstract class CFItem : IComparable
+    public abstract class CFItem : IComparable<CFItem>
     {
         private CompoundFile compoundFile;
 
@@ -84,6 +83,7 @@ namespace OpenMcdf
 
         internal int CompareTo(CFItem other)
         {
+
             return this.dirEntry.CompareTo(other.DirEntry);
         }
 
@@ -263,6 +263,19 @@ namespace OpenMcdf
                 else
                     throw new CFException("Object class GUID can only be set on Root and Storage entries");
             }
+        }
+
+        int IComparable<CFItem>.CompareTo(CFItem other)
+        {
+            return this.dirEntry.CompareTo(other.DirEntry);
+        }
+
+        public override string ToString()
+        {
+            if (this.dirEntry != null)
+                return "[" + this.dirEntry.LeftSibling + "," + this.dirEntry.SID + "," + this.dirEntry.RightSibling + "]" + " " + this.dirEntry.GetEntryName();
+            else
+                return String.Empty;
         }
     }
 }

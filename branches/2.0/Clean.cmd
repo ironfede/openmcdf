@@ -13,6 +13,22 @@ rd /s /Q  Src\bin\Release
 rd /s /Q  Src\obj\Debug
 rd /s /Q  Src\obj\Release
 
+rd /s /Q  "OpenMcdf.Extensions\bin\Debug"
+rd /s /Q  "OpenMcdf.Extensions\bin\Release
+rd /s /Q  "OpenMcdf.Extensions\obj\Debug"
+rd /s /Q  "OpenMcdf.Extensions\obj\Release"
+
+rd /s /Q  "OpenMcdfExtensionsTest\bin\Debug"
+rd /s /Q  "OpenMcdfExtensionsTest\bin\Release
+rd /s /Q  "OpenMcdfExtensionsTest\obj\Debug"
+rd /s /Q  "OpenMcdfExtensionsTest\obj\Release"
+
+rd /s /Q  "Structured Storage Explorer\bin\Debug"
+rd /s /Q  "Structured Storage Explorer\bin\Release
+rd /s /Q  "Structured Storage Explorer\obj\Debug"
+rd /s /Q  "Structured Storage Explorer\obj\Release"
+
+
 rd /s /Q  "Performance Test\bin\Debug"
 rd /s /Q  "Performance Test\bin\Release"
 rd /s /Q  "Performance Test\obj\Debug"

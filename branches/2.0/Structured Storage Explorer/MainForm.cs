@@ -70,7 +70,7 @@ namespace StructuredStorageExplorer
 
             treeView1.Nodes.Clear();
             fileNameLabel.Text = String.Empty;
-            saveAsToolStripMenuItem.Enabled = false ;
+            saveAsToolStripMenuItem.Enabled = false;
             updateCurrentFileToolStripMenuItem.Enabled = false;
 
             propertyGrid1.SelectedObject = null;
@@ -127,7 +127,7 @@ namespace StructuredStorageExplorer
                 //Load file
                 if (enableCommit)
                 {
-                    cf = new CompoundFile(fs, UpdateMode.Update, true, true, false);
+                    cf = new CompoundFile(fs, CFSUpdateMode.Update, CFSConfiguration.SectorRecycle | CFSConfiguration.NoValidationException | CFSConfiguration.EraseFreeSectors);
                 }
                 else
                 {
@@ -151,7 +151,7 @@ namespace StructuredStorageExplorer
         /// <param name="cfs">Current storage associated with node</param>
         private void AddNodes(TreeNode node, CFStorage cfs)
         {
-            VisitedEntryAction va = delegate(CFItem target)
+            Action<CFItem> va = delegate(CFItem target)
             {
                 TreeNode temp = node.Nodes.Add(
                     target.Name,
@@ -359,7 +359,7 @@ namespace StructuredStorageExplorer
 
         private void newStripMenuItem1_Click(object sender, EventArgs e)
         {
-            
+
             CreateNewFile();
         }
 

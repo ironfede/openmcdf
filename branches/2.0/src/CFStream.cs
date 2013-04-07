@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using BinaryTrees;
 
 /*
      The contents of this file are subject to the Mozilla Public License
@@ -38,7 +37,6 @@ namespace OpenMcdf
             this.DirEntry.StgColor = StgColor.Black;
 
             sectorManager.InsertNewDirectoryEntry(this.DirEntry);
-            
         }
 
         internal CFStream(CompoundFile sectorManager, IDirectoryEntry dirEntry)
@@ -67,6 +65,21 @@ namespace OpenMcdf
             CheckDisposed();
 
             this.CompoundFile.SetData(this, data);
+        }
+
+
+        /// <summary>
+        /// Write a data buffer to a specific offset into current CFStream object
+        /// </summary>
+        /// <param name="data">Data buffer to Write</param>
+        /// <param name="offset">Offset into current stream object</param>
+        /// <remarks>Current stream will be extended to receive data buffer over 
+        /// its current size</remarks>
+        public void SetData(Byte[] data, long offset)
+        {
+            CheckDisposed();
+
+            this.CompoundFile.SetData(this, offset, data);
         }
 
         /// <summary>
@@ -145,11 +158,11 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFDisposedException">
         /// Raised when the owner compound file has been closed.
         /// </exception>
-        public Byte[] GetData(long offset, ref int count)
+        public int GetData(byte[] buffer, long offset, int count)
         {
             CheckDisposed();
 
-            return this.CompoundFile.GetData(this, offset, ref count);
+            return this.CompoundFile.GetData(this, buffer, offset, count);
         }
 
         /// <summary>
@@ -173,5 +186,17 @@ namespace OpenMcdf
             input.Read(buffer, 0, (int)input.Length);
             this.SetData(buffer);
         }
+
+
+        /// <summary>
+        /// Resize stream padding with zero if enlarging, trimming data if reducing size.
+        /// </summary>
+        /// <param name="length">New length to assign to this stream</param>
+        public void Resize(long length)
+        {
+            this.CompoundFile.SetStreamLength(this, length);
+        }
+
+        
     }
 }

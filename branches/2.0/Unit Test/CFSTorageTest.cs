@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenMcdf;
-using System.IO;
 
 namespace OpenMcdfTest
 {
@@ -18,9 +16,7 @@ namespace OpenMcdfTest
 
         public CFSTorageTest()
         {
-            //
-            // TODO: Add constructor logic here
-            //
+            
         }
 
         private TestContext testContextInstance;
@@ -101,7 +97,7 @@ namespace OpenMcdfTest
             FileStream output = new FileStream("LogEntries.txt", FileMode.Create);
             TextWriter tw = new StreamWriter(output);
 
-            VisitedEntryAction va = delegate(CFItem item)
+            Action<CFItem> va = delegate(CFItem item)
             {
                 tw.WriteLine(item.Name);
             };
@@ -117,12 +113,11 @@ namespace OpenMcdfTest
         {
             CompoundFile f = null;
 
-
             try
             {
-                f = new CompoundFile("CorruptedDoc_bug3547815.doc", UpdateMode.ReadOnly, false, false, false);
+                f = new CompoundFile("CorruptedDoc_bug3547815.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.NoValidationException);
             }
-            catch 
+            catch
             {
                 Assert.Fail("No exception has to be fired on creation due to lazy loading");
             }
@@ -136,7 +131,7 @@ namespace OpenMcdfTest
                 using (TextWriter tw = new StreamWriter(output))
                 {
 
-                    VisitedEntryAction va = delegate(CFItem item)
+                    Action<CFItem> va = delegate(CFItem item)
                        {
                            tw.WriteLine(item.Name);
                        };
@@ -169,9 +164,9 @@ namespace OpenMcdfTest
             try
             {
                 //Corrupted file has invalid children item sid reference
-                f = new CompoundFile("CorruptedDoc_bug3547815_B.doc", UpdateMode.ReadOnly, false, false, true);
+                f = new CompoundFile("CorruptedDoc_bug3547815_B.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.NoValidationException);
             }
-            catch 
+            catch
             {
                 Assert.Fail("No exception has to be fired on creation due to lazy loading");
             }
@@ -186,7 +181,7 @@ namespace OpenMcdfTest
                 using (TextWriter tw = new StreamWriter(output))
                 {
 
-                    VisitedEntryAction va = delegate(CFItem item)
+                    Action<CFItem> va = delegate(CFItem item)
                     {
                         tw.WriteLine(item.Name);
                     };
@@ -244,7 +239,7 @@ namespace OpenMcdfTest
 
             Console.SetOut(sw);
 
-            VisitedEntryAction va = delegate(CFItem target)
+            Action<CFItem> va = delegate(CFItem target)
             {
                 sw.WriteLine(target.Name);
             };
@@ -259,7 +254,7 @@ namespace OpenMcdfTest
         public void Test_DELETE_DIRECTORY()
         {
             String FILENAME = "MultipleStorage2.cfs";
-            CompoundFile cf = new CompoundFile(FILENAME, UpdateMode.ReadOnly, false, false);
+            CompoundFile cf = new CompoundFile(FILENAME, CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
 
             CFStorage st = cf.RootStorage.GetStorage("MyStorage");
 
@@ -279,7 +274,7 @@ namespace OpenMcdfTest
             CompoundFile cf = new CompoundFile(FILENAME);
 
             CFStorage found = null;
-            VisitedEntryAction action = delegate(CFItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; };
+            Action<CFItem> action = delegate(CFItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; };
             cf.RootStorage.VisitEntries(action, true);
 
             Assert.IsNotNull(found);
@@ -297,7 +292,12 @@ namespace OpenMcdfTest
             CompoundFile cf = new CompoundFile(FILENAME);
 
             CFStorage found = null;
-            VisitedEntryAction action = delegate(CFItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; };
+            Action<CFItem> action = delegate(CFItem item)
+            {
+                if (item.Name == "AnotherStorage")
+                    found = item as CFStorage;
+            };
+
             cf.RootStorage.VisitEntries(action, true);
 
             Assert.IsNotNull(found);
@@ -353,7 +353,7 @@ namespace OpenMcdfTest
             {
                 File.Delete("$Hel1");
             }
-               if (File.Exists("$Hel2"))
+            if (File.Exists("$Hel2"))
             {
                 File.Delete("$Hel2");
             }

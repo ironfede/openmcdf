@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Globalization;
-using BinaryTrees;
 
 /*
      The contents of this file are subject to the Mozilla Public License

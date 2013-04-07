@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace OpenMcdfTest
+namespace OpenMcdfExtensionsTest
 {
     public static class Helpers
     {
@@ -28,23 +27,19 @@ namespace OpenMcdfTest
 
         public static bool CompareBuffer(byte[] b, byte[] p)
         {
-            bool res = CompareBuffer(b, p, b.Length);
-            return res && (b.Length == p.Length);
-        }
-
-        public static bool CompareBuffer(byte[] b, byte[] p, int count)
-        {
             if (b == null && p == null)
                 throw new Exception("Null buffers");
 
-            if (b == null && p != null)
+            if (b == null && p != null) 
                 return false;
 
-            if (b != null && p == null)
+            if (b != null && p == null) 
                 return false;
 
+            if (b.Length != p.Length)
+                return false;
 
-            for (int i = 0; i < count; i++)
+            for (int i = 0; i < b.Length; i++)
             {
                 if (b[i] != p[i])
                     return false;
