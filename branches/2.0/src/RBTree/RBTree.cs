@@ -693,9 +693,8 @@ namespace RedBlackTree
         //}
 
         internal event Action<RBNode<V>> NodeInserted;
-        internal event Action<RBNode<V>> NodeDeleted;
+        //internal event Action<RBNode<V>> NodeDeleted;
         internal event Action<RBNode<V>, NodeOperation> NodeOperation;
-        internal event Action<RBNode<V>, V> ValueAssignedAction;
 
 
     }

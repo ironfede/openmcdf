@@ -1685,7 +1685,7 @@ namespace OpenMcdf
             RBTree<CFItem> bst = new RBTree<CFItem>();
             bst.NodeInserted += OnNodeInsert;
             bst.NodeOperation += OnNodeOperation;
-            bst.NodeDeleted += new Action<RBNode<CFItem>>(OnNodeDeleted);
+            //bst.NodeDeleted += new Action<RBNode<CFItem>>(OnNodeDeleted);
             //  bst.ValueAssignedAction += new Action<RBNode<CFItem>, CFItem>(OnValueAssigned);
             return bst;
         }
@@ -1707,7 +1707,7 @@ namespace OpenMcdf
             RBTree<CFItem> bst = new RBTree<CFItem>();
             bst.NodeInserted += OnNodeInsert;
             bst.NodeOperation += OnNodeOperation;
-            bst.NodeDeleted += OnNodeDeleted;
+            //bst.NodeDeleted += OnNodeDeleted;
 
             // Load children from their original tree.
             DoLoadChildren(bst, directoryEntries[sid]);
@@ -2187,14 +2187,14 @@ namespace OpenMcdf
                     //AssureLength(miniStreamView, (int)miniFATView.Length);
 
                     int id = miniFATView.ReadInt32();
-                    ptr += 4;
+                    ptr++;
 
                     if (id == Sector.FREESECT)
                     {
                         Sector ms = new Sector(Sector.MINISECTOR_SIZE, sourceStream);
                         byte[] temp = new byte[Sector.MINISECTOR_SIZE];
 
-                        ms.Id = (int)((ptr - 4) / 4);
+                        ms.Id = (int)((ptr - 1));
                         ms.Type = SectorType.Mini;
 
                         miniStreamView.Seek(ms.Id * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
