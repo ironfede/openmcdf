@@ -241,7 +241,7 @@ namespace OpenMcdf
             this.header = new Header((ushort)cfsVersion);
             this.sectorRecycle = sectorRecycle;
 
-            
+
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
@@ -1577,7 +1577,7 @@ namespace OpenMcdf
 
         private void DoLoadChildren(BinarySearchTree<CFItem> bst, IDirectoryEntry de)
         {
-            if (de.Child != DirectoryEntry.NOSTREAM )
+            if (de.Child != DirectoryEntry.NOSTREAM)
             {
                 if (directoryEntries[de.Child].StgType == StgType.StgInvalid) return;
 
