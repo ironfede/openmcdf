@@ -6,8 +6,6 @@ using System.IO;
 
 namespace OpenMcdf.Extensions
 {
-
-
     public static class CFStreamExtension
     {
         private class StreamDecorator : Stream
@@ -59,10 +57,19 @@ namespace OpenMcdf.Extensions
 
             public override int Read(byte[] buffer, int offset, int count)
             {
+                if (count > buffer.Length)
+                    throw new ArgumentException("Count parameter exceeds buffer size");
+
+                if (buffer == null)
+                    throw new ArgumentNullException("Buffer cannot be null");
+
+                if (offset < 0 || count < 0)
+                    throw new ArgumentOutOfRangeException("Offset and Count parameters must be non-negative numbers");
+
                 if (position >= cfStream.Size)
                     return 0;
 
-                count = this.cfStream.GetData(buffer, position, count);
+                count = this.cfStream.Read(buffer, position, offset, count);
                 position += count;
                 return count;
             }
@@ -81,7 +88,7 @@ namespace OpenMcdf.Extensions
                         position -= offset;
                         break;
                     default:
-                        throw new CFException("Invalid origin selected");
+                        throw new Exception("Invalid origin selected");
                 }
 
                 return position;
@@ -89,28 +96,12 @@ namespace OpenMcdf.Extensions
 
             public override void SetLength(long value)
             {
-                if (value > this.cfStream.Size)
-                {
-                    long sizeDelta = cfStream.Size - value;
-                    byte[] dataDelta = new byte[sizeDelta];
-                    this.cfStream.AppendData(dataDelta);
-                }
-                else if (value < this.cfStream.Size)
-                {
-                    byte[] data = this.cfStream.GetData();
-                    byte[] newData = new byte[value];
-
-                    Buffer.BlockCopy(data, 0, newData, 0, (int)value);
-                    this.cfStream.SetData(newData);
-                }
+                this.cfStream.Resize(value);
             }
 
             public override void Write(byte[] buffer, int offset, int count)
             {
-                byte[] data = new byte[count];
-
-                Buffer.BlockCopy(buffer, offset, data, 0, count);
-                this.cfStream.SetData(data, position);
+                this.cfStream.Write(buffer, position, offset, count);
                 position += count;
             }
         }

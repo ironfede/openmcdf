@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Text;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenMcdf;
 using OpenMcdf.Extensions;
-using System.IO;
 
 namespace OpenMcdfExtensionsTest
 {
@@ -75,7 +75,20 @@ namespace OpenMcdfExtensionsTest
         [TestMethod]
         public void Test_AS_IOSTREAM_WRITE()
         {
+            const String cmp = "Hello World of BinaryWriter !";
 
+            CompoundFile cf = new CompoundFile();
+            Stream s = cf.RootStorage.AddStream("ANewStream").AsIOStream();
+            BinaryWriter bw = new BinaryWriter(s);
+            bw.Write(cmp);
+            cf.Save("$ACFFile.cfs");
+            cf.Close();
+
+            cf = new CompoundFile("$ACFFile.cfs");
+            BinaryReader br = new BinaryReader(cf.RootStorage.GetStream("ANewStream").AsIOStream());
+            String st = br.ReadString();
+            Assert.IsTrue(st == cmp);
+            cf.Close();
         }
     }
 }

@@ -29,6 +29,7 @@ namespace OpenMcdf
     /// </summary>
     public class CFStream : CFItem
     {
+        private long position = 0;
 
         internal CFStream(CompoundFile sectorManager)
             : base(sectorManager)
@@ -60,26 +61,43 @@ namespace OpenMcdf
         /// </code>
         /// </example>
         /// <param name="data">Data bytes to write to this stream</param>
+        /// <remarks>Existing associated data will be lost after method invocation</remarks>
         public void SetData(Byte[] data)
         {
             CheckDisposed();
 
-            this.CompoundFile.SetData(this, data);
+            this.CompoundFile.FreeData(this);
+            this.CompoundFile.WriteData(this, data);
         }
 
 
         /// <summary>
-        /// Write a data buffer to a specific offset into current CFStream object
+        /// Write a data buffer to a specific position into current CFStream object
         /// </summary>
         /// <param name="data">Data buffer to Write</param>
-        /// <param name="offset">Offset into current stream object</param>
+        /// <param name="position">Position into the stream object to start writing from</param>
         /// <remarks>Current stream will be extended to receive data buffer over 
         /// its current size</remarks>
-        public void SetData(Byte[] data, long offset)
+        public void Write(byte[] data, long position)
+        {
+            this.Write(data, position, 0, data.Length);
+        }
+
+        /// <summary>
+        /// Write <paramref name="Count">Count</paramref> bytes of a data buffer to a specific position into 
+        /// the current CFStream object starting from the specified position.
+        /// </summary>
+        /// <param name="data">Data buffer to copy bytes from</param>
+        /// <param name="position">Position into the stream object to start writing from</param>
+        /// <param name="offset">The zero-based byte offset in buffer at which to 
+        /// begin copying bytes to the current <see cref="T:OpenMcdf.CFStream">CFStream</see>. </param>
+        /// <param name="count">The number of bytes to be written to the current <see cref="T:OpenMcdf.CFStream">CFStream</see> </param>
+        /// <remarks>Current stream will be extended to receive data buffer over 
+        /// its current size.</remarks>
+        internal void Write(byte[] data, long position, int offset, int count)
         {
             CheckDisposed();
-
-            this.CompoundFile.SetData(this, offset, data);
+            this.CompoundFile.WriteData(this, data, position, offset, count);
         }
 
         /// <summary>
@@ -105,7 +123,7 @@ namespace OpenMcdf
         /// Append data can also be invoked on streams with no data in order
         /// to simplify its use inside loops.
         /// </remarks>
-        public void AppendData(Byte[] data)
+        public void Append(Byte[] data)
         {
             CheckDisposed();
             if (this.Size > 0)
@@ -114,18 +132,18 @@ namespace OpenMcdf
             }
             else
             {
-                this.CompoundFile.SetData(this, data);
+                this.CompoundFile.WriteData(this, data);
             }
         }
 
         /// <summary>
-        /// Get the data associated with the stream object.
+        /// Get all the data associated with the stream object.
         /// </summary>
         /// <example>
         /// <code>
         ///     CompoundFile cf2 = new CompoundFile("AFileName.cfs");
         ///     CFStream st = cf2.RootStorage.GetStream("MyStream");
-        ///     byte[] buffer = st.GetData();
+        ///     byte[] buffer = st.ReadAll();
         /// </code>
         /// </example>
         /// <returns>Array of byte containing stream data</returns>
@@ -139,38 +157,84 @@ namespace OpenMcdf
             return this.CompoundFile.GetData(this);
         }
 
+
         /// <summary>
-        /// Get <paramref name="count"/> bytes associated with the stream object, starting from
-        /// a provided <paramref name="offset"/>. When method returns, count will contain the
-        /// effective count of bytes read.
+        /// Read <paramref name="count"/> bytes associated with the stream object, starting from
+        /// a provided <paramref name="offset"/>. Method returns the effective count of bytes 
+        /// read.
         /// </summary>
-        /// <example>
+        /// <param name="buffer">Array of bytes that will contain stream data</param>
+        /// <param name="position">The zero-based byte position in the stream at which to begin reading
+        /// the data from.</param>
+        /// <param name="count">The maximum number of bytes to be read from the current stream.</param>
+        /// <returns>The count of bytes effectively read</returns>
+        /// <remarks>Method may read a number of bytes lesser then the requested one.</remarks>
         /// <code>
-        /// CompoundFile cf = new CompoundFile("AFileName.cfs");
-        /// CFStream st = cf.RootStorage.GetStream("MyStream");
-        /// int count = 8;
-        /// // The stream is supposed to have a length greater than offset + count
-        /// byte[] data = st.GetData(20, ref count);  
-        /// cf.Close();
+        ///  CompoundFile cf = null;
+        ///  byte[] b = Helpers.GetBuffer(1024 * 2, 0xAA); //2MB buffer
+        ///  CFStream item = cf.RootStorage.GetStream("AStream");
+        ///
+        ///  cf = new CompoundFile("$AFILENAME.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
+        ///  item = cf.RootStorage.GetStream("AStream");
+        ///
+        ///  byte[] buffer = new byte[2048];
+        ///  item.Read(buffer, 0, 2048);
+        ///  Assert.IsTrue(Helpers.CompareBuffer(b, buffer));
         /// </code>
         /// </example>
-        /// <returns>Array of byte containing stream data</returns>
         /// <exception cref="T:OpenMcdf.CFDisposedException">
         /// Raised when the owner compound file has been closed.
         /// </exception>
-        public int GetData(byte[] buffer, long offset, int count)
+        public int Read(byte[] buffer, long position, int count)
         {
             CheckDisposed();
-
-            return this.CompoundFile.GetData(this, buffer, offset, count);
+            return this.CompoundFile.ReadData(this, position, buffer, 0, count);
         }
+
+
+
+        /// <summary>
+        /// Read <paramref name="count"/> bytes associated with the stream object, starting from
+        /// a provided <paramref name="position"/>. Method returns the effective count of bytes 
+        /// read.
+        /// </summary>
+        /// <param name="buffer">Array of bytes that will contain stream data</param>
+        /// <param name="position">The zero-based byte position in the stream at which to begin reading
+        /// the data from.</param>
+        /// <param name="offset">The zero-based byte offset in buffer at which to begin storing the data read from the current stream. </param>
+        /// <param name="count">The maximum number of bytes to be read from the current stream.</param>
+        /// <returns>The count of bytes effectively read</returns>
+        /// <remarks>Method may read a number of bytes lesser then the requested one.</remarks>
+        /// <code>
+        ///  CompoundFile cf = null;
+        ///  byte[] b = Helpers.GetBuffer(1024 * 2, 0xAA); //2MB buffer
+        ///  CFStream item = cf.RootStorage.GetStream("AStream");
+        ///
+        ///  cf = new CompoundFile("$AFILENAME.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
+        ///  item = cf.RootStorage.GetStream("AStream");
+        ///
+        ///  byte[] buffer = new byte[2048];
+        ///  item.Read(buffer, 0, 2048);
+        ///  Assert.IsTrue(Helpers.CompareBuffer(b, buffer));
+        /// </code>
+        /// </example>
+        /// <exception cref="T:OpenMcdf.CFDisposedException">
+        /// Raised when the owner compound file has been closed.
+        /// </exception>
+        internal int Read(byte[] buffer, long position, int offset, int count)
+        {
+            CheckDisposed();
+            return this.CompoundFile.ReadData(this, position, buffer, offset, count);
+        }
+
 
         /// <summary>
         /// Copy data from an existing stream.
         /// </summary>
         /// <param name="input">A stream to read from</param>
         /// <remarks>
-        /// Input stream is NOT closed after method invocation.
+        /// Input stream will NOT be closed after method invocation.
+        /// Existing associated data will be deleted.
         /// </remarks>
         public void CopyFrom(Stream input)
         {
@@ -196,7 +260,5 @@ namespace OpenMcdf
         {
             this.CompoundFile.SetStreamLength(this, length);
         }
-
-        
     }
 }

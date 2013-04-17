@@ -35,3 +35,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("2.0.*")]
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("OpenMcdfTest")]
+[assembly: System.Runtime.CompilerServices.InternalsVisibleTo("OpenMcdf.Extensions")]

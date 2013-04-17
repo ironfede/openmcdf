@@ -71,7 +71,7 @@ namespace OpenMcdfMemTest
 
             cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             cf.RootStorage.AddStream("ZZZ").SetData(bF);
-            cf.RootStorage.GetStream("E").AppendData(bE2);
+            cf.RootStorage.GetStream("E").Append(bE2);
             cf.Commit();
             cf.Close();
 
@@ -81,12 +81,12 @@ namespace OpenMcdfMemTest
             cf.Close();
 
             cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
-            cf.RootStorage.AddStorage("MyStorage").AddStream("ANS").AppendData(bE);
+            cf.RootStorage.AddStorage("MyStorage").AddStream("ANS").Append(bE);
             cf.Commit();
             cf.Close();
 
             cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
-            cf.RootStorage.AddStorage("AnotherStorage").AddStream("ANS").AppendData(bE);
+            cf.RootStorage.AddStorage("AnotherStorage").AddStream("ANS").Append(bE);
             cf.RootStorage.Delete("MyStorage");
             cf.Commit();
             cf.Close();
@@ -94,8 +94,8 @@ namespace OpenMcdfMemTest
             CompoundFile.ShrinkCompoundFile("6_Streams_Shrinked.cfs");
 
             cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
-            cf.RootStorage.AddStorage("MiniStorage").AddStream("miniSt").AppendData(bMini);
-            cf.RootStorage.GetStorage("MiniStorage").AddStream("miniSt2").AppendData(bMini);
+            cf.RootStorage.AddStorage("MiniStorage").AddStream("miniSt").Append(bMini);
+            cf.RootStorage.GetStorage("MiniStorage").AddStream("miniSt2").Append(bMini);
             cf.Commit();
             cf.Close();
 
@@ -103,7 +103,7 @@ namespace OpenMcdfMemTest
             cf.RootStorage.GetStorage("MiniStorage").Delete("miniSt");
 
 
-            cf.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").AppendData(bE);
+            cf.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").Append(bE);
             cf.Commit();
             cf.Close();
 
@@ -149,14 +149,14 @@ namespace OpenMcdfMemTest
             for (int i = 0; i < N_LOOP; i++)
             {
 
-                cfst.AppendData(b);
+                cfst.Append(b);
                 cf.Commit(true);
 
                 Console.WriteLine("     Updated " + i.ToString());
                 //Console.ReadKey();
             }
 
-            cfst.AppendData(cmp);
+            cfst.Append(cmp);
             cf.Commit(true);
             sw.Stop();
 
@@ -176,7 +176,7 @@ namespace OpenMcdfMemTest
             sw.Reset();
             sw.Start();
             byte[] data = new byte[count];
-            count = cf.RootStorage.GetStream("MySuperLargeStream").GetData(data, b.Length * (long)N_LOOP, count);
+            count = cf.RootStorage.GetStream("MySuperLargeStream").Read(data, b.Length * (long)N_LOOP, count);
             sw.Stop();
             Console.Write(count);
             cf.Close();

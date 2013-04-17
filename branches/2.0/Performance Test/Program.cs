@@ -8,7 +8,7 @@ namespace OpenMcdfPerfTest
 {
     class Program
     {
-        static int MAX_STREAM_COUNT = 1000;
+        static int MAX_STREAM_COUNT = 5000;
         static String fileName = "PerfLoad.cfs";
 
         static void Main(string[] args)

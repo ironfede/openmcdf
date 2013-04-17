@@ -253,6 +253,9 @@ namespace OpenMcdf
                     if (availableSectors == null || availableSectors.Count == 0)
                     {
                         t = new Sector(sectorSize, stream);
+
+                        if (sectorSize == Sector.MINISECTOR_SIZE)
+                            t.Type = SectorType.Mini;
                     }
                     else
                     {

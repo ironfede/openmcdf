@@ -312,7 +312,7 @@ namespace OpenMcdf
             }
 
 
-            CompoundFile.RefreshIterative(Children.Root);
+            //CompoundFile.RefreshIterative(Children.Root);
             this.DirEntry.Child = Children.Root.Value.DirEntry.SID;
             return cfo;
         }
@@ -468,8 +468,9 @@ namespace OpenMcdf
                     // Remove item from children tree
                     this.Children.Delete(foundObj);
                     //Trace.WriteLine("**** DELETED STREAM " + entryName + "******");
-                    // Synchronize tree with directory entries
-                    this.CompoundFile.RefreshIterative(this.Children.Root);
+                    
+                // Synchronize tree with directory entries
+                    //this.CompoundFile.RefreshIterative(this.Children.Root);
 
                     // Rethread the root of siblings tree...
                     if (this.Children.Root != null)
