@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30501.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6C619B4F-100F-4D60-BEF1-60B770D24E5E}"
 	ProjectSection(SolutionItems) = preProject
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
@@ -10,6 +12,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{AC082D72-85BB-4FE8-AE0A-DB12A5729317}"
 	ProjectSection(SolutionItems) = preProject
+		TestFiles\2_MB-W.ppt = TestFiles\2_MB-W.ppt
+		TestFiles\BUG_16_.xls = TestFiles\BUG_16_.xls
 		TestFiles\CorruptedDoc_bug3547815.doc = TestFiles\CorruptedDoc_bug3547815.doc
 		TestFiles\CorruptedDoc_bug3547815_B.doc = TestFiles\CorruptedDoc_bug3547815_B.doc
 		TestFiles\CyclicFAT.cfs = TestFiles\CyclicFAT.cfs
@@ -36,9 +40,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdfExtensionsTest", "OpenMcdfExtensionsTest\OpenMcdfExtensionsTest.csproj", "{B9CB103F-0AA3-486D-9C9C-672924B6169C}"
 EndProject
 Global
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = OpenMcdf2.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -78,5 +79,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{AC082D72-85BB-4FE8-AE0A-DB12A5729317} = {6C619B4F-100F-4D60-BEF1-60B770D24E5E}
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = OpenMcdf2.vsmdi
 	EndGlobalSection
 EndGlobal

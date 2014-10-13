@@ -652,7 +652,7 @@ namespace OpenMcdfTest
         [TestMethod]
         public void Test_ADD_LARGE_NUMBER_OF_ITEMS()
         {
-            int ITEM_NUMBER = 1;
+            int ITEM_NUMBER = 10000;
 
             CompoundFile f = null;
             byte[] buffer = Helpers.GetBuffer(10, 0x0A);
@@ -690,6 +690,40 @@ namespace OpenMcdfTest
                 //    File.Delete("$ItemsLargeNumber.cfs");
             }
 
+        }
+
+        [TestMethod]
+        public void Test_FIX_BUG_16_CORRUPTED_AFTER_RESIZE()
+        {
+
+            const string FILE_PATH = @"BUG_16_.xls";
+
+            CompoundFile cf = new CompoundFile(FILE_PATH);
+
+            CFStream dirStream = cf.RootStorage.GetStorage("_VBA_PROJECT_CUR").GetStorage("VBA").GetStream("dir");
+
+            byte[] currentData = dirStream.GetData();
+
+            Array.Resize(ref currentData, currentData.Length - 50);
+
+            dirStream.SetData(currentData);
+
+            cf.Save(FILE_PATH + ".edited");
+            cf.Close();
+        }
+
+
+        [TestMethod]
+        public void Test_FIX_BUG_17_CORRUPTED_PPT_FILE()
+        {
+
+            const string FILE_PATH = @"2_MB-W.ppt";
+
+            using (CompoundFile file = new CompoundFile(FILE_PATH))
+            {
+                //CFStorage dataSpaceInfo = file.RootStorage.GetStorage("\u0006DataSpaces").GetStorage("DataSpaceInfo");
+                CFItem dsiItem = file.GetAllNamedEntries("DataSpaceInfo").FirstOrDefault();
+            }
         }
 
         //[TestMethod]

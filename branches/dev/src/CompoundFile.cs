@@ -763,12 +763,37 @@ namespace OpenMcdf
         }
 
 
+        private void PersistMiniStreamToStream(List<Sector> miniSectorChain)
+        {
+            List<Sector> miniStream
+                = GetSectorChain(RootEntry.StartSetc, SectorType.Normal);
+
+            StreamView miniStreamView
+                = new StreamView(
+                    miniStream,
+                    GetSectorSize(),
+                    this.rootStorage.Size,
+                    sourceStream);
+
+            for (int i = 0; i < miniSectorChain.Count; i++)
+            {
+                Sector s = miniSectorChain[i];
+
+                if (s.Id == -1)
+                    throw new CFException("Invalid minisector index");
+
+                // Overwrite
+                miniStreamView.Seek(Sector.MINISECTOR_SIZE * s.Id, SeekOrigin.Begin);
+                miniStreamView.Write(s.GetData(), 0, Sector.MINISECTOR_SIZE);
+            }
+        }
+
         /// <summary>
         /// Allocate space, setup sectors id and refresh header
         /// for the new or updated mini sector chain.
         /// </summary>
         /// <param name="sectorChain">The new MINI sector chain</param>
-        private void SetMiniSectorChain(List<Sector> sectorChain)
+        private void AllocateMiniSectorChain(List<Sector> sectorChain)
         {
             List<Sector> miniFAT
                 = GetSectorChain(header.FirstMiniFATSectorID, SectorType.Normal);
@@ -801,8 +826,8 @@ namespace OpenMcdf
                 if (s.Id != -1)
                 {
                     // Overwrite
-                    miniStreamView.Seek(Sector.MINISECTOR_SIZE * s.Id, SeekOrigin.Begin);
-                    miniStreamView.Write(s.GetData(), 0, Sector.MINISECTOR_SIZE);
+                    //miniStreamView.Seek(Sector.MINISECTOR_SIZE * s.Id, SeekOrigin.Begin);
+                    //miniStreamView.Write(s.GetData(), 0, Sector.MINISECTOR_SIZE);
 
                 }
                 else
@@ -810,8 +835,8 @@ namespace OpenMcdf
                     // Allocate, position ministream at the end of already allocated
                     // ministream's sectors
 
-                    miniStreamView.Seek(this.rootStorage.Size, SeekOrigin.Begin);
-                    miniStreamView.Write(s.GetData(), 0, Sector.MINISECTOR_SIZE);
+                    miniStreamView.Seek(this.rootStorage.Size + Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
+                    //miniStreamView.Write(s.GetData(), 0, Sector.MINISECTOR_SIZE);
                     s.Id = (int)(miniStreamView.Position - Sector.MINISECTOR_SIZE) / Sector.MINISECTOR_SIZE;
 
                     this.rootStorage.DirEntry.Size = miniStreamView.Length;
@@ -991,7 +1016,7 @@ namespace OpenMcdf
             }
             else if (_st == SectorType.Mini)
             {
-                SetMiniSectorChain(sectorChain);
+                AllocateMiniSectorChain(sectorChain);
             }
         }
 
@@ -2296,7 +2321,10 @@ namespace OpenMcdf
                 FreeChain(oldChain, this.eraseFreeSectors);
 
                 //Set up destination chain
-                SetMiniSectorChain(destSv.BaseSectorChain);
+                AllocateMiniSectorChain(destSv.BaseSectorChain);
+
+                // Persist to normal strea
+                PersistMiniStreamToStream(destSv.BaseSectorChain);
 
                 //Update dir item
                 if (destSv.BaseSectorChain.Count > 0)
@@ -2397,7 +2425,11 @@ namespace OpenMcdf
             sv.Seek(position, SeekOrigin.Begin);
             sv.Write(buffer, offset, count);
 
-            SetSectorChain(sv.BaseSectorChain);
+            if (cfItem.Size < header.MinSizeStandardStream)
+            {
+                PersistMiniStreamToStream(sv.BaseSectorChain);
+                //SetSectorChain(sv.BaseSectorChain);
+            }
         }
 
         internal void WriteData(CFItem cfItem, Byte[] buffer)

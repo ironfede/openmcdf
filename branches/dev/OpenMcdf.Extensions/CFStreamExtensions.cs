@@ -104,6 +104,11 @@ namespace OpenMcdf.Extensions
                 this.cfStream.Write(buffer, position, offset, count);
                 position += count;
             }
+
+            public override void Close()
+            {
+                // Do nothing
+            }
         }
 
         /// <summary>
