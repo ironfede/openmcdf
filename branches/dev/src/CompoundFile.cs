@@ -240,9 +240,8 @@ namespace OpenMcdf
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
             //Root -- 
-            rootStorage = new CFStorage(this);
-
-            rootStorage.DirEntry.SetEntryName("Root Entry");
+            DirectoryEntry de = new DirectoryEntry("Root Entry", StgType.StgRoot, directoryEntries);
+            rootStorage = new CFStorage(this, de);
             rootStorage.DirEntry.StgType = StgType.StgRoot;
             rootStorage.DirEntry.StgColor = StgColor.Black;
 
@@ -301,13 +300,14 @@ namespace OpenMcdf
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
             //Root -- 
-            rootStorage = new CFStorage(this);
+            IDirectoryEntry rootDir = new DirectoryEntry("Root Entry", StgType.StgRoot, directoryEntries);
+            rootDir.StgColor = StgColor.Black;
+            //this.InsertNewDirectoryEntry(rootDir);
 
-            rootStorage.DirEntry.SetEntryName("Root Entry");
-            rootStorage.DirEntry.StgType = StgType.StgRoot;
-            rootStorage.DirEntry.StgColor = StgColor.Black;
+            rootStorage = new CFStorage(this, rootDir);
 
-            //this.InsertNewDirectoryEntry(rootStorage.DirEntry);
+
+            //
         }
 
 
@@ -782,7 +782,7 @@ namespace OpenMcdf
                 if (s.Id == -1)
                     throw new CFException("Invalid minisector index");
 
-                // Overwrite
+                // Ministream sectors already allocated
                 miniStreamView.Seek(Sector.MINISECTOR_SIZE * s.Id, SeekOrigin.Begin);
                 miniStreamView.Write(s.GetData(), 0, Sector.MINISECTOR_SIZE);
             }
@@ -823,14 +823,7 @@ namespace OpenMcdf
             {
                 Sector s = sectorChain[i];
 
-                if (s.Id != -1)
-                {
-                    // Overwrite
-                    //miniStreamView.Seek(Sector.MINISECTOR_SIZE * s.Id, SeekOrigin.Begin);
-                    //miniStreamView.Write(s.GetData(), 0, Sector.MINISECTOR_SIZE);
-
-                }
-                else
+                if(s.Id == -1)
                 {
                     // Allocate, position ministream at the end of already allocated
                     // ministream's sectors
@@ -858,8 +851,8 @@ namespace OpenMcdf
             miniFATView.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
 
             // Update sector chains
-            SetNormalSectorChain(miniStreamView.BaseSectorChain);
-            SetNormalSectorChain(miniFATView.BaseSectorChain);
+            AllocateSectorChain(miniStreamView.BaseSectorChain);
+            AllocateSectorChain(miniFATView.BaseSectorChain);
 
             //Update HEADER and root storage when ministream changes
             if (miniFAT.Count > 0)
@@ -985,9 +978,10 @@ namespace OpenMcdf
             miniFATView.Seek(sectorChain[(sectorChain.Count - 1) - nth_sector_to_remove].Id * SIZE_OF_SID, SeekOrigin.Begin);
             miniFATView.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
 
+
             // Update sector chains           ---------------------------------------
-            SetNormalSectorChain(miniStreamView.BaseSectorChain);
-            SetNormalSectorChain(miniFATView.BaseSectorChain);
+            AllocateSectorChain(miniStreamView.BaseSectorChain);
+            AllocateSectorChain(miniFATView.BaseSectorChain);
 
             //Update HEADER and root storage when ministream changes
             if (miniFAT.Count > 0)
@@ -1012,7 +1006,7 @@ namespace OpenMcdf
 
             if (_st == SectorType.Normal)
             {
-                SetNormalSectorChain(sectorChain);
+                AllocateSectorChain(sectorChain);
             }
             else if (_st == SectorType.Mini)
             {
@@ -1025,7 +1019,7 @@ namespace OpenMcdf
         /// for the new or updated sector chain.
         /// </summary>
         /// <param name="sectorChain">The new or updated generic sector chain</param>
-        private void SetNormalSectorChain(List<Sector> sectorChain)
+        private void AllocateSectorChain(List<Sector> sectorChain)
         {
             foreach (Sector s in sectorChain)
             {
@@ -1037,7 +1031,7 @@ namespace OpenMcdf
                 }
             }
 
-            SetFATSectorChain(sectorChain);
+            AllocateFATSectorChain(sectorChain);
         }
 
         internal bool _transactionLockAdded = false;
@@ -1066,7 +1060,7 @@ namespace OpenMcdf
         /// for the new or updated FAT sector chain.
         /// </summary>
         /// <param name="sectorChain">The new or updated generic sector chain</param>
-        private void SetFATSectorChain(List<Sector> sectorChain)
+        private void AllocateFATSectorChain(List<Sector> sectorChain)
         {
             List<Sector> fatSectors = GetSectorChain(-1, SectorType.FAT);
 
@@ -1093,14 +1087,14 @@ namespace OpenMcdf
             fatStream.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
 
             // Merge chain to CFS
-            SetDIFATSectorChain(fatStream.BaseSectorChain);
+            AllocateDIFATSectorChain(fatStream.BaseSectorChain);
         }
 
         /// <summary>
         /// Setup the DIFAT sector chain
         /// </summary>
         /// <param name="FATsectorChain">A FAT sector chain</param>
-        private void SetDIFATSectorChain(List<Sector> FATsectorChain)
+        private void AllocateDIFATSectorChain(List<Sector> FATsectorChain)
         {
             // Get initial sector's count
             header.FATSectorsNumber = FATsectorChain.Count;
@@ -1607,109 +1601,10 @@ namespace OpenMcdf
         /// <param name="sid">Sid of the directory to invalidate</param>
         internal void ResetDirectoryEntry(int sid)
         {
-            directoryEntries[sid] = new DirectoryEntry(StgType.StgInvalid);
+            directoryEntries[sid] = new DirectoryEntry(String.Empty, StgType.StgInvalid, directoryEntries.AsReadOnly());
         }
 
 
-        internal void OnNodeInsert(RBNode<CFItem> node)
-        {
-
-        }
-
-        internal void OnNodeDeleted(RBNode<CFItem> obj)
-        {
-
-        }
-
-        private bool _deserializing;
-        private bool Deserializing
-        {
-            get { return _deserializing; }
-            set
-            {
-                _deserializing = value;
-
-                if (value)
-                {
-                    _deserializing = value;
-                    Trace.WriteLine("Deserializing...");
-                    Trace.Indent();
-                }
-                else
-                {
-                    Trace.WriteLine("Deserializing DONE");
-                    Trace.Unindent();
-                }
-            }
-        }
-
-        void OnNodeOperation(RBNode<CFItem> node, NodeOperation operation)
-        {
-            if (!Deserializing)
-            {
-                switch (operation)
-                {
-                    case NodeOperation.LeftAssigned:
-                        if (node.Left != null && (node.Left.Value.DirEntry.StgType != StgType.StgInvalid))
-                        {
-                            node.Value.DirEntry.LeftSibling = node.Left.Value.DirEntry.SID;
-                        }
-                        else
-                        {
-                            node.Value.DirEntry.LeftSibling = DirectoryEntry.NOSTREAM;
-                        }
-                        break;
-
-                    case NodeOperation.RightAssigned:
-
-                        if (node.Right != null && (node.Right.Value.DirEntry.StgType != StgType.StgInvalid))
-                        {
-                            node.Value.DirEntry.RightSibling = node.Right.Value.DirEntry.SID;
-                        }
-                        else
-                        {
-                            node.Value.DirEntry.RightSibling = DirectoryEntry.NOSTREAM;
-                        }
-                        break;
-
-                    case NodeOperation.ColorAssigned:
-                        node.Value.DirEntry.StgColor = (StgColor)node.Color;
-                        break;
-
-                    case NodeOperation.ValueAssigned:
-
-                        if (node.Value != null)
-                        {
-                            if (node.Left != null)
-                                node.Value.DirEntry.LeftSibling = node.Left.Value.DirEntry.SID;
-                            else
-                                node.Value.DirEntry.LeftSibling = DirectoryEntry.NOSTREAM;
-
-                            if (node.Right != null)
-                                node.Value.DirEntry.RightSibling = node.Right.Value.DirEntry.SID;
-                            else
-                                node.Value.DirEntry.RightSibling = DirectoryEntry.NOSTREAM;
-
-                            node.Value.DirEntry.StgColor = (StgColor)node.Color;
-
-                            //Rethread parent
-                            if (node.Parent != null)
-                            {
-                                if (node.Parent.Left == node)
-                                    node.Parent.Value.DirEntry.LeftSibling = node.Value.DirEntry.SID;
-                                else
-                                    node.Parent.Value.DirEntry.RightSibling = node.Value.DirEntry.SID;
-                            }
-
-                        }
-
-                        break;
-
-                    default:
-                        throw new CFException("Unsupported Red Black Node operation");
-                }
-            }
-        }
 
         //internal class NodeFactory : IRBTreeDeserializer<CFItem>
         //{
@@ -1720,11 +1615,11 @@ namespace OpenMcdf
         //    }
         //}
 
-        internal RBTree<CFItem> CreateNewTree()
+        internal RBTree CreateNewTree()
         {
-            RBTree<CFItem> bst = new RBTree<CFItem>();
-            bst.NodeInserted += OnNodeInsert;
-            bst.NodeOperation += OnNodeOperation;
+            RBTree bst = new RBTree();
+            //bst.NodeInserted += OnNodeInsert;
+            //bst.NodeOperation += OnNodeOperation;
             //bst.NodeDeleted += new Action<RBNode<CFItem>>(OnNodeDeleted);
             //  bst.ValueAssignedAction += new Action<RBNode<CFItem>, CFItem>(OnValueAssigned);
             return bst;
@@ -1742,18 +1637,13 @@ namespace OpenMcdf
         //}
 
 
-        internal RBTree<CFItem> GetChildrenTree(int sid)
+        internal RBTree GetChildrenTree(int sid)
         {
-            RBTree<CFItem> bst = new RBTree<CFItem>();
-            bst.NodeInserted += OnNodeInsert;
-            bst.NodeOperation += OnNodeOperation;
-            //bst.NodeDeleted += OnNodeDeleted;
+            RBTree bst = new RBTree();
 
             // Load children from their original tree.
-            DoLoadChildren(bst, directoryEntries[sid]);
-
-            // Rethreading of Red-Black tree of entry children after first loading
-            bst.VisitTreeNodes(RefreshSIDs);
+            //DoLoadChildren(bst, directoryEntries[sid]);
+            bst = DoLoadChildrenTrusted(directoryEntries[sid]);
 
             //bst.Print();
             //Trace.WriteLine("#### After rethreading");
@@ -1761,29 +1651,38 @@ namespace OpenMcdf
             return bst;
         }
 
-
-        private void DoLoadChildren(RBTree<CFItem> bst, IDirectoryEntry de)
+        private RBTree DoLoadChildrenTrusted(IDirectoryEntry de)
         {
-            Deserializing = true; //Loading existing entries, not just-in-time rethreading
+            RBTree bst = null;
+
+            if (de.Child != DirectoryEntry.NOSTREAM)
+            {
+                bst = new RBTree(directoryEntries[de.SID]);
+            }
+
+            return bst;
+        }
+
+
+        private void DoLoadChildren(RBTree bst, IDirectoryEntry de)
+        {
 
             if (de.Child != DirectoryEntry.NOSTREAM)
             {
                 if (directoryEntries[de.Child].StgType == StgType.StgInvalid) return;
 
                 if (directoryEntries[de.Child].StgType == StgType.StgStream)
-                    bst.Insert(new CFStream(this, directoryEntries[de.Child]));
+                    bst.Insert(directoryEntries[de.Child]);
                 else
-                    bst.Insert(new CFStorage(this, directoryEntries[de.Child]));
+                    bst.Insert(directoryEntries[de.Child]);
 
                 LoadSiblings(bst, directoryEntries[de.Child]);
             }
-
-            Deserializing = false;
         }
 
         // Doubling methods allows iterative behavior while avoiding
         // to insert duplicate items
-        private void LoadSiblings(RBTree<CFItem> bst, IDirectoryEntry de)
+        private void LoadSiblings(RBTree bst, IDirectoryEntry de)
         {
             if (de.LeftSibling != DirectoryEntry.NOSTREAM)
             {
@@ -1798,7 +1697,7 @@ namespace OpenMcdf
             }
         }
 
-        private void DoLoadSiblings(RBTree<CFItem> bst, IDirectoryEntry de)
+        private void DoLoadSiblings(RBTree bst, IDirectoryEntry de)
         {
             if (ValidateSibling(de.LeftSibling))
             {
@@ -1807,9 +1706,9 @@ namespace OpenMcdf
             }
 
             if (directoryEntries[de.SID].StgType == StgType.StgStream)
-                bst.Insert(new CFStream(this, directoryEntries[de.SID]));
+                bst.Insert(directoryEntries[de.SID]);
             else if (directoryEntries[de.SID].StgType == StgType.StgStorage)
-                bst.Insert(new CFStorage(this, directoryEntries[de.SID]));
+                bst.Insert(directoryEntries[de.SID]);
 
 
             if (ValidateSibling(de.RightSibling))
@@ -1884,52 +1783,15 @@ namespace OpenMcdf
             while (dirReader.Position < directoryChain.Count * GetSectorSize())
             {
                 DirectoryEntry de
-                = new DirectoryEntry(StgType.StgInvalid);
+                = new DirectoryEntry(String.Empty, StgType.StgInvalid, directoryEntries);
 
                 //We are not inserting dirs. Do not use 'InsertNewDirectoryEntry'
                 de.Read(dirReader);
-                directoryEntries.Add(de);
-                de.SID = directoryEntries.Count - 1;
+              
             }
         }
 
-        internal void RefreshSIDs(RedBlackTree.RBNode<CFItem> Node)
-        {
-            if (Node.Value != null)
-            {
-                //Set directory color from the node color
-                Node.Value.DirEntry.StgColor = (StgColor)Node.Color;
 
-                //Synchronize relations with SIDs of directory items
-                if (Node.Left != null && (Node.Left.Value.DirEntry.StgType != StgType.StgInvalid))
-                {
-                    Node.Value.DirEntry.LeftSibling = Node.Left.Value.DirEntry.SID;
-                }
-                else
-                {
-                    Node.Value.DirEntry.LeftSibling = DirectoryEntry.NOSTREAM;
-                }
-
-                if (Node.Right != null && (Node.Right.Value.DirEntry.StgType != StgType.StgInvalid))
-                {
-                    Node.Value.DirEntry.RightSibling = Node.Right.Value.DirEntry.SID;
-                }
-                else
-                {
-                    Node.Value.DirEntry.RightSibling = DirectoryEntry.NOSTREAM;
-                }
-            }
-            else
-                throw new CFException("Internal error: null data node");
-        }
-
-        //internal void RefreshIterative(RedBlackTree.RBNode<CFItem> node)
-        //{
-        //    //if (node == null) return;
-        //    //RefreshSIDs(node);
-        //    //RefreshIterative(node.Left);
-        //    //RefreshIterative(node.Right);
-        //}
 
         /// <summary>
         ///  Commit directory entries change on the Current Source stream
@@ -1952,7 +1814,7 @@ namespace OpenMcdf
 
             while (delta % (GetSectorSize() / DIRECTORY_SIZE) != 0)
             {
-                DirectoryEntry dummy = new DirectoryEntry(StgType.StgInvalid);
+                DirectoryEntry dummy = new DirectoryEntry(String.Empty, StgType.StgInvalid, directoryEntries.AsReadOnly());
                 dummy.Write(sv);
                 delta++;
             }
@@ -1962,7 +1824,7 @@ namespace OpenMcdf
                 s.Type = SectorType.Directory;
             }
 
-            SetNormalSectorChain(directorySectors);
+            AllocateSectorChain(directorySectors);
 
             header.FirstDirectorySectorID = directorySectors[0].Id;
 
@@ -2371,7 +2233,7 @@ namespace OpenMcdf
                 FreeMiniChain(oldChain, this.eraseFreeSectors);
 
                 //Set up normal destination chain
-                SetNormalSectorChain(destSv.BaseSectorChain);
+                AllocateSectorChain(destSv.BaseSectorChain);
 
                 //Update dir item
                 if (destSv.BaseSectorChain.Count > 0)
@@ -2697,6 +2559,11 @@ namespace OpenMcdf
 
         private List<IDirectoryEntry> directoryEntries
             = new List<IDirectoryEntry>();
+
+        internal IList<IDirectoryEntry> GetDirectories()
+        {
+            return directoryEntries;
+        }
 
         //internal List<IDirectoryEntry> DirectoryEntries
         //{

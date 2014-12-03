@@ -38,8 +38,9 @@ namespace OpenMcdf
         Black = 1
     }
 
-    internal class DirectoryEntry :  IDirectoryEntry
+    internal class DirectoryEntry : IDirectoryEntry
     {
+        private IList<IDirectoryEntry> dirRepository;
 
         private int sid = -1;
         public int SID
@@ -51,8 +52,12 @@ namespace OpenMcdf
         internal static Int32 NOSTREAM
             = unchecked((int)0xFFFFFFFF);
 
-        public DirectoryEntry(StgType stgType)
+        public DirectoryEntry(String name, StgType stgType, IList<IDirectoryEntry> dirRepository)
         {
+            this.dirRepository = dirRepository;
+            this.dirRepository.Add(this);
+            this.sid = this.dirRepository.Count - 1;
+
             this.stgType = stgType;
 
             switch (stgType)
@@ -73,6 +78,8 @@ namespace OpenMcdf
                     this.modifyDate = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
                     break;
             }
+
+            this.SetEntryName(name);
 
         }
 
@@ -154,6 +161,7 @@ namespace OpenMcdf
             }
         }
         private StgColor stgColor = StgColor.Black;
+
         public StgColor StgColor
         {
             get
@@ -411,5 +419,115 @@ namespace OpenMcdf
             get { return GetEntryName(); }
         }
 
+
+        public RedBlackTree.IRBNode Left
+        {
+            get
+            {
+                if (leftSibling == DirectoryEntry.NOSTREAM)
+                    return null;
+
+                return dirRepository[leftSibling];
+            }
+            set
+            {
+                leftSibling = value != null ? ((IDirectoryEntry)value).SID : DirectoryEntry.NOSTREAM;
+
+                if (leftSibling != DirectoryEntry.NOSTREAM)
+                    dirRepository[leftSibling].Parent = this;
+            }
+        }
+
+        public RedBlackTree.IRBNode Right
+        {
+            get
+            {
+                if (rightSibling == DirectoryEntry.NOSTREAM)
+                    return null;
+
+                return dirRepository[rightSibling];
+            }
+            set
+            {
+
+                rightSibling = value != null ? ((IDirectoryEntry)value).SID : DirectoryEntry.NOSTREAM;
+
+                if (rightSibling != DirectoryEntry.NOSTREAM)
+                    dirRepository[rightSibling].Parent = this;
+
+            }
+        }
+
+        public RedBlackTree.Color Color
+        {
+            get
+            {
+                return (RedBlackTree.Color)StgColor;
+            }
+            set
+            {
+                StgColor = (StgColor)value;
+            }
+        }
+
+        private IDirectoryEntry parent = null;
+
+        public RedBlackTree.IRBNode Parent
+        {
+            get
+            {
+                return parent;
+            }
+            set
+            {
+                parent = value as IDirectoryEntry;
+            }
+        }
+
+        public RedBlackTree.IRBNode Grandparent()
+        {
+            return parent != null ? parent.Parent : null;
+        }
+
+        public RedBlackTree.IRBNode Sibling()
+        {
+            if (this == Parent.Left)
+                return Parent.Right;
+            else
+                return Parent.Left;
+        }
+
+        public RedBlackTree.IRBNode Uncle()
+        {
+            return parent != null ? Parent.Sibling() : null;
+        }
+
+        public object Clone()
+        {
+            DirectoryEntry d = new DirectoryEntry(this.Name, this.stgType, this.dirRepository);
+            d.child = this.child;
+            d.Color = this.Color;
+
+            d.creationDate = new byte[this.creationDate.Length];
+            this.creationDate.CopyTo(d.creationDate, 0);
+
+            d.leftSibling = this.leftSibling;
+
+            d.modifyDate = new byte[this.modifyDate.Length];
+            this.modifyDate.CopyTo(d.modifyDate, 0);
+
+            d.nameLength = this.nameLength;
+            d.parent = this.parent;
+            d.rightSibling = this.rightSibling;
+
+            d.size = this.size;
+            d.startSetc = this.startSetc;
+            d.stateBits = this.stateBits;
+            d.stgColor = this.stgColor;
+            d.stgType = this.stgType;
+            d.storageCLSID = new Guid(this.storageCLSID.ToByteArray());
+
+            return d;
+        }
     }
 }

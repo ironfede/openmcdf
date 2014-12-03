@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RedBlackTree;
+using System;
 
 
 /*
@@ -19,7 +20,7 @@
 
 namespace OpenMcdf
 {
-    internal interface IDirectoryEntry : IComparable
+    internal interface IDirectoryEntry : IComparable, IRBNode
     {
         int Child { get; set; }
         byte[] CreationDate { get; set; }

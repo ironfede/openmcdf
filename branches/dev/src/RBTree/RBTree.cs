@@ -33,144 +33,67 @@ namespace RedBlackTree
         }
     }
 
-
-    public interface IRBTreeDeserializer<V> where V : IComparable<V>
-    {
-        RBNode<V> Deseriazlize();
-    }
-
     public enum Color { RED = 0, BLACK = 1 }
 
     /// <summary>
     /// Red Black Node class
     /// </summary>
     /// <typeparam name="V"></typeparam>
-    public class RBNode<V>
-        where V : IComparable<V>
+    public interface IRBNode : IComparable, ICloneable
     {
 
-        private RBTree<V> owner;
-        public RBTree<V> Owner
+         IRBNode Left
         {
-            get { return owner; }
-            set { owner = value; }
+            get;
+            set;
         }
 
-        private V value;
-        public V Value
+         IRBNode Right
         {
-            get
-            {
-                return value;
-            }
-            set
-            {
-                this.value = value;
-                owner.FireNodeOperation(this, NodeOperation.ValueAssigned);
-            }
+            get;
+            set;
         }
 
-        private RBNode<V> left;
-        public RBNode<V> Left
-        {
-            get { return left; }
-            set
-            {
-                left = value;
 
-                owner.FireNodeOperation(this, NodeOperation.LeftAssigned);
-            }
-        }
+         Color Color
 
-        private RBNode<V> right;
-        public RBNode<V> Right
-        {
-            get { return right; }
-            set
-            {
-                right = value;
-                owner.FireNodeOperation(this, NodeOperation.RightAssigned);
-            }
-        }
+        { get; set; }
 
-        private Color color;
 
-        public Color Color
-        {
-            get
-            {
-                return color;
-            }
-            set
-            {
-                color = value;
-                owner.FireNodeOperation(this, NodeOperation.ColorAssigned);
 
-            }
-        }
+         IRBNode Parent { get; set; }
 
-        public RBNode<V> Parent { get; set; }
-        
-        public override string ToString()
-        {
-            if (value != null)
-                return value.ToString();
-            else
-                return String.Empty;
 
-        }
+         IRBNode Grandparent();
 
-        public RBNode(V value, Color nodeColor, RBNode<V> left, RBNode<V> right, RBTree<V> owner)
-        {
-            this.owner = owner;
-            this.Value = value;
-            this.Left = left;
-            this.Right = right;
 
-            this.Color = nodeColor;
-            if (left != null) left.Parent = this;
-            if (right != null) right.Parent = this;
-            this.Parent = null;
+         IRBNode Sibling();
+        //        {
+        //#if ASSERT
+        //            Debug.Assert(Parent != null); // Root node has no sibling
+        //#endif
+        //            if (this == Parent.Left)
+        //                return Parent.Right;
+        //            else
+        //                return Parent.Left;
+        //        }
 
-        }
-
-        public RBNode<V> Grandparent()
-        {
-
-#if ASSERT
-            Debug.Assert(Parent != null); // Not the root node
-            Debug.Assert(Parent.Parent != null); // Not child of root
-#endif
-            return Parent.Parent;
-        }
-
-        public RBNode<V> Sibling()
-        {
-#if ASSERT
-            Debug.Assert(Parent != null); // Root node has no sibling
-#endif
-            if (this == Parent.Left)
-                return Parent.Right;
-            else
-                return Parent.Left;
-        }
-
-        public RBNode<V> Uncle()
-        {
-#if ASSERT
-            Debug.Assert(Parent != null); // Root node has no uncle
-            Debug.Assert(Parent.Parent != null); // Children of root have no uncle
-#endif
-            return Parent.Sibling();
-        }
+         IRBNode Uncle();
+        //        {
+        //#if ASSERT
+        //            Debug.Assert(Parent != null); // Root node has no uncle
+        //            Debug.Assert(Parent.Parent != null); // Children of root have no uncle
+        //#endif
+        //            return Parent.Sibling();
+        //        }
+        //    }
     }
 
-    public class RBTree<V>
-        where V : IComparable<V>
+    public class RBTree
     {
-        public RBNode<V> Root { get; set; }
+        public IRBNode Root { get; set; }
 
-        private static Color NodeColor(RBNode<V> n)
+        private static Color NodeColor(IRBNode n)
         {
             return n == null ? Color.BLACK : n.Color;
         }
@@ -180,18 +103,20 @@ namespace RedBlackTree
 
         }
 
-        public RBTree(IRBTreeDeserializer<V> deserializer)
+        public RBTree(IRBNode root)
         {
-            Root = deserializer.Deseriazlize();
+            this.Root = root;
         }
 
-        private RBNode<V> LookupNode(V val)
+
+        private IRBNode LookupNode(IRBNode template)
         {
-            RBNode<V> n = Root;
+            IRBNode n = Root;
 
             while (n != null)
             {
-                int compResult = val.CompareTo(n.Value);
+                int compResult = template.CompareTo(n);
+
                 if (compResult == 0)
                 {
                     return n;
@@ -210,23 +135,23 @@ namespace RedBlackTree
             return n;
         }
 
-        public bool TryLookup(V template, out V val)
+        public bool TryLookup(IRBNode template, out IRBNode val)
         {
-            RBNode<V> n = LookupNode(template);
+            IRBNode n = LookupNode(template);
 
             if (n == null)
             {
-                val = default(V);
+                val = null;
                 return false;
             }
             else
             {
-                val = n.Value;
+                val = n;
                 return true;
             }
         }
 
-        private void ReplaceNode(RBNode<V> oldn, RBNode<V> newn)
+        private void ReplaceNode(IRBNode oldn, IRBNode newn)
         {
             if (oldn.Parent == null)
             {
@@ -245,9 +170,9 @@ namespace RedBlackTree
             }
         }
 
-        private void RotateLeft(RBNode<V> n)
+        private void RotateLeft(IRBNode n)
         {
-            RBNode<V> r = n.Right;
+            IRBNode r = n.Right;
             ReplaceNode(n, r);
             n.Right = r.Left;
             if (r.Left != null)
@@ -258,9 +183,9 @@ namespace RedBlackTree
             n.Parent = r;
         }
 
-        private void RotateRight(RBNode<V> n)
+        private void RotateRight(IRBNode n)
         {
-            RBNode<V> l = n.Left;
+            IRBNode l = n.Left;
             ReplaceNode(n, l);
             n.Left = l.Right;
 
@@ -273,14 +198,12 @@ namespace RedBlackTree
             n.Parent = l;
         }
 
-        private void DeserializeFromValues(IList<V> values)
-        {
+    
 
-        }
-
-        public void Insert(V value)
+        public void Insert(IRBNode newNode)
         {
-            RBNode<V> insertedNode = new RBNode<V>(value, Color.RED, null, null, this);
+            newNode.Color = Color.RED;
+            IRBNode insertedNode = newNode;
 
             if (Root == null)
             {
@@ -288,10 +211,10 @@ namespace RedBlackTree
             }
             else
             {
-                RBNode<V> n = Root;
+                IRBNode n = Root;
                 while (true)
                 {
-                    int compResult = value.CompareTo(n.Value);
+                    int compResult = newNode.CompareTo(n);
                     if (compResult == 0)
                     {
                         throw new RBTreeDuplicatedItemException("OhiOhi Duplicated Item");
@@ -339,7 +262,7 @@ namespace RedBlackTree
         }
 
         //------------------------------------
-        private void InsertCase1(RBNode<V> n)
+        private void InsertCase1(IRBNode n)
         {
             if (n.Parent == null)
                 n.Color = Color.BLACK;
@@ -348,7 +271,7 @@ namespace RedBlackTree
         }
 
         //-----------------------------------
-        private void InsertCase2(RBNode<V> n)
+        private void InsertCase2(IRBNode n)
         {
             if (NodeColor(n.Parent) == Color.BLACK)
                 return; // Tree is still valid
@@ -357,7 +280,7 @@ namespace RedBlackTree
         }
 
         //----------------------------
-        private void InsertCase3(RBNode<V> n)
+        private void InsertCase3(IRBNode n)
         {
             if (NodeColor(n.Uncle()) == Color.RED)
             {
@@ -373,7 +296,7 @@ namespace RedBlackTree
         }
 
         //----------------------------
-        private void InsertCase4(RBNode<V> n)
+        private void InsertCase4(IRBNode n)
         {
             if (n == n.Parent.Right && n.Parent == n.Grandparent().Left)
             {
@@ -390,7 +313,7 @@ namespace RedBlackTree
         }
 
         //----------------------------
-        private void InsertCase5(RBNode<V> n)
+        private void InsertCase5(IRBNode n)
         {
             n.Parent.Color = Color.BLACK;
             n.Grandparent().Color = Color.RED;
@@ -405,7 +328,7 @@ namespace RedBlackTree
             }
         }
 
-        private static RBNode<V> MaximumNode(RBNode<V> n)
+        private static IRBNode MaximumNode(IRBNode n)
         {
             //assert n != null;
             while (n.Right != null)
@@ -417,21 +340,21 @@ namespace RedBlackTree
         }
 
 
-        public void Delete(V value)
+        public void Delete(IRBNode template)
         {
-            RBNode<V> n = LookupNode(value);
+            IRBNode n = LookupNode(template);
             if (n == null)
                 return;  // Key not found, do nothing
             if (n.Left != null && n.Right != null)
             {
                 // Copy key/value from predecessor and then delete it instead
-                RBNode<V> pred = MaximumNode(n.Left);
-                n.Value = pred.Value;
+                IRBNode pred = MaximumNode(n.Left);
+                n = pred.Clone() as IRBNode;
                 n = pred;
             }
 
             //assert n.left == null || n.right == null;
-            RBNode<V> child = (n.Right == null) ? n.Left : n.Right;
+            IRBNode child = (n.Right == null) ? n.Left : n.Right;
             if (NodeColor(n) == Color.BLACK)
             {
                 n.Color = NodeColor(child);
@@ -449,11 +372,9 @@ namespace RedBlackTree
 
             //Print();
 
-
-
         }
 
-        private void DeleteCase1(RBNode<V> n)
+        private void DeleteCase1(IRBNode n)
         {
             if (n.Parent == null)
                 return;
@@ -462,7 +383,7 @@ namespace RedBlackTree
         }
 
 
-        private void DeleteCase2(RBNode<V> n)
+        private void DeleteCase2(IRBNode n)
         {
             if (NodeColor(n.Sibling()) == Color.RED)
             {
@@ -477,7 +398,7 @@ namespace RedBlackTree
             DeleteCase3(n);
         }
 
-        private void DeleteCase3(RBNode<V> n)
+        private void DeleteCase3(IRBNode n)
         {
             if (NodeColor(n.Parent) == Color.BLACK &&
                 NodeColor(n.Sibling()) == Color.BLACK &&
@@ -491,7 +412,7 @@ namespace RedBlackTree
                 DeleteCase4(n);
         }
 
-        private void DeleteCase4(RBNode<V> n)
+        private void DeleteCase4(IRBNode n)
         {
             if (NodeColor(n.Parent) == Color.RED &&
                 NodeColor(n.Sibling()) == Color.BLACK &&
@@ -505,7 +426,7 @@ namespace RedBlackTree
                 DeleteCase5(n);
         }
 
-        private void DeleteCase5(RBNode<V> n)
+        private void DeleteCase5(IRBNode n)
         {
             if (n == n.Parent.Left &&
                 NodeColor(n.Sibling()) == Color.BLACK &&
@@ -529,7 +450,7 @@ namespace RedBlackTree
             DeleteCase6(n);
         }
 
-        private void DeleteCase6(RBNode<V> n)
+        private void DeleteCase6(IRBNode n)
         {
             n.Sibling().Color = NodeColor(n.Parent);
             n.Parent.Color = Color.BLACK;
@@ -547,16 +468,16 @@ namespace RedBlackTree
             }
         }
 
-        public void VisitTree(Action<V> action)
+        public void VisitTree(Action<IRBNode> action)
         {
             //IN Order visit
-            RBNode<V> walker = Root;
+            IRBNode walker = Root;
 
             if (walker != null)
                 DoVisitTree(action, walker);
         }
 
-        private void DoVisitTree(Action<V> action, RBNode<V> walker)
+        private void DoVisitTree(Action<IRBNode> action, IRBNode walker)
         {
             if (walker.Left != null)
             {
@@ -564,7 +485,7 @@ namespace RedBlackTree
             }
 
             if (action != null)
-                action(walker.Value);
+                action(walker);
 
             if (walker.Right != null)
             {
@@ -573,16 +494,16 @@ namespace RedBlackTree
 
         }
 
-        internal void VisitTreeNodes(Action<RBNode<V>> action)
+        internal void VisitTreeNodes(Action<IRBNode> action)
         {
             //IN Order visit
-            RBNode<V> walker = Root;
+            IRBNode walker = Root;
 
             if (walker != null)
                 DoVisitTreeNodes(action, walker);
         }
 
-        private void DoVisitTreeNodes(Action<RBNode<V>> action, RBNode<V> walker)
+        private void DoVisitTreeNodes(Action<IRBNode> action, IRBNode walker)
         {
             if (walker.Left != null)
             {
@@ -600,17 +521,17 @@ namespace RedBlackTree
 
         }
 
-        public class RBTreeEnumerator : IEnumerator<RBNode<V>>
+        public class RBTreeEnumerator : IEnumerator<IRBNode>
         {
             int position = -1;
-            private Queue<RBNode<V>> heap = new Queue<RBNode<V>>();
+            private Queue<IRBNode> heap = new Queue<IRBNode>();
 
-            internal RBTreeEnumerator(RBTree<V> tree)
+            internal RBTreeEnumerator(RBTree tree)
             {
                 tree.VisitTreeNodes(item => heap.Enqueue(item));
             }
 
-            public RBNode<V> Current
+            public IRBNode Current
             {
                 get
                 {
@@ -654,7 +575,7 @@ namespace RedBlackTree
             PrintHelper(Root, 0);
         }
 
-        private static void PrintHelper(RBNode<V> n, int indent)
+        private static void PrintHelper(IRBNode n, int indent)
         {
             if (n == null)
             {
@@ -670,9 +591,9 @@ namespace RedBlackTree
             for (int i = 0; i < indent; i++)
                 Trace.Write(" ");
             if (n.Color == Color.BLACK)
-                Trace.WriteLine(" " + n.Value + " ");
+                Trace.WriteLine(" " + n.ToString() + " ");
             else
-                Trace.WriteLine("<" + n.Value + ">");
+                Trace.WriteLine("<" + n.ToString() + ">");
 
             if (n.Right != null)
             {
@@ -680,7 +601,7 @@ namespace RedBlackTree
             }
         }
 
-        internal void FireNodeOperation(RBNode<V> node, NodeOperation operation)
+        internal void FireNodeOperation(IRBNode node, NodeOperation operation)
         {
             if (NodeOperation != null)
                 NodeOperation(node, operation);
@@ -692,9 +613,9 @@ namespace RedBlackTree
         //        ValueAssignedAction(node, value);
         //}
 
-        internal event Action<RBNode<V>> NodeInserted;
+        internal event Action<IRBNode> NodeInserted;
         //internal event Action<RBNode<V>> NodeDeleted;
-        internal event Action<RBNode<V>, NodeOperation> NodeOperation;
+        internal event Action<IRBNode, NodeOperation> NodeOperation;
 
 
     }
