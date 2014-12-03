@@ -29,19 +29,8 @@ namespace OpenMcdf
     /// </summary>
     public class CFStream : CFItem
     {
-        private long position = 0;
-
-        internal CFStream(CompoundFile sectorManager)
-            : base(sectorManager)
-        {
-            this.DirEntry = new DirectoryEntry(StgType.StgStream);
-            this.DirEntry.StgColor = StgColor.Black;
-
-            sectorManager.InsertNewDirectoryEntry(this.DirEntry);
-        }
-
-        internal CFStream(CompoundFile sectorManager, IDirectoryEntry dirEntry)
-            : base(sectorManager)
+        internal CFStream(CompoundFile compoundFile, IDirectoryEntry dirEntry)
+            : base(compoundFile)
         {
             if (dirEntry == null || dirEntry.SID < 0)
                 throw new CFException("Attempting to add a CFStream using an unitialized directory");

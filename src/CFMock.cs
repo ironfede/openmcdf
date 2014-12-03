@@ -24,12 +24,12 @@ namespace OpenMcdf
     /// <summary>
     /// Used as internal template object for binary tree searches.
     /// </summary>
-    internal class CFMock: CFItem
+    internal class CFMock : CFItem
     {
-        internal CFMock(String dirName, StgType dirType): base()
+        internal CFMock(String dirName, StgType dirType, IList<IDirectoryEntry> dirs)
+            : base()
         {
-            this.DirEntry = new DirectoryEntry(dirType);
-            this.DirEntry.SetEntryName(dirName);
+            this.DirEntry = new DirectoryEntry(dirName, dirType, dirs);
         }
 
         public override string ToString()
