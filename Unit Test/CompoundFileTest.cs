@@ -673,7 +673,7 @@ namespace OpenMcdfTest
 
                 f.Save("$ItemsLargeNumber.cfs");
                 f.Close();
-                Trace.Listeners.Add(new ConsoleTraceListener());
+                
                 f = new CompoundFile("$ItemsLargeNumber.cfs");
                 CFStream cfs = f.RootStorage.GetStream("Stream" + (ITEM_NUMBER / 2).ToString());
 

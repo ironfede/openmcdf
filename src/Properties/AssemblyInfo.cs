@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("MS Compound File Storage .NET Implementation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Federico Blaseotto")]
-[assembly: AssemblyProduct("OpenMcdf 2.0 (prerelease)")]
+[assembly: AssemblyProduct("OpenMcdf 2.0 beta 1")]
 [assembly: AssemblyCopyright("Copyright © 2010-2014, Federico Blaseotto")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

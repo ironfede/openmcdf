@@ -158,10 +158,6 @@ namespace OpenMcdf
             {
                 // Add object to Siblings tree
                 this.Children.Insert(dirEntry);
-                //Trace.WriteLine("**** INSERT STREAM " + cfo.Name + "******");
-                //this.Children.Print();
-                //Rethread children tree...
-                // CompoundFile.RefreshIterative(Children.Root);
 
                 //... and set the root of the tree as new child of the current item directory entry
                 this.DirEntry.Child = (Children.Root as IDirectoryEntry).SID;
@@ -298,9 +294,7 @@ namespace OpenMcdf
             try
             {
                 // Add object to Siblings tree
-                //Trace.WriteLine("**** INSERT STORAGE " + cfo.Name + "******");
                 Children.Insert(cfo);
-                //Children.Print();
             }
             catch (RBTreeDuplicatedItemException)
             {
@@ -467,7 +461,7 @@ namespace OpenMcdf
 
                     this.CompoundFile.InvalidateDirectoryEntry(((IDirectoryEntry)foundObj).SID);
 
-                    this.Children.Print();
+                    
 
                     break;
             }
