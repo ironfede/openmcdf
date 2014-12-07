@@ -23,7 +23,8 @@ namespace OpenMcdf
 
         public byte ReadByte()
         {
-            return (byte)this.stream.ReadByte();
+            this.stream.Read(buffer, 0, 1);
+            return buffer[0];
         }
 
         public ushort ReadUInt16()
@@ -74,7 +75,8 @@ namespace OpenMcdf
 
         public void Write(byte b)
         {
-            this.stream.WriteByte(b);
+            buffer[0] = b;
+            this.stream.Write(buffer, 0, 1);
         }
 
         public void Write(ushort value)

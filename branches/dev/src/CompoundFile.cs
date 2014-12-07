@@ -240,7 +240,7 @@ namespace OpenMcdf
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
             //Root -- 
-            DirectoryEntry de = new DirectoryEntry("Root Entry", StgType.StgRoot, directoryEntries);
+            IDirectoryEntry de = DirectoryEntry.New("Root Entry", StgType.StgRoot, directoryEntries);
             rootStorage = new CFStorage(this, de);
             rootStorage.DirEntry.StgType = StgType.StgRoot;
             rootStorage.DirEntry.StgColor = StgColor.Black;
@@ -300,7 +300,7 @@ namespace OpenMcdf
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
             //Root -- 
-            IDirectoryEntry rootDir = new DirectoryEntry("Root Entry", StgType.StgRoot, directoryEntries);
+            IDirectoryEntry rootDir = DirectoryEntry.New("Root Entry", StgType.StgRoot, directoryEntries);
             rootDir.StgColor = StgColor.Black;
             //this.InsertNewDirectoryEntry(rootDir);
 
@@ -823,7 +823,7 @@ namespace OpenMcdf
             {
                 Sector s = sectorChain[i];
 
-                if(s.Id == -1)
+                if (s.Id == -1)
                 {
                     // Allocate, position ministream at the end of already allocated
                     // ministream's sectors
@@ -1572,28 +1572,7 @@ namespace OpenMcdf
             }
         }
 
-        internal void InsertNewDirectoryEntry(IDirectoryEntry de)
-        {
-            // If we are not adding an invalid dirEntry as
-            // in a normal loading from file (invalid dirs MAY pad a sector)
-            if (de != null)
-            {
-                // Find first available invalid slot (if any) to reuse it
-                for (int i = 0; i < directoryEntries.Count; i++)
-                {
-                    if (directoryEntries[i].StgType == StgType.StgInvalid)
-                    {
-                        directoryEntries[i] = de;
-                        de.SID = i;
-                        return;
-                    }
-                }
-            }
 
-            // No invalid directory entry found
-            directoryEntries.Add(de);
-            de.SID = directoryEntries.Count - 1;
-        }
 
         /// <summary>
         /// Reset a directory entry setting it to StgInvalid in the Directory.
@@ -1601,7 +1580,11 @@ namespace OpenMcdf
         /// <param name="sid">Sid of the directory to invalidate</param>
         internal void ResetDirectoryEntry(int sid)
         {
-            directoryEntries[sid] = new DirectoryEntry(String.Empty, StgType.StgInvalid, directoryEntries.AsReadOnly());
+            directoryEntries[sid].SetEntryName(String.Empty);
+            directoryEntries[sid].Left = null;
+            directoryEntries[sid].Right = null;
+            directoryEntries[sid].Parent = null;
+            directoryEntries[sid].StgType = StgType.StgInvalid;
         }
 
 
@@ -1641,10 +1624,12 @@ namespace OpenMcdf
         {
             RBTree bst = new RBTree();
 
-            // Load children from their original tree.
-            //DoLoadChildren(bst, directoryEntries[sid]);
-            bst = DoLoadChildrenTrusted(directoryEntries[sid]);
 
+            // Load children from their original tree.
+            DoLoadChildren(bst, directoryEntries[sid]);
+            //bst = DoLoadChildrenTrusted(directoryEntries[sid]);
+
+            //bst.Print();
             //bst.Print();
             //Trace.WriteLine("#### After rethreading");
 
@@ -1657,7 +1642,7 @@ namespace OpenMcdf
 
             if (de.Child != DirectoryEntry.NOSTREAM)
             {
-                bst = new RBTree(directoryEntries[de.SID]);
+                bst = new RBTree(directoryEntries[de.Child]);
             }
 
             return bst;
@@ -1671,13 +1656,17 @@ namespace OpenMcdf
             {
                 if (directoryEntries[de.Child].StgType == StgType.StgInvalid) return;
 
-                if (directoryEntries[de.Child].StgType == StgType.StgStream)
-                    bst.Insert(directoryEntries[de.Child]);
-                else
-                    bst.Insert(directoryEntries[de.Child]);
-
                 LoadSiblings(bst, directoryEntries[de.Child]);
+                NullifyChildNodes(directoryEntries[de.Child]);
+                bst.Insert(directoryEntries[de.Child]);
             }
+        }
+
+        private void NullifyChildNodes(IDirectoryEntry de)
+        {
+            de.Parent = null;
+            de.Left = null;
+            de.Right = null;
         }
 
         // Doubling methods allows iterative behavior while avoiding
@@ -1688,12 +1677,14 @@ namespace OpenMcdf
             {
                 // If there're more left siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.LeftSibling]);
+                //NullifyChildNodes(directoryEntries[de.LeftSibling]);
             }
 
             if (de.RightSibling != DirectoryEntry.NOSTREAM)
             {
                 // If there're more right siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.RightSibling]);
+                //NullifyChildNodes(directoryEntries[de.RightSibling]);
             }
         }
 
@@ -1705,17 +1696,14 @@ namespace OpenMcdf
                 DoLoadSiblings(bst, directoryEntries[de.LeftSibling]);
             }
 
-            if (directoryEntries[de.SID].StgType == StgType.StgStream)
-                bst.Insert(directoryEntries[de.SID]);
-            else if (directoryEntries[de.SID].StgType == StgType.StgStorage)
-                bst.Insert(directoryEntries[de.SID]);
-
-
             if (ValidateSibling(de.RightSibling))
             {
                 // If there're more right siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.RightSibling]);
             }
+
+            NullifyChildNodes(de);
+            bst.Insert(de);
         }
 
         private bool ValidateSibling(int sid)
@@ -1727,7 +1715,7 @@ namespace OpenMcdf
                 {
                     if (this.validationExceptionEnabled)
                     {
-                        this.Close();
+                        //this.Close();
                         throw new CFCorruptedFileException("A Directory Entry references the non-existent sid number " + sid.ToString());
                     }
                     else
@@ -1739,8 +1727,8 @@ namespace OpenMcdf
                 {
                     if (this.validationExceptionEnabled)
                     {
-                        this.Close();
-                        throw new CFCorruptedFileException("A Directory Entry has a valid reference to an Invalid Storage Type directory");
+                        //this.Close();
+                        throw new CFCorruptedFileException("A Directory Entry has a valid reference to an Invalid Storage Type directory [" + sid + "]");
                     }
                     else
                         return false;
@@ -1751,7 +1739,7 @@ namespace OpenMcdf
 
                     if (this.validationExceptionEnabled)
                     {
-                        this.Close();
+                        //this.Close();
                         throw new CFCorruptedFileException("A Directory Entry has an invalid Storage Type");
                     }
                     else
@@ -1782,12 +1770,12 @@ namespace OpenMcdf
 
             while (dirReader.Position < directoryChain.Count * GetSectorSize())
             {
-                DirectoryEntry de
-                = new DirectoryEntry(String.Empty, StgType.StgInvalid, directoryEntries);
+                IDirectoryEntry de
+                = DirectoryEntry.New(String.Empty, StgType.StgInvalid, directoryEntries);
 
                 //We are not inserting dirs. Do not use 'InsertNewDirectoryEntry'
                 de.Read(dirReader);
-              
+
             }
         }
 
@@ -1814,7 +1802,7 @@ namespace OpenMcdf
 
             while (delta % (GetSectorSize() / DIRECTORY_SIZE) != 0)
             {
-                DirectoryEntry dummy = new DirectoryEntry(String.Empty, StgType.StgInvalid, directoryEntries.AsReadOnly());
+                IDirectoryEntry dummy = DirectoryEntry.New(String.Empty, StgType.StgInvalid, directoryEntries);
                 dummy.Write(sv);
                 delta++;
             }
@@ -2416,35 +2404,34 @@ namespace OpenMcdf
         }
 
 
-        internal void RemoveDirectoryEntry(int sid)
+        internal void InvalidateDirectoryEntry(int sid)
         {
             if (sid >= directoryEntries.Count)
                 throw new CFException("Invalid SID of the directory entry to remove");
 
-            if (directoryEntries[sid].StgType == StgType.StgStream)
+            //Random r = new Random();
+            directoryEntries[sid].SetEntryName("_DELETED_NAME_" + sid.ToString());
+            directoryEntries[sid].StgType = StgType.StgInvalid;
+        }
+
+        internal void FreeAssociatedData(int sid)
+        {
+            // Clear the associated stream (or ministream) if required
+            if (directoryEntries[sid].Size > 0) //thanks to Mark Bosold for this !
             {
-                // Clear the associated stream (or ministream) if required
-                if (directoryEntries[sid].Size > 0) //thanks to Mark Bosold for this !
+                if (directoryEntries[sid].Size < header.MinSizeStandardStream)
                 {
-                    if (directoryEntries[sid].Size < header.MinSizeStandardStream)
-                    {
-                        List<Sector> miniChain
-                            = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Mini);
-                        FreeMiniChain(miniChain, this.eraseFreeSectors);
-                    }
-                    else
-                    {
-                        List<Sector> chain
-                            = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Normal);
-                        FreeChain(chain, this.eraseFreeSectors);
-                    }
+                    List<Sector> miniChain
+                        = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Mini);
+                    FreeMiniChain(miniChain, this.eraseFreeSectors);
+                }
+                else
+                {
+                    List<Sector> chain
+                        = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Normal);
+                    FreeChain(chain, this.eraseFreeSectors);
                 }
             }
-
-
-            Random r = new Random();
-            directoryEntries[sid].SetEntryName("_DELETED_NAME_" + r.Next(short.MaxValue).ToString());
-            directoryEntries[sid].StgType = StgType.StgInvalid;
         }
 
         /// <summary>

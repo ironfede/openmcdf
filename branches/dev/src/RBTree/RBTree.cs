@@ -39,35 +39,35 @@ namespace RedBlackTree
     /// Red Black Node class
     /// </summary>
     /// <typeparam name="V"></typeparam>
-    public interface IRBNode : IComparable, ICloneable
+    public interface IRBNode : IComparable
     {
 
-         IRBNode Left
+        IRBNode Left
         {
             get;
             set;
         }
 
-         IRBNode Right
+        IRBNode Right
         {
             get;
             set;
         }
 
 
-         Color Color
+        Color Color
 
         { get; set; }
 
 
 
-         IRBNode Parent { get; set; }
+        IRBNode Parent { get; set; }
 
 
-         IRBNode Grandparent();
+        IRBNode Grandparent();
 
 
-         IRBNode Sibling();
+        IRBNode Sibling();
         //        {
         //#if ASSERT
         //            Debug.Assert(Parent != null); // Root node has no sibling
@@ -78,7 +78,7 @@ namespace RedBlackTree
         //                return Parent.Left;
         //        }
 
-         IRBNode Uncle();
+        IRBNode Uncle();
         //        {
         //#if ASSERT
         //            Debug.Assert(Parent != null); // Root node has no uncle
@@ -87,6 +87,8 @@ namespace RedBlackTree
         //            return Parent.Sibling();
         //        }
         //    }
+
+        void AssignValueTo(IRBNode other);
     }
 
     public class RBTree
@@ -198,7 +200,7 @@ namespace RedBlackTree
             n.Parent = l;
         }
 
-    
+
 
         public void Insert(IRBNode newNode)
         {
@@ -217,7 +219,7 @@ namespace RedBlackTree
                     int compResult = newNode.CompareTo(n);
                     if (compResult == 0)
                     {
-                        throw new RBTreeDuplicatedItemException("OhiOhi Duplicated Item");
+                        throw new RBTreeDuplicatedItemException("RBNode " + newNode.ToString() + " already present in tree");
                         //n.Value = value;
                         //return;
                     }
@@ -226,6 +228,7 @@ namespace RedBlackTree
                         if (n.Left == null)
                         {
                             n.Left = insertedNode;
+
                             break;
                         }
                         else
@@ -239,6 +242,7 @@ namespace RedBlackTree
                         if (n.Right == null)
                         {
                             n.Right = insertedNode;
+
                             break;
                         }
                         else
@@ -340,17 +344,20 @@ namespace RedBlackTree
         }
 
 
-        public void Delete(IRBNode template)
+        public void Delete(IRBNode template, out IRBNode deletedAlt)
         {
+            deletedAlt = null;
             IRBNode n = LookupNode(template);
+            template = n;
             if (n == null)
                 return;  // Key not found, do nothing
             if (n.Left != null && n.Right != null)
             {
                 // Copy key/value from predecessor and then delete it instead
                 IRBNode pred = MaximumNode(n.Left);
-                n = pred.Clone() as IRBNode;
+                pred.AssignValueTo(n);
                 n = pred;
+                deletedAlt = pred;
             }
 
             //assert n.left == null || n.right == null;
@@ -368,10 +375,8 @@ namespace RedBlackTree
                 Root.Color = Color.BLACK;
             }
 
-            //Trace.WriteLine(" ");
 
-            //Print();
-
+            return;
         }
 
         private void DeleteCase1(IRBNode n)

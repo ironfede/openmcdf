@@ -986,8 +986,10 @@ namespace OpenMcdfTest
             st.Append(Helpers.GetBuffer(1024 * 1024 * 1));
             cf.Save("SectorRecycleSmaller.cfs");
             cf.Close();
+            long larger = (new FileInfo("SectorRecycle.cfs").Length);
+            long smaller = (new FileInfo("SectorRecycleSmaller.cfs").Length);
 
-            Assert.IsTrue((new FileInfo("SectorRecycle.cfs").Length) >= (new FileInfo("SectorRecycleSmaller.cfs").Length));
+            Assert.IsTrue(larger >= smaller, "Larger size:" + larger.ToString() + " - Smaller size:" + smaller.ToString());
 
         }
 
