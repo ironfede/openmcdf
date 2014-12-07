@@ -38,8 +38,10 @@ namespace OpenMcdf
         Black = 1
     }
 
-    internal class DirectoryEntry : IDirectoryEntry
+    public class DirectoryEntry : IDirectoryEntry
     {
+        internal const int THIS_IS_GREATER = 1;
+        internal const int OTHER_IS_GREATER = -1;
         private IList<IDirectoryEntry> dirRepository;
 
         private int sid = -1;
@@ -52,11 +54,9 @@ namespace OpenMcdf
         internal static Int32 NOSTREAM
             = unchecked((int)0xFFFFFFFF);
 
-        public DirectoryEntry(String name, StgType stgType, IList<IDirectoryEntry> dirRepository)
+        private DirectoryEntry(String name, StgType stgType, IList<IDirectoryEntry> dirRepository)
         {
             this.dirRepository = dirRepository;
-            this.dirRepository.Add(this);
-            this.sid = this.dirRepository.Count - 1;
 
             this.stgType = stgType;
 
@@ -275,8 +275,7 @@ namespace OpenMcdf
 
         public int CompareTo(object obj)
         {
-            const int THIS_IS_GREATER = 1;
-            const int OTHER_IS_GREATER = -1;
+
             IDirectoryEntry otherDir = obj as IDirectoryEntry;
 
             if (otherDir == null)
@@ -292,14 +291,17 @@ namespace OpenMcdf
             }
             else
             {
-                String thisName = Encoding.Unicode.GetString(this.EntryName, 0, this.NameLength).ToUpper(CultureInfo.InvariantCulture);
-                String otherName = Encoding.Unicode.GetString(otherDir.EntryName, 0, otherDir.NameLength).ToUpper(CultureInfo.InvariantCulture);
+                String thisName = Encoding.Unicode.GetString(this.EntryName, 0, this.NameLength);
+                String otherName = Encoding.Unicode.GetString(otherDir.EntryName, 0, otherDir.NameLength);
 
                 for (int z = 0; z < thisName.Length; z++)
                 {
-                    if (BitConverter.ToInt16(BitConverter.GetBytes(thisName[z]), 0) > BitConverter.ToInt16(BitConverter.GetBytes(otherName[z]), 0))
+                    char thisChar = char.ToUpperInvariant(thisName[z]);
+                    char otherChar = char.ToUpperInvariant(otherName[z]);
+
+                    if (thisChar > otherChar)
                         return THIS_IS_GREATER;
-                    else if (BitConverter.ToInt16(BitConverter.GetBytes(thisName[z]), 0) < BitConverter.ToInt16(BitConverter.GetBytes(otherName[z]), 0))
+                    else if (thisChar < otherChar)
                         return OTHER_IS_GREATER;
                 }
 
@@ -528,6 +530,105 @@ namespace OpenMcdf
             d.storageCLSID = new Guid(this.storageCLSID.ToByteArray());
 
             return d;
+        }
+
+        internal static IDirectoryEntry New(String name, StgType stgType, IList<IDirectoryEntry> dirRepository)
+        {
+            DirectoryEntry de = null;
+            if (dirRepository != null)
+            {
+                de = new DirectoryEntry(name, stgType, dirRepository);
+                // No invalid directory entry found
+                dirRepository.Add(de);
+                de.SID = dirRepository.Count - 1;
+            }
+            else
+                throw new ArgumentNullException("dirRepository", "Directory repository cannot be null in New() method");
+
+            return de;
+        }
+
+        internal static IDirectoryEntry Mock(String name, StgType stgType)
+        {
+            DirectoryEntry de = new DirectoryEntry(name, stgType, null);
+
+            return de;
+        }
+
+        internal static IDirectoryEntry TryNew(String name, StgType stgType, IList<IDirectoryEntry> dirRepository)
+        {
+            DirectoryEntry de = new DirectoryEntry(name, stgType, dirRepository);
+
+            // If we are not adding an invalid dirEntry as
+            // in a normal loading from file (invalid dirs MAY pad a sector)
+            if (de != null)
+            {
+                // Find first available invalid slot (if any) to reuse it
+                for (int i = 0; i < dirRepository.Count; i++)
+                {
+                    if (dirRepository[i].StgType == StgType.StgInvalid)
+                    {
+                        dirRepository[i] = de;
+                        de.SID = i;
+                        return de;
+                    }
+                }
+            }
+
+            // No invalid directory entry found
+            dirRepository.Add(de);
+            de.SID = dirRepository.Count - 1;
+
+            return de;
+        }
+
+        //private static void InsertNewDirectoryEntry(DirectoryEntry de, IList<IDirectoryEntry> directoryEntries)
+        //{
+        //    // If we are not adding an invalid dirEntry as
+        //    // in a normal loading from file (invalid dirs MAY pad a sector)
+        //    if (de != null)
+        //    {
+        //        // Find first available invalid slot (if any) to reuse it
+        //        for (int i = 0; i < directoryEntries.Count; i++)
+        //        {
+        //            if (directoryEntries[i].StgType == StgType.StgInvalid)
+        //            {
+        //                directoryEntries[i] = de;
+        //                de.SID = i;
+        //                return;
+        //            }
+        //        }
+        //    }
+
+        //    // No invalid directory entry found
+        //    directoryEntries.Add(de);
+        //    de.SID = directoryEntries.Count - 1;
+        //}
+
+
+        public override string ToString()
+        {
+            return this.Name + " [" + this.sid + "]";
+        }
+
+
+        public void AssignValueTo(RedBlackTree.IRBNode other)
+        {
+            DirectoryEntry d = other as DirectoryEntry;
+
+            d.SetEntryName(this.GetEntryName());
+
+            d.creationDate = new byte[this.creationDate.Length];
+            this.creationDate.CopyTo(d.creationDate, 0);
+
+            d.modifyDate = new byte[this.modifyDate.Length];
+            this.modifyDate.CopyTo(d.modifyDate, 0);
+
+            d.size = this.size;
+            d.startSetc = this.startSetc;
+            d.stateBits = this.stateBits;
+            d.stgType = this.stgType;
+            d.storageCLSID = new Guid(this.storageCLSID.ToByteArray());
         }
     }
 }

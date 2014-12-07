@@ -21,20 +21,20 @@ using System.Text;
 namespace OpenMcdf
 {
 
-    /// <summary>
-    /// Used as internal template object for binary tree searches.
-    /// </summary>
-    internal class CFMock : CFItem
-    {
-        internal CFMock(String dirName, StgType dirType, IList<IDirectoryEntry> dirs)
-            : base()
-        {
-            this.DirEntry = new DirectoryEntry(dirName, dirType, dirs);
-        }
+    ///// <summary>
+    ///// Used as internal template object for binary tree searches.
+    ///// </summary>
+    //internal class CFMock : CFItem
+    //{
+    //    internal CFMock(String dirName, StgType dirType, IList<IDirectoryEntry> dirs)
+    //        : base()
+    //    {
+    //        this.DirEntry = new DirectoryEntry(dirName, dirType, dirs);
+    //    }
 
-        public override string ToString()
-        {
-            return this.DirEntry.Name;
-        }
-    }
+    //    public override string ToString()
+    //    {
+    //        return this.DirEntry.Name;
+    //    }
+    //}
 }

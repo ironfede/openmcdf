@@ -389,6 +389,7 @@ namespace OpenMcdfTest
 
             //###########
 
+            Trace.Listeners.Add(new ConsoleTraceListener());
             // Phase 3
             cf = new CompoundFile("6_Streams.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle | CFSConfiguration.EraseFreeSectors);
             cf.RootStorage.Delete("D");
@@ -672,7 +673,7 @@ namespace OpenMcdfTest
 
                 f.Save("$ItemsLargeNumber.cfs");
                 f.Close();
-
+                Trace.Listeners.Add(new ConsoleTraceListener());
                 f = new CompoundFile("$ItemsLargeNumber.cfs");
                 CFStream cfs = f.RootStorage.GetStream("Stream" + (ITEM_NUMBER / 2).ToString());
 

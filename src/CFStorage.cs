@@ -149,7 +149,7 @@ namespace OpenMcdf
 
             CFStream cfo = null;
 
-            DirectoryEntry dirEntry = new DirectoryEntry(streamName, StgType.StgStream, this.CompoundFile.GetDirectories());
+            IDirectoryEntry dirEntry = DirectoryEntry.TryNew(streamName, StgType.StgStream, this.CompoundFile.GetDirectories());
 
             // Add new Stream directory entry
             //cfo = new CFStream(this.CompoundFile, streamName);
@@ -202,7 +202,7 @@ namespace OpenMcdf
         {
             CheckDisposed();
 
-            DirectoryEntry tmp = new DirectoryEntry(streamName, StgType.StgStream, null);
+            IDirectoryEntry tmp = DirectoryEntry.Mock(streamName, StgType.StgStream);
 
             //if (children == null)
             //{
@@ -244,12 +244,12 @@ namespace OpenMcdf
         {
             CheckDisposed();
 
-            IDirectoryEntry template = new DirectoryEntry(storageName, StgType.StgInvalid, null);
+            IDirectoryEntry template = DirectoryEntry.Mock(storageName, StgType.StgInvalid);
             IRBNode outDe = null;
 
             if (Children.TryLookup(template, out outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
             {
-                return outDe as CFStorage;
+                return new CFStorage(this.CompoundFile, outDe as IDirectoryEntry);
             }
             else
             {
@@ -291,7 +291,7 @@ namespace OpenMcdf
 
             // Add new Storage directory entry
             IDirectoryEntry cfo
-                = new DirectoryEntry(storageName, StgType.StgStorage, this.CompoundFile.GetDirectories());
+                = DirectoryEntry.New(storageName, StgType.StgStorage, this.CompoundFile.GetDirectories());
 
             //this.CompoundFile.InsertNewDirectoryEntry(cfo);
 
@@ -394,11 +394,11 @@ namespace OpenMcdf
             CheckDisposed();
 
             // Find entry to delete
-            IDirectoryEntry tmp = new DirectoryEntry(entryName,StgType.StgInvalid, null);
+            IDirectoryEntry tmp = DirectoryEntry.Mock(entryName, StgType.StgInvalid);
 
             IRBNode foundObj = null;
 
-            this.Children.TryLookup(tmp, out foundObj );
+            this.Children.TryLookup(tmp, out foundObj);
 
             if (foundObj == null)
                 throw new CFItemNotFound("Entry named [" + entryName + "] was not found");
@@ -409,6 +409,8 @@ namespace OpenMcdf
             if (((IDirectoryEntry)foundObj).StgType == StgType.StgRoot)
                 throw new CFException("Root storage cannot be removed");
 
+          
+            IRBNode altDel = null;
             switch (((IDirectoryEntry)foundObj).StgType)
             {
                 case StgType.StgStorage:
@@ -429,26 +431,26 @@ namespace OpenMcdf
                         this.DirEntry.Child = DirectoryEntry.NOSTREAM;
 
                     // ...and finally Remove storage item from children tree...
-                    this.Children.Delete(foundObj);
+                    this.Children.Delete(foundObj, out altDel);
 
                     // ...and remove directory (storage) entry
-                    this.CompoundFile.RemoveDirectoryEntry(((IDirectoryEntry)foundObj).SID);
 
-                    //Trace.WriteLine("**** DELETED STORAGE " + entryName + "******");
+                    if (altDel != null)
+                    {
+                        foundObj = altDel;
+                    }
 
-                    // Synchronize tree with directory entries
-                    //this.CompoundFile.RefreshIterative(this.Children.Root);
+                    this.CompoundFile.InvalidateDirectoryEntry(((IDirectoryEntry)foundObj).SID);
 
                     break;
 
                 case StgType.StgStream:
 
-                    // Remove item from children tree
-                    this.Children.Delete(foundObj);
-                    //Trace.WriteLine("**** DELETED STREAM " + entryName + "******");
+                    // Free directory associated data stream. 
+                    CompoundFile.FreeAssociatedData((foundObj as IDirectoryEntry).SID);
 
-                    // Synchronize tree with directory entries
-                    //this.CompoundFile.RefreshIterative(this.Children.Root);
+                    // Remove item from children tree
+                    this.Children.Delete(foundObj,out altDel);
 
                     // Rethread the root of siblings tree...
                     if (this.Children.Root != null)
@@ -456,10 +458,16 @@ namespace OpenMcdf
                     else
                         this.DirEntry.Child = DirectoryEntry.NOSTREAM;
 
+                    // Delete operation could possibly have cloned a directory, changing its SID.
+                    // Invalidate the ACTUALLY deleted directory.
+                    if (altDel != null)
+                    {
+                        foundObj = altDel;
+                    }
 
-                    // Remove directory entry
-                    this.CompoundFile.RemoveDirectoryEntry(((IDirectoryEntry)foundObj).SID);
+                    this.CompoundFile.InvalidateDirectoryEntry(((IDirectoryEntry)foundObj).SID);
 
+                    this.Children.Print();
 
                     break;
             }
