@@ -1,0 +1,5 @@
+Please, use sourceforge bug-tracker to get support at http://sourceforge.net/projects/openmcdf/
+
+Thank You in advance for bug reporting and for You interest in OpenMCDF !
+
+Federico Blaseotto
