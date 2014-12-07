@@ -504,34 +504,6 @@ namespace OpenMcdf
             return parent != null ? Parent.Sibling() : null;
         }
 
-        public object Clone()
-        {
-            DirectoryEntry d = new DirectoryEntry(this.Name, this.stgType, this.dirRepository);
-            d.child = this.child;
-            d.Color = this.Color;
-
-            d.creationDate = new byte[this.creationDate.Length];
-            this.creationDate.CopyTo(d.creationDate, 0);
-
-            d.leftSibling = this.leftSibling;
-
-            d.modifyDate = new byte[this.modifyDate.Length];
-            this.modifyDate.CopyTo(d.modifyDate, 0);
-
-            d.nameLength = this.nameLength;
-            d.parent = this.parent;
-            d.rightSibling = this.rightSibling;
-
-            d.size = this.size;
-            d.startSetc = this.startSetc;
-            d.stateBits = this.stateBits;
-            d.stgColor = this.stgColor;
-            d.stgType = this.stgType;
-            d.storageCLSID = new Guid(this.storageCLSID.ToByteArray());
-
-            return d;
-        }
-
         internal static IDirectoryEntry New(String name, StgType stgType, IList<IDirectoryEntry> dirRepository)
         {
             DirectoryEntry de = null;
@@ -582,28 +554,7 @@ namespace OpenMcdf
             return de;
         }
 
-        //private static void InsertNewDirectoryEntry(DirectoryEntry de, IList<IDirectoryEntry> directoryEntries)
-        //{
-        //    // If we are not adding an invalid dirEntry as
-        //    // in a normal loading from file (invalid dirs MAY pad a sector)
-        //    if (de != null)
-        //    {
-        //        // Find first available invalid slot (if any) to reuse it
-        //        for (int i = 0; i < directoryEntries.Count; i++)
-        //        {
-        //            if (directoryEntries[i].StgType == StgType.StgInvalid)
-        //            {
-        //                directoryEntries[i] = de;
-        //                de.SID = i;
-        //                return;
-        //            }
-        //        }
-        //    }
 
-        //    // No invalid directory entry found
-        //    directoryEntries.Add(de);
-        //    de.SID = directoryEntries.Count - 1;
-        //}
 
 
         public override string ToString()

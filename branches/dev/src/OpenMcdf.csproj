@@ -67,7 +67,6 @@
     <Compile Include="CFMock.cs" />
     <Compile Include="CFStorage.cs" />
     <Compile Include="DirectoryEntry.cs" />
-    <Compile Include="DirectoryFactory.cs" />
     <Compile Include="Header.cs" />
     <Compile Include="CFStream.cs" />
     <Compile Include="RBTree\RBTree.cs" />
