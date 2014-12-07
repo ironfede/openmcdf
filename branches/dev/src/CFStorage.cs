@@ -78,17 +78,6 @@ namespace OpenMcdf
             }
         }
 
-        /// <summary>
-        /// Create a new CFStorage
-        /// </summary>
-        /// <param name="compFile">The Storage Owner - CompoundFile</param>
-        //internal CFStorage(CompoundFile compFile, String name)
-        //    : base(compFile)
-        //{
-        //    this.DirEntry = new DirectoryEntry(name, StgType.StgStorage, compFile.GetDirectories());
-        //    this.DirEntry.StgColor = StgColor.Black;
-        //    compFile.InsertNewDirectoryEntry(this.DirEntry);
-        //}
 
         /// <summary>
         /// Create a CFStorage using an existing directory (previously loaded).
