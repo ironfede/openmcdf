@@ -73,7 +73,7 @@ namespace OpenMcdf
         }
 
         /// <summary>
-        /// Write <paramref name="Count">Count</paramref> bytes of a data buffer to a specific position into 
+        /// Write <paramref name="count">count</paramref> bytes of a data buffer to a specific position into 
         /// the current CFStream object starting from the specified position.
         /// </summary>
         /// <param name="data">Data buffer to copy bytes from</param>

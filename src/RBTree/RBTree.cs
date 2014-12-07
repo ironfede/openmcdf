@@ -36,9 +36,8 @@ namespace RedBlackTree
     public enum Color { RED = 0, BLACK = 1 }
 
     /// <summary>
-    /// Red Black Node class
+    /// Red Black Node interface
     /// </summary>
-    /// <typeparam name="V"></typeparam>
     public interface IRBNode : IComparable
     {
 
