@@ -822,7 +822,7 @@ namespace OpenMcdfTest
             CFStream item = cf.RootStorage.GetStream("AStream");
             item.Resize(item.Size / 2);
             //cf.RootStorage.AddStream("BStream").SetData(b);
-            cf.Commit();
+            cf.Commit(true);
             cf.Close();
         }
 

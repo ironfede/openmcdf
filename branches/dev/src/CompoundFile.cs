@@ -554,16 +554,14 @@ namespace OpenMcdf
                 else
                 {
                     gap = true;
-                    continue;
                 }
+
                 if (releaseMemory)
                 {
 
                     s.ReleaseData();
                     s = null;
                     sectors[i] = null;
-
-                    //GC.Collect();
                 }
 
 
@@ -658,6 +656,8 @@ namespace OpenMcdf
             sourceStream.SetLength((sectors.Count + 1) * sSize);
             sourceStream.Flush();
 
+            if (releaseMemory)
+                GC.Collect();
 
             //}
             //catch (Exception ex)
