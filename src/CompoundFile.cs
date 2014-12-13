@@ -912,7 +912,7 @@ namespace OpenMcdf
             }
 
             // Update FAT marking unallocated sectors ----------
-            for (int i = nth_sector_to_remove; i < sectorChain.Count - 1; i++)
+            for (int i = nth_sector_to_remove; i < sectorChain.Count; i++)
             {
                 Int32 currentId = sectorChain[i].Id;
 
@@ -966,7 +966,7 @@ namespace OpenMcdf
             }
 
             // Update miniFAT                ---------------------------------------
-            for (int i = nth_sector_to_remove; i < sectorChain.Count - 1; i++)
+            for (int i = nth_sector_to_remove; i < sectorChain.Count; i++)
             {
                 Int32 currentId = sectorChain[i].Id;
 
@@ -975,9 +975,15 @@ namespace OpenMcdf
             }
 
             // Write End of Chain in MiniFAT ---------------------------------------
-            miniFATView.Seek(sectorChain[(sectorChain.Count - 1) - nth_sector_to_remove].Id * SIZE_OF_SID, SeekOrigin.Begin);
-            miniFATView.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
+            //miniFATView.Seek(sectorChain[(sectorChain.Count - 1) - nth_sector_to_remove].Id * SIZE_OF_SID, SeekOrigin.Begin);
+            //miniFATView.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
 
+            // Write End of Chain in MiniFAT ---------------------------------------
+            if (nth_sector_to_remove > 0 && sectorChain.Count > 0)
+            {
+                miniFATView.Seek(sectorChain[nth_sector_to_remove - 1].Id * 4, SeekOrigin.Begin);
+                miniFATView.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
+            }
 
             // Update sector chains           ---------------------------------------
             AllocateSectorChain(miniStreamView.BaseSectorChain);
