@@ -2487,13 +2487,14 @@ namespace OpenMcdf
         /// </example>
         public void Close()
         {
-            ((IDisposable)this).Dispose();
+            this.Close(true);
         }
 
         private bool closeStream = true;
 
-        internal void Close(bool closeStream)
+        public void Close(bool closeStream)
         {
+            this.closeStream = closeStream;
             ((IDisposable)this).Dispose();
         }
 
