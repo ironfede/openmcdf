@@ -1675,12 +1675,18 @@ namespace OpenMcdf
             de.Right = null;
         }
 
+        private List<int> levelSIDs = new List<int>();
+
         // Doubling methods allows iterative behavior while avoiding
         // to insert duplicate items
         private void LoadSiblings(RBTree bst, IDirectoryEntry de)
         {
+            levelSIDs.Clear();
+
             if (de.LeftSibling != DirectoryEntry.NOSTREAM)
             {
+
+
                 // If there're more left siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.LeftSibling]);
                 //NullifyChildNodes(directoryEntries[de.LeftSibling]);
@@ -1688,6 +1694,8 @@ namespace OpenMcdf
 
             if (de.RightSibling != DirectoryEntry.NOSTREAM)
             {
+                levelSIDs.Add(de.RightSibling);
+
                 // If there're more right siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.RightSibling]);
                 //NullifyChildNodes(directoryEntries[de.RightSibling]);
@@ -1698,12 +1706,16 @@ namespace OpenMcdf
         {
             if (ValidateSibling(de.LeftSibling))
             {
+                levelSIDs.Add(de.LeftSibling);
+
                 // If there're more left siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.LeftSibling]);
             }
 
             if (ValidateSibling(de.RightSibling))
             {
+                levelSIDs.Add(de.RightSibling);
+
                 // If there're more right siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.RightSibling]);
             }
@@ -1751,6 +1763,9 @@ namespace OpenMcdf
                     else
                         return false;
                 }
+
+                if (levelSIDs.Contains(sid))
+                    throw new CFCorruptedFileException("Cyclic reference of directory item");
 
                 return true; //No fault condition encountered for sid being validated
             }
@@ -2524,7 +2539,7 @@ namespace OpenMcdf
                             this.directoryEntries.Clear();
                             this.directoryEntries = null;
                             this.fileName = null;
-                            this.lockObject = null;
+                            //this.lockObject = null;
 #if !FLAT_WRITE
                             this.buffer = null;
 #endif

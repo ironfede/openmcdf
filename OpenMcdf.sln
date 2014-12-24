@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6C619B4F-100F-4D60-BEF1-60B770D24E5E}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,6 +13,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{AC082D72-85BB-4FE8-AE0A-DB12A5729317}"
 	ProjectSection(SolutionItems) = preProject
 		TestFiles\2_MB-W.ppt = TestFiles\2_MB-W.ppt
+		TestFiles\_thumbs_bug_24.db = TestFiles\_thumbs_bug_24.db
 		TestFiles\BUG_16_.xls = TestFiles\BUG_16_.xls
 		TestFiles\CorruptedDoc_bug3547815.doc = TestFiles\CorruptedDoc_bug3547815.doc
 		TestFiles\CorruptedDoc_bug3547815_B.doc = TestFiles\CorruptedDoc_bug3547815_B.doc
