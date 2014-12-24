@@ -17,7 +17,7 @@ namespace OpenMcdfTest
     {
         public CompoundFileTest()
         {
-   
+
         }
 
         private TestContext testContextInstance;
@@ -400,16 +400,16 @@ namespace OpenMcdfTest
 
             //Test Phase 3
 
-         
+
             cfTest = new CompoundFile("6_Streams.cfs");
-            
+
 
             bool catched = false;
 
             try
             {
                 testSt = cfTest.RootStorage.GetStream("D");
-               
+
             }
             catch (Exception ex)
             {
@@ -489,7 +489,7 @@ namespace OpenMcdfTest
             cf.RootStorage.AddStorage("AnotherStorage").AddStream("ANS").Append(bE);
             cf.RootStorage.Delete("MyStorage");
 
-       
+
             cf.Commit();
             cf.Close();
 
@@ -501,9 +501,9 @@ namespace OpenMcdfTest
 
             cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             CFStorage root = cf.RootStorage;
-          
+
             root.AddStorage("MiniStorage").AddStream("miniSt").Append(bMini);
-           
+
             cf.RootStorage.GetStorage("MiniStorage").AddStream("miniSt2").Append(bMini);
             cf.Commit();
             cf.Close();
@@ -673,12 +673,12 @@ namespace OpenMcdfTest
 
                 f.Save("$ItemsLargeNumber.cfs");
                 f.Close();
-                
+
                 f = new CompoundFile("$ItemsLargeNumber.cfs");
                 CFStream cfs = f.RootStorage.GetStream("Stream" + (ITEM_NUMBER / 2).ToString());
 
-                Assert.IsTrue(cfs != null,"Item is null");
-                Assert.IsTrue(Helpers.CompareBuffer(cfs.GetData(), buffer),"Items are different");
+                Assert.IsTrue(cfs != null, "Item is null");
+                Assert.IsTrue(Helpers.CompareBuffer(cfs.GetData(), buffer), "Items are different");
                 f.Close();
             }
             catch (Exception ex)
@@ -726,6 +726,29 @@ namespace OpenMcdfTest
                 CFItem dsiItem = file.GetAllNamedEntries("DataSpaceInfo").FirstOrDefault();
             }
         }
+
+        [TestMethod]
+        public void Test_FIX_BUG_24_CORRUPTED_THUMBS_DB_FILE()
+        {
+            try
+            {
+                using (var cf = new CompoundFile("_thumbs_bug_24.db"))
+                {
+                    cf.RootStorage.VisitEntries(item => Console.WriteLine(item.Name), recursive: false);
+                }
+            }
+            catch (Exception exc)
+            {
+                Assert.IsInstanceOfType(exc, typeof(CFCorruptedFileException));
+            }
+
+            using (var cf = new CompoundFile("report.xls"))
+            {
+                cf.RootStorage.VisitEntries(item => Console.WriteLine(item.Name), recursive: false);
+            }
+
+        }
+
 
         //[TestMethod]
         //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
