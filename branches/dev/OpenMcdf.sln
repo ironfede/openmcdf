@@ -1,44 +1,47 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6C619B4F-100F-4D60-BEF1-60B770D24E5E}"
 	ProjectSection(SolutionItems) = preProject
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		OpenMcdf.vsmdi = OpenMcdf.vsmdi
-		OpenMcdf2.vsmdi = OpenMcdf2.vsmdi
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{AC082D72-85BB-4FE8-AE0A-DB12A5729317}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{8DC8730A-F254-4848-B272-BDFFCB5FDC00}"
 	ProjectSection(SolutionItems) = preProject
-		TestFiles\2_MB-W.ppt = TestFiles\2_MB-W.ppt
-		TestFiles\_thumbs_bug_24.db = TestFiles\_thumbs_bug_24.db
-		TestFiles\BUG_16_.xls = TestFiles\BUG_16_.xls
-		TestFiles\CorruptedDoc_bug3547815.doc = TestFiles\CorruptedDoc_bug3547815.doc
-		TestFiles\CorruptedDoc_bug3547815_B.doc = TestFiles\CorruptedDoc_bug3547815_B.doc
-		TestFiles\CyclicFAT.cfs = TestFiles\CyclicFAT.cfs
-		TestFiles\MultipleStorage.cfs = TestFiles\MultipleStorage.cfs
-		TestFiles\MultipleStorage2.cfs = TestFiles\MultipleStorage2.cfs
-		TestFiles\MultipleStorage3.cfs = TestFiles\MultipleStorage3.cfs
-		TestFiles\MultipleStorage4.cfs = TestFiles\MultipleStorage4.cfs
-		TestFiles\report.xls = TestFiles\report.xls
-		TestFiles\report_name_fix.xls = TestFiles\report_name_fix.xls
+		sources\TestFiles\2_MB-W.ppt = sources\TestFiles\2_MB-W.ppt
+		sources\TestFiles\_thumbs_bug_24.db = sources\TestFiles\_thumbs_bug_24.db
+		sources\TestFiles\BUG_16_.xls = sources\TestFiles\BUG_16_.xls
+		sources\TestFiles\CorruptedDoc_bug3547815.doc = sources\TestFiles\CorruptedDoc_bug3547815.doc
+		sources\TestFiles\CorruptedDoc_bug3547815_B.doc = sources\TestFiles\CorruptedDoc_bug3547815_B.doc
+		sources\TestFiles\CyclicFAT.cfs = sources\TestFiles\CyclicFAT.cfs
+		sources\TestFiles\MultipleStorage.cfs = sources\TestFiles\MultipleStorage.cfs
+		sources\TestFiles\MultipleStorage2.cfs = sources\TestFiles\MultipleStorage2.cfs
+		sources\TestFiles\MultipleStorage3.cfs = sources\TestFiles\MultipleStorage3.cfs
+		sources\TestFiles\MultipleStorage4.cfs = sources\TestFiles\MultipleStorage4.cfs
+		sources\TestFiles\report.xls = sources\TestFiles\report.xls
+		sources\TestFiles\report_name_fix.xls = sources\TestFiles\report_name_fix.xls
+		sources\TestFiles\reportREAD.xls = sources\TestFiles\reportREAD.xls
+		sources\TestFiles\testbad.ole = sources\TestFiles\testbad.ole
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf", "src\OpenMcdf.csproj", "{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf", "sources\OpenMcdf\OpenMcdf.csproj", "{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdfMemTest", "Memory Test\OpenMcdfMemTest.csproj", "{E2BAD82D-3040-462B-BAA2-6E608A9054F4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.Extensions", "sources\OpenMcdf.Extensions\OpenMcdf.Extensions.csproj", "{DB748C1D-D71C-442B-832D-2E33BE816CBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdfPerfTest", "Performance Test\OpenMcdfPerfTest.csproj", "{7077508F-B313-4DF6-8855-4764911BE161}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructuredStorageExplorer", "sources\Structured Storage Explorer\StructuredStorageExplorer.csproj", "{4F6323A8-9C06-4D94-808F-EBD69B8370D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdfTest", "Unit Test\OpenMcdfTest.csproj", "{FD339266-8842-40B4-9230-F8E84FC42AC2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{73814657-FC73-4066-AABD-86062F2A132E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructuredStorageExplorer", "Structured Storage Explorer\StructuredStorageExplorer.csproj", "{4F6323A8-9C06-4D94-808F-EBD69B8370D7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.Extensions.Test", "sources\Test\OpenMcdf.Extensions.Test\OpenMcdf.Extensions.Test.csproj", "{B9CB103F-0AA3-486D-9C9C-672924B6169C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.Extensions", "OpenMcdf.Extensions\OpenMcdf.Extensions.csproj", "{DB748C1D-D71C-442B-832D-2E33BE816CBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.MemTest", "sources\Test\OpenMcdf.MemTest\OpenMcdf.MemTest.csproj", "{E2BAD82D-3040-462B-BAA2-6E608A9054F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdfExtensionsTest", "OpenMcdfExtensionsTest\OpenMcdfExtensionsTest.csproj", "{B9CB103F-0AA3-486D-9C9C-672924B6169C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.PerfTest", "sources\Test\OpenMcdf.PerfTest\OpenMcdf.PerfTest.csproj", "{7077508F-B313-4DF6-8855-4764911BE161}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.Test", "sources\Test\OpenMcdf.Test\OpenMcdf.Test.csproj", "{FD339266-8842-40B4-9230-F8E84FC42AC2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +53,18 @@ Global
 		{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F6323A8-9C06-4D94-808F-EBD69B8370D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F6323A8-9C06-4D94-808F-EBD69B8370D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F6323A8-9C06-4D94-808F-EBD69B8370D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F6323A8-9C06-4D94-808F-EBD69B8370D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9CB103F-0AA3-486D-9C9C-672924B6169C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9CB103F-0AA3-486D-9C9C-672924B6169C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9CB103F-0AA3-486D-9C9C-672924B6169C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9CB103F-0AA3-486D-9C9C-672924B6169C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E2BAD82D-3040-462B-BAA2-6E608A9054F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E2BAD82D-3040-462B-BAA2-6E608A9054F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E2BAD82D-3040-462B-BAA2-6E608A9054F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -62,24 +77,16 @@ Global
 		{FD339266-8842-40B4-9230-F8E84FC42AC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD339266-8842-40B4-9230-F8E84FC42AC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD339266-8842-40B4-9230-F8E84FC42AC2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4F6323A8-9C06-4D94-808F-EBD69B8370D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4F6323A8-9C06-4D94-808F-EBD69B8370D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4F6323A8-9C06-4D94-808F-EBD69B8370D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4F6323A8-9C06-4D94-808F-EBD69B8370D7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B9CB103F-0AA3-486D-9C9C-672924B6169C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B9CB103F-0AA3-486D-9C9C-672924B6169C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B9CB103F-0AA3-486D-9C9C-672924B6169C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B9CB103F-0AA3-486D-9C9C-672924B6169C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{AC082D72-85BB-4FE8-AE0A-DB12A5729317} = {6C619B4F-100F-4D60-BEF1-60B770D24E5E}
+		{8DC8730A-F254-4848-B272-BDFFCB5FDC00} = {73814657-FC73-4066-AABD-86062F2A132E}
+		{B9CB103F-0AA3-486D-9C9C-672924B6169C} = {73814657-FC73-4066-AABD-86062F2A132E}
+		{E2BAD82D-3040-462B-BAA2-6E608A9054F4} = {73814657-FC73-4066-AABD-86062F2A132E}
+		{7077508F-B313-4DF6-8855-4764911BE161} = {73814657-FC73-4066-AABD-86062F2A132E}
+		{FD339266-8842-40B4-9230-F8E84FC42AC2} = {73814657-FC73-4066-AABD-86062F2A132E}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = OpenMcdf2.vsmdi
