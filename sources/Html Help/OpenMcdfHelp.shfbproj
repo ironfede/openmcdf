@@ -8,7 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6b2e0fe5-8246-4f87-9663-d72ebadfc53f}</ProjectGuid>
-    <SHFBSchemaVersion>1.9.9.0</SHFBSchemaVersion>
+    <SHFBSchemaVersion>2015.6.5.0</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
          Studio adds them anyway -->
     <AssemblyName>Documentation</AssemblyName>
@@ -23,8 +23,8 @@
     <HelpTitle>Open MCDF</HelpTitle>
     <MissingTags>Summary, AutoDocumentCtors</MissingTags>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\src\bin\Debug\OpenMcdf.dll" />
-<DocumentationSource sourceFile="..\src\bin\Debug\OpenMcdf.xml" /></DocumentationSources>
+      <DocumentationSource sourceFile="..\..\bin\Release\OpenMcdf\OpenMcdf.dll" />
+<DocumentationSource sourceFile="..\..\bin\Release\OpenMcdf\OpenMcdf.xml" /></DocumentationSources>
     <FeedbackEMailAddress>ironfede%40users.sourceforge.net</FeedbackEMailAddress>
     <BuildLogFile>
     </BuildLogFile>
@@ -36,7 +36,7 @@
     </SandcastlePath>
     <WorkingPath>
     </WorkingPath>
-    <PresentationStyle>Prototype</PresentationStyle>
+    <PresentationStyle>VS2013</PresentationStyle>
     <Language>en-US</Language>
     <NamespaceSummaries>
       <NamespaceSummaryItem name="BinaryTrees" isDocumented="False" xmlns="" />
@@ -52,18 +52,18 @@
       </Filter>
       <Filter entryType="Namespace" fullName="RBTree" isExposed="False" />
     </ApiFilter>
-    <HelpFileVersion>1.5.4.0</HelpFileVersion>
+    <HelpFileVersion>2.0</HelpFileVersion>
     <CollectionTocStyle>Hierarchical</CollectionTocStyle>
     <MaximumGroupParts>2</MaximumGroupParts>
     <NamespaceGrouping>False</NamespaceGrouping>
-    <SyntaxFilters>Standard</SyntaxFilters>
+    <SyntaxFilters>C#</SyntaxFilters>
     <SdkLinkTarget>Blank</SdkLinkTarget>
     <RootNamespaceContainer>False</RootNamespaceContainer>
     <Preliminary>False</Preliminary>
     <NamingMethod>Guid</NamingMethod>
     <ContentPlacement>AboveNamespaces</ContentPlacement>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
-    <HelpFileFormat>Website</HelpFileFormat>
+    <HelpFileFormat>HtmlHelp1</HelpFileFormat>
     <IndentHtml>False</IndentHtml>
     <FrameworkVersion>.NET Framework 4.0</FrameworkVersion>
     <KeepLogFile>True</KeepLogFile>
