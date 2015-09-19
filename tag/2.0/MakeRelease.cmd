@@ -1,0 +1,1 @@
+msbuild OpenMcdf.sln /property:Configuration=Release
