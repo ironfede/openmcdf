@@ -129,7 +129,7 @@ namespace OpenMcdf
             if (String.IsNullOrEmpty(streamName))
                 throw new CFException("Stream name cannot be null or empty");
 
-            CFStream cfo = null;
+            
 
             IDirectoryEntry dirEntry = DirectoryEntry.TryNew(streamName, StgType.StgStream, this.CompoundFile.GetDirectories());
 
@@ -146,8 +146,8 @@ namespace OpenMcdf
             }
             catch (RBTreeException)
             {
-                CompoundFile.ResetDirectoryEntry(cfo.DirEntry.SID);
-                cfo = null;
+                CompoundFile.ResetDirectoryEntry(dirEntry.SID);
+                
                 throw new CFDuplicatedItemException("An entry with name '" + streamName + "' is already present in storage '" + this.Name + "' ");
             }
 
