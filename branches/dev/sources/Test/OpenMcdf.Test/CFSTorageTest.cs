@@ -16,7 +16,7 @@ namespace OpenMcdf.Test
 
         public CFSTorageTest()
         {
-            
+
         }
 
         private TestContext testContextInstance;
@@ -97,7 +97,7 @@ namespace OpenMcdf.Test
             FileStream output = new FileStream("LogEntries.txt", FileMode.Create);
             TextWriter tw = new StreamWriter(output);
 
-            Action<CFItem> va = delegate(CFItem item)
+            Action<CFItem> va = delegate (CFItem item)
             {
                 tw.WriteLine(item.Name);
             };
@@ -128,11 +128,12 @@ namespace OpenMcdf.Test
                 Assert.Fail("Exception raised for try_get method");
             }
 
-            try { 
-            CFStream s = st.TryGetStream("MyStream");
-            Assert.IsNotNull(s);
-            CFStream ns = st.TryGetStream("IDONTEXIST2");
-            Assert.IsNull(ns);
+            try
+            {
+                CFStream s = st.TryGetStream("MyStream");
+                Assert.IsNotNull(s);
+                CFStream ns = st.TryGetStream("IDONTEXIST2");
+                Assert.IsNull(ns);
             }
             catch (Exception)
             {
@@ -163,7 +164,7 @@ namespace OpenMcdf.Test
                 using (TextWriter tw = new StreamWriter(output))
                 {
 
-                    Action<CFItem> va = delegate(CFItem item)
+                    Action<CFItem> va = delegate (CFItem item)
                        {
                            tw.WriteLine(item.Name);
                        };
@@ -213,7 +214,7 @@ namespace OpenMcdf.Test
                 using (TextWriter tw = new StreamWriter(output))
                 {
 
-                    Action<CFItem> va = delegate(CFItem item)
+                    Action<CFItem> va = delegate (CFItem item)
                     {
                         tw.WriteLine(item.Name);
                     };
@@ -271,7 +272,7 @@ namespace OpenMcdf.Test
 
             Console.SetOut(sw);
 
-            Action<CFItem> va = delegate(CFItem target)
+            Action<CFItem> va = delegate (CFItem target)
             {
                 sw.WriteLine(target.Name);
             };
@@ -306,7 +307,7 @@ namespace OpenMcdf.Test
             CompoundFile cf = new CompoundFile(FILENAME);
 
             CFStorage found = null;
-            Action<CFItem> action = delegate(CFItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; };
+            Action<CFItem> action = delegate (CFItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; };
             cf.RootStorage.VisitEntries(action, true);
 
             Assert.IsNotNull(found);
@@ -324,7 +325,7 @@ namespace OpenMcdf.Test
             CompoundFile cf = new CompoundFile(FILENAME);
 
             CFStorage found = null;
-            Action<CFItem> action = delegate(CFItem item)
+            Action<CFItem> action = delegate (CFItem item)
             {
                 if (item.Name == "AnotherStorage")
                     found = item as CFStorage;
@@ -389,6 +390,31 @@ namespace OpenMcdf.Test
             {
                 File.Delete("$Hel2");
             }
+        }
+
+        [TestMethod]
+        public void Test_FIX_BUG_31()
+        {
+            CompoundFile cf = new CompoundFile();
+            cf.RootStorage.AddStorage("Level_1")
+
+                .AddStream("Level2Stream")
+                .SetData(Helpers.GetBuffer(100));
+
+            cf.Save("$Hel1");
+
+            cf.Close();
+
+            CompoundFile cf1 = new CompoundFile("$Hel1");
+            try
+            {
+                CFStream cs = cf1.RootStorage.GetStorage("Level_1").AddStream("Level2Stream");
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex.GetType() == typeof(CFDuplicatedItemException));
+            }
+
         }
     }
 }
