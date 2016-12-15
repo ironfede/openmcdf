@@ -1415,6 +1415,9 @@ namespace OpenMcdf
             {
                 if (nextSecID == Sector.ENDOFCHAIN) break;
 
+                if (nextSecID < 0)
+                    throw new CFCorruptedFileException(String.Format("Next Sector ID reference is below zero. NextID : {0}", nextSecID));
+
                 if (nextSecID >= sectors.Count)
                     throw new CFCorruptedFileException(String.Format("Next Sector ID reference an out of range sector. NextID : {0} while sector count {1}", nextSecID, sectors.Count));
 
