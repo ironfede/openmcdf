@@ -48,4 +48,14 @@ CFStream sm = st.AddStream("MyStream");
 cf.RootStorage.Delete("AStream"); // AStream item is assumed to exist.
 ```
 
-It is NOT a wrapper around Win32 API but a pure .net component that runs also on Mono platform.
+Call *commit()* method when you need to persist changes to the underlying stream
+```C#
+cf.RootStorage.AddStream("MyStream").SetData(buffer);
+cf.Commit();
+```
+If you need to compress a compound file, you can purge its unused space
+```C#
+CompoundFile.ShrinkCompoundFile("MultipleStorage_Deleted_Compress.cfs"); 
+```
+
+OpenMcdf is NOT a wrapper around Win32 API but a pure .net component that runs also on Mono platform.
