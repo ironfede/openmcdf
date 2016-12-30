@@ -1,0 +1,32 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Unit Test/obj/Debug
+/Unit Test/bin/Debug
+/TestResults
+/Structured Storage Explorer/obj/Debug
+/Structured Storage Explorer/bin/Debug
+/src/obj/Debug
+/src/bin/Debug
+/sources/Test/OpenMcdf.Test/obj/Debug
+/sources/Test/OpenMcdf.Test/bin/Debug
+/sources/Test/OpenMcdf.PerfTest/obj/Debug
+/sources/Test/OpenMcdf.PerfTest/bin/Debug
+/sources/Test/OpenMcdf.MemTest/obj/Debug
+/sources/Test/OpenMcdf.MemTest/bin/Debug
+/sources/Test/OpenMcdf.Extensions.Test/obj/Debug
+/sources/Test/OpenMcdf.Extensions.Test/bin/Debug
+/sources/Structured Storage Explorer/obj/Debug
+/sources/OpenMcdf.Extensions/obj/Debug
+/sources/OpenMcdf/obj/Debug
+/Performance Test/obj/Debug
+/Performance Test/bin/Debug
+/OpenMcdfExtensionsTest/obj/Debug
+/OpenMcdfExtensionsTest/bin/Debug
+/OpenMcdf.Extensions/obj/Debug
+/OpenMcdf.Extensions/bin/Debug
+/Memory Test/obj/Debug
+/Memory Test/bin/Debug
+/bin/Debug
+/.vs/OpenMcdf/v14
