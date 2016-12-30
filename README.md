@@ -18,7 +18,6 @@ byte[] b = new byte[10000];
 CompoundFile cf = new CompoundFile();
 CFStream myStream = cf.RootStorage.AddStream("MyStream");
 
-Assert.IsNotNull(myStream);
 myStream.SetData(b);
 cf.Save("MyCompoundFile.cfs");
 cf.Close();
@@ -32,8 +31,21 @@ String filename = "report.xls";
 CompoundFile cf = new CompoundFile(filename);
 CFStream foundStream = cf.RootStorage.GetStream("Workbook");
 byte[] temp = foundStream.GetData();
-Assert.IsNotNull(temp);
+//do something with temp
 cf.Close();
+```
+
+Adding **storage and stream items** is just as easy...
+
+```C#
+CompoundFile cf = new CompoundFile();
+CFStorage st = cf.RootStorage.AddStorage("MyStorage");
+CFStream sm = st.AddStream("MyStream");
+```
+...as removing them
+
+```C#
+cf.RootStorage.Delete("AStream"); // AStream item is assumed to exist.
 ```
 
 It is NOT a wrapper around Win32 API but a pure .net component that runs also on Mono platform.
