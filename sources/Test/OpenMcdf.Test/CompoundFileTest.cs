@@ -447,7 +447,7 @@ namespace OpenMcdf.Test
             Assert.IsTrue(new FileInfo("6_Streams_Shrinked.cfs").Length < new FileInfo("6_Streams.cfs").Length);
 
             cfTest = new CompoundFile("6_Streams_Shrinked.cfs");
-            Action<CFItem> va = delegate(CFItem item)
+            Action<CFItem> va = delegate (CFItem item)
             {
                 if (item.IsStream)
                 {
@@ -763,6 +763,24 @@ namespace OpenMcdf.Test
                 storage1 = compoundFile.RootStorage.GetStorage("A");
                 storage1.GetStream("A.1");
             }
+        }
+
+        [TestMethod]
+        public void Test_CORRUPTEDDOC_BUG36_SHOULD_THROW_CORRUPTED_FILE_EXCEPTION()
+        {
+            FileStream fs = null;
+            try
+            {
+                fs = new FileStream("CorruptedDoc_bug36.doc", FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
+                CompoundFile file = new CompoundFile(fs, CFSUpdateMode.ReadOnly, CFSConfiguration.LeaveOpen);
+
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(fs.CanRead && fs.CanSeek && fs.CanWrite);
+            }
+
+
         }
 
         //[TestMethod]

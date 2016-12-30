@@ -11,6 +11,9 @@ using System.Resources;
 using System.Globalization;
 using StructuredStorageExplorer.Properties;
 using Be.Windows.Forms;
+using OpenMcdf.Extensions.OLEProperties;
+using OpenMcdf.Extensions.OLEProperties.Interfaces;
+using OpenMcdf.Extensions;
 
 // Author Federico Blaseotto
 
@@ -33,10 +36,12 @@ namespace StructuredStorageExplorer
             //Load images for icons from resx
             Image folderImage = (Image)Properties.Resources.ResourceManager.GetObject("storage");
             Image streamImage = (Image)Properties.Resources.ResourceManager.GetObject("stream");
+            Image olePropsImage = (Image)Properties.Resources.ResourceManager.GetObject("oleprops");
 
             treeView1.ImageList = new ImageList();
             treeView1.ImageList.Images.Add(folderImage);
             treeView1.ImageList.Images.Add(streamImage);
+            treeView1.ImageList.Images.Add(olePropsImage);
 
             saveAsToolStripMenuItem.Enabled = false;
             updateCurrentFileToolStripMenuItem.Enabled = false;
@@ -151,7 +156,7 @@ namespace StructuredStorageExplorer
         /// <param name="cfs">Current storage associated with node</param>
         private void AddNodes(TreeNode node, CFStorage cfs)
         {
-            Action<CFItem> va = delegate(CFItem target)
+            Action<CFItem> va = delegate (CFItem target)
             {
                 TreeNode temp = node.Nodes.Add(
                     target.Name,
@@ -162,10 +167,10 @@ namespace StructuredStorageExplorer
 
                 if (target.IsStream)
                 {
+
                     //Stream
                     temp.ImageIndex = 1;
                     temp.SelectedImageIndex = 1;
-
                 }
                 else
                 {
@@ -409,29 +414,52 @@ namespace StructuredStorageExplorer
                     addStreamToolStripMenuItem.Enabled = false;
                     importDataStripMenuItem1.Enabled = true;
                     exportDataToolStripMenuItem.Enabled = true;
-                }
-                else
-                {
-                    addStorageStripMenuItem1.Enabled = true;
-                    addStreamToolStripMenuItem.Enabled = true;
-                    importDataStripMenuItem1.Enabled = false;
-                    exportDataToolStripMenuItem.Enabled = false;
-                }
 
-                propertyGrid1.SelectedObject = n.Tag;
+                    if (target.Name == "\u0005SummaryInformation" || target.Name == "\u0005DocumentSummaryInformation")
+                    {   
+                        PropertySetStream mgr = ((CFStream)target).AsOLEProperties();
 
+                        DataTable ds = new DataTable();
+                        ds.Columns.Add("Name", typeof(String));
+                        ds.Columns.Add("Type", typeof(String));
+                        ds.Columns.Add("Value", typeof(String));
 
+                        for (int i = 0; i < mgr.PropertySet0.NumProperties; i++)
+                        {
+                            ITypedPropertyValue p = mgr.PropertySet0.Properties[i];
+                            
+                            DataRow dr = ds.NewRow();
+                            dr.ItemArray = new Object[] { mgr.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier.GetDescription(), p.VTType, p.PropertyValue };
+                            ds.Rows.Add(dr);
+                        }
 
-                CFStream targetStream = n.Tag as CFStream;
-                if (targetStream != null)
-                {
-                    this.hexEditor.ByteProvider = new StreamDataProvider(targetStream);
-                }
-                else
-                {
-                    this.hexEditor.ByteProvider = null;
+                        ds.AcceptChanges();
+                        dgvOLEProps.DataSource = ds;
+                    }
                 }
             }
+            else
+            {
+                addStorageStripMenuItem1.Enabled = true;
+                addStreamToolStripMenuItem.Enabled = true;
+                importDataStripMenuItem1.Enabled = false;
+                exportDataToolStripMenuItem.Enabled = false;
+            }
+
+            propertyGrid1.SelectedObject = n.Tag;
+
+
+
+            CFStream targetStream = n.Tag as CFStream;
+            if (targetStream != null)
+            {
+                this.hexEditor.ByteProvider = new StreamDataProvider(targetStream);
+            }
+            else
+            {
+                this.hexEditor.ByteProvider = null;
+            }
+
         }
 
         void hexEditor_ByteProviderChanged(object sender, EventArgs e)

@@ -28,7 +28,7 @@ namespace OpenMcdf
 
         private List<Sector> sectorChain;
         private Stream stream;
-
+        private bool isFatStream = false;
         private List<Sector> freeSectors = new List<Sector>();
         public IEnumerable<Sector> FreeSectors
         {
@@ -48,18 +48,15 @@ namespace OpenMcdf
             this.stream = stream;
         }
 
-        public StreamView(List<Sector> sectorChain, int sectorSize, long length, Queue<Sector> availableSectors, Stream stream)
+        public StreamView(List<Sector> sectorChain, int sectorSize, long length, Queue<Sector> availableSectors, Stream stream, bool isFatStream = false)
             : this(sectorChain, sectorSize, stream)
         {
+            this.isFatStream = isFatStream;
             adjustLength(length, availableSectors);
         }
 
 
-        public StreamView(List<Sector> sectorChain, int sectorSize, long length, Stream stream)
-            : this(sectorChain, sectorSize, stream)
-        {
-            adjustLength(length);
-        }
+
 
         public List<Sector> BaseSectorChain
         {
@@ -255,7 +252,11 @@ namespace OpenMcdf
                         t = availableSectors.Dequeue();
                     }
 
-                    sectorChain.Add(t);
+                    if (isFatStream)
+                    {
+                        t.InitFATData();
+                    }
+                        sectorChain.Add(t);
                     nSec--;
                 }
 
