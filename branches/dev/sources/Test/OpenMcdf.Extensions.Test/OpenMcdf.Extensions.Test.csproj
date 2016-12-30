@@ -50,10 +50,6 @@
     <Compile Include="CFSStreamExtensionsTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="lib\NMock3.dll" />
-    <Content Include="lib\NMock3.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\OpenMcdf.Extensions\OpenMcdf.Extensions.csproj">
       <Project>{db748c1d-d71c-442b-832d-2e33be816cbb}</Project>
       <Name>OpenMcdf.Extensions</Name>

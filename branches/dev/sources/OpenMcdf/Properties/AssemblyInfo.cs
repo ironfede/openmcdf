@@ -9,8 +9,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("MS Compound File Storage .NET Implementation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Federico Blaseotto")]
-[assembly: AssemblyProduct("OpenMcdf 2.0")]
-[assembly: AssemblyCopyright("Copyright © 2010-2015, Federico Blaseotto")]
+[assembly: AssemblyProduct("OpenMcdf 2.1")]
+[assembly: AssemblyCopyright("Copyright © 2010-2016, Federico Blaseotto")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.0.1.*")]
+[assembly: AssemblyVersion("2.1.0.*")]
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("OpenMcdf.Test")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("OpenMcdf.Extensions")]

@@ -110,6 +110,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="img\application_view_detail.png" />
     <Content Include="img\disk.png" />
     <Content Include="img\folder.png" />
     <Content Include="img\page_white.png" />
@@ -138,6 +139,10 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OpenMcdf.Extensions\OpenMcdf.Extensions.csproj">
+      <Project>{db748c1d-d71c-442b-832d-2e33be816cbb}</Project>
+      <Name>OpenMcdf.Extensions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj">
       <Project>{56e15d4a-8a37-4c7c-bb44-fd59aff220c1}</Project>
       <Name>OpenMcdf</Name>
