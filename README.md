@@ -23,7 +23,7 @@ cf.Save("MyCompoundFile.cfs");
 cf.Close();
 ```
 
-You can **open an existing one**, an excel workbook (.xls) and find its main data stream
+You can **open an existing one**, an excel workbook (.xls) and use its main data stream
 
 ```C#
 //A xls file should have a Workbook stream
