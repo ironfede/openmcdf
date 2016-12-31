@@ -1,11 +1,11 @@
 # openmcdf
 **Structured Storage .net component - pure C#**
 
-OpenMCDF is a 100% .net / C# component that allows developers to manipulate Microsoft Compound Document File Format for OLE structured storage. 
+OpenMCDF is a 100% .net / C# component that allows developers to manipulate Microsoft Compound Document File Format (also known as OLE structured storage). 
 
-Compound files include multiple streams of information (document summary, user data) in a single physical container.
+Compound file includes multiple streams of information (document summary, user data) in a single container. 
 
-This file format is used under the hood by a lot of applications: the files created by Microsoft Office until the 2007 product release are all structured storage files. Also the omnipresent Thumbs.db, used by Windows as thumbnails cache, is a structured storage file. Visual Studio .suo files (solution options) are compound files and a lot of audio/video editing tools saves project file in a compound containerer.
+This file format is used under the hood by a lot of applications: the files created by Microsoft Office until the 2007 product release are all structured storage files. Also the omnipresent Thumbs.db, used by Windows as thumbnails cache, is a structured storage file. Visual Studio .suo files (solution options) are compound files and a lot of audio/video editing tools saves project file in a compound container.
 
 OpenMcdf supports read/write operations on streams and storages and traversal of structures tree. It supports version 3 and 4 of the specifications, uses lazy loading wherever possible to reduce memory usage and offer an intuitive API to work with structured files.
 
@@ -49,13 +49,16 @@ cf.RootStorage.Delete("AStream"); // AStream item is assumed to exist.
 ```
 
 Call *commit()* method when you need to persist changes to the underlying stream
+
 ```C#
 cf.RootStorage.AddStream("MyStream").SetData(buffer);
 cf.Commit();
 ```
+
 If you need to compress a compound file, you can purge its unused space
+
 ```C#
 CompoundFile.ShrinkCompoundFile("MultipleStorage_Deleted_Compress.cfs"); 
 ```
 
-OpenMcdf is NOT a wrapper around Win32 API but a pure .net component that runs also on Mono platform.
+OpenMcdf is NOT a wrapper around Win32 API: it is a pure .net component that runs also on Mono platform.
