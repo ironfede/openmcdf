@@ -1,8 +1,12 @@
-ver 2.0 beta 1 (NOT FOR PRODUCTION)
-FIXED: Issues with StreamRW in reading Int64
-FIXED: Issue with poor random naming policy for directory invalidation
-FIXED: Redundancy of rethreading a RBTree after insertion/removal operations
-NOTE: This is a technical preview not aimed to production use.
+ver 2.1 
+FIXED: Issues with failed initialization to FREESECT (0xFFFFFFFF) of FAT sectors
+FIXED: Issues with file-corruption detection 
+
+MIGRATION TO GITHUB
+
+-------
+ver 2.0 - Stable release.
+LAST SF release.
 
 ---------
 ver 2.0 pre-release (NOT FOR PRODUCTION)
