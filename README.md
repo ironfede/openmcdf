@@ -1,7 +1,7 @@
 # openmcdf
 **Structured Storage .net component - pure C#**
 
-OpenMCDF is a 100% .net / C# component that allows developers to manipulate Microsoft Compound Document File Format (also known as OLE structured storage). 
+OpenMCDF is a 100% .net / C# component that allows developers to manipulate [Microsoft Compound Document File Format](https://msdn.microsoft.com/en-us/library/dd942138.aspx) (also known as OLE structured storage). 
 
 Compound file includes multiple streams of information (document summary, user data) in a single container. 
 
