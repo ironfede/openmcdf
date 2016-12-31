@@ -33,15 +33,21 @@ namespace StructuredStorageExplorer
         {
             InitializeComponent();
 
+#if !OLE_PROPERTY
+            tabControl1.TabPages.Remove(tabPage2);
+#endif
+
             //Load images for icons from resx
             Image folderImage = (Image)Properties.Resources.ResourceManager.GetObject("storage");
             Image streamImage = (Image)Properties.Resources.ResourceManager.GetObject("stream");
-            Image olePropsImage = (Image)Properties.Resources.ResourceManager.GetObject("oleprops");
+            //Image olePropsImage = (Image)Properties.Resources.ResourceManager.GetObject("oleprops");
 
             treeView1.ImageList = new ImageList();
             treeView1.ImageList.Images.Add(folderImage);
             treeView1.ImageList.Images.Add(streamImage);
-            treeView1.ImageList.Images.Add(olePropsImage);
+            //treeView1.ImageList.Images.Add(olePropsImage);
+
+
 
             saveAsToolStripMenuItem.Enabled = false;
             updateCurrentFileToolStripMenuItem.Enabled = false;
@@ -415,6 +421,7 @@ namespace StructuredStorageExplorer
                     importDataStripMenuItem1.Enabled = true;
                     exportDataToolStripMenuItem.Enabled = true;
 
+#if OLE_PROPERTY
                     if (target.Name == "\u0005SummaryInformation" || target.Name == "\u0005DocumentSummaryInformation")
                     {   
                         PropertySetStream mgr = ((CFStream)target).AsOLEProperties();
@@ -436,6 +443,7 @@ namespace StructuredStorageExplorer
                         ds.AcceptChanges();
                         dgvOLEProps.DataSource = ds;
                     }
+#endif
                 }
             }
             else
