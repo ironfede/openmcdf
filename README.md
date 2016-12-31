@@ -61,4 +61,4 @@ If you need to compress a compound file, you can purge its unused space
 CompoundFile.ShrinkCompoundFile("MultipleStorage_Deleted_Compress.cfs"); 
 ```
 
-OpenMcdf is NOT a wrapper around Win32 API: it is a pure .net component that runs also on Mono platform.
+OpenMcdf runs as well on the [Mono] (http://www.mono-project.com/) platform .
