@@ -1,6 +1,7 @@
 ﻿using OpenMcdf.Extensions.OLEProperties.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -20,7 +21,13 @@ namespace OpenMcdf.Extensions.OLEProperties
         public PropertySet PropertySet0 { get; set; }
         public PropertySet PropertySet1 { get; set; }
 
-        public void Read(System.IO.BinaryReader br)
+        public PropertySetStream(Stream s)
+        {
+            BinaryReader br = new BinaryReader(s);
+            Read(br);
+        }
+
+        private void Read(BinaryReader br)
         {
             ByteOrder = br.ReadUInt16();
             Version = br.ReadUInt16();
@@ -37,52 +44,39 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
 
             PropertySet0 = new PropertySet();
-            PropertySet0.Size = br.ReadUInt32();
-            PropertySet0.NumProperties = br.ReadUInt32();
+            PropertySet0.Read(Offset0, br);
 
-            // Read property offsets
-            for (int i = 0; i < PropertySet0.NumProperties; i++)
+            if (NumPropertySets == 2)
             {
-                PropertyIdentifierAndOffset pio = new PropertyIdentifierAndOffset();
-                pio.PropertyIdentifier = (PropertyIdentifiersSummaryInfo)br.ReadUInt32();
-                pio.Offset = br.ReadUInt32();
-                PropertySet0.PropertyIdentifierAndOffsets.Add(pio);
-            }
-
-            // Read properties
-            PropertyReader pr = new PropertyReader();
-            for (int i = 0; i < PropertySet0.NumProperties; i++)
-            {
-                br.BaseStream.Seek(Offset0 + PropertySet0.PropertyIdentifierAndOffsets[i].Offset, System.IO.SeekOrigin.Begin);
-                PropertySet0.Properties.AddRange(pr.ReadProperty(PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier, br));
+                PropertySet1 = new PropertySet();
+                PropertySet1.Read(Offset1, br);
             }
         }
 
-        public void Write(System.IO.BinaryWriter bw)
+        public void Write(Stream outStream)
         {
-            throw new NotImplementedException();
+            BinaryWriter bw = new BinaryWriter(outStream);
+            bw.Write(ByteOrder);
+            bw.Write(Version);
+            bw.Write(SystemIdentifier);
+            bw.Write(CLSID.ToByteArray());
+            bw.Write(NumPropertySets);
+            bw.Write(FMTID0.ToByteArray());
+            bw.Write(Offset0);
+
+            if (NumPropertySets == 2)
+            {
+                bw.Write(FMTID1.ToByteArray());
+                bw.Write(Offset1);
+            }
+
+            PropertySet0.Write(Offset0, bw);
+
+            if (NumPropertySets == 2)
+            {
+                PropertySet1.Write(Offset1, bw);
+            }
         }
 
-        //        private void LoadFromStream(Stream inStream)
-        //        {
-        //            BinaryReader br = new BinaryReader(inStream);
-        //            PropertySetStream psStream = new PropertySetStream();
-        //            psStream.Read(br);
-        //            br.Close();
-
-        //            propertySets.Clear();
-
-        //            if (psStream.NumPropertySets == 1)
-        //            {
-        //                propertySets.Add(psStream.PropertySet0);
-        //            }
-        //            else
-        //            {
-        //                propertySets.Add(psStream.PropertySet0);
-        //                propertySets.Add(psStream.PropertySet1);
-        //            }
-
-        //            return;
-        //        }
     }
 }

@@ -17,6 +17,7 @@ using StructuredStorageExplorer.Properties;
 using Be.Windows.Forms;
 using OpenMcdf.Extensions.OLEProperties;
 using OpenMcdf.Extensions.OLEProperties.Interfaces;
+
 using OpenMcdf.Extensions;
 
 // Author Federico Blaseotto
@@ -427,20 +428,21 @@ namespace StructuredStorageExplorer
 
 #if OLE_PROPERTY
                     if (target.Name == "\u0005SummaryInformation" || target.Name == "\u0005DocumentSummaryInformation")
-                    {   
-                        PropertySetStream mgr = ((CFStream)target).AsOLEProperties();
+                    {
+                        var mgr = ((CFStream)target).AsOLEProperties();
 
                         DataTable ds = new DataTable();
                         ds.Columns.Add("Name", typeof(String));
                         ds.Columns.Add("Type", typeof(String));
                         ds.Columns.Add("Value", typeof(String));
 
+
                         for (int i = 0; i < mgr.PropertySet0.NumProperties; i++)
                         {
                             ITypedPropertyValue p = mgr.PropertySet0.Properties[i];
-                            
+
                             DataRow dr = ds.NewRow();
-                            dr.ItemArray = new Object[] { mgr.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier.GetDescription(), p.VTType, p.PropertyValue };
+                            dr.ItemArray = new Object[] { mgr.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier, p.VTType, p.PropertyValue };
                             ds.Rows.Add(dr);
                         }
 
@@ -458,18 +460,22 @@ namespace StructuredStorageExplorer
                 exportDataToolStripMenuItem.Enabled = false;
             }
 
-            propertyGrid1.SelectedObject = n.Tag;
-
-
-
-            CFStream targetStream = n.Tag as CFStream;
-            if (targetStream != null)
+            if (n != null)
             {
-                this.hexEditor.ByteProvider = new StreamDataProvider(targetStream);
-            }
-            else
-            {
-                this.hexEditor.ByteProvider = null;
+
+                propertyGrid1.SelectedObject = n.Tag;
+
+
+
+                CFStream targetStream = n.Tag as CFStream;
+                if (targetStream != null)
+                {
+                    this.hexEditor.ByteProvider = new StreamDataProvider(targetStream);
+                }
+                else
+                {
+                    this.hexEditor.ByteProvider = null;
+                }
             }
 
         }

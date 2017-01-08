@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using OpenMcdf.Extensions.OLEProperties;
 
 namespace OpenMcdf.Extensions
 {
@@ -128,10 +129,9 @@ namespace OpenMcdf.Extensions
         /// </summary>
         /// <param name="cfStream"></param>
         /// <returns>A <see cref="T:OpenMcdf.OLEProperties.PropertySetStream">OLE Propertie stream</see></returns>
-        public static OLEProperties.PropertySetStream AsOLEProperties(this CFStream cfStream)
+        public static PropertySetStream AsOLEProperties(this CFStream cfStream)
         {
-            var result = new OLEProperties.PropertySetStream();
-            result.Read(new BinaryReader(new StreamDecorator(cfStream)));
+            var result = new PropertySetStream(new StreamDecorator(cfStream));
             return result;
         }
        

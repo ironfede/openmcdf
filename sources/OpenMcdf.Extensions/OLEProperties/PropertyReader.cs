@@ -5,26 +5,11 @@ using System.Linq;
 using System.Text;
 using OpenMcdf.Extensions.OLEProperties.Interfaces;
 using System.Collections;
+using OpenMcdf.Extensions.OLEProperties.Factory;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    public enum Behavior
-    {
-        CaseSensitive, CaseInsensitive
-    }
-
-    public class PropertyContext
-    {
-
-        public Int32 CodePage { get; set; }
-        public Behavior Behavior { get; set; }
-        public UInt32 Locale { get; set; }
-    }
-
-    public enum PropertyDimensions
-    {
-        IsScalar, IsVector, IsArray
-    }
+    
 
     //public class PropertyResult
     //{
@@ -41,76 +26,126 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public PropertyReader()
         {
-            factory = new PropertyFactory(ctx);
+            factory = new PropertyFactory();
         }
 
-        public List<ITypedPropertyValue> ReadProperty(PropertyIdentifiersSummaryInfo propertyIdentifier, BinaryReader br)
+        public ITypedPropertyValue ReadProperty(
+            uint propertyIdentifier,
+            BinaryReader br,
+            out Dictionary<uint, string> propertyDictionary)
         {
+            propertyDictionary = new Dictionary<uint, string>();
             List<ITypedPropertyValue> res = new List<ITypedPropertyValue>();
-            bool isVariant = false;
-            PropertyDimensions dim = PropertyDimensions.IsScalar;
 
-            UInt16 pVal = br.ReadUInt16();
-
-            VTPropertyType vType = (VTPropertyType)(pVal & 0x00FF);
-
-            if ((pVal & 0x1000) != 0)
-                dim = PropertyDimensions.IsVector;
-            else if ((pVal & 0x2000) != 0)
-                dim = PropertyDimensions.IsArray;
-
-            isVariant = ((pVal & 0x00FF) == 0x000C);
-
-            br.ReadUInt16(); // Ushort Padding
-
-            switch (dim)
+            if (propertyIdentifier != 0)
             {
-                case PropertyDimensions.IsVector:
 
-                    ITypedPropertyValue vectorHeader = factory.NewProperty(VTPropertyType.VT_VECTOR_HEADER, ctx);
-                    vectorHeader.Read(br);
+                bool isVariant = false;
 
-                    uint nItems = (uint)vectorHeader.PropertyValue;
+                PropertyDimensions dim = PropertyDimensions.IsScalar;
 
-                    for (int i = 0; i < nItems; i++)
+                UInt16 pVal = br.ReadUInt16();
+
+                //VTPropertyType vType = (VTPropertyType)(pVal & 0x00FF);
+                ITypedPropertyValue property = factory.NewProperty((VTPropertyType)pVal, ctx);
+
+                //        ITypedPropertyValue pr = factory.NewProperty(vType, ctx);
+
+                property.Read(br);
+
+                if (propertyIdentifier == (uint)PropertyIdentifiersSummaryInfo.CodePageString)
+                {
+                    this.ctx.CodePage = (short)property.PropertyValue;
+                }
+
+                return property;
+
+                //                isVariant = ((pVal & 0x00FF) == 0x000C);
+
+                br.ReadUInt16(); // Ushort Padding
+
+                //switch (dim)
+                //{
+                //    case PropertyDimensions.IsVector:
+
+                //        ITypedPropertyValue vectorHeader = factory.NewProperty(VTPropertyType.VT_VECTOR_HEADER, ctx);
+                //        vectorHeader.Read(br);
+
+                //        uint nItems = (uint)vectorHeader.PropertyValue;
+
+                //        for (int i = 0; i < nItems; i++)
+                //        {
+                //            VTPropertyType vTypeItem = VTPropertyType.VT_EMPTY;
+
+                //            if (isVariant)
+                //            {
+                //                UInt16 pValItem = br.ReadUInt16();
+                //                vTypeItem = (VTPropertyType)(pValItem & 0x00FF);
+                //                br.ReadUInt16(); // Ushort Padding
+                //            }
+                //            else
+                //            {
+                //                vTypeItem = vType;
+                //            }
+
+                //            var p = factory.NewProperty(vTypeItem, ctx);
+
+                //            p.Read(br);
+                //            res.Add(p);
+                //        }
+
+                //        break;
+                //    default:
+                //        // Scalar property, it could be a standard property or a special one as Dictionary or CodePage;
+
+                //        ITypedPropertyValue pr = factory.NewProperty(vType, ctx);
+
+                //        pr.Read(br);
+
+                //        if (propertyIdentifier == (uint)PropertyIdentifiersSummaryInfo.CodePageString)
+                //        {
+                //            this.ctx.CodePage = (short)pr.PropertyValue;
+                //        }
+
+                //        res.Add(pr);
+                //        break;
+                //}
+            }
+            else
+            {
+                var numEntries = br.ReadUInt32();
+
+                int totLength = 0;
+
+                for (int j = 0; j < numEntries; j++)
+                {
+                    var propertyId = br.ReadUInt32();
+                    int length = (int)br.ReadUInt32();  // number of characters including null terminator
+
+                    length--; //remove null;
+
+                    if (ctx.CodePage == 0x04B0)  // if unicode, double length (16 bit characters)
+                        length *= 2;
+
+                    totLength += length;
+
+                    var prName = Encoding.GetEncoding(ctx.CodePage).GetString(br.ReadBytes(length));
+
+                    propertyDictionary.Add(propertyId, prName);
+
+                    if (ctx.CodePage == 0x04B0) // if unicode, padding to multiple of 4
                     {
-                        VTPropertyType vTypeItem = VTPropertyType.VT_EMPTY;
-
-                        if (isVariant)
-                        {
-                            UInt16 pValItem = br.ReadUInt16();
-                            vTypeItem = (VTPropertyType)(pValItem & 0x00FF);
-                            br.ReadUInt16(); // Ushort Padding
-                        }
-                        else
-                        {
-                            vTypeItem = vType;
-                        }
-
-                        var p = factory.NewProperty(vTypeItem, ctx);
-
-                        p.Read(br);
-                        res.Add(p);
+                        int m = (int)length % 4;
+                        totLength += m;
+                        br.ReadBytes(m);
                     }
+                }
 
-                    break;
-                default:
-
-                    //Scalar property
-                    ITypedPropertyValue pr = factory.NewProperty(vType, ctx);
-
-                    pr.Read(br);
-
-                    if (propertyIdentifier == PropertyIdentifiersSummaryInfo.CodePageString)
-                    {
-                        this.ctx.CodePage = (short)pr.PropertyValue;
-                    }
-
-                    res.Add(pr);
-                    break;
+                int totPad = (int)totLength % 4;
+                br.ReadBytes(totPad);
             }
 
-            return res;
+            return null;
         }
     }
 }

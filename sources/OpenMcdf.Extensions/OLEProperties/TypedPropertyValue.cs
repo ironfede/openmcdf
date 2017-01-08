@@ -6,21 +6,25 @@ using OpenMcdf.Extensions.OLEProperties.Interfaces;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    public class TypedPropertyValue : ITypedPropertyValue, IBinarySerializable
+    public class TypedPropertyValue : ITypedPropertyValue
     {
         private VTPropertyType _VTType;
+        private bool isVector = false;
+        private bool isArray = false;
 
-        public VTPropertyType VTType 
-        { 
+        public VTPropertyType VTType
+        {
             get { return _VTType; }
-           //set { _VTType = value; }
+        }
+
+        public TypedPropertyValue(VTPropertyType vtType, bool isVector = false, bool isArray = false)
+        {
+            this._VTType = vtType;
+            this.isVector = isVector;
+            this.isArray = isArray;
         }
 
         protected object propertyValue = null;
-        public TypedPropertyValue(VTPropertyType vtType)
-        {
-            this._VTType = vtType;
-        }
         public virtual object PropertyValue
         {
             get
@@ -39,12 +43,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         {
             get
             {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
+                return isArray;
             }
         }
 
@@ -52,23 +51,18 @@ namespace OpenMcdf.Extensions.OLEProperties
         {
             get
             {
-                throw new NotImplementedException();
-            }
-
-            set
-            {
-                throw new NotImplementedException();
+                return isVector;
             }
         }
 
         public virtual void Read(System.IO.BinaryReader br)
         {
-          
+
         }
 
         public virtual void Write(System.IO.BinaryWriter bw)
         {
-          
+
         }
     }
 }

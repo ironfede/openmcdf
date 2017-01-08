@@ -10,13 +10,11 @@ namespace OpenMcdf.Extensions.OLEProperties.Interfaces
         bool IsArray
         {
             get;
-            set;
         }
 
         bool IsVector
         {
             get;
-            set;
         }
 
         object PropertyValue
