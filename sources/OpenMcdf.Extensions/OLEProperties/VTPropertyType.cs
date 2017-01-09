@@ -18,6 +18,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         VT_BSTR = 0x0008,
         VT_ERROR = 0x000A,
         VT_BOOL = 0x000B,
+        VT_VARIANT_VECTOR_HEADER = 0x000C, // NOT NORMATIVE, helper enum value
         VT_DECIMAL = 0x000E,
         VT_I1 = 0x0010,
         VT_UI1 = 0x0011,

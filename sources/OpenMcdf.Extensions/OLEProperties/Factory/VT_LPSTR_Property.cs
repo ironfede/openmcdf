@@ -40,8 +40,8 @@ namespace OpenMcdf.Extensions.OLEProperties.Factory
 
                     data = br.ReadBytes((int)size);
                     this.propertyValue = Encoding.GetEncoding(codePage).GetString(data);
-                    int m = (int)size % 4;
-                    br.ReadBytes(m); // padding
+                    //int m = (int)size % 4;
+                    //br.ReadBytes(m); // padding
                 }
             }
 

@@ -45,6 +45,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 PropertyDimensions dim = PropertyDimensions.IsScalar;
 
                 UInt16 pVal = br.ReadUInt16();
+                br.ReadUInt16();//padding
 
                 //VTPropertyType vType = (VTPropertyType)(pVal & 0x00FF);
                 ITypedPropertyValue property = factory.NewProperty((VTPropertyType)pVal, ctx);

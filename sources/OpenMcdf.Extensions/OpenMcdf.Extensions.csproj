@@ -55,7 +55,7 @@
     <Compile Include="OLEProperties\Factory\VT_I2_Property.cs" />
     <Compile Include="OLEProperties\Factory\VT_CY_Property.cs" />
     <Compile Include="OLEProperties\Factory\VT_DATE_Property.cs" />
-    <Compile Include="OLEProperties\Factory\VT_VECTOR_LPSTR_Property.cs" />
+    <Compile Include="OLEProperties\Factory\VT_VARIANT_VECTOR_HEADER_Property.cs" />
     <Compile Include="OLEProperties\Factory\VT_LPSTR_Property.cs" />
     <Compile Include="OLEProperties\Factory\VT_FILETIME_Property.cs" />
     <Compile Include="OLEProperties\Factory\VT_DECIMAL_Property.cs" />

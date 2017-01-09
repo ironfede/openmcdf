@@ -13,6 +13,8 @@ namespace OpenMcdf.Extensions.OLEProperties.Factory
         {
             bool isVector = ((0x1000 & (ushort)vType) == 1);
             bool isArray = ((0x2000 & (ushort)vType) == 1);
+            bool isVariant = (((ushort)vType & 0x00FF) == 0x000C);
+
             vType = (VTPropertyType)((ushort)vType & 0x00FF);
 
             ITypedPropertyValue pr = null;
@@ -29,7 +31,7 @@ namespace OpenMcdf.Extensions.OLEProperties.Factory
                     pr = new VT_R4_Property(vType);
                     break;
                 case VTPropertyType.VT_LPSTR:
-                    pr = new VT_LPSTR_Property(vType, ctx.CodePage);
+                    pr = new VT_LPSTR_Property(vType, ctx.CodePage, isVector);
                     break;
                 case VTPropertyType.VT_FILETIME:
                     pr = new VT_FILETIME_Property(vType);
@@ -46,7 +48,9 @@ namespace OpenMcdf.Extensions.OLEProperties.Factory
                 case VTPropertyType.VT_EMPTY:
                     pr = new VT_EMPTY_Property(vType);
                     break;
-                
+                case VTPropertyType.VT_VARIANT_VECTOR_HEADER:
+                    pr = new VT_VARIANT_VECTOR_HEADER_Property(vType, ctx);
+                    break;
                 default:
                     throw new Exception("Unrecognized property type");
             }
