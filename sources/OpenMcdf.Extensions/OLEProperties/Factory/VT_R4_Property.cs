@@ -9,19 +9,51 @@ namespace OpenMcdf.Extensions.OLEProperties.Factory
     {
         private class VT_R4_Property : TypedPropertyValue
         {
-            public VT_R4_Property(VTPropertyType vType) : base(vType)
+            public VT_R4_Property(VTPropertyType vType, PropertyContext ctx, PropertyDimensions dim) : base(vType, ctx, dim)
             {
 
             }
 
             public override void Read(System.IO.BinaryReader br)
             {
-                this.propertyValue = br.ReadSingle();
+                switch (Dimensions)
+                {
+                    case PropertyDimensions.IsScalar:
+                        this.propertyValue = br.ReadSingle();
+                        break;
+
+                    case PropertyDimensions.IsVector:
+                        uint size = br.ReadUInt32();
+                        this.propertyValue = new List<float>();
+
+                        for (int i = 0; i < size; i++)
+                        {
+                            ((List<float>)propertyValue).Add(br.ReadSingle());
+                        }
+                        break;
+                }
             }
 
             public override void Write(System.IO.BinaryWriter bw)
             {
-                bw.Write((Single)propertyValue);
+                switch (Dimensions)
+                {
+                    case PropertyDimensions.IsScalar:
+                        bw.Write((float)propertyValue);
+
+                        break;
+
+                    case PropertyDimensions.IsVector:
+                        var size = ((List<float>)propertyValue).Count;
+                        this.propertyValue = new List<float>();
+
+                        foreach (var i in ((List<float>)propertyValue))
+                        {
+                            bw.Write(i);
+                        }
+
+                        break;
+                }
             }
         }
     }

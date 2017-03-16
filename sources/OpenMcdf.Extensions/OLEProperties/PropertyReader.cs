@@ -9,24 +9,17 @@ using OpenMcdf.Extensions.OLEProperties.Factory;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    
-
-    //public class PropertyResult
-    //{
-    //    public PropertyDimensions Dimensions { get; set; }
-    //    public uint[] DimSizes { get; set; }
-    //    public List<ITypedPropertyValue> DimValues { get; set; }
-    //}
-
     public class PropertyReader
     {
 
         private PropertyContext ctx = new PropertyContext();
         private PropertyFactory factory = null;
+        private PropertyIdentifiersBase identifiers;
 
-        public PropertyReader()
+        public PropertyReader(PropertyIdentifiersBase identifiers)
         {
             factory = new PropertyFactory();
+            this.identifiers = identifiers;
         }
 
         public ITypedPropertyValue ReadProperty(
@@ -35,82 +28,22 @@ namespace OpenMcdf.Extensions.OLEProperties
             out Dictionary<uint, string> propertyDictionary)
         {
             propertyDictionary = new Dictionary<uint, string>();
-            List<ITypedPropertyValue> res = new List<ITypedPropertyValue>();
-
+          
             if (propertyIdentifier != 0)
             {
-
-                bool isVariant = false;
-
-                PropertyDimensions dim = PropertyDimensions.IsScalar;
-
                 UInt16 pVal = br.ReadUInt16();
-                br.ReadUInt16();//padding
+                br.ReadUInt16(); //padding short
 
-                //VTPropertyType vType = (VTPropertyType)(pVal & 0x00FF);
                 ITypedPropertyValue property = factory.NewProperty((VTPropertyType)pVal, ctx);
-
-                //        ITypedPropertyValue pr = factory.NewProperty(vType, ctx);
 
                 property.Read(br);
 
-                if (propertyIdentifier == (uint)PropertyIdentifiersSummaryInfo.CodePageString)
+                if (propertyIdentifier == PropertyIdentifiersBase.CodePageString)
                 {
                     this.ctx.CodePage = (short)property.PropertyValue;
                 }
 
                 return property;
-
-                //                isVariant = ((pVal & 0x00FF) == 0x000C);
-
-                br.ReadUInt16(); // Ushort Padding
-
-                //switch (dim)
-                //{
-                //    case PropertyDimensions.IsVector:
-
-                //        ITypedPropertyValue vectorHeader = factory.NewProperty(VTPropertyType.VT_VECTOR_HEADER, ctx);
-                //        vectorHeader.Read(br);
-
-                //        uint nItems = (uint)vectorHeader.PropertyValue;
-
-                //        for (int i = 0; i < nItems; i++)
-                //        {
-                //            VTPropertyType vTypeItem = VTPropertyType.VT_EMPTY;
-
-                //            if (isVariant)
-                //            {
-                //                UInt16 pValItem = br.ReadUInt16();
-                //                vTypeItem = (VTPropertyType)(pValItem & 0x00FF);
-                //                br.ReadUInt16(); // Ushort Padding
-                //            }
-                //            else
-                //            {
-                //                vTypeItem = vType;
-                //            }
-
-                //            var p = factory.NewProperty(vTypeItem, ctx);
-
-                //            p.Read(br);
-                //            res.Add(p);
-                //        }
-
-                //        break;
-                //    default:
-                //        // Scalar property, it could be a standard property or a special one as Dictionary or CodePage;
-
-                //        ITypedPropertyValue pr = factory.NewProperty(vType, ctx);
-
-                //        pr.Read(br);
-
-                //        if (propertyIdentifier == (uint)PropertyIdentifiersSummaryInfo.CodePageString)
-                //        {
-                //            this.ctx.CodePage = (short)pr.PropertyValue;
-                //        }
-
-                //        res.Add(pr);
-                //        break;
-                //}
             }
             else
             {

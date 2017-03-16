@@ -24,7 +24,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         }
     }
 
-    internal enum PropertyDimensions
+    public enum PropertyDimensions
     {
         IsScalar, IsVector, IsArray
     }

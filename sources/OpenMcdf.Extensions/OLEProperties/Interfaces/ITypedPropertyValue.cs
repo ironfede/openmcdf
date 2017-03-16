@@ -7,15 +7,11 @@ namespace OpenMcdf.Extensions.OLEProperties.Interfaces
 {
     public interface ITypedPropertyValue : IBinarySerializable
     {
-        bool IsArray
+        PropertyDimensions Dimensions
         {
             get;
         }
 
-        bool IsVector
-        {
-            get;
-        }
 
         object PropertyValue
         {

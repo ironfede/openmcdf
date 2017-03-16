@@ -37,7 +37,7 @@ namespace OpenMcdf.Extensions.OLEProperties.Factory
             }
 
             public override void Write(System.IO.BinaryWriter bw)
-            {
+            { 
 
             }
         }

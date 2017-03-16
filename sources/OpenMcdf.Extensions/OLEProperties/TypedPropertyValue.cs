@@ -6,25 +6,31 @@ using OpenMcdf.Extensions.OLEProperties.Interfaces;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    public class TypedPropertyValue : ITypedPropertyValue
+    internal class TypedPropertyValue : ITypedPropertyValue
     {
         private VTPropertyType _VTType;
-        private bool isVector = false;
-        private bool isArray = false;
+        private PropertyDimensions dim = PropertyDimensions.IsScalar;
+        private PropertyContext ctx;
+
+        protected PropertyContext Ctx
+        {
+            get { return ctx; }
+        }
 
         public VTPropertyType VTType
         {
             get { return _VTType; }
         }
 
-        public TypedPropertyValue(VTPropertyType vtType, bool isVector = false, bool isArray = false)
+        public TypedPropertyValue(VTPropertyType vtType, PropertyContext ctx = null, PropertyDimensions dim = PropertyDimensions.IsScalar)
         {
             this._VTType = vtType;
-            this.isVector = isVector;
-            this.isArray = isArray;
+            this.dim = dim;
+            this.ctx = ctx;
         }
 
         protected object propertyValue = null;
+
         public virtual object PropertyValue
         {
             get
@@ -39,21 +45,15 @@ namespace OpenMcdf.Extensions.OLEProperties
         }
 
 
-        public bool IsArray
+        public PropertyDimensions Dimensions
         {
             get
             {
-                return isArray;
+                return dim;
             }
         }
 
-        public bool IsVector
-        {
-            get
-            {
-                return isVector;
-            }
-        }
+     
 
         public virtual void Read(System.IO.BinaryReader br)
         {

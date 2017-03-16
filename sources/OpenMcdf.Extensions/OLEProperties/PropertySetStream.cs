@@ -43,12 +43,12 @@ namespace OpenMcdf.Extensions.OLEProperties
                 Offset1 = br.ReadUInt32();
             }
 
-            PropertySet0 = new PropertySet();
+            PropertySet0 = new PropertySet(FMTID0);
             PropertySet0.Read(Offset0, br);
 
             if (NumPropertySets == 2)
             {
-                PropertySet1 = new PropertySet();
+                PropertySet1 = new PropertySet(FMTID1);
                 PropertySet1.Read(Offset1, br);
             }
         }

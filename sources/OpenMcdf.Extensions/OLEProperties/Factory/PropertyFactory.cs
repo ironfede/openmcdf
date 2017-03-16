@@ -13,7 +13,15 @@ namespace OpenMcdf.Extensions.OLEProperties.Factory
         {
             bool isVector = ((0x1000 & (ushort)vType) == 1);
             bool isArray = ((0x2000 & (ushort)vType) == 1);
-            bool isVariant = (((ushort)vType & 0x00FF) == 0x000C);
+
+            PropertyDimensions d = PropertyDimensions.IsScalar;
+
+            if (isArray)
+                d = PropertyDimensions.IsArray;
+            else if (isVector)
+                d = PropertyDimensions.IsVector;
+            else
+                d = PropertyDimensions.IsScalar;
 
             vType = (VTPropertyType)((ushort)vType & 0x00FF);
 
@@ -22,28 +30,25 @@ namespace OpenMcdf.Extensions.OLEProperties.Factory
             switch (vType)
             {
                 case VTPropertyType.VT_I2:
-                    pr = new VT_I2_Property(vType);
+                    pr = new VT_I2_Property(vType, ctx, d);
                     break;
                 case VTPropertyType.VT_I4:
-                    pr = new VT_I4_Property(vType);
+                    pr = new VT_I4_Property(vType, ctx, d);
                     break;
                 case VTPropertyType.VT_R4:
-                    pr = new VT_R4_Property(vType);
+                    pr = new VT_R4_Property(vType, ctx, d);
                     break;
                 case VTPropertyType.VT_LPSTR:
-                    pr = new VT_LPSTR_Property(vType, ctx.CodePage, isVector);
+                    pr = new VT_LPSTR_Property(vType, ctx, d);
                     break;
                 case VTPropertyType.VT_FILETIME:
-                    pr = new VT_FILETIME_Property(vType);
+                    pr = new VT_FILETIME_Property(vType, ctx, d);
                     break;
                 case VTPropertyType.VT_DECIMAL:
-                    pr = new VT_DECIMAL_Property(vType);
+                    pr = new VT_DECIMAL_Property(vType, ctx, d);
                     break;
                 case VTPropertyType.VT_BOOL:
-                    pr = new VT_BOOL_Property(vType);
-                    break;
-                case VTPropertyType.VT_VECTOR_HEADER:
-                    pr = new VT_VectorHeader(vType);
+                    pr = new VT_BOOL_Property(vType, ctx, d);
                     break;
                 case VTPropertyType.VT_EMPTY:
                     pr = new VT_EMPTY_Property(vType);

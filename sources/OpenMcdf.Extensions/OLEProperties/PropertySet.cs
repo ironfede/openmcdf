@@ -13,6 +13,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         public uint Size { get; set; }
         public uint NumProperties { get; set; }
         private bool isPersisted = true;
+        private PropertyIdentifiersBase b = null;
 
         List<PropertyIdentifierAndOffset> propertyIdentifierAndOffsets
             = new List<PropertyIdentifierAndOffset>();
@@ -34,6 +35,26 @@ namespace OpenMcdf.Extensions.OLEProperties
             set
             {
                 properties = value;
+            }
+        }
+
+        public PropertySet(Guid fmtd)
+        {
+            string s = fmtd.ToString().ToUpper();
+            switch (s)
+            {
+                case "F29F85E0-4FF9-1068-AB91-08002B27B3D9":
+                    b = new PropertyIdentifiersSummaryInfo();
+                    break;
+                case "D5CDD502-2E9C-101B-9397-08002B2CF9AE":
+                    b = new PropertyIdentifiersDocumentSummaryInfo();
+                    break;
+                case "D5CDD505-2E9C-101B-9397-08002B2CF9AE":
+                    b = new PropertyIdentifiersDocumentSummaryInfo();  // USER DEFINED
+                    break;
+                default:
+                    b = new PropertyIdentifiersSummaryInfo();
+                    break;
             }
         }
 
@@ -63,7 +84,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
 
             Dictionary<uint, string> r = new Dictionary<uint, string>();
-            PropertyReader pr = new PropertyReader();
+            PropertyReader pr = new PropertyReader(b);
             for (int i = 0; i < NumProperties; i++)
             {
                 br.BaseStream.Seek(offset + PropertyIdentifierAndOffsets[i].Offset, SeekOrigin.Begin);

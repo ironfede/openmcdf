@@ -9,21 +9,49 @@ namespace OpenMcdf.Extensions.OLEProperties.Factory
     {
         private class VT_DATE_Property : TypedPropertyValue
         {
-            public VT_DATE_Property(VTPropertyType vType) : base(vType)
+            public VT_DATE_Property(VTPropertyType vType, PropertyContext ctx, PropertyDimensions dim) : base(vType, ctx, dim)
             {
 
             }
 
             public override void Read(System.IO.BinaryReader br)
             {
-                Double temp = br.ReadDouble();
-
-                this.propertyValue = DateTime.FromOADate(temp);
+                switch (Dimensions)
+                {
+                    case PropertyDimensions.IsScalar:
+                        Double temp = br.ReadDouble();
+                        this.propertyValue = DateTime.FromOADate(temp);
+                        break;
+                    case PropertyDimensions.IsVector:
+                        uint size = br.ReadUInt32();
+                        var t = new List<DateTime>();
+                        for (int i = 0; i < size; i++)
+                        {
+                            t.Add(DateTime.FromOADate(br.ReadDouble()));
+                        }
+                        this.propertyValue = t;
+                        break;
+                }
             }
 
             public override void Write(System.IO.BinaryWriter bw)
             {
-                bw.Write(((DateTime)propertyValue).ToOADate());
+                switch (Dimensions)
+                {
+                    case PropertyDimensions.IsScalar:
+                        bw.Write(((DateTime)propertyValue).ToOADate());
+
+                        break;
+                    case PropertyDimensions.IsVector:
+                        uint size = (uint)(((List<DateTime>)propertyValue).Count);
+                        bw.Write(size);
+                        foreach (var d in ((List<DateTime>)propertyValue))
+                        {
+                            bw.Write(d.ToOADate());
+                        }
+                        break;
+                }
+
             }
         }
     }
