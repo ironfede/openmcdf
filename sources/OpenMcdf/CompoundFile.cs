@@ -2100,8 +2100,8 @@ namespace OpenMcdf
             if (cfItem.DirEntry.StartSetc != Sector.ENDOFCHAIN)
             {
                 if (
-                    (length < header.MinSizeStandardStream && cfItem.DirEntry.Size > header.MinSizeStandardStream)
-                    || (length > header.MinSizeStandardStream && cfItem.DirEntry.Size < header.MinSizeStandardStream)
+                    (length < header.MinSizeStandardStream && cfItem.DirEntry.Size >= header.MinSizeStandardStream)
+                    || (length >= header.MinSizeStandardStream && cfItem.DirEntry.Size < header.MinSizeStandardStream)
                    )
                 {
                     if (cfItem.DirEntry.Size < header.MinSizeStandardStream)
