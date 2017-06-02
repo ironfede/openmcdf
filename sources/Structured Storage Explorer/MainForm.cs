@@ -454,20 +454,22 @@ namespace StructuredStorageExplorer
                 exportDataToolStripMenuItem.Enabled = false;
             }
 
-            propertyGrid1.SelectedObject = n.Tag;
+            if (n != null)
+                propertyGrid1.SelectedObject = n.Tag;
 
 
-
-            CFStream targetStream = n.Tag as CFStream;
-            if (targetStream != null)
+            if (n != null)
             {
-                this.hexEditor.ByteProvider = new StreamDataProvider(targetStream);
+                CFStream targetStream = n.Tag as CFStream;
+                if (targetStream != null)
+                {
+                    this.hexEditor.ByteProvider = new StreamDataProvider(targetStream);
+                }
+                else
+                {
+                    this.hexEditor.ByteProvider = null;
+                }
             }
-            else
-            {
-                this.hexEditor.ByteProvider = null;
-            }
-
         }
 
         void hexEditor_ByteProviderChanged(object sender, EventArgs e)

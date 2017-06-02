@@ -23,7 +23,7 @@ namespace OpenMcdf
         byte[] ModifyDate { get; set; }
         string Name { get; }
         ushort NameLength { get; set; }
-        void Read(System.IO.Stream stream);
+        void Read(System.IO.Stream stream, CFSVersion ver = CFSVersion.Ver_3);
         int RightSibling { get; set; }
         void SetEntryName(string entryName);
         int SID { get; set; }

@@ -1073,9 +1073,9 @@ namespace OpenMcdf
                 new StreamView(
                     fatSectors,
                     GetSectorSize(),
-                    header.FATSectorsNumber * GetSectorSize(), 
-                    null, 
-                    sourceStream, 
+                    header.FATSectorsNumber * GetSectorSize(),
+                    null,
+                    sourceStream,
                     true
                     );
 
@@ -1801,7 +1801,7 @@ namespace OpenMcdf
                 = DirectoryEntry.New(String.Empty, StgType.StgInvalid, directoryEntries);
 
                 //We are not inserting dirs. Do not use 'InsertNewDirectoryEntry'
-                de.Read(dirReader);
+                de.Read(dirReader, this.Version);
 
             }
         }
