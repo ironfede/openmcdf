@@ -378,7 +378,7 @@ namespace OpenMcdf
         //    return ms.ToArray();
         //}
 
-        public void Read(Stream stream)
+        public void Read(Stream stream, CFSVersion ver = CFSVersion.Ver_3)
         {
             StreamRW rw = new StreamRW(stream);
 
@@ -404,7 +404,19 @@ namespace OpenMcdf
             creationDate = rw.ReadBytes(8);
             modifyDate = rw.ReadBytes(8);
             startSetc = rw.ReadInt32();
-            size = rw.ReadInt64();
+
+            if (ver == CFSVersion.Ver_3)
+            {
+                // avoid dirty read for version 3 files (max size: 32bit integer)
+                // where most significant bits are not initialized to zero
+
+                size = rw.ReadInt32();
+                rw.ReadBytes(4); //discard most significant 4 (possibly) dirty bytes
+            }
+            else
+            {
+                size = rw.ReadInt64();
+            }
         }
 
         public string Name
