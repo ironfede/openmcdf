@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("2.1.2.1274")]
+[assembly: AssemblyVersion("2.1.3.1275")]
 
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("OpenMcdf.Test")]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("OpenMcdf.Extensions")]
