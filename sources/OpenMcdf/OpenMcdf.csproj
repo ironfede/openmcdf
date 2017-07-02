@@ -57,11 +57,10 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>OpenMcdf.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -83,6 +82,7 @@
     <Compile Include="StreamView.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="OpenMcdf.snk" />
     <None Include="OpenMcdfClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
