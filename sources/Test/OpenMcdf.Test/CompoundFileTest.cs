@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -858,5 +858,81 @@ namespace OpenMcdf.Test
 
         }
 
+        public void Test_COPY_ENTRIES_FROM_TO_STORAGE()
+        {
+            CompoundFile cfDst = new CompoundFile();
+            CompoundFile cfSrc = new CompoundFile("MultipleStorage4.cfs");
 
+            Copy(cfSrc.RootStorage, cfDst.RootStorage);
+
+            cfDst.Save("MultipleStorage4Copy.cfs");
+
+            cfDst.Close();
+            cfSrc.Close();
+
+        }
+
+        #region Copy heper method
+            /// <summary>
+            /// Copies the given <paramref name="source"/> to the given <paramref name="destination"/>
+            /// </summary>
+            /// <param name="source"></param>
+            /// <param name="destination"></param>
+        public static void Copy(CFStorage source, CFStorage destination)
+        {
+            source.VisitEntries(action =>
+            {
+                if (action.IsStorage)
+                {
+                    var destionationStorage = destination.AddStorage(action.Name);
+                    destionationStorage.CLSID = action.CLSID;
+                    destionationStorage.CreationDate = action.CreationDate;
+                    destionationStorage.ModifyDate = action.ModifyDate;
+                    Copy(action as CFStorage, destionationStorage);
+                }
+                else
+                {
+                    var sourceStream = action as CFStream;
+                    var destinationStream = destination.AddStream(action.Name);
+                    if (sourceStream != null) destinationStream.SetData(sourceStream.GetData());
+                }
+
+            }, false);
+        }
+        #endregion
+        //[TestMethod]
+        //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
+        //{
+
+        //    CompoundFile cf = null;
+        //    try
+        //    {
+        //        cf = new CompoundFile("CiclycDFAT.cfs");
+        //        CFStorage s = cf.RootStorage.GetStorage("MyStorage");
+        //        CFStream st = s.GetStream("MyStream");
+        //        Assert.IsTrue(st.Size > 0);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Assert.IsTrue(ex is CFCorruptedFileException);
+        //    }
+        //    finally
+        //    {
+        //        if (cf != null)
+        //        {
+        //            cf.Close();
+        //        }
+        //    }
+        //}
+        //[TestMethod]
+        //public void Test_REM()
+        //{
+        //    var f = new CompoundFile();
+
+        //    byte[] bB = Helpers.GetBuffer(5 * 1024, 0x0B); 
+        //    f.RootStorage.AddStream("Test").AppendData(bB);
+        //    f.Save("Astorage.cfs");
+        //}
+
+    }
 }
