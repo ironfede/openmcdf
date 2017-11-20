@@ -2419,6 +2419,64 @@ namespace OpenMcdf
 
             return result;
         }
+        public byte[] GetDataBySID(int sid)
+        {
+            if (_disposed)
+                throw new CFDisposedException("Compound File closed: cannot access data");
+            if (sid < 0)
+                return null;
+            byte[] result = null;
+            try
+            {
+                IDirectoryEntry de = directoryEntries[sid];
+                if (de.Size < header.MinSizeStandardStream)
+                {
+                    StreamView miniView
+                        = new StreamView(GetSectorChain(de.StartSetc, SectorType.Mini), Sector.MINISECTOR_SIZE, de.Size, null, sourceStream);
+                    BinaryReader br = new BinaryReader(miniView);
+                    result = br.ReadBytes((int)de.Size);
+                    br.Close();
+                }
+                else
+                {
+                    StreamView sView
+                        = new StreamView(GetSectorChain(de.StartSetc, SectorType.Normal), GetSectorSize(), de.Size, null, sourceStream);
+                    result = new byte[(int)de.Size];
+                    sView.Read(result, 0, result.Length);
+                }
+            }
+            catch
+            {
+                throw new CFException("Cannot get data for SID");
+            }
+            return result;
+        }
+        public Guid getGuidBySID(int sid)
+        {
+            if (_disposed)
+                throw new CFDisposedException("Compound File closed: cannot access data");
+            if (sid < 0)
+                throw new CFException("Invalid SID");
+            IDirectoryEntry de = directoryEntries[sid];
+            return de.StorageCLSID;
+        }
+        public Guid getGuidForStream(int sid)
+        {
+            if (_disposed)
+                throw new CFDisposedException("Compound File closed: cannot access data");
+            if (sid < 0)
+                throw new CFException("Invalid SID");
+            Guid g = new Guid("00000000000000000000000000000000");
+            //find first storage containing a non-zero CLSID before SID in directory structure
+            for (int i = sid - 1; i >= 0; i--)
+            {
+                if (directoryEntries[i].StorageCLSID != g && directoryEntries[i].StgType == StgType.StgStorage)
+                {
+                    return directoryEntries[i].StorageCLSID;
+                }
+            }
+            return g;
+        }
 
         private static int Ceiling(double d)
         {
@@ -2636,6 +2694,32 @@ namespace OpenMcdf
 
             return result;
         }
+
+        public int GetNumDirectories()
+        {
+            if (_disposed)
+                throw new CFDisposedException("Compound File closed: cannot access data");
+            return directoryEntries.Count;
+        }
+
+        public string GetNameDirEntry(int id)
+        {
+            if (_disposed)
+                throw new CFDisposedException("Compound File closed: cannot access data");
+            if (id < 0)
+                throw new CFException("Invalid Storage ID");
+            return directoryEntries[id].Name;
+        }
+
+        public StgType GetStorageType(int id)
+        {
+            if (_disposed)
+                throw new CFDisposedException("Compound File closed: cannot access data");
+            if (id < 0)
+                throw new CFException("Invalid Storage ID");
+            return directoryEntries[id].StgType;
+        }
+
 
         /// <summary>
         /// Compress free space by removing unallocated sectors from compound file
