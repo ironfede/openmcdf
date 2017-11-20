@@ -811,6 +811,17 @@ namespace OpenMcdf.Test
             }
         }
 
+        [TestMethod]
+        public void Test_PR_13()
+        {
+            CompoundFile cf = new CompoundFile("report.xls");
+            Guid g = cf.getGuidBySID(0);
+            Assert.IsNotNull(g);
+            g =cf.getGuidForStream(3);
+            Assert.IsNotNull(g);
+            Assert.IsTrue(!String.IsNullOrEmpty(cf.GetNameDirEntry(2)));
+            Assert.IsTrue(cf.GetNumDirectories() > 0);
+        }
             //[TestMethod]
             //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
             //{
@@ -846,4 +857,6 @@ namespace OpenMcdf.Test
             //}
 
         }
+
+
 }
