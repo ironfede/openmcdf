@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -797,10 +797,10 @@ namespace OpenMcdf.Test
                 CompoundFile cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
                 var s = cf.RootStorage.AddStream("miniToNormal");
                 s.Append(Helpers.GetBuffer(4090, 0xAA));
-               
+
                 cf.Save("TEST_ISSUE_2");
                 cf.Close();
-                var cf2 = new CompoundFile("TEST_ISSUE_2",CFSUpdateMode.Update,CFSConfiguration.Default);
+                var cf2 = new CompoundFile("TEST_ISSUE_2", CFSUpdateMode.Update, CFSConfiguration.Default);
                 cf2.RootStorage.GetStream("miniToNormal").Append(Helpers.GetBuffer(6, 0xBB));
                 cf2.Commit();
                 cf2.Close();
@@ -817,46 +817,46 @@ namespace OpenMcdf.Test
             CompoundFile cf = new CompoundFile("report.xls");
             Guid g = cf.getGuidBySID(0);
             Assert.IsNotNull(g);
-            g =cf.getGuidForStream(3);
+            g = cf.getGuidForStream(3);
             Assert.IsNotNull(g);
             Assert.IsTrue(!String.IsNullOrEmpty(cf.GetNameDirEntry(2)));
             Assert.IsTrue(cf.GetNumDirectories() > 0);
         }
-            //[TestMethod]
-            //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
-            //{
+        //[TestMethod]
+        //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
+        //{
 
-            //    CompoundFile cf = null;
-            //    try
-            //    {
-            //        cf = new CompoundFile("CiclycDFAT.cfs");
-            //        CFStorage s = cf.RootStorage.GetStorage("MyStorage");
-            //        CFStream st = s.GetStream("MyStream");
-            //        Assert.IsTrue(st.Size > 0);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Assert.IsTrue(ex is CFCorruptedFileException);
-            //    }
-            //    finally
-            //    {
-            //        if (cf != null)
-            //        {
-            //            cf.Close();
-            //        }
-            //    }
-            //}
-            //[TestMethod]
-            //public void Test_REM()
-            //{
-            //    var f = new CompoundFile();
+        //    CompoundFile cf = null;
+        //    try
+        //    {
+        //        cf = new CompoundFile("CiclycDFAT.cfs");
+        //        CFStorage s = cf.RootStorage.GetStorage("MyStorage");
+        //        CFStream st = s.GetStream("MyStream");
+        //        Assert.IsTrue(st.Size > 0);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Assert.IsTrue(ex is CFCorruptedFileException);
+        //    }
+        //    finally
+        //    {
+        //        if (cf != null)
+        //        {
+        //            cf.Close();
+        //        }
+        //    }
+        //}
+        //[TestMethod]
+        //public void Test_REM()
+        //{
+        //    var f = new CompoundFile();
 
-            //    byte[] bB = Helpers.GetBuffer(5 * 1024, 0x0B); 
-            //    f.RootStorage.AddStream("Test").AppendData(bB);
-            //    f.Save("Astorage.cfs");
-            //}
+        //    byte[] bB = Helpers.GetBuffer(5 * 1024, 0x0B); 
+        //    f.RootStorage.AddStream("Test").AppendData(bB);
+        //    f.Save("Astorage.cfs");
+        //}
 
-        }
+
 
         public void Test_COPY_ENTRIES_FROM_TO_STORAGE()
         {
@@ -873,11 +873,11 @@ namespace OpenMcdf.Test
         }
 
         #region Copy heper method
-            /// <summary>
-            /// Copies the given <paramref name="source"/> to the given <paramref name="destination"/>
-            /// </summary>
-            /// <param name="source"></param>
-            /// <param name="destination"></param>
+        /// <summary>
+        /// Copies the given <paramref name="source"/> to the given <paramref name="destination"/>
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
         public static void Copy(CFStorage source, CFStorage destination)
         {
             source.VisitEntries(action =>
@@ -899,6 +899,7 @@ namespace OpenMcdf.Test
 
             }, false);
         }
+
         #endregion
         //[TestMethod]
         //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
