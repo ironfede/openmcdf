@@ -647,7 +647,7 @@ namespace OpenMcdf
             sourceStream.Seek(0, SeekOrigin.Begin);
             header.Write(sourceStream);
 
-            sourceStream.SetLength((sectors.Count + 1) * sSize);
+            sourceStream.SetLength((long)(sectors.Count + 1) * sSize);
             sourceStream.Flush();
 
             if (releaseMemory)

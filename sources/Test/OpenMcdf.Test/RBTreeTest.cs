@@ -74,7 +74,7 @@ namespace OpenMcdf.Test
         public void Test_RBTREE_INSERT()
         {
             RBTree rbTree = new RBTree();
-            System.Collections.Generic.IList<IDirectoryEntry> repo = GetDirectoryRepository(25);
+            System.Collections.Generic.IList<IDirectoryEntry> repo = GetDirectoryRepository(1000000);
 
             foreach (var item in repo)
             {
