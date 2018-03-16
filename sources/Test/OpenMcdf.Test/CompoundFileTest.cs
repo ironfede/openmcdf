@@ -951,6 +951,46 @@ namespace OpenMcdf.Test
 
             compoundFile.Close();
         }
+
+        [TestMethod]
+        public void Test_FIX_BUG_GH_15()
+        {
+            String filename = "MyFile.dat";
+            String storageName = "MyStorage";
+            String streamName = "MyStream";
+            int bufferSize = 500000000;
+            int iterationCount = 6;
+            int streamCount = 1;
+
+            CompoundFile compoundFile = new CompoundFile(CFSVersion.Ver_4, CFSConfiguration.Default);
+            CFStorage st = compoundFile.RootStorage.AddStorage(storageName);
+
+            for (int streamId = 0; streamId < streamCount; ++streamId)
+            {
+                CFStream sm = st.AddStream(streamName + streamId);
+                for (int iteration = 0; iteration < iterationCount; ++iteration)
+                {
+                    byte b = (byte)(0x0A + iteration);
+                    sm.Append(Helpers.GetBuffer(bufferSize, b));
+                }
+            }
+            compoundFile.Save(filename);
+            compoundFile.Close();
+
+            byte[] readBuffer = new byte[15];
+             compoundFile = new CompoundFile(filename);
+
+            byte c = 0x0A;
+            for (int i = 0; i < iterationCount; i++)
+            {
+                compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + 0.ToString()).Read(readBuffer, ((long)bufferSize + ((long)bufferSize * i)) - 15, 15);
+                Assert.IsTrue(readBuffer.All(by => by == c));
+                c++;
+            }
+            compoundFile.Close();
+        }
+
+
         //[TestMethod]
         //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
         //{
