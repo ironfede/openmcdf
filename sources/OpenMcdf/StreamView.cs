@@ -256,7 +256,9 @@ namespace OpenMcdf
                     {
                         t.InitFATData();
                     }
+
                     sectorChain.Add(t);
+
                     nSec--;
                 }
 
@@ -310,7 +312,9 @@ namespace OpenMcdf
             {
                 // First sector
                 int secOffset = (int)(position / (long)sectorSize);
+
                 int secShift = (int)(position % sectorSize);
+
 
                 roundByteWritten = (int)Math.Min(sectorSize - (int)(position % (long)sectorSize), count);
 
