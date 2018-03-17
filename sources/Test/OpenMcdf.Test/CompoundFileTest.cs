@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
@@ -797,10 +797,10 @@ namespace OpenMcdf.Test
                 CompoundFile cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
                 var s = cf.RootStorage.AddStream("miniToNormal");
                 s.Append(Helpers.GetBuffer(4090, 0xAA));
-               
+
                 cf.Save("TEST_ISSUE_2");
                 cf.Close();
-                var cf2 = new CompoundFile("TEST_ISSUE_2",CFSUpdateMode.Update,CFSConfiguration.Default);
+                var cf2 = new CompoundFile("TEST_ISSUE_2", CFSUpdateMode.Update, CFSConfiguration.Default);
                 cf2.RootStorage.GetStream("miniToNormal").Append(Helpers.GetBuffer(6, 0xBB));
                 cf2.Commit();
                 cf2.Close();
@@ -811,39 +811,219 @@ namespace OpenMcdf.Test
             }
         }
 
-            //[TestMethod]
-            //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
-            //{
+        [TestMethod]
+        public void Test_PR_13()
+        {
+            CompoundFile cf = new CompoundFile("report.xls");
+            Guid g = cf.getGuidBySID(0);
+            Assert.IsNotNull(g);
+            g = cf.getGuidForStream(3);
+            Assert.IsNotNull(g);
+            Assert.IsTrue(!String.IsNullOrEmpty(cf.GetNameDirEntry(2)));
+            Assert.IsTrue(cf.GetNumDirectories() > 0);
+        }
+        //[TestMethod]
+        //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
+        //{
 
-            //    CompoundFile cf = null;
-            //    try
-            //    {
-            //        cf = new CompoundFile("CiclycDFAT.cfs");
-            //        CFStorage s = cf.RootStorage.GetStorage("MyStorage");
-            //        CFStream st = s.GetStream("MyStream");
-            //        Assert.IsTrue(st.Size > 0);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Assert.IsTrue(ex is CFCorruptedFileException);
-            //    }
-            //    finally
-            //    {
-            //        if (cf != null)
-            //        {
-            //            cf.Close();
-            //        }
-            //    }
-            //}
-            //[TestMethod]
-            //public void Test_REM()
-            //{
-            //    var f = new CompoundFile();
+        //    CompoundFile cf = null;
+        //    try
+        //    {
+        //        cf = new CompoundFile("CiclycDFAT.cfs");
+        //        CFStorage s = cf.RootStorage.GetStorage("MyStorage");
+        //        CFStream st = s.GetStream("MyStream");
+        //        Assert.IsTrue(st.Size > 0);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Assert.IsTrue(ex is CFCorruptedFileException);
+        //    }
+        //    finally
+        //    {
+        //        if (cf != null)
+        //        {
+        //            cf.Close();
+        //        }
+        //    }
+        //}
+        //[TestMethod]
+        //public void Test_REM()
+        //{
+        //    var f = new CompoundFile();
 
-            //    byte[] bB = Helpers.GetBuffer(5 * 1024, 0x0B); 
-            //    f.RootStorage.AddStream("Test").AppendData(bB);
-            //    f.Save("Astorage.cfs");
-            //}
+        //    byte[] bB = Helpers.GetBuffer(5 * 1024, 0x0B); 
+        //    f.RootStorage.AddStream("Test").AppendData(bB);
+        //    f.Save("Astorage.cfs");
+        //}
+
+        //}
+
+
+        [TestMethod]
+        public void Test_COPY_ENTRIES_FROM_TO_STORAGE()
+        {
+            CompoundFile cfDst = new CompoundFile();
+            CompoundFile cfSrc = new CompoundFile("MultipleStorage4.cfs");
+
+            Copy(cfSrc.RootStorage, cfDst.RootStorage);
+
+            cfDst.Save("MultipleStorage4Copy.cfs");
+
+            cfDst.Close();
+            cfSrc.Close();
 
         }
+
+        #region Copy heper method
+        /// <summary>
+        /// Copies the given <paramref name="source"/> to the given <paramref name="destination"/>
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="destination"></param>
+        public static void Copy(CFStorage source, CFStorage destination)
+        {
+            source.VisitEntries(action =>
+            {
+                if (action.IsStorage)
+                {
+                    var destionationStorage = destination.AddStorage(action.Name);
+                    destionationStorage.CLSID = action.CLSID;
+                    destionationStorage.CreationDate = action.CreationDate;
+                    destionationStorage.ModifyDate = action.ModifyDate;
+                    Copy(action as CFStorage, destionationStorage);
+                }
+                else
+                {
+                    var sourceStream = action as CFStream;
+                    var destinationStream = destination.AddStream(action.Name);
+                    if (sourceStream != null) destinationStream.SetData(sourceStream.GetData());
+                }
+
+            }, false);
+        }
+        #endregion
+
+        [TestMethod]
+        public void Test_FIX_BUG_GH_14()
+        {
+            String filename = "MyFile.dat";
+            String storageName = "MyStorage";
+            String streamName = "MyStream";
+            int BUFFER_SIZE = 500000000;
+            int iterationCount = 3;
+            int streamCount = 3;
+
+            CompoundFile compoundFileInit = new CompoundFile(CFSVersion.Ver_4, CFSConfiguration.Default);
+            compoundFileInit.Save(filename);
+            compoundFileInit.Close();
+
+            CompoundFile compoundFile = new CompoundFile(filename, CFSUpdateMode.Update, CFSConfiguration.Default);
+            CFStorage st = compoundFile.RootStorage.AddStorage(storageName);
+            byte b = 0X0A;
+
+            for (int streamId = 0; streamId < streamCount; ++streamId)
+            {
+                CFStream sm = st.AddStream(streamName + streamId);
+                for (int iteration = 0; iteration < iterationCount; ++iteration)
+                {
+                    sm.Append(Helpers.GetBuffer(BUFFER_SIZE, b));
+                    compoundFile.Commit();
+                }
+
+                b++;
+            }
+            compoundFile.Close();
+
+            compoundFile = new CompoundFile(filename, CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
+            byte[] testBuffer = new byte[100];
+            byte t = 0x0A;
+
+            for (int streamId = 0; streamId < streamCount; ++streamId)
+            {
+                compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + streamId).Read(testBuffer, BUFFER_SIZE / 2, 100);
+                Assert.IsTrue(testBuffer.All(g => g == t));
+                compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + streamId).Read(testBuffer, BUFFER_SIZE - 101, 100);
+                Assert.IsTrue(testBuffer.All(g => g == t));
+                compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + streamId).Read(testBuffer, 0, 100);
+                Assert.IsTrue(testBuffer.All(g => g == t));
+                t++;
+            }
+
+            compoundFile.Close();
+        }
+
+        [TestMethod]
+        public void Test_FIX_BUG_GH_15()
+        {
+            String filename = "MyFile.dat";
+            String storageName = "MyStorage";
+            String streamName = "MyStream";
+            int bufferSize = 500000000;
+            int iterationCount = 6;
+            int streamCount = 1;
+
+            CompoundFile compoundFile = new CompoundFile(CFSVersion.Ver_4, CFSConfiguration.Default);
+            CFStorage st = compoundFile.RootStorage.AddStorage(storageName);
+
+            for (int streamId = 0; streamId < streamCount; ++streamId)
+            {
+                CFStream sm = st.AddStream(streamName + streamId);
+                for (int iteration = 0; iteration < iterationCount; ++iteration)
+                {
+                    byte b = (byte)(0x0A + iteration);
+                    sm.Append(Helpers.GetBuffer(bufferSize, b));
+                }
+            }
+            compoundFile.Save(filename);
+            compoundFile.Close();
+
+            byte[] readBuffer = new byte[15];
+             compoundFile = new CompoundFile(filename);
+
+            byte c = 0x0A;
+            for (int i = 0; i < iterationCount; i++)
+            {
+                compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + 0.ToString()).Read(readBuffer, ((long)bufferSize + ((long)bufferSize * i)) - 15, 15);
+                Assert.IsTrue(readBuffer.All(by => by == c));
+                c++;
+            }
+            compoundFile.Close();
+        }
+
+
+        //[TestMethod]
+        //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
+        //{
+
+        //    CompoundFile cf = null;
+        //    try
+        //    {
+        //        cf = new CompoundFile("CiclycDFAT.cfs");
+        //        CFStorage s = cf.RootStorage.GetStorage("MyStorage");
+        //        CFStream st = s.GetStream("MyStream");
+        //        Assert.IsTrue(st.Size > 0);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Assert.IsTrue(ex is CFCorruptedFileException);
+        //    }
+        //    finally
+        //    {
+        //        if (cf != null)
+        //        {
+        //            cf.Close();
+        //        }
+        //    }
+        //}
+        //[TestMethod]
+        //public void Test_REM()
+        //{
+        //    var f = new CompoundFile();
+
+        //    byte[] bB = Helpers.GetBuffer(5 * 1024, 0x0B); 
+        //    f.RootStorage.AddStream("Test").AppendData(bB);
+        //    f.Save("Astorage.cfs");
+        //}
+
+    }
 }

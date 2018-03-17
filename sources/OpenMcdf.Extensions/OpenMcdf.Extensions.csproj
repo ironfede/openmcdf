@@ -33,11 +33,10 @@
     <DocumentationFile>..\..\bin\Release\OpenMcdf.Extensions\OpenMcdf.Extensions.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>OpenMcdf.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -50,28 +49,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CFStreamExtensions.cs" />
-    <Compile Include="OLEProperties\Api\OLEProperty.cs" />
-    <Compile Include="OLEProperties\Api\OLEPropertyManager.cs" />
-    <Compile Include="OLEProperties\Factory\VT_I2_Property.cs" />
-    <Compile Include="OLEProperties\Factory\VT_CY_Property.cs" />
-    <Compile Include="OLEProperties\Factory\VT_DATE_Property.cs" />
-    <Compile Include="OLEProperties\Factory\VT_VARIANT_VECTOR_HEADER_Property.cs" />
-    <Compile Include="OLEProperties\Factory\VT_LPSTR_Property.cs" />
-    <Compile Include="OLEProperties\Factory\VT_FILETIME_Property.cs" />
-    <Compile Include="OLEProperties\Factory\VT_DECIMAL_Property.cs" />
-    <Compile Include="OLEProperties\Factory\VT_BOOL_Property.cs" />
-    <Compile Include="OLEProperties\Factory\VT_R8_Property.cs" />
-    <Compile Include="OLEProperties\Factory\VT_R4_Property.cs" />
-    <Compile Include="OLEProperties\Factory\VT_I4_Property.cs" />
     <Compile Include="OLEProperties\Interfaces\IBinarySerializable.cs" />
     <Compile Include="OLEProperties\Interfaces\ITypedPropertyValue.cs" />
-    <Compile Include="OLEProperties\Factory\PropertyFactory.cs" />
+    <Compile Include="OLEProperties\PropertyFactory.cs" />
     <Compile Include="OLEProperties\PropertyIdentifierAndOffset.cs" />
     <Compile Include="OLEProperties\PropertyReader.cs" />
     <Compile Include="OLEProperties\PropertySet.cs" />
     <Compile Include="OLEProperties\PropertySetStream.cs" />
     <Compile Include="OLEProperties\ProperyIdentifiers.cs" />
-    <Compile Include="OLEProperties\Shared.cs" />
     <Compile Include="OLEProperties\TypedPropertyValue.cs" />
     <Compile Include="OLEProperties\VTPropertyType.cs" />
     <Compile Include="OLEProperties\VTVectorHeader.cs" />
@@ -83,7 +68,9 @@
       <Name>OpenMcdf</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="OpenMcdf.snk" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

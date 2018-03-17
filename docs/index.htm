@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <link href="main.css" rel="Stylesheet" />
+    <title>OpenMCDF - .net component for ole compound file storage format</title>
+	<meta name="description" content="OpenMCDF is a free structured storage component for .net. MPL licensed, full source included" />
+	<meta name="keywords" content="Structured storage,compound document, .net, free, component, com, ole" /> 
+    <script type="text/javascript" src="js/jquery-1.5.2.min.js"></script>
+	<script type="text/javascript">
+        function hideElement(elemId){  
+			var el = document.getElementById(elemId);
+			
+			if(!$.browser.msie)
+				$(el).fadeOut(300);
+			else
+				$(el).css("display","none");
+		}
+        
+		function showElement(elemId){ 
+			var el = document.getElementById(elemId);
+			
+			el.style.top = -10000;
+			el.style.left= -10000;   
+			el.style.display = "block";
+			
+			var height = el.scrollHeight;
+			var width = el.scrollWidth;
+			
+			el.style.display = "none";
+			
+			height = height / 2;
+			height = String("-" + height + "px");
+			
+			width = width / 2;
+			width = String("-" + width + "px");
+			
+			el.style.position="absolute";
+			el.style.top = "50%";
+			el.style.left= "50%";    
+			el.style.marginTop = height;
+			el.style.marginLeft = width;
+			
+			if(!jQuery.browser.msie)
+				$(el).fadeIn(300);
+			else
+				$(el).css("display","block");
+		}
+    </script>
+</head>
+<body>
+    <div id="container">
+		
+        <div id="header">
+            <a href="https://github.com/ironfede/openmcdf" ><img style="border-width:0px" src="img/LOGO_OpenMcdf_H.png" height="60px" width="380px" alt="OpenMCDF Logo" /></a>
+        </div>
+        <div id="main">
+            <h2>
+                What is OpenMCDF ?
+            </h2>
+            <p>
+                OpenMCDF is a 100% managed .net component that allows client applications to manipulate
+                COM structured storage files, also known as Microsoft Compound Document Format files.
+            </p>
+            <h2>
+                Ok, so what's 'structured storage' anyway ?
+            </h2>
+            <p>
+                This file format is used under the hood by a lot of applications: the files created
+                by Microsoft Office until the 2007 product release are all structured storage files.
+                They include multiple streams of information (document summary, user data) in a
+                single physical container (the file). Also the omnipresent Thumbs.db, used by Windows as thumbnails
+                 cache, is a structured storage file.
+            </p>
+            <h2>
+                How does it work ?
+            </h2>
+            <p>
+                OpenMCDF makes available to the developer an easy interface to <a href="javascript:showElement('modReadStream');">
+                    read</a>, <a href="javascript:showElement('modWriteStream');">write</a>, add
+                and remove structured storage primitives. Items are organized
+                in a <a href="javascript:showElement('modStructuredStorage');">hierarchical tree</a>
+                where 'storage' nodes act like a directory and 'stream' nodes like a file. Developers
+                can use OpenMCDF to view storages and streams, <a href="javascript:showElement('modVisitEntries');">
+                    traverse</a> hierarchical trees of items, explore existing compound file and modify them or
+                create a new compound file from scratch.
+            </p>
+            <h2>
+                ...mmm yes, but I've already seen a lot of wrappers...
+            </h2>
+            
+				<ul>
+					<li>OpenMCDF is <strong>NOT</strong> a wrapper component: it's 100% pure C#, nothing else.</li>
+					<li>There are <strong>NO</strong> ActiveX, COM or P/Invoke dependencies</li>
+					<li>OpenMCDF supports large files and Version 4 of Compound File Format</li>
+					<li>Low memory footprint: <a href="javascript:showElement('modIncrementalUpdate');">incremental data updating</a> and <a href="javascript:showElement('modPartialData');">partial stream data reading</a> </li>
+					<li>Works on Mono platform out of the box</li>
+				</ul>
+            <p></p>
+            <h2>
+                Well, can I try it ?
+            </h2>
+            <p>
+                You can get OpenMCDF from <a href="https://github.com/ironfede/openmcdf/"><strong>Github</strong></a> 
+                or use <a href="https://nuget.org/packages/OpenMcdf/">NuGet</a> to install it into your projects. OpenMCDF is MPL 2.0 licensed.
+	    </p>        
+        </div>
+        <div id="footer">
+            Copyright 2010-2017, Federico Blaseotto
+        </div>
+		
+    </div>
+    <!-- Popup windows -->
+    <div id="modStructuredStorage" class="modal_popup" style="display: none;">
+        <div id="fader1" class="fader">
+        </div>
+        <div id="imgBlock1" class="popup_block"  style="width:350px">
+			<h3>The structured storage entries tree</h3>
+			<p>
+			<br/>
+            <img src="img/structured_storage.png" width="260px" alt="Structured Storage hierarchy" />
+			</p>
+            <div id="imgBlockFooter1" class="popup_footer">
+                <div style="float: right">
+                    <a href="javascript:hideElement('modStructuredStorage');">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Popup windows -->
+    <div id="modReadStream" class="modal_popup" style="display: none;">
+        <div id="fader2" class="fader">
+        </div>
+	
+        <div id="imgBlock2" class="popup_block"  style="width:550px">
+			<h3>Sample code to read a stream entry</h3>
+			<p>
+            <img src="img/read_stream.PNG" alt="Stream reading" />
+			</p>
+            <div id="imgBlockFooter2" class="popup_footer">
+                <div style="float: right">
+                    <a href="javascript:hideElement('modReadStream');">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Popup windows -->
+    <div id="modWriteStream" class="modal_popup" style="display: none;">
+        <div id="fader3" class="fader">
+        </div>
+		
+        <div id="imgBlock3" class="popup_block"  style="width:550px">
+			<h3>Sample code to write a stream entry</h3>
+			<p>
+            <img src="img/write_stream.PNG" alt="Stream writing" />
+			</p>
+            <div id="imgBlockFooter3" class="popup_footer">
+                <div style="float: right">
+                    <a href="javascript:hideElement('modWriteStream');">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Popup windows -->
+    <div id="modVisitEntries" class="modal_popup" style="display: none;">
+        <div id="fader4" class="fader">
+        </div>
+        <div id="imgBlock4" class="popup_block" style="width:600px">
+			<h3>Sample code to traverse entries tree</h3>
+			<p>
+            <img src="img/visit_entries.PNG" alt="Structured Storage items visiting" />
+			</p>
+            <div id="imgBlockFooter4" class="popup_footer">
+                <div style="float: right">
+                    <a href="javascript:hideElement('modVisitEntries');">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+	<!-- Popup windows -->
+    <div id="modIncrementalUpdate" class="modal_popup" style="display: none;">
+        <div id="fader5" class="fader">
+        </div>
+        <div id="imgBlock5" class="popup_block" style="width:400px">
+		<div>
+			<h3>Incremental Update</h3>
+			<p>
+            This feature allows to commit changes to file in order to save memory and reduce
+			the size of subsequent write operations. Only data blocks marked as "dirty" will be
+			persisted on the storage media (file or stream) while clean data will stay untouched.
+			This feature is also useful to avoid the need for temporary files while using OpenMCDF.
+			</p>
+		</div>
+            <div id="imgBlockFooter5" class="popup_footer">
+                <div style="float: right">
+                    <a href="javascript:hideElement('modIncrementalUpdate');">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+	<!-- Popup windows -->
+    <div id="modPartialData" class="modal_popup" style="display: none;">
+        <div id="fader6" class="fader">
+        </div>
+        <div id="imgBlock6" class="popup_block" style="width:480px">
+			<h3>Partial data reading</h3>
+			<p>
+			OpenMCDF can load fragments of data streams without a full structure load. 
+			That means that if you want to read 100 bytes from a specified offset
+			of a 1 GB stream , you will only need to load 
+			<strong>1&nbsp;sector&nbsp;(usually 512 bytes) </strong> of user data and a couple of sectors for FAT indexing.
+			</p>
+			<br/>
+			You will get the <i>required</i> amount of data without being forced to use large buffers
+<br/><br/>			<div><img src="img/PartialStream.PNG" alt="Structured Storage items visiting" style="width:480px" /></div>
+            <div id="imgBlockFooter6" class="popup_footer">
+                <div style="float: right">
+                    <a href="javascript:hideElement('modPartialData');">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
