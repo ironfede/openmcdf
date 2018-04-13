@@ -550,7 +550,7 @@ namespace OpenMcdf
                     gap = true;
                 }
 
-                if (releaseMemory)
+                if ( s != null && releaseMemory)
                 {
 
                     s.ReleaseData();
