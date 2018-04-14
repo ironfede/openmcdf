@@ -978,7 +978,7 @@ namespace OpenMcdf.Test
             compoundFile.Close();
 
             byte[] readBuffer = new byte[15];
-             compoundFile = new CompoundFile(filename);
+            compoundFile = new CompoundFile(filename);
 
             byte c = 0x0A;
             for (int i = 0; i < iterationCount; i++)
@@ -990,7 +990,23 @@ namespace OpenMcdf.Test
             compoundFile.Close();
         }
 
-
+        [TestMethod]
+        public void Test_PR_GH_18()
+        {
+            try
+            {
+                var f = new CompoundFile("MultipleStorage4.cfs",CFSUpdateMode.Update,CFSConfiguration.Default);
+                var st = f.RootStorage.GetStorage("MyStorage").GetStorage("AnotherStorage").GetStream("MyStream");
+                st.Write(Helpers.GetBuffer(100, 0x02), 100);
+                f.Commit(true);
+                Assert.IsTrue(st.GetData().Count() == 31220);
+                f.Close();
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail("Release Memory flag caused error");
+            }
+        }
         //[TestMethod]
         //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
         //{
