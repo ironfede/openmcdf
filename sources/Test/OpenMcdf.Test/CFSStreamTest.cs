@@ -496,7 +496,7 @@ namespace OpenMcdf.Test
         }
 
 
-
+         
         [TestMethod]
         public void Test_DELETE_STREAM_1()
         {
@@ -506,7 +506,7 @@ namespace OpenMcdf.Test
             CFStorage cfs = cf.RootStorage.GetStorage("MyStorage");
             cfs.Delete("MySecondStream");
 
-            cf.Save(TestContext.TestDir + "MultipleStorage_REMOVED_STREAM_1.cfs");
+            cf.Save(TestContext + "MultipleStorage_REMOVED_STREAM_1.cfs");
             cf.Close();
         }
 
@@ -520,7 +520,7 @@ namespace OpenMcdf.Test
 
             cfs.Delete("AnotherStream");
 
-            cf.Save(TestContext.TestDir + "MultipleStorage_REMOVED_STREAM_2.cfs");
+            cf.Save(TestContext + "MultipleStorage_REMOVED_STREAM_2.cfs");
 
             cf.Close();
         }

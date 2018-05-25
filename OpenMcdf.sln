@@ -1,13 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2015
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6C619B4F-100F-4D60-BEF1-60B770D24E5E}"
 	ProjectSection(SolutionItems) = preProject
-		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		OpenMcdf.snk = OpenMcdf.snk
-		OpenMcdf.vsmdi = OpenMcdf.vsmdi
+		sources\SharedAssemblyInfo.cs = sources\SharedAssemblyInfo.cs
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{8DC8730A-F254-4848-B272-BDFFCB5FDC00}"
@@ -29,21 +28,21 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{
 		sources\TestFiles\testbad.ole = sources\TestFiles\testbad.ole
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf", "sources\OpenMcdf\OpenMcdf.csproj", "{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf", "sources\OpenMcdf\OpenMcdf.csproj", "{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.Extensions", "sources\OpenMcdf.Extensions\OpenMcdf.Extensions.csproj", "{DB748C1D-D71C-442B-832D-2E33BE816CBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Extensions", "sources\OpenMcdf.Extensions\OpenMcdf.Extensions.csproj", "{DB748C1D-D71C-442B-832D-2E33BE816CBB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructuredStorageExplorer", "sources\Structured Storage Explorer\StructuredStorageExplorer.csproj", "{4F6323A8-9C06-4D94-808F-EBD69B8370D7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{73814657-FC73-4066-AABD-86062F2A132E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.Extensions.Test", "sources\Test\OpenMcdf.Extensions.Test\OpenMcdf.Extensions.Test.csproj", "{B9CB103F-0AA3-486D-9C9C-672924B6169C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Extensions.Test", "sources\Test\OpenMcdf.Extensions.Test\OpenMcdf.Extensions.Test.csproj", "{B9CB103F-0AA3-486D-9C9C-672924B6169C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.MemTest", "sources\Test\OpenMcdf.MemTest\OpenMcdf.MemTest.csproj", "{E2BAD82D-3040-462B-BAA2-6E608A9054F4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.PerfTest", "sources\Test\OpenMcdf.PerfTest\OpenMcdf.PerfTest.csproj", "{7077508F-B313-4DF6-8855-4764911BE161}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.Test", "sources\Test\OpenMcdf.Test\OpenMcdf.Test.csproj", "{FD339266-8842-40B4-9230-F8E84FC42AC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Test", "sources\Test\OpenMcdf.Test\OpenMcdf.Test.csproj", "{FD339266-8842-40B4-9230-F8E84FC42AC2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,6 +88,9 @@ Global
 		{E2BAD82D-3040-462B-BAA2-6E608A9054F4} = {73814657-FC73-4066-AABD-86062F2A132E}
 		{7077508F-B313-4DF6-8855-4764911BE161} = {73814657-FC73-4066-AABD-86062F2A132E}
 		{FD339266-8842-40B4-9230-F8E84FC42AC2} = {73814657-FC73-4066-AABD-86062F2A132E}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DEAA45F3-54F5-4F50-8402-9D89EB95A04C}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = OpenMcdf2.vsmdi
