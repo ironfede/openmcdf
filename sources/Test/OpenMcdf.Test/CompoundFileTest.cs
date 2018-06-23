@@ -915,7 +915,7 @@ namespace OpenMcdf.Test
             String storageName = "MyStorage";
             String streamName = "MyStream";
             
-            const int streamTargetSizePerIteration = 500*Mb;
+            const int streamTargetSizePerIteration = 150*Mb;
             const int iterationCount = 3;
             const int streamCount = 3;
 
@@ -969,14 +969,14 @@ namespace OpenMcdf.Test
             String filename = "MyFile.dat";
             String storageName = "MyStorage";
             String streamName = "MyStream";
-            const int bufferSize = 500 * Mb;
-            int iterationCount = 6;
+            const int additionSize = 5 * Mb;
+            int iterationCount = 1;
             int streamCount = 1;
 
             CompoundFile compoundFile = new CompoundFile(CFSVersion.Ver_4, CFSConfiguration.Default);
             CFStorage st = compoundFile.RootStorage.AddStorage(storageName);
 
-            var buffer = new byte[bufferSize];
+            var buffer = new byte[1*Mb];
 
             for (int streamId = 0; streamId < streamCount; ++streamId)
             {
@@ -985,7 +985,11 @@ namespace OpenMcdf.Test
                 {
                     byte b = (byte)(0x0A + iteration);
                     Helpers.FillBuffer(buffer, b);
-                    sm.Append(buffer);
+
+                    for (int i = 0; i < additionSize / buffer.Length; i++)
+                    {
+                        sm.Append(buffer);
+                    }
                     //compoundFile.Commit(true);
                 }
             }
@@ -998,7 +1002,7 @@ namespace OpenMcdf.Test
             byte c = 0x0A;
             for (int i = 0; i < iterationCount; i++)
             {
-                compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + 0.ToString()).Read(readBuffer, ((long)bufferSize + ((long)bufferSize * i)) - 15, 15);
+                compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + 0.ToString()).Read(readBuffer, ((long)additionSize + ((long)additionSize * i)) - 15, 15);
                 Assert.IsTrue(readBuffer.All(by => by == c));
                 c++;
             }
