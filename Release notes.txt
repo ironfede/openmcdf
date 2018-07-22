@@ -1,3 +1,7 @@
+
+ver 2.2
+ADD: NET Standard 2.0 platform support
+
 ver 2.1 
 FIXED: Issues with failed initialization to FREESECT (0xFFFFFFFF) of FAT sectors
 FIXED: Issues with file-corruption detection 
