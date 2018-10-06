@@ -63,7 +63,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <ApplicationVersion>2.2.0.1</ApplicationVersion>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -71,7 +71,17 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>OpenMcdf.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  <PropertyGroup />
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>2.2.0.1</Version>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Authors>ironfede</Authors>
+    <PackageLicenseUrl>https://opensource.org/licenses/MPL-2.0</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/ironfede/openmcdf</PackageProjectUrl>
+    <PackageIconUrl>http://a.fsdn.com/allura/p/openmcdf/icon</PackageIconUrl>
+    <RepositoryUrl>https://github.com/ironfede/openmcdf</RepositoryUrl>
+    <PackageTags>Compound file, c#, structured storag</PackageTags>
+  </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
     <None Include="OpenMcdf.snk" />
