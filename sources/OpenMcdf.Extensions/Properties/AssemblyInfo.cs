@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("OpenMcdf.Extensions")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("System.IO.Stream integration for OpenMcdf")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("-")]
 [assembly: AssemblyProduct("OpenMcdf.Extensions")]
-[assembly: AssemblyCopyright("Copyright © Federico Blaseotto, 2015")]
+[assembly: AssemblyCopyright("Copyright © Federico Blaseotto, 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

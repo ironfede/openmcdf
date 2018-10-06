@@ -47,7 +47,15 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>OpenMcdf.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  <PropertyGroup />
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Version>2.2.1.2</Version>
+    <PackageLicenseUrl>https://opensource.org/licenses/MPL-2.0</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/ironfede/openmcdf</PackageProjectUrl>
+    <PackageIconUrl>http://a.fsdn.com/allura/p/openmcdf/icon</PackageIconUrl>
+    <RepositoryUrl>https://github.com/ironfede/openmcdf</RepositoryUrl>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj" />
   </ItemGroup>
