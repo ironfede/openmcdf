@@ -369,6 +369,7 @@ namespace OpenMcdf
         /// </example>
         public CompoundFile(String fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters)
         {
+            this.configuration = configParameters;
             this.validationExceptionEnabled = !configParameters.HasFlag(CFSConfiguration.NoValidationException);
             this.sectorRecycle = configParameters.HasFlag(CFSConfiguration.SectorRecycle);
             this.updateMode = updateMode;
@@ -416,6 +417,7 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFException">Raised stream is null</exception>
         public CompoundFile(Stream stream, CFSUpdateMode updateMode, CFSConfiguration configParameters)
         {
+            this.configuration = configParameters;
             this.validationExceptionEnabled = !configParameters.HasFlag(CFSConfiguration.NoValidationException);
             this.sectorRecycle = configParameters.HasFlag(CFSConfiguration.SectorRecycle);
             this.eraseFreeSectors = configParameters.HasFlag(CFSConfiguration.EraseFreeSectors);
