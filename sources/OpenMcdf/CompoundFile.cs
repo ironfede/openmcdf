@@ -1507,8 +1507,13 @@ namespace OpenMcdf
                     result.Add(ms);
 
                     miniFATView.Seek(nextSecID * 4, SeekOrigin.Begin);
-                    nextSecID = miniFATReader.ReadInt32();
-                }
+					int next = miniFATReader.ReadInt32();
+
+					if (next != nextSecID)
+						nextSecID = next;
+					else
+						throw new CFCorruptedFileException("Cyclic sector chain found. File is corrupted");
+				}
             }
             return result;
         }
