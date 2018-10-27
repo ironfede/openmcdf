@@ -129,7 +129,7 @@ namespace OpenMcdf
             if (String.IsNullOrEmpty(streamName))
                 throw new CFException("Stream name cannot be null or empty");
 
-            
+
 
             IDirectoryEntry dirEntry = DirectoryEntry.TryNew(streamName, StgType.StgStream, this.CompoundFile.GetDirectories());
 
@@ -147,7 +147,7 @@ namespace OpenMcdf
             catch (RBTreeException)
             {
                 CompoundFile.ResetDirectoryEntry(dirEntry.SID);
-                
+
                 throw new CFDuplicatedItemException("An entry with name '" + streamName + "' is already present in storage '" + this.Name + "' ");
             }
 
@@ -199,6 +199,54 @@ namespace OpenMcdf
             }
         }
 
+        /// <summary>
+        /// Get a named <see cref="T:OpenMcdf.CFStream">stream</see> contained in the current storage if existing.
+        /// </summary>
+        /// <param name="streamName">Name of the stream to look for</param>
+        /// <param name="cfStream">Found <see cref="T:OpenMcdf.CFStream"> if any</param>
+        /// <returns><see cref="T:System.Boolean"> true if stream found, else false</returns>
+        /// <example>
+        /// <code>
+        /// String filename = "report.xls";
+        ///
+        /// CompoundFile cf = new CompoundFile(filename);
+        /// bool b = cf.RootStorage.TryGetStream("Workbook",out CFStream foundStream);
+        ///
+        /// byte[] temp = foundStream.GetData();
+        ///
+        /// Assert.IsNotNull(temp);
+        /// Assert.IsTrue(b);
+        ///
+        /// cf.Close();
+        /// </code>
+        /// </example>
+        public bool TryGetStream(String streamName, out CFStream cfStream)
+        {
+            bool result = false;
+            cfStream = null;
+
+            try
+            {
+                CheckDisposed();
+
+                IDirectoryEntry tmp = DirectoryEntry.Mock(streamName, StgType.StgStream);
+
+                IRBNode outDe = null;
+
+                if (Children.TryLookup(tmp, out outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
+                {
+                    cfStream = new CFStream(this.CompoundFile, (IDirectoryEntry)outDe);
+                    result = true;
+                }
+            }
+            catch (CFDisposedException)
+            {
+                result = false;
+
+            }
+
+            return result;
+        }
 
         /// <summary>
         /// Get a named <see cref="T:OpenMcdf.CFStream">stream</see> contained in the current storage if existing.
@@ -220,6 +268,7 @@ namespace OpenMcdf
         /// cf.Close();
         /// </code>
         /// </example>
+        [Obsolete("Please use TryGetStream(string, out cfStream) instead.")]
         public CFStream TryGetStream(String streamName)
         {
             CheckDisposed();
@@ -298,6 +347,7 @@ namespace OpenMcdf
         /// cf.Close();
         /// </code>
         /// </example>
+        [Obsolete("Please use TryGetStorage(string, out cfStorage) instead.")]
         public CFStorage TryGetStorage(String storageName)
         {
             CheckDisposed();
@@ -313,6 +363,53 @@ namespace OpenMcdf
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Get a named storage contained in the current one if existing.
+        /// </summary>
+        /// <param name="storageName">Name of the storage to look for</param>
+        /// <param name="cfStorage">A storage reference if found else null</param>
+        /// <returns><see cref="T:System.Boolean"> true if storage found, else false</returns>
+        /// <example>
+        /// <code>
+        /// 
+        /// String FILENAME = "MultipleStorage2.cfs";
+        /// CompoundFile cf = new CompoundFile(FILENAME, UpdateMode.ReadOnly, false, false);
+        ///
+        /// bool b = cf.RootStorage.TryGetStorage("MyStorage",out CFStorage st);
+        ///
+        /// Assert.IsNotNull(st);
+        /// Assert.IsTrue(b);
+        /// 
+        /// cf.Close();
+        /// </code>
+        /// </example>
+        public bool TryGetStorage(String storageName, CFStorage cfStorage)
+        {
+            bool result = false;
+            cfStorage = null;
+
+            try
+            {
+                CheckDisposed();
+
+                IDirectoryEntry template = DirectoryEntry.Mock(storageName, StgType.StgInvalid);
+                IRBNode outDe = null;
+
+                if (Children.TryLookup(template, out outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
+                {
+                    cfStorage = new CFStorage(this.CompoundFile, outDe as IDirectoryEntry);
+                    result = true;
+                }
+                
+            }
+            catch (CFDisposedException)
+            {
+                result = false;
+            }
+
+            return result;
         }
 
 
@@ -405,7 +502,7 @@ namespace OpenMcdf
                     = new List<IRBNode>();
 
                 Action<IRBNode> internalAction =
-                    delegate(IRBNode targetNode)
+                    delegate (IRBNode targetNode)
                     {
                         IDirectoryEntry d = targetNode as IDirectoryEntry;
                         if (d.StgType == StgType.StgStream)

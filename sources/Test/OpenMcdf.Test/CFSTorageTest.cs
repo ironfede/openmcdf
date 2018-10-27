@@ -142,6 +142,38 @@ namespace OpenMcdf.Test
         }
 
         [TestMethod]
+        public void Test_TRY_GET_STREAM_STORAGE_NEW()
+        {
+            String FILENAME = "MultipleStorage.cfs";
+            CompoundFile cf = new CompoundFile(FILENAME);
+
+            CFStorage st = cf.RootStorage.TryGetStorage("MyStorage");
+            Assert.IsNotNull(st);
+
+            try
+            {
+                CFStorage nf = cf.RootStorage.TryGetStorage("IDONTEXIST");
+                Assert.IsNull(nf);
+            }
+            catch (Exception)
+            {
+                Assert.Fail("Exception raised for try_get method");
+            }
+
+            try
+            {
+                var b = st.TryGetStream("MyStream", out CFStream s);
+                Assert.IsNotNull(s);
+                b = st.TryGetStream("IDONTEXIST2",out CFStream ns);
+                Assert.IsFalse(b);
+            }
+            catch (Exception)
+            {
+                Assert.Fail("Exception raised for try_get method");
+            }
+        }
+
+        [TestMethod]
         public void Test_VISIT_ENTRIES_CORRUPTED_FILE_VALIDATION_ON()
         {
             CompoundFile f = null;
