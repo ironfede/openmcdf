@@ -19,6 +19,13 @@ namespace OpenMcdf.Extensions.OLEProperties
         public PropertySet PropertySet0 { get; set; }
         public PropertySet PropertySet1 { get; set; }
 
+        //private SummaryInfoMap map;
+
+        public PropertySetStream()
+        {
+            
+        }
+
         public void Read(System.IO.BinaryReader br)
         {
             ByteOrder = br.ReadUInt16();
@@ -43,7 +50,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             for (int i = 0; i < PropertySet0.NumProperties; i++)
             {
                 PropertyIdentifierAndOffset pio = new PropertyIdentifierAndOffset();
-                pio.PropertyIdentifier = (PropertyIdentifiersSummaryInfo)br.ReadUInt32();
+                pio.PropertyIdentifier = br.ReadUInt32();
                 pio.Offset = br.ReadUInt32();
                 PropertySet0.PropertyIdentifierAndOffsets.Add(pio);
             }
@@ -53,7 +60,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             for (int i = 0; i < PropertySet0.NumProperties; i++)
             {
                 br.BaseStream.Seek(Offset0 + PropertySet0.PropertyIdentifierAndOffsets[i].Offset, System.IO.SeekOrigin.Begin);
-                PropertySet0.Properties.AddRange(pr.ReadProperty(PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier, br));
+                PropertySet0.Properties.Add(pr.ReadProperty(PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier, br));
             }
         }
 

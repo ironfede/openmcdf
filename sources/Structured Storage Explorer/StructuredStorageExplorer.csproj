@@ -138,11 +138,11 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OpenMcdf.Extensions\OpenMcdf.Extensions.csproj">
+    <ProjectReference Include="..\OpenMcdf.Extensions\OpenMcdf.Extensions.csproj" AdditionalProperties="TargetFramework=net40">
       <Project>{db748c1d-d71c-442b-832d-2e33be816cbb}</Project>
       <Name>OpenMcdf.Extensions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj">
+    <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj" AdditionalProperties="TargetFramework=net40">
       <Project>{56e15d4a-8a37-4c7c-bb44-fd59aff220c1}</Project>
       <Name>OpenMcdf</Name>
     </ProjectReference>

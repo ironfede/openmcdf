@@ -3,16 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Threading;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
     internal class PropertyFactory
     {
-        private PropertyContext ctx;
 
-        public PropertyFactory(PropertyContext ctx)
+        private static ThreadLocal<PropertyFactory> instance = new ThreadLocal<PropertyFactory>(() => { return new PropertyFactory(); });
+
+        public static PropertyFactory Instance
         {
-            this.ctx = ctx;
+            get
+            {
+                return instance.Value;
+            }
         }
 
         private PropertyFactory()
@@ -24,7 +29,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         {
             ITypedPropertyValue pr = null;
 
-            switch (vType)
+            switch ((VTPropertyType)((ushort)vType & 0x00FF))
             {
                 case VTPropertyType.VT_I2:
                     pr = new VT_I2_Property(vType);
@@ -47,11 +52,11 @@ namespace OpenMcdf.Extensions.OLEProperties
                 case VTPropertyType.VT_BOOL:
                     pr = new VT_BOOL_Property(vType);
                     break;
-                case VTPropertyType.VT_VECTOR_HEADER:
-                    pr = new VT_VectorHeader(vType);
-                    break;
                 case VTPropertyType.VT_EMPTY:
                     pr = new VT_EMPTY_Property(vType);
+                    break;
+                case VTPropertyType.VT_VARIANT_VECTOR:
+                    pr = new VT_VariantVector(vType, ctx);
                     break;
                 default:
                     throw new Exception("Unrecognized property type");
@@ -200,16 +205,50 @@ namespace OpenMcdf.Extensions.OLEProperties
             public VT_LPSTR_Property(VTPropertyType vType, int codePage) : base(vType)
             {
                 this.codePage = codePage;
+            }
 
+            private string ReadScalarValue(System.IO.BinaryReader br)
+            {
+                size = br.ReadUInt32();
+                data = br.ReadBytes((int)size);
+                return Encoding.GetEncoding(codePage).GetString(data);
             }
 
             public override void Read(System.IO.BinaryReader br)
             {
-                size = br.ReadUInt32();
-                data = br.ReadBytes((int)size);
-                this.propertyValue = Encoding.GetEncoding(codePage).GetString(data);
-                int m = (int)size % 4;
-                br.ReadBytes(m); // padding
+                int m = 0; //padding 
+
+                switch (this.PropertyDimensions)
+                {
+                    case PropertyDimensions.IsScalar:
+                        this.propertyValue = ReadScalarValue(br);
+
+                        m = (int)size % 4;
+                        br.ReadBytes(m); // padding
+                        break;
+
+                    case PropertyDimensions.IsVector:
+                        uint nItems = br.ReadUInt32();
+
+                        List<string> res = new List<string>();
+                        int totLength = 0;
+
+                        for (int i = 0; i < nItems; i++)
+                        {
+                            string s = ReadScalarValue(br);
+                            totLength += s.Length;
+                            res.Add(s);
+                        }
+
+                        this.propertyValue = res;
+
+                        m = (int)totLength % 4;
+                        br.ReadBytes(m); // padding
+                        break;
+
+                    default:
+                        break;
+                }
             }
 
             public override void Write(System.IO.BinaryWriter bw)
@@ -303,6 +342,36 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
+
+        private class VT_VariantVector : TypedPropertyValue
+        {
+            private readonly PropertyContext ctx;
+
+            public VT_VariantVector(VTPropertyType vType, PropertyContext ctx) : base(vType)
+            {
+                this.ctx = ctx;
+            }
+
+            public override void Read(BinaryReader br)
+            {
+                uint nItems = br.ReadUInt32();
+
+                List<object> res = new List<object>();
+
+                for (int i = 0; i < nItems; i++)
+                {
+                    VTPropertyType vType = (VTPropertyType)br.ReadUInt16();
+                    br.ReadUInt16(); // Ushort Padding
+
+                    ITypedPropertyValue p = PropertyFactory.Instance.NewProperty(vType, ctx);
+                    p.Read(br);
+
+                    res.Add(p);
+                }
+
+                this.propertyValue = res;
+            }
+        }
         #endregion
 
     }

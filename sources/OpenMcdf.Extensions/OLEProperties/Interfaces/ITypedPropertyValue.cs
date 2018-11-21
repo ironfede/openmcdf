@@ -6,19 +6,8 @@ namespace OpenMcdf.Extensions.OLEProperties.Interfaces
 {
     public interface ITypedPropertyValue : IBinarySerializable
     {
-        bool IsArray
-        {
-            get;
-            set;
-        }
 
-        bool IsVector
-        {
-            get;
-            set;
-        }
-
-        object PropertyValue
+        object Value
         {
             get;
             set;
@@ -28,6 +17,16 @@ namespace OpenMcdf.Extensions.OLEProperties.Interfaces
         {
             get;
             //set;
+        }
+
+        PropertyDimensions PropertyDimensions
+        {
+            get;
+        }
+
+        bool IsVariant
+        {
+            get;
         }
     }
 }

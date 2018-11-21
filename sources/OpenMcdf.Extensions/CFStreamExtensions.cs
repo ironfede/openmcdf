@@ -122,7 +122,7 @@ namespace OpenMcdf.Extensions
         }
 
         /// <summary>
-        /// Return the current <see cref="T:OpenMcdf.CFStream">CFStream</see> object 
+        /// [BETA] Return the current <see cref="T:OpenMcdf.CFStream">CFStream</see> object 
         /// as a OLE properties Stream.
         /// </summary>
         /// <param name="cfStream"></param>
@@ -133,6 +133,6 @@ namespace OpenMcdf.Extensions
             result.Read(new BinaryReader(new StreamDecorator(cfStream)));
             return result;
         }
-       
+
     }
 }

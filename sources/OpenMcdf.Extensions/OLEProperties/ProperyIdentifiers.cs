@@ -4,6 +4,13 @@ using System.Text;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
+    public enum SummaryInfoMap
+    {
+        SummaryInfo = 0, DocumentSummaryInfo = 1
+    }
+
+
+
     public enum PropertyIdentifiersSummaryInfo : uint
     {
         CodePageString = 0x00000001,
@@ -48,70 +55,85 @@ namespace OpenMcdf.Extensions.OLEProperties
 
     public static class Extensions
     {
-        public static String GetDescription(this PropertyIdentifiersSummaryInfo identifier)
+        public static String GetDescription(this uint identifier, SummaryInfoMap map)
         {
-            switch (identifier)
+            switch (map)
             {
-                case PropertyIdentifiersSummaryInfo.CodePageString:
-                    return "CodePage";
-                case PropertyIdentifiersSummaryInfo.PIDSI_TITLE:
-                    return "Title";
-                case PropertyIdentifiersSummaryInfo.PIDSI_SUBJECT:
-                    return "Subject";
-                case PropertyIdentifiersSummaryInfo.PIDSI_AUTHOR:
-                    return "Author";
-                case PropertyIdentifiersSummaryInfo.PIDSI_LASTAUTHOR:
-                    return "Last Author";
-                case PropertyIdentifiersSummaryInfo.PIDSI_APPNAME:
-                    return "Application Name";
-                case PropertyIdentifiersSummaryInfo.PIDSI_CREATE_DTM:
-                    return "Create Time";
-                case PropertyIdentifiersSummaryInfo.PIDSI_LASTSAVE_DTM:
-                    return "Last Modified Time";
-                case PropertyIdentifiersSummaryInfo.PIDSI_KEYWORDS:
-                    return "Keywords";
-                case PropertyIdentifiersSummaryInfo.PIDSI_DOC_SECURITY:
-                    return "Document Security";
-                default: return String.Empty;
+                case SummaryInfoMap.SummaryInfo:
+
+                    PropertyIdentifiersSummaryInfo id1 = (PropertyIdentifiersSummaryInfo)identifier;
+
+                    switch (id1)
+                    {
+                        case PropertyIdentifiersSummaryInfo.CodePageString:
+                            return "CodePage";
+                        case PropertyIdentifiersSummaryInfo.PIDSI_TITLE:
+                            return "Title";
+                        case PropertyIdentifiersSummaryInfo.PIDSI_SUBJECT:
+                            return "Subject";
+                        case PropertyIdentifiersSummaryInfo.PIDSI_AUTHOR:
+                            return "Author";
+                        case PropertyIdentifiersSummaryInfo.PIDSI_LASTAUTHOR:
+                            return "Last Author";
+                        case PropertyIdentifiersSummaryInfo.PIDSI_APPNAME:
+                            return "Application Name";
+                        case PropertyIdentifiersSummaryInfo.PIDSI_CREATE_DTM:
+                            return "Create Time";
+                        case PropertyIdentifiersSummaryInfo.PIDSI_LASTSAVE_DTM:
+                            return "Last Modified Time";
+                        case PropertyIdentifiersSummaryInfo.PIDSI_KEYWORDS:
+                            return "Keywords";
+                        case PropertyIdentifiersSummaryInfo.PIDSI_DOC_SECURITY:
+                            return "Document Security";
+                        default: return String.Empty;
+                    }
+                    break;
+
+                case SummaryInfoMap.DocumentSummaryInfo:
+                    PropertyIdentifiersDocumentSummaryInfo id2 = (PropertyIdentifiersDocumentSummaryInfo)identifier;
+
+                    switch (id2)
+                    {
+                        case PropertyIdentifiersDocumentSummaryInfo.CodePageString:
+                            return "CodePage";
+                        case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_CATEGORY:
+                            return "Category";
+                        case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_COMPANY:
+                            return "Company";
+                        case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_DOCPARTS:
+                            return "Titles of Parts";
+                        case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_HEADINGPAIR:
+                            return "Heading Pairs";
+                        case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_HIDDENCOUNT:
+                            return "Hidden Slides";
+                        case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_LINECOUNT:
+                            return "Line Count";
+                        case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_LINKSDIRTY:
+                            return "Links up to date";
+                        case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_MANAGER:
+                            return "Manager";
+                        case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_MMCLIPCOUNT:
+                            return "MMClips";
+                        case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_NOTECOUNT:
+                            return "Notes";
+                        case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_PARCOUNT:
+                            return "Paragraphs";
+                        case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_PRESFORMAT:
+                            return "Presenteation Target";
+                        case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_SCALE:
+                            return "Scale";
+                        case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_SLIDECOUNT:
+                            return "Slides";
+                        default: return String.Empty;
+                    }
+
+                    break;
+
             }
+
+            return string.Empty;
         }
 
-        public static String GetDescription(this PropertyIdentifiersDocumentSummaryInfo identifier)
-        {
-            switch (identifier)
-            {
-                case PropertyIdentifiersDocumentSummaryInfo.CodePageString:
-                    return "CodePage";
-                case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_CATEGORY:
-                    return "Category";
-                case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_COMPANY:
-                    return "Company";
-                case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_DOCPARTS:
-                    return "Titles of Parts";
-                case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_HEADINGPAIR:
-                    return "Heading Pairs";
-                case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_HIDDENCOUNT:
-                    return "Hidden Slides";
-                case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_LINECOUNT:
-                    return "Line Count";
-                case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_LINKSDIRTY:
-                    return "Links up to date";
-                case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_MANAGER:
-                    return "Manager";
-                case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_MMCLIPCOUNT:
-                    return "MMClips";
-                case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_NOTECOUNT:
-                    return "Notes";
-                case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_PARCOUNT:
-                    return "Paragraphs";
-                case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_PRESFORMAT:
-                    return "Presenteation Target";
-                case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_SCALE:
-                    return "Scale";
-                case PropertyIdentifiersDocumentSummaryInfo.PIDDSI_SLIDECOUNT:
-                    return "Slides";
-                default: return String.Empty;
-            }
-        }
+
     }
 }
