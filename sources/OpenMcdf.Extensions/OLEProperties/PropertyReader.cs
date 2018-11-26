@@ -7,23 +7,7 @@ using System.Collections;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    public enum Behavior
-    {
-        CaseSensitive, CaseInsensitive
-    }
-
-    public class PropertyContext
-    {
-
-        public Int32 CodePage { get; set; }
-        public Behavior Behavior { get; set; }
-        public UInt32 Locale { get; set; }
-    }
-
-    public enum PropertyDimensions
-    {
-        IsScalar, IsVector, IsArray
-    }
+   
 
     //public class PropertyResult
     //{
@@ -55,7 +39,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             if (propertyIdentifier == 1)
             {
-                this.ctx.CodePage = (short)pr.Value;
+                this.ctx.CodePage = (int)(ushort)(short)pr.Value;
             }
 
             return pr;

@@ -26,7 +26,7 @@ namespace OpenMcdf.Extensions.OLEProperties.Interfaces
 
         bool IsVariant
         {
-            get;
+            get; 
         }
     }
 }

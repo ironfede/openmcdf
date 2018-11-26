@@ -38,7 +38,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         VT_CF = 0x0047,         //MUST be a ClipboardData. 
         VT_CLSID = 0x0048,       //MUST be a GUID (Packet Version)
         VT_VERSIONED_STREAM = 0x0049,       //MUST be a Verisoned Stream, NOT allowed in simple property
-        VT_VECTOR_HEADER = 0x1000,  //--- NOT NORMATIVE
+        VT_VECTOR_HEADER  =0x1000,  //--- NOT NORMATIVE
         VT_ARRAY_HEADER = 0x2000,  //--- NOT NORMATIVE
         VT_VARIANT_VECTOR = 0x000C,//--- NOT NORMATIVE
         VT_VARIANT_ARRAY = 0x200C,//--- NOT NORMATIVE

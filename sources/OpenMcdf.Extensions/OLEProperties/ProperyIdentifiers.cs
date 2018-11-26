@@ -4,12 +4,10 @@ using System.Text;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    public enum SummaryInfoMap
+    public enum ContainerType
     {
-        SummaryInfo = 0, DocumentSummaryInfo = 1
+        AppSpecific = 0, SummaryInfo = 1, DocumentSummaryInfo = 2, UserDefinedProperties = 3, GlobalInfo = 4, ImageContents = 5, ImageInfo = 6
     }
-
-
 
     public enum PropertyIdentifiersSummaryInfo : uint
     {
@@ -55,11 +53,11 @@ namespace OpenMcdf.Extensions.OLEProperties
 
     public static class Extensions
     {
-        public static String GetDescription(this uint identifier, SummaryInfoMap map)
+        public static String GetDescription(this uint identifier, ContainerType map)
         {
             switch (map)
             {
-                case SummaryInfoMap.SummaryInfo:
+                case ContainerType.SummaryInfo:
 
                     PropertyIdentifiersSummaryInfo id1 = (PropertyIdentifiersSummaryInfo)identifier;
 
@@ -89,7 +87,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     }
                     break;
 
-                case SummaryInfoMap.DocumentSummaryInfo:
+                case ContainerType.DocumentSummaryInfo:
                     PropertyIdentifiersDocumentSummaryInfo id2 = (PropertyIdentifiersDocumentSummaryInfo)identifier;
 
                     switch (id2)
