@@ -436,7 +436,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             public override void WriteScalarValue(BinaryWriter bw, string pValue)
             {
-                data = Encoding.GetEncoding(codePage).GetBytes((String)pValue);
+                data = Encoding.Unicode.GetBytes(pValue);
             }
         }
 

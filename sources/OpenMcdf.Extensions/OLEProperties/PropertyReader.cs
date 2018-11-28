@@ -7,7 +7,7 @@ using System.Collections;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-   
+
 
     //public class PropertyResult
     //{
@@ -18,7 +18,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
     public class PropertyReader
     {
-
+        public PropertyContext Context { get { return ctx; } }
         private PropertyContext ctx = new PropertyContext();
 
 

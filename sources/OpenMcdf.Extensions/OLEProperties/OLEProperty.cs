@@ -21,19 +21,8 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         private string DecodePropertyIdentifier()
         {
-            switch (container.ContainerType)
-            {
-                case ContainerType.SummaryInfo:
-                    PropertyIdentifiersSummaryInfo id1 = (PropertyIdentifiersSummaryInfo)PropertyIdentifier;
-                    return id1.ToString();
-                case ContainerType.DocumentSummaryInfo:
-                    PropertyIdentifiersDocumentSummaryInfo id2 = (PropertyIdentifiersDocumentSummaryInfo)PropertyIdentifier;
-                    return id2.ToString();
-                default:
-                    return PropertyIdentifier.ToString();
-            }
+            return PropertyIdentifier.GetDescription(this.container.ContainerType, this.container.PropertyNames);
         }
-
 
         //public string Description { get { return description; }
         public uint PropertyIdentifier { get; internal set; }

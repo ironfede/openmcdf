@@ -103,6 +103,30 @@ namespace OpenMcdf.Extensions.Test
         }
 
         [TestMethod]
+        public void Test_DOCUMENT_SUMMARY_INFO_ROUND_TRIP()
+        {
+            //if (File.Exists("test.cfs"))
+            //    File.Delete("test.cfs");
+
+            //using (CompoundFile cf = new CompoundFile("_Test.ppt"))
+            //{
+            //    var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
+            //    using (CompoundFile cf2 = new CompoundFile())
+            //    {
+            //        cf2.RootStorage.AddStream("\u0005DocumentSummaryInformation");
+
+            //        co.Save(cf2.RootStorage.GetStream("\u0005DocumentSummaryInformation"));
+
+            //        cf2.Save("test.cfs");
+            //        cf2.Close();
+            //    }
+
+            //    cf.Close();
+            //}
+
+        }
+
+        [TestMethod]
         public void Test_SUMMARY_INFO_READ_LPWSTRING()
         {
             using (CompoundFile cf = new CompoundFile("wstr_presets.doc"))
@@ -124,5 +148,6 @@ namespace OpenMcdf.Extensions.Test
             }
 
         }
+
     }
 }

@@ -7,7 +7,12 @@ namespace OpenMcdf.Extensions.OLEProperties
 {
     public class PropertySet
     {
+        public DictionaryProperty DictionaryProperty { get; set; }
+
+        public int CodePage { get; set; }
+
         public uint Size { get; set; }
+
         public uint NumProperties { get; set; }
 
         List<PropertyIdentifierAndOffset> propertyIdentifierAndOffsets
