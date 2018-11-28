@@ -94,6 +94,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public OLEProperty NewProperty(VTPropertyType vtPropertyType, uint propertyIdentifier, string propertyName = null)
         {
+            throw new NotImplementedException("API Unstable - Work in progress - Milestone 2.3.0.0");
             var op = new OLEProperty(this);
             op.VTType = vtPropertyType;
             op.PropertyIdentifier = propertyIdentifier;
@@ -103,11 +104,13 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public void AddProperty(OLEProperty property)
         {
+            throw new NotImplementedException("API Unstable - Work in progress - Milestone 2.3.0.0");
             properties.Add(property);
         }
 
         public void RemoveProperty(uint propertyIdentifier)
         {
+            throw new NotImplementedException("API Unstable - Work in progress - Milestone 2.3.0.0");
             var toRemove = properties.Where(o => o.PropertyIdentifier == propertyIdentifier).FirstOrDefault();
 
             if (toRemove != null)
@@ -117,6 +120,8 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public void Save(CFStream cfStream)
         {
+            throw new NotImplementedException("API Unstable - Work in progress - Milestone 2.3.0.0");
+
             properties.Sort((a, b) => a.PropertyIdentifier.CompareTo(b.PropertyIdentifier));
 
             Stream s = new StreamDecorator(cfStream);

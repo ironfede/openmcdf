@@ -105,7 +105,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        public abstract void WriteScalarValue(System.IO.BinaryWriter bw, object pValue);
+        public abstract void WriteScalarValue(System.IO.BinaryWriter bw, T pValue);
 
         public void Write(BinaryWriter bw)
         {
@@ -120,7 +120,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     bw.Write((ushort)_VTType);
                     bw.Write((ushort)0);
 
-                    WriteScalarValue(bw, this.propertyValue);
+                    WriteScalarValue(bw,(T)this.propertyValue);
                     size = (int)(bw.BaseStream.Position - currentPos);
                     m = (int)size % 4;
 

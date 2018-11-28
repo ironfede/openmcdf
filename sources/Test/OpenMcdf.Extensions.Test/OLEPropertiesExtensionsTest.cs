@@ -101,5 +101,28 @@ namespace OpenMcdf.Extensions.Test
             }
 
         }
+
+        [TestMethod]
+        public void Test_SUMMARY_INFO_READ_LPWSTRING()
+        {
+            using (CompoundFile cf = new CompoundFile("wstr_presets.doc"))
+            {
+                var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
+
+                foreach (OLEProperties.OLEProperty p in co.Properties)
+                {
+                    Debug.Write(p.PropertyName);
+                    Debug.Write(" - ");
+                    Debug.Write(p.VTType);
+                    Debug.Write(" - ");
+                    Debug.WriteLine(p.Value);
+                }
+
+                Assert.IsNotNull(co.Properties);
+
+                cf.Close();
+            }
+
+        }
     }
 }
