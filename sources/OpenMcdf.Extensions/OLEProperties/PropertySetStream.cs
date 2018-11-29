@@ -167,7 +167,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             // w property offsets
             for (int i = 0; i < PropertySet0.NumProperties; i++)
             {
-                oc0.PropertyIdentifierOffsets.Add(bw.BaseStream.Position + 4); //Offset of 4 to Offset value
+                oc0.PropertyIdentifierOffsets.Add(bw.BaseStream.Position); //Offset of 4 to Offset value
                 PropertySet0.PropertyIdentifierAndOffsets[i].Write(bw);
             }
 
@@ -187,8 +187,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             int size0 = (int)(bw.BaseStream.Position - oc0.OffsetPS);
 
-            bw.Seek(oc0.OffsetPS + 4, System.IO.SeekOrigin.Begin);
-            bw.Write(size0);
+
 
             if (NumPropertySets == 2)
             {
@@ -202,7 +201,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 // w property offsets
                 for (int i = 0; i < PropertySet1.PropertyIdentifierAndOffsets.Count; i++)
                 {
-                    oc1.PropertyIdentifierOffsets.Add(bw.BaseStream.Position + 4); //Offset of 4 to Offset value
+                    oc1.PropertyIdentifierOffsets.Add(bw.BaseStream.Position); //Offset of 4 to Offset value
                     PropertySet1.PropertyIdentifierAndOffsets[i].Write(bw);
                 }
 
@@ -218,6 +217,9 @@ namespace OpenMcdf.Extensions.OLEProperties
                 bw.Write(size1);
             }
 
+            bw.Seek(oc0.OffsetPS, System.IO.SeekOrigin.Begin);
+            bw.Write(size0);
+
             int shiftO1 = 2 + 2 + 4 + 16 + 4 + 16; //OFFSET0
             bw.Seek(shiftO1, System.IO.SeekOrigin.Begin);
             bw.Write(oc0.OffsetPS);
@@ -232,14 +234,19 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             for (int i = 0; i < PropertySet0.PropertyIdentifierAndOffsets.Count; i++)
             {
-                bw.Seek((int)oc0.PropertyIdentifierOffsets[i], System.IO.SeekOrigin.Begin); //Offset of 4 to Offset value
-                bw.Write(oc0.PropertyOffsets[i] - oc0.OffsetPS);
+                bw.Seek((int)oc0.PropertyIdentifierOffsets[i] + 4, System.IO.SeekOrigin.Begin); //Offset of 4 to Offset value
+                bw.Write((int)(oc0.PropertyOffsets[i] - oc0.OffsetPS));
             }
 
-            for (int i = 0; i < PropertySet1.PropertyIdentifierAndOffsets.Count; i++)
+
+
+            if (PropertySet1 != null)
             {
-                bw.Seek((int)oc1.PropertyIdentifierOffsets[i], System.IO.SeekOrigin.Begin); //Offset of 4 to Offset value
-                bw.Write(oc1.PropertyOffsets[i] - oc1.OffsetPS);
+                for (int i = 0; i < PropertySet1.PropertyIdentifierAndOffsets.Count; i++)
+                {
+                    bw.Seek((int)oc1.PropertyIdentifierOffsets[i], System.IO.SeekOrigin.Begin); //Offset of 4 to Offset value
+                    bw.Write(oc1.PropertyOffsets[i] - oc1.OffsetPS);
+                }
             }
         }
 

@@ -105,24 +105,24 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_DOCUMENT_SUMMARY_INFO_ROUND_TRIP()
         {
-            //if (File.Exists("test.cfs"))
-            //    File.Delete("test.cfs");
+            if (File.Exists("test1.cfs"))
+                File.Delete("test1.cfs");
 
-            //using (CompoundFile cf = new CompoundFile("_Test.ppt"))
-            //{
-            //    var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
-            //    using (CompoundFile cf2 = new CompoundFile())
-            //    {
-            //        cf2.RootStorage.AddStream("\u0005DocumentSummaryInformation");
+            using (CompoundFile cf = new CompoundFile("_Test.ppt"))
+            {
+                var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
+                using (CompoundFile cf2 = new CompoundFile())
+                {
+                    cf2.RootStorage.AddStream("\u0005DocumentSummaryInformation");
 
-            //        co.Save(cf2.RootStorage.GetStream("\u0005DocumentSummaryInformation"));
+                    co.Save(cf2.RootStorage.GetStream("\u0005DocumentSummaryInformation"));
 
-            //        cf2.Save("test.cfs");
-            //        cf2.Close();
-            //    }
+                    cf2.Save("test1.cfs");
+                    cf2.Close();
+                }
 
-            //    cf.Close();
-            //}
+                cf.Close();
+            }
 
         }
 

@@ -126,7 +126,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                     if (m > 0)
                         for (int i = 0; i < m; i++)  // padding
-                            bw.Write(0);
+                            bw.Write((byte)0);
                     break;
 
                 case PropertyDimensions.IsVector:
@@ -145,7 +145,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                     if (m > 0)
                         for (int i = 0; i < m; i++)  // padding
-                            bw.Write(0);
+                            bw.Write((byte)0);
                     break;
             }
         }

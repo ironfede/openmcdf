@@ -65,7 +65,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             for (int i = 0; i < pStream.PropertySet0.Properties.Count; i++)
             {
                 if (pStream.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier == 0) continue;
-                if (pStream.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier == 1) continue;
+                //if (pStream.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier == 1) continue;
                 if (pStream.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier == 0x80000000) continue;
 
                 var p = pStream.PropertySet0.Properties[i];
@@ -91,7 +91,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 for (int i = 0; i < pStream.PropertySet1.Properties.Count; i++)
                 {
                     if (pStream.PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier == 0) continue;
-                    if (pStream.PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier == 1) continue;
+                    //if (pStream.PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier == 1) continue;
                     if (pStream.PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier == 0x80000000) continue;
 
                     var p = pStream.PropertySet1.Properties[i];

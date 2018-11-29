@@ -413,6 +413,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             public override void WriteScalarValue(BinaryWriter bw, string pValue)
             {
                 data = Encoding.GetEncoding(codePage).GetBytes((String)pValue);
+                bw.Write(data);
             }
         }
 
@@ -437,6 +438,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             public override void WriteScalarValue(BinaryWriter bw, string pValue)
             {
                 data = Encoding.Unicode.GetBytes(pValue);
+                bw.Write(data);
             }
         }
 
@@ -597,7 +599,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                 ITypedPropertyValue p = PropertyFactory.Instance.NewProperty(vType, ctx, true);
                 p.Read(br);
-                return p.Value;
+                return p;
             }
 
             public override void WriteScalarValue(BinaryWriter bw, object pValue)
