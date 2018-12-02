@@ -19,7 +19,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         private byte[] nameBytes;
 
-       
+
 
         public void Read(BinaryReader br)
         {
@@ -30,6 +30,19 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             if (m > 0)
                 br.ReadBytes(m);
+        }
+
+        public void Write(BinaryWriter bw)
+        {
+            bw.Write(PropertyIdentifier);
+            bw.Write(Length);
+            bw.Write(nameBytes);
+
+            int m = Length % 4;
+
+            if (m > 0)
+                for (int i = 0; i < m; i++)
+                    bw.Write((byte)m);
         }
 
         private string GetName()

@@ -3,11 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using System.IO;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    public class PropertySetStream
+    internal class PropertySetStream
     {
+
 
         public ushort ByteOrder { get; set; }
         public ushort Version { get; set; }
@@ -49,7 +51,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             PropertySet0.NumProperties = br.ReadUInt32();
 
 
-            // Read property offsets
+            // Read property offsets (P0)
             for (int i = 0; i < PropertySet0.NumProperties; i++)
             {
                 PropertyIdentifierAndOffset pio = new PropertyIdentifierAndOffset();
@@ -58,31 +60,14 @@ namespace OpenMcdf.Extensions.OLEProperties
                 PropertySet0.PropertyIdentifierAndOffsets.Add(pio);
             }
 
-            // Read properties
-            PropertyReader pr = new PropertyReader();
+            PropertySet0.LoadContext((int)Offset0, br);  //Read CodePage, Locale
+
+            // Read properties (P0)
             for (int i = 0; i < PropertySet0.NumProperties; i++)
             {
-                if (PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier == 0)
-                {
-                    PropertySet0.Properties.Add(null);
-                    continue;
-                }
-
                 br.BaseStream.Seek(Offset0 + PropertySet0.PropertyIdentifierAndOffsets[i].Offset, System.IO.SeekOrigin.Begin);
-                PropertySet0.Properties.Add(pr.ReadProperty(PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier, br));
+                PropertySet0.Properties.Add(ReadProperty(PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier, PropertySet0.PropertyContext.CodePage, br));
             }
-
-            PropertySet0.CodePage = pr.Context.CodePage;
-
-            if (PropertySet0.PropertyIdentifierAndOffsets.Where(p => p.PropertyIdentifier == 0).FirstOrDefault() != null)
-            {
-                br.BaseStream.Seek(Offset0 + PropertySet0.PropertyIdentifierAndOffsets.Where(p => p.PropertyIdentifier == 0).First().Offset, System.IO.SeekOrigin.Begin);
-
-                DictionaryProperty dp = new DictionaryProperty(PropertySet0.CodePage);
-                dp.Read(br);
-                PropertySet0.DictionaryProperty = dp;
-            }
-
 
             if (NumPropertySets == 2)
             {
@@ -100,28 +85,15 @@ namespace OpenMcdf.Extensions.OLEProperties
                     PropertySet1.PropertyIdentifierAndOffsets.Add(pio);
                 }
 
+                PropertySet1.LoadContext((int)Offset1, br);
+
                 // Read properties
                 for (int i = 0; i < PropertySet1.NumProperties; i++)
                 {
-                    if (PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier == 0)
-                    {
-                        PropertySet1.Properties.Add(null);
-                        continue;
-                    }
+                    
 
                     br.BaseStream.Seek(Offset1 + PropertySet1.PropertyIdentifierAndOffsets[i].Offset, System.IO.SeekOrigin.Begin);
-                    PropertySet1.Properties.Add(pr.ReadProperty(PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier, br));
-                }
-
-                PropertySet1.CodePage = pr.Context.CodePage;
-
-                if (PropertySet1.PropertyIdentifierAndOffsets.Where(p => p.PropertyIdentifier == 0).FirstOrDefault() != null)
-                {
-                    br.BaseStream.Seek(Offset1 + PropertySet1.PropertyIdentifierAndOffsets.Where(p => p.PropertyIdentifier == 0).First().Offset, System.IO.SeekOrigin.Begin);
-
-                    DictionaryProperty dp = new DictionaryProperty(PropertySet1.CodePage);
-                    dp.Read(br);
-                    PropertySet1.DictionaryProperty = dp;
+                    PropertySet1.Properties.Add(ReadProperty(PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier, PropertySet1.PropertyContext.CodePage, br));
                 }
             }
         }
@@ -179,11 +151,11 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             var padding0 = bw.BaseStream.Position % 4;
 
-            if (padding0 > 0)
-            {
-                for (int p = 0; p < padding0; p++)
-                    bw.Write((byte)0);
-            }
+            //if (padding0 > 0)
+            //{
+            //    for (int p = 0; p < padding0; p++)
+            //        bw.Write((byte)0);
+            //}
 
             int size0 = (int)(bw.BaseStream.Position - oc0.OffsetPS);
 
@@ -250,5 +222,26 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
+
+
+        private IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br)
+        {
+            if (propertyIdentifier != 0)
+            {
+                VTPropertyType vType = (VTPropertyType)br.ReadUInt16();
+                br.ReadUInt16(); // Ushort Padding
+
+                ITypedPropertyValue pr = PropertyFactory.Instance.NewProperty(vType, codePage);
+                pr.Read(br);
+
+                return pr;
+            }
+            else
+            {
+                IDictionaryProperty dictionaryProperty = new DictionaryProperty(codePage);
+                dictionaryProperty.Read(br);
+                return dictionaryProperty;
+            }
+        }
     }
 }

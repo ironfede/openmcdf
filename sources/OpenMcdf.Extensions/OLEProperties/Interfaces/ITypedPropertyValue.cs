@@ -4,15 +4,8 @@ using System.Text;
 
 namespace OpenMcdf.Extensions.OLEProperties.Interfaces
 {
-    public interface ITypedPropertyValue : IBinarySerializable
+    public interface ITypedPropertyValue : IProperty
     {
-
-        object Value
-        {
-            get;
-            set;
-        }
-
         VTPropertyType VTType
         {
             get;

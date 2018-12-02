@@ -25,7 +25,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         }
 
-        public ITypedPropertyValue NewProperty(VTPropertyType vType, PropertyContext ctx, bool isVariant = false)
+        public ITypedPropertyValue NewProperty(VTPropertyType vType, int codePage, bool isVariant = false)
         {
             ITypedPropertyValue pr = null;
 
@@ -72,10 +72,10 @@ namespace OpenMcdf.Extensions.OLEProperties
                     break;
                 case VTPropertyType.VT_BSTR:
                 case VTPropertyType.VT_LPSTR:
-                    pr = new VT_LPSTR_Property(vType, ctx.CodePage, isVariant);
+                    pr = new VT_LPSTR_Property(vType, codePage, isVariant);
                     break;
                 case VTPropertyType.VT_LPWSTR:
-                    pr = new VT_LPWSTR_Property(vType, ctx.CodePage, isVariant);
+                    pr = new VT_LPWSTR_Property(vType, codePage, isVariant);
                     break;
                 case VTPropertyType.VT_FILETIME:
                     pr = new VT_FILETIME_Property(vType, isVariant);
@@ -90,7 +90,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     pr = new VT_EMPTY_Property(vType, isVariant);
                     break;
                 case VTPropertyType.VT_VARIANT_VECTOR:
-                    pr = new VT_VariantVector(vType, ctx, isVariant);
+                    pr = new VT_VariantVector(vType, codePage, isVariant);
                     break;
                 case VTPropertyType.VT_CF:
                     pr = new VT_CF_Property(vType, isVariant);
@@ -413,6 +413,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             public override void WriteScalarValue(BinaryWriter bw, string pValue)
             {
                 data = Encoding.GetEncoding(codePage).GetBytes((String)pValue);
+                bw.Write((uint)data.Length);
                 bw.Write(data);
             }
         }
@@ -438,6 +439,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             public override void WriteScalarValue(BinaryWriter bw, string pValue)
             {
                 data = Encoding.Unicode.GetBytes(pValue);
+                bw.Write((uint)data.Length >> 2);
                 bw.Write(data);
             }
         }
@@ -585,11 +587,11 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         private class VT_VariantVector : TypedPropertyValue<object>
         {
-            private readonly PropertyContext ctx;
+            private readonly int codePage;
 
-            public VT_VariantVector(VTPropertyType vType, PropertyContext ctx, bool isVariant) : base(vType, isVariant)
+            public VT_VariantVector(VTPropertyType vType, int codePage, bool isVariant) : base(vType, isVariant)
             {
-                this.ctx = ctx;
+                this.codePage = codePage;
             }
 
             public override object ReadScalarValue(System.IO.BinaryReader br)
@@ -597,7 +599,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 VTPropertyType vType = (VTPropertyType)br.ReadUInt16();
                 br.ReadUInt16(); // Ushort Padding
 
-                ITypedPropertyValue p = PropertyFactory.Instance.NewProperty(vType, ctx, true);
+                ITypedPropertyValue p = PropertyFactory.Instance.NewProperty(vType, codePage, true);
                 p.Read(br);
                 return p;
             }
@@ -605,6 +607,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             public override void WriteScalarValue(BinaryWriter bw, object pValue)
             {
                 ITypedPropertyValue p = (ITypedPropertyValue)pValue;
+
                 p.Write(bw);
             }
         }

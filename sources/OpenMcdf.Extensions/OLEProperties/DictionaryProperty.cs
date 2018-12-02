@@ -1,22 +1,37 @@
-﻿using System;
+﻿using OpenMcdf.Extensions.OLEProperties.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    public class DictionaryProperty
+    public class DictionaryProperty :  IDictionaryProperty
     {
         private int codePage;
 
         public DictionaryProperty(int codePage)
         {
             this.codePage = codePage;
-            this.Entries = new Dictionary<uint, string>();
+            this.entries = new Dictionary<uint, string>();
 
         }
 
-        public Dictionary<uint, string> Entries { get; }
+        public PropertyType PropertyType
+        {
+            get
+            {
+                return PropertyType.DictionaryProperty;
+            }
+        }
+
+        private Dictionary<uint, string> entries;
+
+        public object Value
+        {
+            get { return entries; }
+            set { entries = (Dictionary<uint, string>)value; }
+        }
 
         public void Read(BinaryReader br)
         {
@@ -27,9 +42,24 @@ namespace OpenMcdf.Extensions.OLEProperties
                 DictionaryEntry de = new DictionaryEntry(codePage);
 
                 de.Read(br);
-                this.Entries.Add(de.PropertyIdentifier, de.Name);
+                this.entries.Add(de.PropertyIdentifier, de.Name);
             }
 
+        }
+
+        public void Write(BinaryWriter bw)
+        {
+            bw.Write(entries.Count);
+
+            foreach (KeyValuePair<uint, string> kv in entries)
+            {
+                bw.Write(kv.Key);
+                string s = kv.Value;
+                if (!s.EndsWith("\0"))
+                    s += "\0";
+                bw.Write(Encoding.GetEncoding(this.codePage).GetBytes(s));
+            }
+           
         }
     }
 }

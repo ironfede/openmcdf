@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Linq;
 
 namespace OpenMcdf.Extensions.Test
 {
@@ -132,7 +133,7 @@ namespace OpenMcdf.Extensions.Test
             using (CompoundFile cf = new CompoundFile("wstr_presets.doc"))
             {
                 var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
-
+               
                 foreach (OLEProperties.OLEProperty p in co.Properties)
                 {
                     Debug.Write(p.PropertyName);

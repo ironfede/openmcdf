@@ -8,12 +8,20 @@ using System.Linq;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    internal abstract class TypedPropertyValue<T> : ITypedPropertyValue, IBinarySerializable
+    internal abstract class TypedPropertyValue<T> : ITypedPropertyValue
     {
         private bool isVariant = false;
         private PropertyDimensions dim = PropertyDimensions.IsScalar;
 
         private VTPropertyType _VTType;
+
+        public PropertyType PropertyType
+        {
+            get
+            {
+                return PropertyType.TypedPropertyValue;
+            }
+        }
 
         public VTPropertyType VTType
         {
@@ -112,6 +120,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             long currentPos = bw.BaseStream.Position;
             int size = 0;
             int m = 0;
+            bool needsPadding = HasPadding();
 
             switch (this.PropertyDimensions)
             {
@@ -120,11 +129,11 @@ namespace OpenMcdf.Extensions.OLEProperties
                     bw.Write((ushort)_VTType);
                     bw.Write((ushort)0);
 
-                    WriteScalarValue(bw,(T)this.propertyValue);
+                    WriteScalarValue(bw, (T)this.propertyValue);
                     size = (int)(bw.BaseStream.Position - currentPos);
                     m = (int)size % 4;
 
-                    if (m > 0)
+                    if (m > 0 && needsPadding)
                         for (int i = 0; i < m; i++)  // padding
                             bw.Write((byte)0);
                     break;
@@ -143,11 +152,32 @@ namespace OpenMcdf.Extensions.OLEProperties
                     size = (int)(bw.BaseStream.Position - currentPos);
                     m = (int)size % 4;
 
-                    if (m > 0)
+                    if (m > 0 && needsPadding)
                         for (int i = 0; i < m; i++)  // padding
                             bw.Write((byte)0);
                     break;
             }
+        }
+
+        private bool HasPadding()
+        {
+
+            VTPropertyType vt = (VTPropertyType)((ushort)this.VTType & 0x00FF);
+
+            switch (vt)
+            {
+                case VTPropertyType.VT_LPSTR:
+                    if (this.IsVariant) return false;
+                    if (dim == PropertyDimensions.IsVector) return false;
+                    break;
+                case VTPropertyType.VT_VARIANT_VECTOR:
+                    if (dim == PropertyDimensions.IsVector) return false;
+                    break;
+                default:
+                    return true;
+            }
+
+            return true;
         }
     }
 }
