@@ -7,7 +7,10 @@ namespace OpenMcdf.Extensions.OLEProperties
 {
     public class DictionaryEntry
     {
+        private const int CP_WINUNICODE = 0x04B0;
+
         int codePage;
+
         public DictionaryEntry(int codePage)
         {
             this.codePage = codePage;
@@ -19,17 +22,23 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         private byte[] nameBytes;
 
-
-
         public void Read(BinaryReader br)
         {
             PropertyIdentifier = br.ReadUInt32();
             Length = br.ReadInt32();
-            nameBytes = br.ReadBytes(Length);
-            int m = Length % 4;
 
-            if (m > 0)
-                br.ReadBytes(m);
+            if (codePage != CP_WINUNICODE)
+            {
+                nameBytes = br.ReadBytes(Length);
+            }
+            else
+            {
+                nameBytes = br.ReadBytes(Length << 2);
+
+                int m = Length % 4;
+                if (m > 0)
+                    br.ReadBytes(m);
+            }
         }
 
         public void Write(BinaryWriter bw)
@@ -38,11 +47,12 @@ namespace OpenMcdf.Extensions.OLEProperties
             bw.Write(Length);
             bw.Write(nameBytes);
 
-            int m = Length % 4;
+            //if (codePage == CP_WINUNICODE)
+            //    int m = Length % 4;
 
-            if (m > 0)
-                for (int i = 0; i < m; i++)
-                    bw.Write((byte)m);
+            //if (m > 0)
+            //    for (int i = 0; i < m; i++)
+            //        bw.Write((byte)m);
         }
 
         private string GetName()

@@ -168,6 +168,56 @@ namespace OpenMcdf.Extensions.Test
         }
 
         [TestMethod]
+        public void Test_SUMMARY_INFO_READ_UTF8_ISSUE_34()
+        {
+            try
+            {
+                using (CompoundFile cf = new CompoundFile("2custom.doc"))
+                {
+                    var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
+
+                    foreach (OLEProperties.OLEProperty p in co.Properties)
+                    {
+                        Debug.Write(p.PropertyName);
+                        Debug.Write(" - ");
+                        Debug.Write(p.VTType);
+                        Debug.Write(" - ");
+                        Debug.WriteLine(p.Value);
+                    }
+
+                    Assert.IsNotNull(co.Properties);
+
+                    var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
+
+                    Assert.IsNotNull(co2.Properties);
+                    foreach (OLEProperties.OLEProperty p in co2.Properties)
+                    {
+                        Debug.Write(p.PropertyName);
+                        Debug.Write(" - ");
+                        Debug.Write(p.VTType);
+                        Debug.Write(" - ");
+                        Debug.WriteLine(p.Value);
+                    }
+
+                    
+                    Assert.IsNotNull(co2.UserDefinedProperties.Properties);
+                    foreach (OLEProperties.OLEProperty p in co2.UserDefinedProperties.Properties)
+                    {
+                        Debug.Write(p.PropertyName);
+                        Debug.Write(" - ");
+                        Debug.Write(p.VTType);
+                        Debug.Write(" - ");
+                        Debug.WriteLine(p.Value);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail();
+            }
+
+        }
+        [TestMethod]
         public void Test_SUMMARY_INFO_READ_LPWSTRING()
         {
             using (CompoundFile cf = new CompoundFile("english.presets.doc"))

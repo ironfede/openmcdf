@@ -6,7 +6,7 @@ using System.Text;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    public class DictionaryProperty :  IDictionaryProperty
+    public class DictionaryProperty : IDictionaryProperty
     {
         private int codePage;
 
@@ -35,6 +35,8 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public void Read(BinaryReader br)
         {
+            long curPos = br.BaseStream.Position;
+
             uint numEntries = br.ReadUInt32();
 
             for (uint i = 0; i < numEntries; i++)
@@ -43,6 +45,16 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                 de.Read(br);
                 this.entries.Add(de.PropertyIdentifier, de.Name);
+            }
+
+            int m = (int)(br.BaseStream.Position - curPos) % 4;
+
+            if (m > 0)
+            {
+                for(int i = 0; i < m; i++)
+                {
+                    br.ReadByte();
+                }
             }
 
         }
@@ -59,7 +71,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     s += "\0";
                 bw.Write(Encoding.GetEncoding(this.codePage).GetBytes(s));
             }
-           
+
         }
     }
 }
