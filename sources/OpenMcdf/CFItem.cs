@@ -1,5 +1,4 @@
-﻿
-/* This Source Code Form is subject to the terms of the Mozilla Public
+﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
  * 
@@ -12,96 +11,155 @@ using System;
 namespace OpenMcdf
 {
     /// <summary>
-    /// Abstract base class for Structured Storage entities.
+    ///     Abstract base class for Structured Storage entities.
     /// </summary>
     /// <example>
-    /// <code>
+    ///     <code>
+    ///  
+    ///  const String STORAGE_NAME = "report.xls";
+    ///  CompoundFile cf = new CompoundFile(STORAGE_NAME);
     /// 
-    /// const String STORAGE_NAME = "report.xls";
-    /// CompoundFile cf = new CompoundFile(STORAGE_NAME);
-    ///
-    /// FileStream output = new FileStream("LogEntries.txt", FileMode.Create);
-    /// TextWriter tw = new StreamWriter(output);
-    ///
-    /// // CFItem represents both storage and stream items
-    /// VisitedEntryAction va = delegate(CFItem item)
-    /// {
-    ///      tw.WriteLine(item.Name);
-    /// };
-    ///
-    /// cf.RootStorage.VisitEntries(va, true);
-    ///
-    /// tw.Close();
+    ///  FileStream output = new FileStream("LogEntries.txt", FileMode.Create);
+    ///  TextWriter tw = new StreamWriter(output);
     /// 
-    /// </code>
+    ///  // CFItem represents both storage and stream items
+    ///  VisitedEntryAction va = delegate(CFItem item)
+    ///  {
+    ///       tw.WriteLine(item.Name);
+    ///  };
+    /// 
+    ///  cf.RootStorage.VisitEntries(va, true);
+    /// 
+    ///  tw.Close();
+    ///  
+    ///  </code>
     /// </example>
-    public abstract class CFItem : IComparable<CFItem>
+    public abstract class CFItem : IComparable<CFItem>, IEquatable<CFItem>
     {
-        private CompoundFile compoundFile;
-
-        protected CompoundFile CompoundFile
+        protected CFItem(CompoundFile compoundFile)
         {
-            get { return compoundFile; }
+            CompoundFile = compoundFile;
+        }
+
+        protected CompoundFile CompoundFile { get; }
+
+        internal IDirectoryEntry DirEntry { get; set; }
+
+        /// <summary>
+        ///     Get entity name
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                var n = DirEntry.GetEntryName();
+                return string.IsNullOrEmpty(n) ? string.Empty : n.TrimEnd('\0');
+            }
+        }
+
+        /// <summary>
+        ///     Size in bytes of the item. It has a valid value
+        ///     only if entity is a stream, otherwise it is setted to zero.
+        /// </summary>
+        public long Size => DirEntry.Size;
+
+        /// <summary>
+        ///     Return true if item is Storage
+        /// </summary>
+        /// <remarks>
+        ///     This check doesn't use reflection or runtime type information
+        ///     and doesn't suffer related performance penalties.
+        /// </remarks>
+        public bool IsStorage => DirEntry.StgType == StgType.StgStorage;
+
+        /// <summary>
+        ///     Return true if item is a Stream
+        /// </summary>
+        /// <remarks>
+        ///     This check doesn't use reflection or runtime type information
+        ///     and doesn't suffer related performance penalties.
+        /// </remarks>
+        public bool IsStream => DirEntry.StgType == StgType.StgStream;
+
+        /// <summary>
+        ///     Return true if item is the Root Storage
+        /// </summary>
+        /// <remarks>
+        ///     This check doesn't use reflection or runtime type information
+        ///     and doesn't suffer related performance penalties.
+        /// </remarks>
+        public bool IsRoot => DirEntry.StgType == StgType.StgRoot;
+
+        /// <summary>
+        ///     Get/Set the Creation Date of the current item
+        /// </summary>
+        public DateTime CreationDate
+        {
+            get => DateTime.FromFileTime(BitConverter.ToInt64(DirEntry.CreationDate, 0));
+
+            set
+            {
+                if (DirEntry.StgType != StgType.StgStream && DirEntry.StgType != StgType.StgRoot)
+                    DirEntry.CreationDate = BitConverter.GetBytes(value.ToFileTime());
+                else
+                    throw new CFException("Creation Date can only be set on storage entries");
+            }
+        }
+
+        /// <summary>
+        ///     Get/Set the Modify Date of the current item
+        /// </summary>
+        public DateTime ModifyDate
+        {
+            get => DateTime.FromFileTime(BitConverter.ToInt64(DirEntry.ModifyDate, 0));
+
+            set
+            {
+                if (DirEntry.StgType != StgType.StgStream && DirEntry.StgType != StgType.StgRoot)
+                    DirEntry.ModifyDate = BitConverter.GetBytes(value.ToFileTime());
+                else
+                    throw new CFException("Modify Date can only be set on storage entries");
+            }
+        }
+
+        /// <summary>
+        ///     Get/Set Object class Guid for Root and Storage entries.
+        /// </summary>
+        public Guid CLSID
+        {
+            get => DirEntry.StorageCLSID;
+            set
+            {
+                if (DirEntry.StgType != StgType.StgStream)
+                    DirEntry.StorageCLSID = value;
+                else
+                    throw new CFException("Object class GUID can only be set on Root and Storage entries");
+            }
         }
 
         protected void CheckDisposed()
         {
-            if (compoundFile.IsClosed)
-                throw new CFDisposedException("Owner Compound file has been closed and owned items have been invalidated");
+            if (IsDisposed())
+                throw new CFDisposedException(
+                    "Owner Compound file has been closed and owned items have been invalidated");
         }
 
-        protected CFItem()
+        /// <summary>
+        ///     Checks the underlying stream without throwing exception. 
+        /// </summary>
+        /// <returns>true if stream is closed, false if stream is open.</returns>
+        protected bool IsDisposed()
         {
+            return CompoundFile.IsClosed;
         }
-
-        protected CFItem(CompoundFile compoundFile)
-        {
-            this.compoundFile = compoundFile;
-        }
-
-        #region IDirectoryEntry Members
-
-        private IDirectoryEntry dirEntry;
-
-        internal IDirectoryEntry DirEntry
-        {
-            get { return dirEntry; }
-            set { dirEntry = value; }
-        }
-
-
-
-        internal int CompareTo(CFItem other)
-        {
-
-            return this.dirEntry.CompareTo(other.DirEntry);
-        }
-
-
-        #endregion
-
-        #region IComparable Members
-
-        public int CompareTo(object obj)
-        {
-            return this.dirEntry.CompareTo(((CFItem)obj).DirEntry);
-        }
-
-        #endregion
 
         public static bool operator ==(CFItem leftItem, CFItem rightItem)
         {
             // If both are null, or both are same instance, return true.
-            if (System.Object.ReferenceEquals(leftItem, rightItem))
-            {
-                return true;
-            }
+            if (ReferenceEquals(leftItem, rightItem)) return true;
 
             // If one is null, but not both, return false.
-            if (((object)leftItem == null) || ((object)rightItem == null))
-            {
-                return false;
-            }
+            if (leftItem is null ^ rightItem is null) return false;
 
             // Return true if the fields match:
             return leftItem.CompareTo(rightItem) == 0;
@@ -112,160 +170,45 @@ namespace OpenMcdf
             return !(leftItem == rightItem);
         }
 
+        public bool Equals(CFItem other)
+        {
+            return CompareTo(other) == 0;
+        }
+
         public override bool Equals(object obj)
         {
-            return this.CompareTo(obj) == 0;
+            return CompareTo(obj) == 0;
         }
 
         public override int GetHashCode()
         {
-            return this.dirEntry.GetEntryName().GetHashCode();
-        }
-
-        /// <summary>
-        /// Get entity name
-        /// </summary>
-        public String Name
-        {
-            get
+            unchecked
             {
-                String n = this.dirEntry.GetEntryName();
-                if (n != null && n.Length > 0)
-                {
-                    return n.TrimEnd('\0');
-                }
-                else
-                    return String.Empty;
+                return ((CompoundFile != null ? CompoundFile.GetHashCode() : 0) * 397) ^
+                       (DirEntry != null ? DirEntry.GetHashCode() : 0);
             }
-        }
-
-        /// <summary>
-        /// Size in bytes of the item. It has a valid value 
-        /// only if entity is a stream, otherwise it is setted to zero.
-        /// </summary>
-        public long Size
-        {
-            get
-            {
-                return this.dirEntry.Size;
-            }
-        }
-
-
-        /// <summary>
-        /// Return true if item is Storage
-        /// </summary>
-        /// <remarks>
-        /// This check doesn't use reflection or runtime type information
-        /// and doesn't suffer related performance penalties.
-        /// </remarks>
-        public bool IsStorage
-        {
-            get
-            {
-                return this.dirEntry.StgType == StgType.StgStorage;
-            }
-        }
-
-        /// <summary>
-        /// Return true if item is a Stream
-        /// </summary>
-        /// <remarks>
-        /// This check doesn't use reflection or runtime type information
-        /// and doesn't suffer related performance penalties.
-        /// </remarks>
-        public bool IsStream
-        {
-            get
-            {
-                return this.dirEntry.StgType == StgType.StgStream;
-            }
-        }
-
-        /// <summary>
-        /// Return true if item is the Root Storage
-        /// </summary>
-        /// <remarks>
-        /// This check doesn't use reflection or runtime type information
-        /// and doesn't suffer related performance penalties.
-        /// </remarks>
-        public bool IsRoot
-        {
-            get
-            {
-                return this.dirEntry.StgType == StgType.StgRoot;
-            }
-        }
-
-        /// <summary>
-        /// Get/Set the Creation Date of the current item
-        /// </summary>
-        public DateTime CreationDate
-        {
-            get
-            {
-                return DateTime.FromFileTime(BitConverter.ToInt64(this.dirEntry.CreationDate, 0));
-            }
-
-            set
-            {
-                if (this.dirEntry.StgType != StgType.StgStream && this.dirEntry.StgType != StgType.StgRoot)
-                    this.dirEntry.CreationDate = BitConverter.GetBytes((value.ToFileTime()));
-                else
-                    throw new CFException("Creation Date can only be set on storage entries");
-            }
-        }
-
-        /// <summary>
-        /// Get/Set the Modify Date of the current item
-        /// </summary>
-        public DateTime ModifyDate
-        {
-            get
-            {
-                return DateTime.FromFileTime(BitConverter.ToInt64(this.dirEntry.ModifyDate, 0));
-            }
-
-            set
-            {
-                if (this.dirEntry.StgType != StgType.StgStream && this.dirEntry.StgType != StgType.StgRoot)
-                    this.dirEntry.ModifyDate = BitConverter.GetBytes((value.ToFileTime()));
-                else
-                    throw new CFException("Modify Date can only be set on storage entries");
-            }
-        }
-
-        /// <summary>
-        /// Get/Set Object class Guid for Root and Storage entries.
-        /// </summary>
-        public Guid CLSID
-        {
-            get
-            {
-                return this.dirEntry.StorageCLSID;
-            }
-            set
-            {
-                if (this.dirEntry.StgType != StgType.StgStream)
-                {
-                    this.dirEntry.StorageCLSID = value;
-                }
-                else
-                    throw new CFException("Object class GUID can only be set on Root and Storage entries");
-            }
-        }
-
-        int IComparable<CFItem>.CompareTo(CFItem other)
-        {
-            return this.dirEntry.CompareTo(other.DirEntry);
         }
 
         public override string ToString()
         {
-            if (this.dirEntry != null)
-                return "[" + this.dirEntry.LeftSibling + "," + this.dirEntry.SID + "," + this.dirEntry.RightSibling + "]" + " " + this.dirEntry.GetEntryName();
-            else
-                return String.Empty;
+            if (DirEntry != null)
+                return "[" + DirEntry.LeftSibling + "," + DirEntry.SID + "," + DirEntry.RightSibling + "]" + " " +
+                       DirEntry.GetEntryName();
+            return string.Empty;
         }
+
+        #region IComparable Members
+
+        public int CompareTo(CFItem other)
+        {
+            return DirEntry.CompareTo(other.DirEntry);
+        }
+
+        public int CompareTo(object obj)
+        {
+            return DirEntry.CompareTo(((CFItem) obj).DirEntry);
+        }
+
+        #endregion
     }
 }

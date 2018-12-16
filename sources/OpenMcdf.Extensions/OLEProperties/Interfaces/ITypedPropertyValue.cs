@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OpenMcdf.Extensions.OLEProperties.Interfaces
+﻿namespace OpenMcdf.Extensions.OLEProperties.Interfaces
 {
     public interface ITypedPropertyValue : IProperty
     {
@@ -12,14 +8,8 @@ namespace OpenMcdf.Extensions.OLEProperties.Interfaces
             //set;
         }
 
-        PropertyDimensions PropertyDimensions
-        {
-            get;
-        }
+        PropertyDimensions PropertyDimensions { get; }
 
-        bool IsVariant
-        {
-            get; 
-        }
+        bool IsVariant { get; }
     }
 }

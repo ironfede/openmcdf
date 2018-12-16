@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 
 namespace OpenMcdf.Extensions.OLEProperties
@@ -9,7 +7,9 @@ namespace OpenMcdf.Extensions.OLEProperties
     {
         private const int CP_WINUNICODE = 0x04B0;
 
-        int codePage;
+        private readonly int codePage;
+
+        private byte[] nameBytes;
 
         public DictionaryEntry(int codePage)
         {
@@ -18,9 +18,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public uint PropertyIdentifier { get; set; }
         public int Length { get; set; }
-        public String Name { get { return GetName(); } }
-
-        private byte[] nameBytes;
+        public string Name => GetName();
 
         public void Read(BinaryReader br)
         {
@@ -35,7 +33,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             {
                 nameBytes = br.ReadBytes(Length << 2);
 
-                int m = Length % 4;
+                var m = Length % 4;
                 if (m > 0)
                     br.ReadBytes(m);
             }
@@ -57,9 +55,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         private string GetName()
         {
-            return Encoding.GetEncoding(this.codePage).GetString(nameBytes);
+            return Encoding.GetEncoding(codePage).GetString(nameBytes);
         }
-
-
     }
 }

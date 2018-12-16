@@ -1,22 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OpenMcdf.Extensions.OLEProperties.Interfaces
+﻿namespace OpenMcdf.Extensions.OLEProperties.Interfaces
 {
     public interface IProperty : IBinarySerializable
     {
+        object Value { get; set; }
 
-        object Value
-        {
-            get;
-            set;
-        }
-
-        PropertyType PropertyType
-        {
-            get;
-        }
-       
+        PropertyType PropertyType { get; }
     }
 }

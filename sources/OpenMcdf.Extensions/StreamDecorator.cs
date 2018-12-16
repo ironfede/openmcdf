@@ -1,55 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace OpenMcdf.Extensions
 {
     public class StreamDecorator : Stream
     {
-        private CFStream cfStream;
-        private long position = 0;
+        private readonly CFStream cfStream;
+        private long position;
 
         public StreamDecorator(CFStream cfstream)
         {
-            this.cfStream = cfstream;
+            cfStream = cfstream;
         }
 
-        public override bool CanRead
-        {
-            get { return true; }
-        }
+        public override bool CanRead => true;
 
-        public override bool CanSeek
-        {
-            get { return true; }
-        }
+        public override bool CanSeek => true;
 
-        public override bool CanWrite
+        public override bool CanWrite => true;
+
+        public override long Length => cfStream.Size;
+
+        public override long Position
         {
-            get { return true; }
+            get => position;
+            set => position = value;
         }
 
         public override void Flush()
         {
             // nothing to do;
-        }
-
-        public override long Length
-        {
-            get { return cfStream.Size; }
-        }
-
-        public override long Position
-        {
-            get
-            {
-                return position;
-            }
-            set
-            {
-                position = value;
-            }
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -66,7 +46,7 @@ namespace OpenMcdf.Extensions
             if (position >= cfStream.Size)
                 return 0;
 
-            count = this.cfStream.Read(buffer, position, offset, count);
+            count = cfStream.Read(buffer, position, offset, count);
             position += count;
             return count;
         }
@@ -93,12 +73,12 @@ namespace OpenMcdf.Extensions
 
         public override void SetLength(long value)
         {
-            this.cfStream.Resize(value);
+            cfStream.Resize(value);
         }
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            this.cfStream.Write(buffer, position, offset, count);
+            cfStream.Write(buffer, position, offset, count);
             position += count;
         }
 
