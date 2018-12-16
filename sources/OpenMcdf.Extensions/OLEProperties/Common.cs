@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OpenMcdf.Extensions.OLEProperties
+﻿namespace OpenMcdf.Extensions.OLEProperties
 {
     public enum Behavior
     {
-        CaseSensitive, CaseInsensitive
+        CaseSensitive,
+        CaseInsensitive
     }
 
     public class PropertyContext
     {
-
-        public Int32 CodePage { get; set; }
+        public int CodePage { get; set; }
         public Behavior Behavior { get; set; }
-        public UInt32 Locale { get; set; }
+        public uint Locale { get; set; }
     }
 
     public static class WellKnownFMTID
@@ -29,11 +25,14 @@ namespace OpenMcdf.Extensions.OLEProperties
 
     public enum PropertyDimensions
     {
-        IsScalar, IsVector, IsArray
+        IsScalar,
+        IsVector,
+        IsArray
     }
 
     public enum PropertyType
     {
-        TypedPropertyValue = 0, DictionaryProperty = 1
+        TypedPropertyValue = 0,
+        DictionaryProperty = 1
     }
 }

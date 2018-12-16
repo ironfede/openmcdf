@@ -1,12 +1,9 @@
-﻿using OpenMcdf.Extensions.OLEProperties.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
+using OpenMcdf.Extensions.OLEProperties.Interfaces;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    public class PropertyIdentifierAndOffset: IBinarySerializable
+    public class PropertyIdentifierAndOffset : IBinarySerializable
     {
         public uint PropertyIdentifier { get; set; }
         public uint Offset { get; set; }

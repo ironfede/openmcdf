@@ -7,9 +7,9 @@
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
 
-using RedBlackTree;
 using System;
-
+using System.IO;
+using RedBlackTree;
 
 namespace OpenMcdf
 {
@@ -18,14 +18,11 @@ namespace OpenMcdf
         int Child { get; set; }
         byte[] CreationDate { get; set; }
         byte[] EntryName { get; }
-        string GetEntryName();
         int LeftSibling { get; set; }
         byte[] ModifyDate { get; set; }
         string Name { get; }
         ushort NameLength { get; set; }
-        void Read(System.IO.Stream stream, CFSVersion ver = CFSVersion.Ver_3);
         int RightSibling { get; set; }
-        void SetEntryName(string entryName);
         int SID { get; set; }
         long Size { get; set; }
         int StartSetc { get; set; }
@@ -33,6 +30,9 @@ namespace OpenMcdf
         StgColor StgColor { get; set; }
         StgType StgType { get; set; }
         Guid StorageCLSID { get; set; }
-        void Write(System.IO.Stream stream);
+        string GetEntryName();
+        void Read(Stream stream, CFSVersion ver = CFSVersion.Ver_3);
+        void SetEntryName(string entryName);
+        void Write(Stream stream);
     }
 }

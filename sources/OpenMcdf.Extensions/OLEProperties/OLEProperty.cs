@@ -1,42 +1,26 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OpenMcdf.Extensions.OLEProperties
+﻿namespace OpenMcdf.Extensions.OLEProperties
 {
     public class OLEProperty
     {
-        private OLEPropertiesContainer container;
+        private readonly OLEPropertiesContainer container;
 
         internal OLEProperty(OLEPropertiesContainer container)
         {
             this.container = container;
         }
 
-        public string PropertyName
-        {
-            get { return DecodePropertyIdentifier(); }
-        }
-
-        private string DecodePropertyIdentifier()
-        {
-            return PropertyIdentifier.GetDescription(this.container.ContainerType, this.container.PropertyNames);
-        }
+        public string PropertyName => DecodePropertyIdentifier();
 
         //public string Description { get { return description; }
         public uint PropertyIdentifier { get; internal set; }
 
-        public VTPropertyType VTType
-        {
-            get;
-            internal set;
-        }
+        public VTPropertyType VTType { get; internal set; }
 
-        public object Value
+        public object Value { get; set; }
+
+        private string DecodePropertyIdentifier()
         {
-            get;
-            set;
+            return PropertyIdentifier.GetDescription(container.ContainerType, container.PropertyNames);
         }
 
         public override bool Equals(object obj)
@@ -44,13 +28,12 @@ namespace OpenMcdf.Extensions.OLEProperties
             var other = obj as OLEProperty;
             if (other == null) return false;
 
-            return other.PropertyIdentifier == this.PropertyIdentifier;
+            return other.PropertyIdentifier == PropertyIdentifier;
         }
 
         public override int GetHashCode()
         {
-            return (int)this.PropertyIdentifier;
+            return (int) PropertyIdentifier;
         }
-
     }
 }
