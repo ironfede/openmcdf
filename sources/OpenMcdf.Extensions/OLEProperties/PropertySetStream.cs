@@ -90,8 +90,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                 // Read properties
                 for (int i = 0; i < PropertySet1.NumProperties; i++)
                 {
-                    
-
                     br.BaseStream.Seek(Offset1 + PropertySet1.PropertyIdentifierAndOffsets[i].Offset, System.IO.SeekOrigin.Begin);
                     PropertySet1.Properties.Add(ReadProperty(PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier, PropertySet1.PropertyContext.CodePage, br));
                 }

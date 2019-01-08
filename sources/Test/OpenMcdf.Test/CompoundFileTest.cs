@@ -392,9 +392,9 @@ namespace OpenMcdf.Test
 
             //###########
             // 
-            #if !NETCOREAPP2_0
-                        Trace.Listeners.Add(new ConsoleTraceListener());
-            #endif
+#if !NETCOREAPP2_0
+            Trace.Listeners.Add(new ConsoleTraceListener());
+#endif
             // Phase 3
             cf = new CompoundFile("6_Streams.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle | CFSConfiguration.EraseFreeSectors);
             cf.RootStorage.Delete("D");
@@ -1001,7 +1001,7 @@ namespace OpenMcdf.Test
         {
             try
             {
-                var f = new CompoundFile("MultipleStorage4.cfs",CFSUpdateMode.Update,CFSConfiguration.Default);
+                var f = new CompoundFile("MultipleStorage4.cfs", CFSUpdateMode.Update, CFSConfiguration.Default);
                 var st = f.RootStorage.GetStorage("MyStorage").GetStorage("AnotherStorage").GetStream("MyStream");
                 st.Write(Helpers.GetBuffer(100, 0x02), 100);
                 f.Commit(true);
@@ -1013,6 +1013,43 @@ namespace OpenMcdf.Test
                 Assert.Fail("Release Memory flag caused error");
             }
         }
+
+        [TestMethod]
+        public void Test_FIX_GH_38()
+        {
+            CompoundFile f = null;
+            try
+            {
+                f = new CompoundFile("empty_directory_chain.doc", CFSUpdateMode.Update, CFSConfiguration.Default);
+
+                f.Close();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(CFCorruptedFileException));
+                if (f != null)
+                    f.Close();
+            }
+        }
+
+        [TestMethod]
+        public void Test_FIX_GH_38_B()
+        {
+            CompoundFile f = null;
+            try
+            {
+                f = new CompoundFile("no_sectors.doc", CFSUpdateMode.Update, CFSConfiguration.Default);
+
+                f.Close();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(CFException));
+                if (f != null)
+                    f.Close();
+            }
+        }
+
         //[TestMethod]
         //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
         //{

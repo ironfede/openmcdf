@@ -552,7 +552,7 @@ namespace OpenMcdf
                     gap = true;
                 }
 
-                if ( s != null && releaseMemory)
+                if (s != null && releaseMemory)
                 {
 
                     s.ReleaseData();
@@ -1507,13 +1507,13 @@ namespace OpenMcdf
                     result.Add(ms);
 
                     miniFATView.Seek(nextSecID * 4, SeekOrigin.Begin);
-					int next = miniFATReader.ReadInt32();
+                    int next = miniFATReader.ReadInt32();
 
-					if (next != nextSecID)
-						nextSecID = next;
-					else
-						throw new CFCorruptedFileException("Cyclic sector chain found. File is corrupted");
-				}
+                    if (next != nextSecID)
+                        nextSecID = next;
+                    else
+                        throw new CFCorruptedFileException("Cyclic sector chain found. File is corrupted");
+                }
             }
             return result;
         }
@@ -1794,6 +1794,9 @@ namespace OpenMcdf
         {
             List<Sector> directoryChain
                 = GetSectorChain(header.FirstDirectorySectorID, SectorType.Normal);
+
+            if (!(directoryChain.Count > 0))
+                throw new CFCorruptedFileException("Directory sector chain MUST contain at least 1 sector");
 
             if (header.FirstDirectorySectorID == Sector.ENDOFCHAIN)
                 header.FirstDirectorySectorID = directoryChain[0].Id;

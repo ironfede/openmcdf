@@ -25,23 +25,23 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         /*
          Property name	Property ID	PID	Type
-Codepage	PID_CODEPAGE	1	VT_I2
-Title	PID_TITLE	2	VT_LPSTR
-Subject	PID_SUBJECT	3	VT_LPSTR
-Author	PID_AUTHOR	4	VT_LPSTR
-Keywords	PID_KEYWORDS	5	VT_LPSTR
-Comments	PID_COMMENTS	6	VT_LPSTR
-Template	PID_TEMPLATE	7	VT_LPSTR
-Last Saved By	PID_LASTAUTHOR	8	VT_LPSTR
-Revision Number	PID_REVNUMBER	9	VT_LPSTR
-Last Printed	PID_LASTPRINTED	11	VT_FILETIME
-Create Time/Date	PID_CREATE_DTM	12	VT_FILETIME
-Last Save Time/Date	PID_LASTSAVE_DTM	13	VT_FILETIME
-Page Count	PID_PAGECOUNT	14	VT_I4
-Word Count	PID_WORDCOUNT	15	VT_I4
-Character Count	PID_CHARCOUNT	16	VT_I4
-Creating Application	PID_APPNAME	18	VT_LPSTR
-Security	PID_SECURITY	19	VT_I4
+        Codepage	PID_CODEPAGE	1	VT_I2
+        Title	PID_TITLE	2	VT_LPSTR
+        Subject	PID_SUBJECT	3	VT_LPSTR
+        Author	PID_AUTHOR	4	VT_LPSTR
+        Keywords	PID_KEYWORDS	5	VT_LPSTR
+        Comments	PID_COMMENTS	6	VT_LPSTR
+        Template	PID_TEMPLATE	7	VT_LPSTR
+        Last Saved By	PID_LASTAUTHOR	8	VT_LPSTR
+        Revision Number	PID_REVNUMBER	9	VT_LPSTR
+        Last Printed	PID_LASTPRINTED	11	VT_FILETIME
+        Create Time/Date	PID_CREATE_DTM	12	VT_FILETIME
+        Last Save Time/Date	PID_LASTSAVE_DTM	13	VT_FILETIME
+        Page Count	PID_PAGECOUNT	14	VT_I4
+        Word Count	PID_WORDCOUNT	15	VT_I4
+        Character Count	PID_CHARCOUNT	16	VT_I4
+        Creating Application	PID_APPNAME	18	VT_LPSTR
+        Security	PID_SECURITY	19	VT_I4
              */
         public class SummaryInfoProperties
         {
@@ -85,7 +85,6 @@ Security	PID_SECURITY	19	VT_I4
             PropertySetStream pStream = new PropertySetStream();
 
             this.cfStream = cfStream;
-            pStream = new OLEProperties.PropertySetStream();
             pStream.Read(new BinaryReader(new StreamDecorator(cfStream)));
 
             switch (pStream.FMTID0.ToString("B").ToUpperInvariant())
@@ -119,11 +118,12 @@ Security	PID_SECURITY	19	VT_I4
                 var p = (ITypedPropertyValue)pStream.PropertySet0.Properties[i];
                 var poi = pStream.PropertySet0.PropertyIdentifierAndOffsets[i];
 
-                var op = new OLEProperty(this);
-
-                op.VTType = p.VTType;
-                op.PropertyIdentifier = (uint)pStream.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier;
-                op.Value = p.Value;
+                var op = new OLEProperty(this)
+                {
+                    VTType = p.VTType,
+                    PropertyIdentifier = (uint)pStream.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier,
+                    Value = p.Value
+                };
 
 
                 properties.Add(op);
@@ -167,29 +167,31 @@ Security	PID_SECURITY	19	VT_I4
 
         public OLEProperty NewProperty(VTPropertyType vtPropertyType, uint propertyIdentifier, string propertyName = null)
         {
-            throw new NotImplementedException("API Unstable - Work in progress - Milestone 2.3.0.0");
-            var op = new OLEProperty(this);
-            op.VTType = vtPropertyType;
-            op.PropertyIdentifier = propertyIdentifier;
+            //throw new NotImplementedException("API Unstable - Work in progress - Milestone 2.3.0.0");
+            var op = new OLEProperty(this)
+            {
+                VTType = vtPropertyType,
+                PropertyIdentifier = propertyIdentifier
+            };
 
             return op;
         }
 
-       
-        //public void AddProperty(OLEProperty property)
-        //{
-        //    throw new NotImplementedException("API Unstable - Work in progress - Milestone 2.3.0.0");
-        //    properties.Add(property);
-        //}
 
-        //public void RemoveProperty(uint propertyIdentifier)
-        //{
-        //    throw new NotImplementedException("API Unstable - Work in progress - Milestone 2.3.0.0");
-        //    var toRemove = properties.Where(o => o.PropertyIdentifier == propertyIdentifier).FirstOrDefault();
+        public void AddProperty(OLEProperty property)
+        {
+            //throw new NotImplementedException("API Unstable - Work in progress - Milestone 2.3.0.0");
+            properties.Add(property);
+        }
 
-        //    if (toRemove != null)
-        //        properties.Remove(toRemove);
-        //}
+        public void RemoveProperty(uint propertyIdentifier)
+        {
+            //throw new NotImplementedException("API Unstable - Work in progress - Milestone 2.3.0.0");
+            var toRemove = properties.Where(o => o.PropertyIdentifier == propertyIdentifier).FirstOrDefault();
+
+            if (toRemove != null)
+                properties.Remove(toRemove);
+        }
 
 
         public void Save(CFStream cfStream)
@@ -230,8 +232,6 @@ Security	PID_SECURITY	19	VT_I4
                 p.Value = op.Value;
                 ps.PropertySet0.Properties.Add(p);
                 ps.PropertySet0.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = op.PropertyIdentifier, Offset = 0 });
-
-
             }
 
             ps.PropertySet0.NumProperties = (uint)this.Properties.Count();
@@ -260,7 +260,6 @@ Security	PID_SECURITY	19	VT_I4
 
                 }
             }
-
 
             ps.Write(bw);
         }
