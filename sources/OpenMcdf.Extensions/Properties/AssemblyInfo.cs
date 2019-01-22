@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("OpenMcdf.Extensions")]
-[assembly: AssemblyDescription("System.IO.Stream integration for OpenMcdf")]
+[assembly: AssemblyDescription("System.IO.Stream integration and OLE Properties handling for OpenMcdf")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("-")]
 [assembly: AssemblyProduct("OpenMcdf.Extensions")]
@@ -38,4 +38,4 @@ using System.Runtime.InteropServices;
 // http://blog.paranoidcoding.com/2016/04/05/deterministic-builds-in-roslyn.html
 // and Compilers should be deterministic: same inputs generate same outputs
 // https://stackoverflow.com/questions/43019832/auto-versioning-in-visual-studio-2017-net-core/46985624#46985624
-[assembly: AssemblyVersion("2.1.6.28924")]
+[assembly: AssemblyVersion("2.3.0.0")]

@@ -3,16 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Threading;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
     internal class PropertyFactory
     {
-        private PropertyContext ctx;
+        private static ThreadLocal<PropertyFactory> instance
+            = new ThreadLocal<PropertyFactory>(() => { return new PropertyFactory(); });
 
-        public PropertyFactory(PropertyContext ctx)
+        public static PropertyFactory Instance
         {
-            this.ctx = ctx;
+            get
+            {
+                return instance.Value;
+            }
         }
 
         private PropertyFactory()
@@ -20,38 +25,79 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         }
 
-        public ITypedPropertyValue NewProperty(VTPropertyType vType, PropertyContext ctx)
+        public ITypedPropertyValue NewProperty(VTPropertyType vType, int codePage, bool isVariant = false)
         {
             ITypedPropertyValue pr = null;
 
-            switch (vType)
+            switch ((VTPropertyType)((ushort)vType & 0x00FF))
             {
+                case VTPropertyType.VT_I1:
+                    pr = new VT_I1_Property(vType, isVariant);
+                    break;
                 case VTPropertyType.VT_I2:
-                    pr = new VT_I2_Property(vType);
+                    pr = new VT_I2_Property(vType, isVariant);
                     break;
                 case VTPropertyType.VT_I4:
-                    pr = new VT_I4_Property(vType);
+                    pr = new VT_I4_Property(vType, isVariant);
                     break;
                 case VTPropertyType.VT_R4:
-                    pr = new VT_R4_Property(vType);
+                    pr = new VT_R4_Property(vType, isVariant);
                     break;
+                case VTPropertyType.VT_R8:
+                    pr = new VT_R8_Property(vType, isVariant);
+                    break;
+                case VTPropertyType.VT_CY:
+                    pr = new VT_CY_Property(vType, isVariant);
+                    break;
+                case VTPropertyType.VT_DATE:
+                    pr = new VT_DATE_Property(vType, isVariant);
+                    break;
+                case VTPropertyType.VT_INT:
+                    pr = new VT_INT_Property(vType, isVariant);
+                    break;
+                case VTPropertyType.VT_UINT:
+                    pr = new VT_UINT_Property(vType, isVariant);
+                    break;
+                case VTPropertyType.VT_UI1:
+                    pr = new VT_UI1_Property(vType, isVariant);
+                    break;
+                case VTPropertyType.VT_UI2:
+                    pr = new VT_UI2_Property(vType, isVariant);
+                    break;
+                case VTPropertyType.VT_UI4:
+                    pr = new VT_UI4_Property(vType, isVariant);
+                    break;
+                case VTPropertyType.VT_UI8:
+                    pr = new VT_UI8_Property(vType, isVariant);
+                    break;
+                case VTPropertyType.VT_BSTR:
                 case VTPropertyType.VT_LPSTR:
-                    pr = new VT_LPSTR_Property(vType, ctx.CodePage);
+                    pr = new VT_LPSTR_Property(vType, codePage, isVariant);
+                    break;
+                case VTPropertyType.VT_LPWSTR:
+                    pr = new VT_LPWSTR_Property(vType, codePage, isVariant);
                     break;
                 case VTPropertyType.VT_FILETIME:
-                    pr = new VT_FILETIME_Property(vType);
+                    pr = new VT_FILETIME_Property(vType, isVariant);
                     break;
                 case VTPropertyType.VT_DECIMAL:
-                    pr = new VT_DECIMAL_Property(vType);
+                    pr = new VT_DECIMAL_Property(vType, isVariant);
                     break;
                 case VTPropertyType.VT_BOOL:
-                    pr = new VT_BOOL_Property(vType);
-                    break;
-                case VTPropertyType.VT_VECTOR_HEADER:
-                    pr = new VT_VectorHeader(vType);
+                    pr = new VT_BOOL_Property(vType, isVariant);
                     break;
                 case VTPropertyType.VT_EMPTY:
-                    pr = new VT_EMPTY_Property(vType);
+                    pr = new VT_EMPTY_Property(vType, isVariant);
+                    break;
+                case VTPropertyType.VT_VARIANT_VECTOR:
+                    pr = new VT_VariantVector(vType, codePage, isVariant);
+                    break;
+                case VTPropertyType.VT_CF:
+                    pr = new VT_CF_Property(vType, isVariant);
+                    break;
+                case VTPropertyType.VT_BLOB_OBJECT:
+                case VTPropertyType.VT_BLOB:
+                    pr = new VT_BLOB_Property(vType, isVariant);
                     break;
                 default:
                     throw new Exception("Unrecognized property type");
@@ -60,200 +106,378 @@ namespace OpenMcdf.Extensions.OLEProperties
             return pr;
         }
 
-
         #region Property implementations
-        private class VT_EMPTY_Property : TypedPropertyValue
+
+        private class VT_EMPTY_Property : TypedPropertyValue<object>
         {
-            public VT_EMPTY_Property(VTPropertyType vType) : base(vType)
+            public VT_EMPTY_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
 
             }
 
-            public override void Read(System.IO.BinaryReader br)
+            public override object ReadScalarValue(System.IO.BinaryReader br)
             {
-                this.propertyValue = null;
+                return null;
             }
 
-            public override void Write(System.IO.BinaryWriter bw)
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, object pValue)
+            {
+            }
+        }
+        private class VT_I1_Property : TypedPropertyValue<sbyte>
+        {
+            public VT_I1_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
 
+            }
+
+            public override sbyte ReadScalarValue(System.IO.BinaryReader br)
+            {
+                var r = br.ReadSByte();
+                return r;
+            }
+
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, sbyte pValue)
+            {
+                bw.Write(pValue);
             }
         }
 
-        private class VT_I2_Property : TypedPropertyValue
+        private class VT_UI1_Property : TypedPropertyValue<byte>
         {
-            public VT_I2_Property(VTPropertyType vType) : base(vType)
+            public VT_UI1_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
 
             }
 
-            public override void Read(System.IO.BinaryReader br)
+            public override byte ReadScalarValue(System.IO.BinaryReader br)
             {
-                this.propertyValue = br.ReadInt16();
+                var r = br.ReadByte();
+                return r;
             }
 
-            public override void Write(System.IO.BinaryWriter bw)
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, byte pValue)
             {
-                bw.Write((short)propertyValue);
+                bw.Write(pValue);
             }
         }
 
-        private class VT_I4_Property : TypedPropertyValue
+        private class VT_UI4_Property : TypedPropertyValue<uint>
         {
-            public VT_I4_Property(VTPropertyType vType) : base(vType)
+            public VT_UI4_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
 
             }
 
-            public override void Read(System.IO.BinaryReader br)
+            public override uint ReadScalarValue(System.IO.BinaryReader br)
             {
-                this.propertyValue = br.ReadInt32();
+                var r = br.ReadUInt32();
+                return r;
             }
 
-            public override void Write(System.IO.BinaryWriter bw)
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, uint pValue)
             {
-                bw.Write((int)propertyValue);
+                bw.Write(pValue);
             }
         }
 
-        private class VT_R4_Property : TypedPropertyValue
+        private class VT_UI8_Property : TypedPropertyValue<ulong>
         {
-            public VT_R4_Property(VTPropertyType vType) : base(vType)
+            public VT_UI8_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
 
             }
 
-            public override void Read(System.IO.BinaryReader br)
+            public override ulong ReadScalarValue(System.IO.BinaryReader br)
             {
-                this.propertyValue = br.ReadSingle();
+                var r = br.ReadUInt64();
+                return r;
             }
 
-            public override void Write(System.IO.BinaryWriter bw)
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, ulong pValue)
             {
-                bw.Write((Single)propertyValue);
+                bw.Write(pValue);
             }
         }
 
-        private class VT_R8_Property : TypedPropertyValue
+        private class VT_I2_Property : TypedPropertyValue<short>
         {
-            public VT_R8_Property(VTPropertyType vType) : base(vType)
+            public VT_I2_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
 
             }
 
-            public override void Read(System.IO.BinaryReader br)
+            public override short ReadScalarValue(System.IO.BinaryReader br)
             {
-                this.propertyValue = br.ReadDouble();
+                var r = br.ReadInt16();
+                return r;
             }
 
-            public override void Write(System.IO.BinaryWriter bw)
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, short pValue)
             {
-                bw.Write((Double)propertyValue);
+                bw.Write(pValue);
             }
         }
 
-        private class VT_CY_Property : TypedPropertyValue
+
+
+        private class VT_UI2_Property : TypedPropertyValue<ushort>
         {
-            public VT_CY_Property(VTPropertyType vType) : base(vType)
+            public VT_UI2_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+            {
+
+            }
+
+            public override ushort ReadScalarValue(System.IO.BinaryReader br)
+            {
+                var r = br.ReadUInt16();
+                return r;
+            }
+
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, ushort pValue)
+            {
+                bw.Write(pValue);
+            }
+        }
+
+        private class VT_I4_Property : TypedPropertyValue<int>
+        {
+            public VT_I4_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
             }
 
-            public override void Read(System.IO.BinaryReader br)
+            public override int ReadScalarValue(System.IO.BinaryReader br)
+            {
+                var r = br.ReadInt32();
+                return r;
+            }
+
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, int pValue)
+            {
+                bw.Write(pValue);
+            }
+        }
+
+        private class VT_I8_Property : TypedPropertyValue<long>
+        {
+            public VT_I8_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+            {
+            }
+
+            public override long ReadScalarValue(System.IO.BinaryReader br)
+            {
+                var r = br.ReadInt64();
+                return r;
+            }
+
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, long pValue)
+            {
+                bw.Write(pValue);
+            }
+        }
+
+        private class VT_INT_Property : TypedPropertyValue<int>
+        {
+            public VT_INT_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+            {
+            }
+
+            public override int ReadScalarValue(System.IO.BinaryReader br)
+            {
+                var r = br.ReadInt32();
+                return r;
+            }
+
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, int pValue)
+            {
+                bw.Write(pValue);
+            }
+        }
+
+        private class VT_UINT_Property : TypedPropertyValue<uint>
+        {
+            public VT_UINT_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+            {
+            }
+
+            public override uint ReadScalarValue(System.IO.BinaryReader br)
+            {
+                var r = br.ReadUInt32();
+                return r;
+            }
+
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, uint pValue)
+            {
+                bw.Write(pValue);
+            }
+        }
+
+
+        private class VT_R4_Property : TypedPropertyValue<float>
+        {
+            public VT_R4_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+            {
+
+            }
+
+            public override float ReadScalarValue(System.IO.BinaryReader br)
+            {
+                var r = br.ReadSingle();
+                return r;
+            }
+
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, float pValue)
+            {
+                bw.Write(pValue);
+            }
+        }
+
+        private class VT_R8_Property : TypedPropertyValue<double>
+        {
+            public VT_R8_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+            {
+
+            }
+
+            public override double ReadScalarValue(System.IO.BinaryReader br)
+            {
+                var r = br.ReadDouble();
+                return r;
+            }
+
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, double pValue)
+            {
+                bw.Write(pValue);
+            }
+        }
+
+        private class VT_CY_Property : TypedPropertyValue<long>
+        {
+            public VT_CY_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+            {
+            }
+
+            public override long ReadScalarValue(System.IO.BinaryReader br)
             {
                 Int64 temp = br.ReadInt64();
 
-                this.propertyValue = (double)(temp /= 10000);
+                var tmp = (temp /= 10000);
+
+                return (tmp);
             }
 
-            public override void Write(System.IO.BinaryWriter bw)
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, long pValue)
             {
-                bw.Write((Int64)propertyValue * 10000);
+                bw.Write(pValue * 10000);
             }
         }
 
-        private class VT_DATE_Property : TypedPropertyValue
+        private class VT_DATE_Property : TypedPropertyValue<DateTime>
         {
-            public VT_DATE_Property(VTPropertyType vType) : base(vType)
+            public VT_DATE_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
 
             }
 
-            public override void Read(System.IO.BinaryReader br)
+            public override DateTime ReadScalarValue(System.IO.BinaryReader br)
             {
                 Double temp = br.ReadDouble();
 
-                this.propertyValue = DateTime.FromOADate(temp);
+                return DateTime.FromOADate(temp);
             }
 
-            public override void Write(System.IO.BinaryWriter bw)
+            public override void WriteScalarValue(System.IO.BinaryWriter bw, DateTime pValue)
             {
-                bw.Write(((DateTime)propertyValue).ToOADate());
+                bw.Write(pValue.ToOADate());
             }
         }
 
-        private class VT_LPSTR_Property : TypedPropertyValue
+        private class VT_LPSTR_Property : TypedPropertyValue<string>
         {
-            private uint size = 0;
+
             private byte[] data;
             private int codePage;
 
-            public VT_LPSTR_Property(VTPropertyType vType, int codePage) : base(vType)
+            public VT_LPSTR_Property(VTPropertyType vType, int codePage, bool isVariant) : base(vType, isVariant)
             {
                 this.codePage = codePage;
-
             }
 
-            public override void Read(System.IO.BinaryReader br)
+            public override string ReadScalarValue(System.IO.BinaryReader br)
             {
-                size = br.ReadUInt32();
+                uint size = br.ReadUInt32();
                 data = br.ReadBytes((int)size);
-                this.propertyValue = Encoding.GetEncoding(codePage).GetString(data);
-                int m = (int)size % 4;
-                br.ReadBytes(m); // padding
+                return Encoding.GetEncoding(codePage).GetString(data);
             }
 
-            public override void Write(System.IO.BinaryWriter bw)
+            public override void WriteScalarValue(BinaryWriter bw, string pValue)
             {
-                data = Encoding.GetEncoding(codePage).GetBytes((String)propertyValue);
-                size = (uint)data.Length;
-                int m = (int)size % 4;
+                data = Encoding.GetEncoding(codePage).GetBytes((String)pValue);
+                bw.Write((uint)data.Length);
                 bw.Write(data);
-                for (int i = 0; i < m; i++)  // padding
-                    bw.Write(0);
             }
         }
 
-        private class VT_FILETIME_Property : TypedPropertyValue
+        private class VT_LPWSTR_Property : TypedPropertyValue<string>
         {
 
-            public VT_FILETIME_Property(VTPropertyType vType) : base(vType)
+            private byte[] data;
+            private int codePage;
+
+            public VT_LPWSTR_Property(VTPropertyType vType, int codePage, bool isVariant) : base(vType, isVariant)
+            {
+                this.codePage = codePage;
+            }
+
+            public override string ReadScalarValue(System.IO.BinaryReader br)
+            {
+                uint nChars = br.ReadUInt32();
+                data = br.ReadBytes((int)(nChars * 2));  //WChar
+                return Encoding.Unicode.GetString(data);
+            }
+
+            public override void WriteScalarValue(BinaryWriter bw, string pValue)
+            {
+                data = Encoding.Unicode.GetBytes(pValue);
+                bw.Write((uint)data.Length >> 2);
+                bw.Write(data);
+            }
+        }
+
+        private class VT_FILETIME_Property : TypedPropertyValue<DateTime>
+        {
+
+            public VT_FILETIME_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
 
             }
 
-            public override void Read(System.IO.BinaryReader br)
+            public override DateTime ReadScalarValue(System.IO.BinaryReader br)
             {
                 Int64 tmp = br.ReadInt64();
-                propertyValue = DateTime.FromFileTime(tmp);
+
+                return DateTime.FromFileTime(tmp);
             }
 
-            public override void Write(System.IO.BinaryWriter bw)
+            public override void WriteScalarValue(BinaryWriter bw, DateTime pValue)
             {
-                bw.Write(((DateTime)propertyValue).ToFileTime());
+                bw.Write((pValue).ToFileTime());
+
             }
         }
 
-        private class VT_DECIMAL_Property : TypedPropertyValue
+        private class VT_DECIMAL_Property : TypedPropertyValue<Decimal>
         {
 
-            public VT_DECIMAL_Property(VTPropertyType vType) : base(vType)
+            public VT_DECIMAL_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
 
             }
 
-            public override void Read(System.IO.BinaryReader br)
+            public override Decimal ReadScalarValue(System.IO.BinaryReader br)
             {
                 Decimal d;
+
 
                 br.ReadInt16(); // wReserved
                 byte scale = br.ReadByte();
@@ -268,38 +492,123 @@ namespace OpenMcdf.Extensions.OLEProperties
                 d /= (10 << scale);
 
                 this.propertyValue = d;
+                return d;
             }
 
-            public override void Write(System.IO.BinaryWriter bw)
+            public override void WriteScalarValue(BinaryWriter bw, Decimal pValue)
             {
-                bw.Write((short)propertyValue);
+                int[] parts = Decimal.GetBits((Decimal)pValue);
+
+                bool sign = (parts[3] & 0x80000000) != 0;
+                byte scale = (byte)((parts[3] >> 16) & 0x7F);
+
+
+                bw.Write((short)0);
+                bw.Write(scale);
+                bw.Write(sign ? (byte)0 : (byte)1);
+
+                bw.Write(parts[2]);
+                bw.Write(parts[1]);
+                bw.Write(parts[0]);
             }
         }
 
-        private class VT_BOOL_Property : TypedPropertyValue
+        private class VT_BOOL_Property : TypedPropertyValue<bool>
         {
-            public VT_BOOL_Property(VTPropertyType vType) : base(vType)
+            public VT_BOOL_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
 
             }
 
-            public override void Read(BinaryReader br)
+            public override bool ReadScalarValue(System.IO.BinaryReader br)
             {
+
                 this.propertyValue = br.ReadUInt16() == (ushort)0xFFFF ? true : false;
+                return (bool)propertyValue;
                 //br.ReadUInt16();//padding
             }
+
+            public override void WriteScalarValue(BinaryWriter bw, bool pValue)
+            {
+                bw.Write((bool)pValue ? (ushort)0xFFFF : (ushort)0);
+
+            }
+
         }
 
-        private class VT_VectorHeader : TypedPropertyValue
+        private class VT_CF_Property : TypedPropertyValue<object>
         {
-            public VT_VectorHeader(VTPropertyType vType) : base(vType)
+            public VT_CF_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
 
             }
 
-            public override void Read(BinaryReader br)
+            public override object ReadScalarValue(System.IO.BinaryReader br)
             {
-                propertyValue = br.ReadUInt32();
+
+                int size = br.ReadInt32();
+                byte[] data = br.ReadBytes(size);
+                return data;
+                //br.ReadUInt16();//padding
+            }
+
+            public override void WriteScalarValue(BinaryWriter bw, object pValue)
+            {
+                byte[] r = pValue as byte[];
+                if (r != null)
+                    bw.Write(r);
+            }
+
+        }
+
+        private class VT_BLOB_Property : TypedPropertyValue<object>
+        {
+            public VT_BLOB_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+            {
+
+            }
+
+            public override object ReadScalarValue(System.IO.BinaryReader br)
+            {
+                int size = br.ReadInt32();
+                byte[] data = br.ReadBytes(size);
+                return data;
+            }
+
+            public override void WriteScalarValue(BinaryWriter bw, object pValue)
+            {
+                byte[] r = pValue as byte[];
+                if (r != null)
+                    bw.Write(r);
+
+            }
+
+        }
+
+        private class VT_VariantVector : TypedPropertyValue<object>
+        {
+            private readonly int codePage;
+
+            public VT_VariantVector(VTPropertyType vType, int codePage, bool isVariant) : base(vType, isVariant)
+            {
+                this.codePage = codePage;
+            }
+
+            public override object ReadScalarValue(System.IO.BinaryReader br)
+            {
+                VTPropertyType vType = (VTPropertyType)br.ReadUInt16();
+                br.ReadUInt16(); // Ushort Padding
+
+                ITypedPropertyValue p = PropertyFactory.Instance.NewProperty(vType, codePage, true);
+                p.Read(br);
+                return p;
+            }
+
+            public override void WriteScalarValue(BinaryWriter bw, object pValue)
+            {
+                ITypedPropertyValue p = (ITypedPropertyValue)pValue;
+
+                p.Write(bw);
             }
         }
 

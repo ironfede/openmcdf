@@ -2,12 +2,21 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Linq;
+using System.IO;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    public class PropertySet
+    internal class PropertySet
     {
+
+        public PropertyContext PropertyContext
+        {
+            get;  set;
+        }
+
         public uint Size { get; set; }
+
         public uint NumProperties { get; set; }
 
         List<PropertyIdentifierAndOffset> propertyIdentifierAndOffsets
@@ -19,8 +28,8 @@ namespace OpenMcdf.Extensions.OLEProperties
             set { propertyIdentifierAndOffsets = value; }
         }
 
-        List<ITypedPropertyValue> properties = new List<ITypedPropertyValue>();
-        public List<ITypedPropertyValue> Properties
+        List<IProperty> properties = new List<IProperty>();
+        public List<IProperty> Properties
         {
             get
             {
@@ -30,6 +39,21 @@ namespace OpenMcdf.Extensions.OLEProperties
             {
                 properties = value;
             }
+        }
+
+        public void LoadContext(int propertySetOffset, BinaryReader br)
+        {
+            var currPos = br.BaseStream.Position;
+
+            PropertyContext = new PropertyContext();
+            var codePageOffset = (int)(propertySetOffset + PropertyIdentifierAndOffsets.Where(pio => pio.PropertyIdentifier == 1).First().Offset);
+            br.BaseStream.Seek(codePageOffset, SeekOrigin.Begin);
+
+            VTPropertyType vType = (VTPropertyType)br.ReadUInt16();
+            br.ReadUInt16(); // Ushort Padding
+            PropertyContext.CodePage = (int)(ushort)br.ReadInt16();
+
+            br.BaseStream.Position = currPos;
         }
 
     }

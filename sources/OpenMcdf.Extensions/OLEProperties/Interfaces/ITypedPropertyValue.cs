@@ -4,30 +4,22 @@ using System.Text;
 
 namespace OpenMcdf.Extensions.OLEProperties.Interfaces
 {
-    public interface ITypedPropertyValue : IBinarySerializable
+    public interface ITypedPropertyValue : IProperty
     {
-        bool IsArray
-        {
-            get;
-            set;
-        }
-
-        bool IsVector
-        {
-            get;
-            set;
-        }
-
-        object PropertyValue
-        {
-            get;
-            set;
-        }
-
         VTPropertyType VTType
         {
             get;
             //set;
+        }
+
+        PropertyDimensions PropertyDimensions
+        {
+            get;
+        }
+
+        bool IsVariant
+        {
+            get; 
         }
     }
 }
