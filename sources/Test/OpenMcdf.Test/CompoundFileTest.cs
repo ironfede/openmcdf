@@ -1050,6 +1050,33 @@ namespace OpenMcdf.Test
             }
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(CFCorruptedFileException))]
+        public void Test_CorruptedSectorChain_Doc()
+        {
+	        var f = new CompoundFile("corrupted-sector-chain.doc");
+
+	        f.Close();
+        } 
+        
+        [TestMethod]
+        [ExpectedException(typeof(CFCorruptedFileException))]
+        public void Test_CorruptedSectorChain_Cfs()
+        {
+	        var f = new CompoundFile("corrupted-sector-chain.cfs");
+
+	        f.Close();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(CFCorruptedFileException))]
+        public void Test_CorruptedSectorChain_Doc2()
+        {
+	        var f = new CompoundFile("corrupted-sector-chain-2.doc");
+
+	        f.Close();
+        }
+
         //[TestMethod]
         //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
         //{

@@ -176,6 +176,8 @@ namespace OpenMcdf
 
                 if (nToRead != 0)
                 {
+					if (secIndex > sectorChain.Count) throw new CFCorruptedFileException("The file is probably corrupted.");
+
                     Buffer.BlockCopy(
                         sectorChain[secIndex].GetData(),
                         0,
