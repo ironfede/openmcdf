@@ -3,7 +3,7 @@
 ################################################################################
 obj/
 /.vs/OpenMcdf/v14
-/bin/Debug
+bin/
 /TestResults
 /sources/Test/OpenMcdf.Test/bin/Debug
 /sources/Test/OpenMcdf.PerfTest/obj/Debug
@@ -27,7 +27,7 @@ obj/
 /Memory Test/bin/Debug
 /bin/Release/StructuredStorageXplorer
 /bin/Release/OpenMcdf.Extensions
-/bin/Release
+/bin/Release/
 /sources/Html Help/Help
 /.vs
 # User-specific files

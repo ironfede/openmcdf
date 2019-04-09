@@ -52,6 +52,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.PerfTest", "source
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Test", "sources\Test\OpenMcdf.Test\OpenMcdf.Test.csproj", "{FD339266-8842-40B4-9230-F8E84FC42AC2}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Benchmark", "sources\Test\OpenMcdf.Benchmark\OpenMcdf.Benchmark.csproj", "{B3645D34-1E22-4BCC-8956-A8A56FA9F114}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +88,10 @@ Global
 		{FD339266-8842-40B4-9230-F8E84FC42AC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FD339266-8842-40B4-9230-F8E84FC42AC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FD339266-8842-40B4-9230-F8E84FC42AC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3645D34-1E22-4BCC-8956-A8A56FA9F114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3645D34-1E22-4BCC-8956-A8A56FA9F114}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3645D34-1E22-4BCC-8956-A8A56FA9F114}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3645D34-1E22-4BCC-8956-A8A56FA9F114}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -96,6 +102,7 @@ Global
 		{E2BAD82D-3040-462B-BAA2-6E608A9054F4} = {73814657-FC73-4066-AABD-86062F2A132E}
 		{7077508F-B313-4DF6-8855-4764911BE161} = {73814657-FC73-4066-AABD-86062F2A132E}
 		{FD339266-8842-40B4-9230-F8E84FC42AC2} = {73814657-FC73-4066-AABD-86062F2A132E}
+		{B3645D34-1E22-4BCC-8956-A8A56FA9F114} = {73814657-FC73-4066-AABD-86062F2A132E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DEAA45F3-54F5-4F50-8402-9D89EB95A04C}
