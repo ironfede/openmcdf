@@ -3,8 +3,9 @@
 ################################################################################
 obj/
 /.vs/OpenMcdf/v14
+# all bin directories anywhere in the repo
 bin/
-/TestResults
+TestResults/
 /sources/Test/OpenMcdf.Test/bin/Debug
 /sources/Test/OpenMcdf.PerfTest/obj/Debug
 /sources/Test/OpenMcdf.PerfTest/bin/Debug
@@ -27,7 +28,7 @@ bin/
 /Memory Test/bin/Debug
 /bin/Release/StructuredStorageXplorer
 /bin/Release/OpenMcdf.Extensions
-/bin/Release/
+/bin/Release
 /sources/Html Help/Help
 /.vs
 # User-specific files
