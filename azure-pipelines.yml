@@ -1,0 +1,31 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+variables:
+  buildConfiguration: 'Release'
+  libFramework: 'netstandard2.0'
+  appFramework: 'netcoreapp2.0'
+  # pay attention to  slashes
+  testsProject:  'sources/Test/OpenMcdf.Test/OpenMcdf.Test.csproj'
+  buildProject: 'sources/OpenMcdf/OpenMcdf.csproj'
+  # without filter it  will timoeout in azure AFTER 60+ min
+  testFilter: 'Name!=Test_FIX_BUG_GH_14&Name!=Test_FIX_BUG_GH_15'
+
+steps:
+- script: dotnet build --configuration $(buildConfiguration) -f $(libFramework) $(buildProject)
+  displayName: 'dotnet build $(buildConfiguration)'
+
+- script: dotnet test -f $(appFramework)  $(testsProject) --filter="$(testFilter)" --logger trx
+- task: PublishTestResults@2
+  condition: succeededOrFailed()
+  inputs:
+    testRunner: VSTest
+    testResultsFiles: '**/*.trx'
