@@ -1292,6 +1292,13 @@ namespace OpenMcdf
                 while (true && validationCount >= 0)
                 {
                     nextSecID = BitConverter.ToInt32(s.GetData(), GetSectorSize() - 4);
+
+                    //Some files are terminated this way.
+                    //Break before the call to EnsureUniqueSectorIndex so the
+                    //magic 0 number is not registered as a processed sector
+                    if (nextSecID == 0)
+                        break;
+
                     EnsureUniqueSectorIndex(nextSecID, processedSectors);
 
                     // Strictly speaking, the following condition is not correct from
@@ -1324,12 +1331,14 @@ namespace OpenMcdf
             return result;
         }
 
-        private static void EnsureUniqueSectorIndex(int nextSecID, HashSet<int> processedSectors)
+        private void EnsureUniqueSectorIndex(int nextSecID, HashSet<int> processedSectors)
         {
-	        if (processedSectors.Contains(nextSecID))
-	        {
-		        throw new CFCorruptedFileException("The file is corrupted.");
-	        }
+            if (processedSectors.Contains(nextSecID))
+            {
+                if (!Configuration.HasFlag(CFSConfiguration.NoValidationException))
+                    throw new CFCorruptedFileException("The file is corrupted.");
+                return;
+            }
 
 	        processedSectors.Add(nextSecID);
         }
