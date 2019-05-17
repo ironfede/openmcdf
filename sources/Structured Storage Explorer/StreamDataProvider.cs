@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Be.Windows.Forms;
 using OpenMcdf;
 
@@ -27,7 +25,7 @@ namespace StructuredStorageExplorer
         /// <summary>
         /// Initializes a new instance of the DynamicByteProvider class.
         /// </summary>
-        /// <param name="bytes"></param>
+        /// <param name="modifiedStream"></param>
         public StreamDataProvider(CFStream modifiedStream)
         {
             _bytes = new ByteCollection(modifiedStream.GetData());

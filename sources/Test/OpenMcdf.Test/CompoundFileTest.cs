@@ -1,11 +1,9 @@
 using System;
-using System.Text;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenMcdf;
-using System.IO;
-using System.Diagnostics;
 
 namespace OpenMcdf.Test
 {
@@ -780,12 +778,10 @@ namespace OpenMcdf.Test
                 CompoundFile file = new CompoundFile(fs, CFSUpdateMode.ReadOnly, CFSConfiguration.LeaveOpen);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Assert.IsTrue(fs.CanRead && fs.CanSeek && fs.CanWrite);
             }
-
-
         }
 
         [TestMethod]
@@ -810,7 +806,7 @@ namespace OpenMcdf.Test
                 cf2.Commit();
                 cf2.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Assert.IsTrue(fs.CanRead && fs.CanSeek && fs.CanWrite);
             }
@@ -988,7 +984,7 @@ namespace OpenMcdf.Test
             byte c = 0x0A;
             for (int i = 0; i < iterationCount; i++)
             {
-                compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + 0.ToString()).Read(readBuffer, ((long)BUFFER_SIZE + ((long)BUFFER_SIZE * i)) - 15, 15);
+                compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + 0.ToString()).Read(readBuffer, (BUFFER_SIZE + ((long)BUFFER_SIZE * i)) - 15, 15);
                 Assert.IsTrue(readBuffer.All(by => by == c));
                 c++;
             }
@@ -1008,7 +1004,7 @@ namespace OpenMcdf.Test
                 Assert.IsTrue(st.GetData().Count() == 31220);
                 f.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Assert.Fail("Release Memory flag caused error");
             }
@@ -1054,27 +1050,27 @@ namespace OpenMcdf.Test
         [ExpectedException(typeof(CFCorruptedFileException))]
         public void Test_CorruptedSectorChain_Doc()
         {
-	        var f = new CompoundFile("corrupted-sector-chain.doc");
+            var f = new CompoundFile("corrupted-sector-chain.doc");
 
-	        f.Close();
-        } 
-        
+            f.Close();
+        }
+
         [TestMethod]
         [ExpectedException(typeof(CFCorruptedFileException))]
         public void Test_CorruptedSectorChain_Cfs()
         {
-	        var f = new CompoundFile("corrupted-sector-chain.cfs");
+            var f = new CompoundFile("corrupted-sector-chain.cfs");
 
-	        f.Close();
+            f.Close();
         }
 
         [TestMethod]
         [ExpectedException(typeof(CFCorruptedFileException))]
         public void Test_CorruptedSectorChain_Doc2()
         {
-	        var f = new CompoundFile("corrupted-sector-chain-2.doc");
+            var f = new CompoundFile("corrupted-sector-chain-2.doc");
 
-	        f.Close();
+            f.Close();
         }
 
         //[TestMethod]
