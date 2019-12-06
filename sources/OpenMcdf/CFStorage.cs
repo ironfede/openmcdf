@@ -385,7 +385,7 @@ namespace OpenMcdf
         /// cf.Close();
         /// </code>
         /// </example>
-        public bool TryGetStorage(String storageName, CFStorage cfStorage)
+        public bool TryGetStorage(String storageName, out CFStorage cfStorage)
         {
             bool result = false;
             cfStorage = null;
@@ -402,7 +402,7 @@ namespace OpenMcdf
                     cfStorage = new CFStorage(this.CompoundFile, outDe as IDirectoryEntry);
                     result = true;
                 }
-                
+
             }
             catch (CFDisposedException)
             {
@@ -639,6 +639,33 @@ namespace OpenMcdf
 
             //    ((IDirectoryEntry)target).LeftSibling--;
             //};
+
+
+        }
+
+
+        /// <summary>
+        /// Rename a Stream or Storage item in the current storage
+        /// </summary>
+        /// <param name="oldItemName">The item old name to lookup</param>
+        /// <param name="newItemName">The new name to assign</param>
+        public void RenameItem(string oldItemName, string newItemName)
+        {
+            IDirectoryEntry template = DirectoryEntry.Mock(oldItemName, StgType.StgInvalid);
+            IRBNode item;
+            if (Children.TryLookup(template, out item))
+            {
+                ((DirectoryEntry)item).SetEntryName(newItemName);
+            }
+            else throw new CFItemNotFound("Item " + oldItemName + " not found in Storage");
+
+            children = null;
+            children = LoadChildren(this.DirEntry.SID); //Rethread
+
+            if (children == null)
+            {
+                children = this.CompoundFile.CreateNewTree();
+            }
         }
     }
 }

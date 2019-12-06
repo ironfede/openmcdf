@@ -146,25 +146,29 @@ namespace OpenMcdf.Test
         {
             String FILENAME = "MultipleStorage.cfs";
             CompoundFile cf = new CompoundFile(FILENAME);
+            CFStorage st = null;
+            bool bs = cf.RootStorage.TryGetStorage("MyStorage", out st);
 
-            CFStorage st = cf.RootStorage.TryGetStorage("MyStorage");
+            Assert.IsTrue(bs);
             Assert.IsNotNull(st);
 
             try
             {
-                CFStorage nf = cf.RootStorage.TryGetStorage("IDONTEXIST");
+                CFStorage nf = null;
+                bool nb = cf.RootStorage.TryGetStorage("IDONTEXIST", out nf);
+                Assert.IsFalse(nb);
                 Assert.IsNull(nf);
             }
             catch (Exception)
             {
-                Assert.Fail("Exception raised for try_get method");
+                Assert.Fail("Exception raised for TryGetStorage method");
             }
 
             try
             {
                 var b = st.TryGetStream("MyStream", out CFStream s);
                 Assert.IsNotNull(s);
-                b = st.TryGetStream("IDONTEXIST2",out CFStream ns);
+                b = st.TryGetStream("IDONTEXIST2", out CFStream ns);
                 Assert.IsFalse(b);
             }
             catch (Exception)
@@ -453,7 +457,8 @@ namespace OpenMcdf.Test
         [ExpectedException(typeof(OpenMcdf.CFCorruptedFileException))]
         public void Test_CORRUPTEDDOC_BUG36_SHOULD_THROW_CORRUPTED_FILE_EXCEPTION()
         {
-            using (CompoundFile file = new CompoundFile("CorruptedDoc_bug36.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.NoValidationException) ) {
+            using (CompoundFile file = new CompoundFile("CorruptedDoc_bug36.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.NoValidationException))
+            {
                 //Many thanks to theseus for bug reporting
             }
         }

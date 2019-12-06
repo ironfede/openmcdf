@@ -26,7 +26,7 @@ namespace OpenMcdf
         {
             if (dirEntry == null || dirEntry.SID < 0)
                 throw new CFException("Attempting to add a CFStream using an unitialized directory");
-
+            
             this.DirEntry = dirEntry;
         }
 
