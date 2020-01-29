@@ -496,7 +496,7 @@ namespace OpenMcdf.Test
         }
 
 
-         
+
         [TestMethod]
         public void Test_DELETE_STREAM_1()
         {
@@ -1004,7 +1004,7 @@ namespace OpenMcdf.Test
             Buffer.BlockCopy(BitConverter.GetBytes((int)1), 0, s.GetData(), 0, 4);
             temp.Add(s);
 
-            StreamView sv = new StreamView(temp, 512, 0,null, a);
+            StreamView sv = new StreamView(temp, 512, 0, null, a);
             BinaryReader br = new BinaryReader(sv);
             Int32 t = br.ReadInt32();
 
@@ -1080,7 +1080,41 @@ namespace OpenMcdf.Test
             }
         }
 
+        /// <summary>
+        /// Write a sequence of Int32 greater than sector size,
+        /// read and compare.
+        /// </summary>
+        [TestMethod]
+        public void Test_CHANGE_STREAM_NAME_FIX_54()
+        {
+            try
+            {
+                CompoundFile cf = new CompoundFile("report.xls", CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
+                cf.RootStorage.RenameItem("Workbook", "Workbuk");
 
+                cf.Save("report_n.xls");
+                cf.Close();
+
+                CompoundFile cf2 = new CompoundFile("report_n.xls", CFSUpdateMode.Update, CFSConfiguration.Default);
+                cf2.RootStorage.RenameItem("Workbuk", "Workbook");
+                cf2.Commit();
+                cf2.Close();
+
+                CompoundFile cf3 = new CompoundFile("MultipleStorage.cfs", CFSUpdateMode.Update, CFSConfiguration.Default);
+                cf3.RootStorage.RenameItem("MyStorage", "MyNewStorage");
+                cf3.Commit();
+                cf3.Close();
+
+                CompoundFile cf4 = new CompoundFile("MultipleStorage.cfs", CFSUpdateMode.Update, CFSConfiguration.Default);
+                cf4.RootStorage.RenameItem("MyNewStorage", "MyStorage");
+                cf4.Commit();
+                cf4.Close();
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail("Unexpected exception raised: " + ex.Message);
+            }
+        }
 
     }
 }

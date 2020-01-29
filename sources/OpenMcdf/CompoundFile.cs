@@ -1321,8 +1321,11 @@ namespace OpenMcdf
 
                     if (validationCount < 0)
                     {
-                        this.Close();
-                        throw new CFCorruptedFileException("DIFAT sectors count mismatched. Corrupted compound file");
+                        if (this.closeStream)
+                            this.Close();
+
+                        if (this.validationExceptionEnabled)
+                            throw new CFCorruptedFileException("DIFAT sectors count mismatched. Corrupted compound file");
                     }
 
                     s = sectors[nextSecID] as Sector;
@@ -1341,9 +1344,9 @@ namespace OpenMcdf
             return result;
         }
 
-        private static void EnsureUniqueSectorIndex(int nextSecID, HashSet<int> processedSectors)
+        private void EnsureUniqueSectorIndex(int nextSecID, HashSet<int> processedSectors)
         {
-            if (processedSectors.Contains(nextSecID))
+            if (processedSectors.Contains(nextSecID) && this.validationExceptionEnabled)
             {
                 throw new CFCorruptedFileException("The file is corrupted.");
             }
@@ -1487,6 +1490,7 @@ namespace OpenMcdf
 
                 EnsureUniqueSectorIndex(next, processedSectors);
                 nextSecID = next;
+
             }
 
             return result;
