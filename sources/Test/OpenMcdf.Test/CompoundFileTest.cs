@@ -390,7 +390,7 @@ namespace OpenMcdf.Test
 
             //###########
             // 
-#if !NETCOREAPP2_0
+#if !NETCOREAPP2_2
             Trace.Listeners.Add(new ConsoleTraceListener());
 #endif
             // Phase 3
