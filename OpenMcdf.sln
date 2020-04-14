@@ -1,12 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2015
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30001.183
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6C619B4F-100F-4D60-BEF1-60B770D24E5E}"
 	ProjectSection(SolutionItems) = preProject
 		OpenMcdf.snk = OpenMcdf.snk
-		sources\SharedAssemblyInfo.cs = sources\SharedAssemblyInfo.cs
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{8DC8730A-F254-4848-B272-BDFFCB5FDC00}"

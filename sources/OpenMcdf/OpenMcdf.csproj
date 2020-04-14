@@ -1,100 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
-    <Configurations>Debug;Release</Configurations>
-    <SignAssembly>true</SignAssembly>
-    <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <IncludeSource>true</IncludeSource>
-    <AssemblyOriginatorKeyFile>OpenMcdf.snk</AssemblyOriginatorKeyFile>
-    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
-    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
-    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
-    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
-    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
-    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
-    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <Description>OpenMcdf is a 100% .net / C# component that allows developers to manipulate Microsoft Compound Document File Format for OLE structured storage. It supports read/write operations on streams and storages and traversal of structures tree.</Description>
+    <Copyright>Copyright © 2010-2020, Federico Blaseotto</Copyright>
+    <Company>Federico Blaseotto</Company>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>portable</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\Debug\OpenMcdf\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\bin\Debug\OpenMcdf\OpenMcdf.xml</DocumentationFile>
-    <NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>portable</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Release\OpenMcdf\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\bin\Release\OpenMcdf\OpenMcdf.xml</DocumentationFile>
-    <NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
-    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OpenMcdf</RootNamespace>
-    <AssemblyName>OpenMcdf</AssemblyName>
-    <!--<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>-->
-    <FileAlignment>512</FileAlignment>
-    <FileUpgradeFlags />
-    <OldToolsVersion>3.5</OldToolsVersion>
-    <UpgradeBackupLocation />
-    <PublishUrl>http://localhost/OpenMcdf/</PublishUrl>
-    <Install>true</Install>
-    <InstallFrom>Web</InstallFrom>
-    <UpdateEnabled>true</UpdateEnabled>
-    <UpdateMode>Foreground</UpdateMode>
-    <UpdateInterval>7</UpdateInterval>
-    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
-    <UpdatePeriodically>false</UpdatePeriodically>
-    <UpdateRequired>false</UpdateRequired>
-    <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.2.1.9</ApplicationVersion>
-    <IsWebBootstrapper>true</IsWebBootstrapper>
-    <UseApplicationTrust>false</UseApplicationTrust>
-    <BootstrapperEnabled>true</BootstrapperEnabled>
-    <TargetFrameworkProfile />
-    <SignAssembly>true</SignAssembly>
-    <AssemblyOriginatorKeyFile>OpenMcdf.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.2.1.9</Version>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Authors>ironfede</Authors>
-    <PackageLicenseUrl>https://opensource.org/licenses/MPL-2.0</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/ironfede/openmcdf</PackageProjectUrl>
-    <PackageIconUrl>http://a.fsdn.com/allura/p/openmcdf/icon</PackageIconUrl>
-    <RepositoryUrl>https://github.com/ironfede/openmcdf</RepositoryUrl>
-    <PackageTags>Compound file, c#, structured storage</PackageTags>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-  </PropertyGroup>
-  <ItemGroup />
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+		<_Parameter1>$(AssemblyName).Test,PublicKey=002400000480000094000000060200000024000052534131000400000100010085b50cbc1e40df696f8c30eaafc59a01e22303cb038fc832289b2c393f908a65c9aaa0d28026a47c6e5f85cc236f0735bea17236dbaaf91fea0003ddc1bb9c4cd318c5b855e7ef5877df5a7fc8394ee747d3573b69622e045837d546befb2fc13257e984db53a73dd59254a9a1d3c99a8ca6876c91304ea96899ac06a88d7bc6</_Parameter1>
+    </AssemblyAttribute>
+	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleToAttribute">
+		<_Parameter1>$(AssemblyName).Extensions,PublicKey=002400000480000094000000060200000024000052534131000400000100010085b50cbc1e40df696f8c30eaafc59a01e22303cb038fc832289b2c393f908a65c9aaa0d28026a47c6e5f85cc236f0735bea17236dbaaf91fea0003ddc1bb9c4cd318c5b855e7ef5877df5a7fc8394ee747d3573b69622e045837d546befb2fc13257e984db53a73dd59254a9a1d3c99a8ca6876c91304ea96899ac06a88d7bc6</_Parameter1>
+    </AssemblyAttribute>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
     <None Include="OpenMcdf.snk" />
     <None Include="OpenMcdfClassDiagram.cd" />
   </ItemGroup>

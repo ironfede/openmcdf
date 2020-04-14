@@ -80,7 +80,7 @@ namespace OpenMcdf.Benchmark
             var iterationCount = TotalStreamSize / BufferSize;
 
             var buffer = new byte[BufferSize];
-            Array.Fill(buffer, byte.MaxValue);
+            for (int i = 0; i < BufferSize; ++i) buffer[i] = byte.MaxValue;
             const CFSConfiguration flags = CFSConfiguration.Default | CFSConfiguration.LeaveOpen;
             using (var compoundFile = new CompoundFile(CFSVersion.Ver_4, flags))
             {

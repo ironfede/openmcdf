@@ -1,0 +1,11 @@
+﻿<Project>
+	<Import Project="../Directory.Build.props" />
+	<PropertyGroup>	
+		<TargetFrameworks>netcoreapp3.1</TargetFrameworks>
+		<Configurations>Debug;Release</Configurations>
+		<AssemblyOriginatorKeyFile>$(SolutionDir)\OpenMcdf.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\OpenMcdf\OpenMcdf.csproj" TargetFrameworks="netstandard2.0"/>
+	</ItemGroup>
+</Project>
