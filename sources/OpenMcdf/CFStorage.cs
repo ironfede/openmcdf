@@ -494,36 +494,41 @@ namespace OpenMcdf
         /// </example>
         public void VisitEntries(Action<CFItem> action, bool recursive)
         {
+            if (action == null) return;
+            foreach (CFItem child in EnumerateChildren(recursive))
+                action(child);
+        }
+
+        /// <summary>
+        /// Enumerate entries contained in this storage.
+        /// </summary>
+        /// <param name="recursive"> Visiting recursion level. True means substorages are visited recursively, false indicates that only the direct children of this storage are visited</param>
+        /// <example>
+        /// <code>
+        /// const String STORAGE_NAME = "report.xls";
+        /// CompoundFile cf = new CompoundFile(STORAGE_NAME);
+        /// using FileStream output = new FileStream("LogEntries.txt", FileMode.Create);
+        /// using TextWriter tw = new StreamWriter(output);
+        /// foreach(CFItem in cf.RootStorage.EnumerateChildren(true))
+        ///     tw.WriteLine(item.Name);
+        /// </code>
+        /// </example>
+        public IEnumerable<CFItem> EnumerateChildren(bool recursive)
+        {
             CheckDisposed();
-
-            if (action != null)
+            foreach (var targetNode in Children)
             {
-                List<IRBNode> subStorages
-                    = new List<IRBNode>();
-
-                Action<IRBNode> internalAction =
-                    delegate (IRBNode targetNode)
-                    {
-                        IDirectoryEntry d = targetNode as IDirectoryEntry;
-                        if (d.StgType == StgType.StgStream)
-                            action(new CFStream(this.CompoundFile, d));
-                        else
-                            action(new CFStorage(this.CompoundFile, d));
-
-                        if (d.Child != DirectoryEntry.NOSTREAM)
-                            subStorages.Add(targetNode);
-
-                        return;
-                    };
-
-                this.Children.VisitTreeNodes(internalAction);
-
-                if (recursive && subStorages.Count > 0)
-                    foreach (IRBNode n in subStorages)
-                    {
-                        IDirectoryEntry d = n as IDirectoryEntry;
-                        (new CFStorage(this.CompoundFile, d)).VisitEntries(action, recursive);
-                    }
+                IDirectoryEntry d = targetNode as IDirectoryEntry;
+                if (d.StgType == StgType.StgStream)
+                    yield return new CFStream(CompoundFile, d);
+                else
+                {
+                    CFStorage substg = new CFStorage(CompoundFile, d);
+                    yield return substg;
+                    if (recursive)
+                        foreach (CFItem item in substg.EnumerateChildren(recursive))
+                            yield return item;
+                }
             }
         }
 
