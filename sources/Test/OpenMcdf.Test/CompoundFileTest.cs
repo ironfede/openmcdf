@@ -909,7 +909,7 @@ namespace OpenMcdf.Test
         #endregion
         private const int Mb = 1024 * 1024;
         [TestMethod]
-        public void Test_FIX_BUG_GH_14()
+        public void Test_FIX_BUG_GH_14_GH15()
         {
             String filename = "MyFile.dat";
             String storageName = "MyStorage";
@@ -925,19 +925,20 @@ namespace OpenMcdf.Test
             CompoundFile compoundFile = new CompoundFile(filename, CFSUpdateMode.Update, CFSConfiguration.Default);
             CFStorage st = compoundFile.RootStorage.AddStorage(storageName);
             byte b = 0X0A;
-
+            byte[] buffer = new byte[BUFFER_SIZE];
             for (int streamId = 0; streamId < streamCount; ++streamId)
             {
+                Array.Fill(buffer, b);
                 CFStream sm = st.AddStream(streamName + streamId);
                 for (int iteration = 0; iteration < iterationCount; ++iteration)
                 {
-                    sm.Append(Helpers.GetBuffer(BUFFER_SIZE, b));
+                    sm.Append(buffer);
                     compoundFile.Commit();
                 }
-
                 b++;
             }
             compoundFile.Close();
+            buffer = null;
 
             compoundFile = new CompoundFile(filename, CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
             byte[] testBuffer = new byte[100];
@@ -952,45 +953,6 @@ namespace OpenMcdf.Test
                 compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + streamId).Read(testBuffer, 0, 100);
                 Assert.IsTrue(testBuffer.All(g => g == t));
                 t++;
-            }
-
-            compoundFile.Close();
-        }
-
-        [TestMethod]
-        public void Test_FIX_BUG_GH_15()
-        {
-            String filename = "MyFile.dat";
-            String storageName = "MyStorage";
-            String streamName = "MyStream";
-            int BUFFER_SIZE = 800 * Mb;
-            int iterationCount = 1;
-            int streamCount = 1;
-
-            CompoundFile compoundFile = new CompoundFile(CFSVersion.Ver_4, CFSConfiguration.Default);
-            CFStorage st = compoundFile.RootStorage.AddStorage(storageName);
-
-            for (int streamId = 0; streamId < streamCount; ++streamId)
-            {
-                CFStream sm = st.AddStream(streamName + streamId);
-                for (int iteration = 0; iteration < iterationCount; ++iteration)
-                {
-                    byte b = (byte)(0x0A + iteration);
-                    sm.Append(Helpers.GetBuffer(BUFFER_SIZE, b));
-                }
-            }
-            compoundFile.Save(filename);
-            compoundFile.Close();
-
-            byte[] readBuffer = new byte[15];
-            compoundFile = new CompoundFile(filename);
-
-            byte c = 0x0A;
-            for (int i = 0; i < iterationCount; i++)
-            {
-                compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + 0.ToString()).Read(readBuffer, ((long)BUFFER_SIZE + ((long)BUFFER_SIZE * i)) - 15, 15);
-                Assert.IsTrue(readBuffer.All(by => by == c));
-                c++;
             }
 
             compoundFile.Close();

@@ -19,25 +19,17 @@ namespace OpenMcdf.Test
             Random r = new Random();
             r.NextBytes(buffer);
         }
-        public static void FillBuffer(byte[] buffer,byte c)
-        {
-            for (int i = 0; i < buffer.Length; i++)
-            {
-                buffer[i] = c;
-            }
-        }
 
         public static byte[] GetBuffer(int count, byte c)
         {
             byte[] b = new byte[count];
-            FillBuffer(b,c);
+            Array.Fill(b, c);
             return b;
         }
 
         public static bool CompareBuffer(byte[] b, byte[] p)
         {
-            bool res = CompareBuffer(b, p, b.Length);
-            return res && (b.Length == p.Length);
+            return (b.Length == p.Length) && CompareBuffer(b, p, b.Length);
         }
 
         public static bool CompareBuffer(byte[] b, byte[] p, int count)
@@ -45,12 +37,8 @@ namespace OpenMcdf.Test
             if (b == null && p == null)
                 throw new Exception("Null buffers");
 
-            if (b == null && p != null)
+            if (b == null || p == null)
                 return false;
-
-            if (b != null && p == null)
-                return false;
-
 
             for (int i = 0; i < count; i++)
             {
