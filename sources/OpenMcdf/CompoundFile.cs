@@ -1407,6 +1407,8 @@ namespace OpenMcdf
                         continue;
                     }
 
+                    EnsureUniqueSectorIndex(nextSecID, processedSectors);
+
                     Sector s = sectors[nextSecID] as Sector;
 
                     if (s == null)
@@ -1421,7 +1423,6 @@ namespace OpenMcdf
 
                     difatStream.Read(nextDIFATSectorBuffer, 0, 4);
                     nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
-                    EnsureUniqueSectorIndex(nextSecID, processedSectors);
                     nFat++;
                 }
             }
