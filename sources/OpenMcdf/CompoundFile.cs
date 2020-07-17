@@ -1392,20 +1392,16 @@ namespace OpenMcdf
 
                 byte[] nextDIFATSectorBuffer = new byte[4];
 
-                difatStream.Read(nextDIFATSectorBuffer, 0, 4);
-                nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
+               
 
                 int i = 0;
-                int nFat = N_HEADER_FAT_ENTRY;
-
-                while (nFat < header.FATSectorsNumber)
+                
+                while (result.Count < header.FATSectorsNumber)
                 {
-                    if (difatStream.Position == ((GetSectorSize() - 4) + i * GetSectorSize()))
-                    {
-                        difatStream.Seek(4, SeekOrigin.Current);
-                        i++;
-                        continue;
-                    }
+                    difatStream.Read(nextDIFATSectorBuffer, 0, 4);
+                    nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
+                    
+                    EnsureUniqueSectorIndex(nextSecID, processedSectors);
 
                     Sector s = sectors[nextSecID] as Sector;
 
@@ -1419,10 +1415,22 @@ namespace OpenMcdf
 
                     result.Add(s);
 
-                    difatStream.Read(nextDIFATSectorBuffer, 0, 4);
-                    nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
-                    EnsureUniqueSectorIndex(nextSecID, processedSectors);
-                    nFat++;
+                    //difatStream.Read(nextDIFATSectorBuffer, 0, 4);
+                    //nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
+                    
+
+                    if (difatStream.Position == ((GetSectorSize() - 4) + i * GetSectorSize()))
+                    {
+                        // Skip DIFAT chain fields considering the possibility that the last FAT entry has been already read
+                        difatStream.Read(nextDIFATSectorBuffer, 0, 4);
+                        if (BitConverter.ToInt32(nextDIFATSectorBuffer, 0) == Sector.ENDOFCHAIN)
+                            break;
+                        else
+                        {
+                            i++;
+                            continue;
+                        }
+                    }
                 }
             }
 

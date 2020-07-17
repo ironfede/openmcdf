@@ -115,12 +115,14 @@ namespace OpenMcdf.Test
             String FILENAME = "MultipleStorage.cfs";
             CompoundFile cf = new CompoundFile(FILENAME);
 
-            CFStorage st = cf.RootStorage.TryGetStorage("MyStorage");
+            CFStorage st = null;
+            cf.RootStorage.TryGetStorage("MyStorage", out st);
             Assert.IsNotNull(st);
 
             try
             {
-                CFStorage nf = cf.RootStorage.TryGetStorage("IDONTEXIST");
+                CFStorage nf = null;
+                cf.RootStorage.TryGetStorage("IDONTEXIST", out nf);
                 Assert.IsNull(nf);
             }
             catch (Exception)
@@ -130,9 +132,11 @@ namespace OpenMcdf.Test
 
             try
             {
-                CFStream s = st.TryGetStream("MyStream");
+                CFStream s = null;
+                st.TryGetStream("MyStream", out s);
                 Assert.IsNotNull(s);
-                CFStream ns = st.TryGetStream("IDONTEXIST2");
+                CFStream ns = null;
+                st.TryGetStream("IDONTEXIST2", out ns);
                 Assert.IsNull(ns);
             }
             catch (Exception)

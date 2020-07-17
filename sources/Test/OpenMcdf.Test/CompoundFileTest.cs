@@ -1051,30 +1051,43 @@ namespace OpenMcdf.Test
         }
 
         [TestMethod]
+        public void Test_FIX_GH_50()
+        {
+            try
+            {
+                var f = new CompoundFile("64-67.numberOfMiniFATSectors.docx", CFSUpdateMode.Update, CFSConfiguration.Default);
+            }
+            catch (Exception e)
+            {
+                Assert.IsTrue(e is CFFileFormatException);
+            }
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(CFCorruptedFileException))]
         public void Test_CorruptedSectorChain_Doc()
         {
-	        var f = new CompoundFile("corrupted-sector-chain.doc");
+            var f = new CompoundFile("corrupted-sector-chain.doc");
 
-	        f.Close();
-        } 
-        
+            f.Close();
+        }
+
         [TestMethod]
         [ExpectedException(typeof(CFCorruptedFileException))]
         public void Test_CorruptedSectorChain_Cfs()
         {
-	        var f = new CompoundFile("corrupted-sector-chain.cfs");
+            var f = new CompoundFile("corrupted-sector-chain.cfs");
 
-	        f.Close();
+            f.Close();
         }
 
         [TestMethod]
         [ExpectedException(typeof(CFCorruptedFileException))]
         public void Test_CorruptedSectorChain_Doc2()
         {
-	        var f = new CompoundFile("corrupted-sector-chain-2.doc");
+            var f = new CompoundFile("corrupted-sector-chain-2.doc");
 
-	        f.Close();
+            f.Close();
         }
 
         //[TestMethod]

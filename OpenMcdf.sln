@@ -13,6 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{
 	ProjectSection(SolutionItems) = preProject
 		sources\TestFiles\2_MB-W.ppt = sources\TestFiles\2_MB-W.ppt
 		sources\Test\TestFiles\2custom.doc = sources\Test\TestFiles\2custom.doc
+		sources\Test\TestFiles\64-67.numberOfMiniFATSectors.docx = sources\Test\TestFiles\64-67.numberOfMiniFATSectors.docx
 		sources\TestFiles\_thumbs_bug_24.db = sources\TestFiles\_thumbs_bug_24.db
 		sources\TestFiles\BUG_16_.xls = sources\TestFiles\BUG_16_.xls
 		sources\Test\TestFiles\corrupted-sector-chain-2.doc = sources\Test\TestFiles\corrupted-sector-chain-2.doc
