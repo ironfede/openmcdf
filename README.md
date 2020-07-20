@@ -61,4 +61,15 @@ If you need to compress a compound file, you can purge its unused space
 CompoundFile.ShrinkCompoundFile("MultipleStorage_Deleted_Compress.cfs"); 
 ```
 
-OpenMcdf runs happily on the [Mono](http://www.mono-project.com/) platform .
+OLE Properties handling for DocumentSummaryInfo and SummaryInfo streams  
+is now available via extension methods ***(beta - api subjected to changes)***
+
+```C#
+PropertySetStream mgr = ((CFStream)target).AsOLEProperties();
+for (int i = 0; i < mgr.PropertySet0.NumProperties; i++)
+{
+  ITypedPropertyValue p = mgr.PropertySet0.Properties[i];
+  ...
+```
+
+OpenMcdf runs happily on the [Mono](http://www.mono-project.com/) platform and supports now **.NET Standard 2.0**

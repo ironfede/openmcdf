@@ -369,6 +369,7 @@ namespace OpenMcdf
         /// </example>
         public CompoundFile(String fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters)
         {
+            this.configuration = configParameters;
             this.validationExceptionEnabled = !configParameters.HasFlag(CFSConfiguration.NoValidationException);
             this.sectorRecycle = configParameters.HasFlag(CFSConfiguration.SectorRecycle);
             this.updateMode = updateMode;
@@ -416,6 +417,7 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFException">Raised stream is null</exception>
         public CompoundFile(Stream stream, CFSUpdateMode updateMode, CFSConfiguration configParameters)
         {
+            this.configuration = configParameters;
             this.validationExceptionEnabled = !configParameters.HasFlag(CFSConfiguration.NoValidationException);
             this.sectorRecycle = configParameters.HasFlag(CFSConfiguration.SectorRecycle);
             this.eraseFreeSectors = configParameters.HasFlag(CFSConfiguration.EraseFreeSectors);
@@ -550,7 +552,7 @@ namespace OpenMcdf
                     gap = true;
                 }
 
-                if (releaseMemory)
+                if (s != null && releaseMemory)
                 {
 
                     s.ReleaseData();
@@ -1269,6 +1271,8 @@ namespace OpenMcdf
             int nextSecID
                = Sector.ENDOFCHAIN;
 
+            HashSet<int> processedSectors = new HashSet<int>();
+
             if (header.DIFATSectorsNumber != 0)
             {
                 validationCount = (int)header.DIFATSectorsNumber;
@@ -1288,6 +1292,7 @@ namespace OpenMcdf
                 while (true && validationCount >= 0)
                 {
                     nextSecID = BitConverter.ToInt32(s.GetData(), GetSectorSize() - 4);
+                    EnsureUniqueSectorIndex(nextSecID, processedSectors);
 
                     // Strictly speaking, the following condition is not correct from
                     // a specification point of view:
@@ -1299,8 +1304,11 @@ namespace OpenMcdf
 
                     if (validationCount < 0)
                     {
-                        this.Close();
-                        throw new CFCorruptedFileException("DIFAT sectors count mismatched. Corrupted compound file");
+                        if (this.closeStream)
+                            this.Close();
+
+                        if (this.validationExceptionEnabled)
+                            throw new CFCorruptedFileException("DIFAT sectors count mismatched. Corrupted compound file");
                     }
 
                     s = sectors[nextSecID] as Sector;
@@ -1317,6 +1325,16 @@ namespace OpenMcdf
             }
 
             return result;
+        }
+
+        private void EnsureUniqueSectorIndex(int nextSecID, HashSet<int> processedSectors)
+        {
+            if (processedSectors.Contains(nextSecID) && this.validationExceptionEnabled)
+            {
+                throw new CFCorruptedFileException("The file is corrupted.");
+            }
+
+            processedSectors.Add(nextSecID);
         }
 
         /// <summary>
@@ -1359,6 +1377,7 @@ namespace OpenMcdf
             //Is there any DIFAT sector containing other FAT entries ?
             if (difatSectors.Count > 0)
             {
+                HashSet<int> processedSectors = new HashSet<int>();
                 StreamView difatStream
                     = new StreamView
                         (
@@ -1373,20 +1392,16 @@ namespace OpenMcdf
 
                 byte[] nextDIFATSectorBuffer = new byte[4];
 
-                difatStream.Read(nextDIFATSectorBuffer, 0, 4);
-                nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
+               
 
                 int i = 0;
-                int nFat = N_HEADER_FAT_ENTRY;
-
-                while (nFat < header.FATSectorsNumber)
+                
+                while (result.Count < header.FATSectorsNumber)
                 {
-                    if (difatStream.Position == ((GetSectorSize() - 4) + i * GetSectorSize()))
-                    {
-                        difatStream.Seek(4, SeekOrigin.Current);
-                        i++;
-                        continue;
-                    }
+                    difatStream.Read(nextDIFATSectorBuffer, 0, 4);
+                    nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
+                    
+                    EnsureUniqueSectorIndex(nextSecID, processedSectors);
 
                     Sector s = sectors[nextSecID] as Sector;
 
@@ -1400,9 +1415,22 @@ namespace OpenMcdf
 
                     result.Add(s);
 
-                    difatStream.Read(nextDIFATSectorBuffer, 0, 4);
-                    nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
-                    nFat++;
+                    //difatStream.Read(nextDIFATSectorBuffer, 0, 4);
+                    //nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
+                    
+
+                    if (difatStream.Position == ((GetSectorSize() - 4) + i * GetSectorSize()))
+                    {
+                        // Skip DIFAT chain fields considering the possibility that the last FAT entry has been already read
+                        difatStream.Read(nextDIFATSectorBuffer, 0, 4);
+                        if (BitConverter.ToInt32(nextDIFATSectorBuffer, 0) == Sector.ENDOFCHAIN)
+                            break;
+                        else
+                        {
+                            i++;
+                            continue;
+                        }
+                    }
                 }
             }
 
@@ -1423,6 +1451,7 @@ namespace OpenMcdf
             int nextSecID = secID;
 
             List<Sector> fatSectors = GetFatSectorChain();
+            HashSet<int> processedSectors = new HashSet<int>();
 
             StreamView fatStream
                 = new StreamView(fatSectors, GetSectorSize(), fatSectors.Count * GetSectorSize(), null, sourceStream);
@@ -1451,10 +1480,9 @@ namespace OpenMcdf
                 fatStream.Seek(nextSecID * 4, SeekOrigin.Begin);
                 int next = fatStream.ReadInt32();
 
-                if (next != nextSecID)
-                    nextSecID = next;
-                else
-                    throw new CFCorruptedFileException("Cyclic sector chain found. File is corrupted");
+                EnsureUniqueSectorIndex(next, processedSectors);
+                nextSecID = next;
+
             }
 
 
@@ -1488,6 +1516,8 @@ namespace OpenMcdf
 
                 nextSecID = secID;
 
+                HashSet<int> processedSectors = new HashSet<int>();
+
                 while (true)
                 {
                     if (nextSecID == Sector.ENDOFCHAIN)
@@ -1505,7 +1535,10 @@ namespace OpenMcdf
                     result.Add(ms);
 
                     miniFATView.Seek(nextSecID * 4, SeekOrigin.Begin);
-                    nextSecID = miniFATReader.ReadInt32();
+                    int next = miniFATReader.ReadInt32();
+
+                    nextSecID = next;
+                    EnsureUniqueSectorIndex(nextSecID, processedSectors);
                 }
             }
             return result;
@@ -1787,6 +1820,9 @@ namespace OpenMcdf
         {
             List<Sector> directoryChain
                 = GetSectorChain(header.FirstDirectorySectorID, SectorType.Normal);
+
+            if (!(directoryChain.Count > 0))
+                throw new CFCorruptedFileException("Directory sector chain MUST contain at least 1 sector");
 
             if (header.FirstDirectorySectorID == Sector.ENDOFCHAIN)
                 header.FirstDirectorySectorID = directoryChain[0].Id;

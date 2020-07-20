@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace OpenMcdf.Extensions.OLEProperties
@@ -43,5 +42,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         VT_VECTOR_LPSTR = VT_VECTOR_HEADER | VT_LPSTR,
         VT_VECTOR_HEADER = 0x1000,  //--- NOT NORMATIVE
         VT_ARRAY_HEADER = 0x2000,  //--- NOT NORMATIVE
+        VT_VARIANT_VECTOR = 0x000C,//--- NOT NORMATIVE
+        VT_VARIANT_ARRAY = 0x200C,//--- NOT NORMATIVE
     }
 }

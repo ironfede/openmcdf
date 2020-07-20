@@ -218,17 +218,20 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_OPEN_FROM_STREAM()
         {
-            String filename = "reportREAD.xls";
-            File.Copy(filename, "reportOPENFROMSTREAM.xls");
-            FileStream fs = new FileStream(filename, FileMode.Open);
-            CompoundFile cf = new CompoundFile(fs);
-            CFStream foundStream = cf.RootStorage.GetStream("Workbook");
+            const string filename = "reportREAD.xls";
 
-            byte[] temp = foundStream.GetData();
+            using (var fs = new FileStream(filename, FileMode.Open))
+            {
+                using (var cf = new CompoundFile(fs))
+                {
+                    var foundStream = cf.RootStorage.GetStream("Workbook");
+                    var temp = foundStream.GetData();
+                    Assert.IsNotNull(temp);
+                    cf.Close();
+                }
+            }
 
-            Assert.IsNotNull(temp);
 
-            cf.Close();
         }
 
         [TestMethod]
@@ -388,8 +391,10 @@ namespace OpenMcdf.Test
             File.Delete("8_Streams.cfs");
 
             //###########
-
+            // 
+#if !NETCOREAPP2_0
             Trace.Listeners.Add(new ConsoleTraceListener());
+#endif
             // Phase 3
             cf = new CompoundFile("6_Streams.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle | CFSConfiguration.EraseFreeSectors);
             cf.RootStorage.Delete("D");
@@ -902,14 +907,14 @@ namespace OpenMcdf.Test
             }, false);
         }
         #endregion
-
+        private const int Mb = 1024 * 1024;
         [TestMethod]
         public void Test_FIX_BUG_GH_14()
         {
             String filename = "MyFile.dat";
             String storageName = "MyStorage";
             String streamName = "MyStream";
-            int BUFFER_SIZE = 500000000;
+            int BUFFER_SIZE = 800 * Mb;
             int iterationCount = 3;
             int streamCount = 3;
 
@@ -958,7 +963,7 @@ namespace OpenMcdf.Test
             String filename = "MyFile.dat";
             String storageName = "MyStorage";
             String streamName = "MyStream";
-            int bufferSize = 500000000;
+            int BUFFER_SIZE = 800 * Mb;
             int iterationCount = 6;
             int streamCount = 1;
 
@@ -971,25 +976,119 @@ namespace OpenMcdf.Test
                 for (int iteration = 0; iteration < iterationCount; ++iteration)
                 {
                     byte b = (byte)(0x0A + iteration);
-                    sm.Append(Helpers.GetBuffer(bufferSize, b));
+                    sm.Append(Helpers.GetBuffer(BUFFER_SIZE, b));
                 }
             }
             compoundFile.Save(filename);
             compoundFile.Close();
 
             byte[] readBuffer = new byte[15];
-             compoundFile = new CompoundFile(filename);
+            compoundFile = new CompoundFile(filename);
 
             byte c = 0x0A;
             for (int i = 0; i < iterationCount; i++)
             {
-                compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + 0.ToString()).Read(readBuffer, ((long)bufferSize + ((long)bufferSize * i)) - 15, 15);
+                compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + 0.ToString()).Read(readBuffer, ((long)BUFFER_SIZE + ((long)BUFFER_SIZE * i)) - 15, 15);
                 Assert.IsTrue(readBuffer.All(by => by == c));
                 c++;
             }
+
             compoundFile.Close();
         }
 
+        [TestMethod]
+        public void Test_PR_GH_18()
+        {
+            try
+            {
+                var f = new CompoundFile("MultipleStorage4.cfs", CFSUpdateMode.Update, CFSConfiguration.Default);
+                var st = f.RootStorage.GetStorage("MyStorage").GetStorage("AnotherStorage").GetStream("MyStream");
+                st.Write(Helpers.GetBuffer(100, 0x02), 100);
+                f.Commit(true);
+                Assert.IsTrue(st.GetData().Count() == 31220);
+                f.Close();
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail("Release Memory flag caused error");
+            }
+        }
+
+        [TestMethod]
+        public void Test_FIX_GH_38()
+        {
+            CompoundFile f = null;
+            try
+            {
+                f = new CompoundFile("empty_directory_chain.doc", CFSUpdateMode.Update, CFSConfiguration.Default);
+
+                f.Close();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(CFCorruptedFileException));
+                if (f != null)
+                    f.Close();
+            }
+        }
+
+        [TestMethod]
+        public void Test_FIX_GH_38_B()
+        {
+            CompoundFile f = null;
+            try
+            {
+                f = new CompoundFile("no_sectors.doc", CFSUpdateMode.Update, CFSConfiguration.Default);
+
+                f.Close();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(CFException));
+                if (f != null)
+                    f.Close();
+            }
+        }
+
+        [TestMethod]
+        public void Test_FIX_GH_50()
+        {
+            try
+            {
+                var f = new CompoundFile("64-67.numberOfMiniFATSectors.docx", CFSUpdateMode.Update, CFSConfiguration.Default);
+            }
+            catch (Exception e)
+            {
+                Assert.IsTrue(e is CFFileFormatException);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(CFCorruptedFileException))]
+        public void Test_CorruptedSectorChain_Doc()
+        {
+            var f = new CompoundFile("corrupted-sector-chain.doc");
+
+            f.Close();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(CFCorruptedFileException))]
+        public void Test_CorruptedSectorChain_Cfs()
+        {
+            var f = new CompoundFile("corrupted-sector-chain.cfs");
+
+            f.Close();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(CFCorruptedFileException))]
+        public void Test_CorruptedSectorChain_Doc2()
+        {
+            var f = new CompoundFile("corrupted-sector-chain-2.doc");
+
+            f.Close();
+        }
 
         //[TestMethod]
         //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()

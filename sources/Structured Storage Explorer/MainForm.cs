@@ -10,15 +10,14 @@ using System.Windows.Forms;
 using OpenMcdf;
 using System.IO;
 using System.Resources;
-
-
 using System.Globalization;
 using StructuredStorageExplorer.Properties;
 using Be.Windows.Forms;
 using OpenMcdf.Extensions.OLEProperties;
 using OpenMcdf.Extensions.OLEProperties.Interfaces;
-
 using OpenMcdf.Extensions;
+using System.Linq;
+using System.Collections;
 
 // Author Federico Blaseotto
 
@@ -429,26 +428,107 @@ namespace StructuredStorageExplorer
 #if OLE_PROPERTY
                     if (target.Name == "\u0005SummaryInformation" || target.Name == "\u0005DocumentSummaryInformation")
                     {
-                        var mgr = ((CFStream)target).AsOLEProperties();
+                        OLEPropertiesContainer c = ((CFStream)target).AsOLEPropertiesContainer();
 
                         DataTable ds = new DataTable();
+
                         ds.Columns.Add("Name", typeof(String));
                         ds.Columns.Add("Type", typeof(String));
                         ds.Columns.Add("Value", typeof(String));
 
-
-                        for (int i = 0; i < mgr.PropertySet0.NumProperties; i++)
+                        foreach (var p in c.Properties)
                         {
-                            ITypedPropertyValue p = mgr.PropertySet0.Properties[i];
-
-                            DataRow dr = ds.NewRow();
-                            dr.ItemArray = new Object[] { mgr.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier, p.VTType, p.PropertyValue };
-                            ds.Rows.Add(dr);
+                            if (p.Value.GetType() != typeof(byte[]) && p.Value.GetType().GetInterfaces().Any(t => t == typeof(IList)))
+                            {
+                                for (int h = 0; h < ((IList)p.Value).Count; h++)
+                                {
+                                    DataRow dr = ds.NewRow();
+                                    dr.ItemArray = new Object[] { p.PropertyName, p.VTType, ((IList)p.Value)[h] };
+                                    ds.Rows.Add(dr);
+                                }
+                            }
+                            else
+                            {
+                                DataRow dr = ds.NewRow();
+                                dr.ItemArray = new Object[] { p.PropertyName, p.VTType, p.Value };
+                                ds.Rows.Add(dr);
+                            }
                         }
-
                         ds.AcceptChanges();
                         dgvOLEProps.DataSource = ds;
+
+                        if (c.HasUserDefinedProperties)
+                        {
+                            DataTable ds2 = new DataTable();
+
+                            ds2.Columns.Add("Name", typeof(String));
+                            ds2.Columns.Add("Type", typeof(String));
+                            ds2.Columns.Add("Value", typeof(String));
+
+                            foreach (var p in c.UserDefinedProperties.Properties)
+                            {
+                                if (p.Value.GetType() != typeof(byte[]) && p.Value.GetType().GetInterfaces().Any(t => t == typeof(IList)))
+                                {
+                                    for (int h = 0; h < ((IList)p.Value).Count; h++)
+                                    {
+                                        DataRow dr = ds2.NewRow();
+                                        dr.ItemArray = new Object[] { p.PropertyName, p.VTType, ((IList)p.Value)[h] };
+                                        ds2.Rows.Add(dr);
+                                    }
+                                }
+                                else
+                                {
+                                    DataRow dr = ds2.NewRow();
+                                    dr.ItemArray = new Object[] { p.PropertyName, p.VTType, p.Value };
+                                    ds2.Rows.Add(dr);
+                                }
+                            }
+
+                            ds2.AcceptChanges();
+                            dgvUserDefinedProperties.DataSource = ds2;
+                        }
+
+                       
                     }
+                    else
+                    {
+                        dgvOLEProps.DataSource = null;
+                    }
+
+                    //if (target.Name == "\u0005SummaryInformation" || target.Name == "\u0005DocumentSummaryInformation")
+                    //{
+                    //    ContainerType map = target.Name == "\u0005SummaryInformation" ? ContainerType.SummaryInfo : ContainerType.DocumentSummaryInfo;
+                    //    PropertySetStream mgr = ((CFStream)target).AsOLEProperties();
+
+                    //    DataTable ds = new DataTable();
+                    //    ds.Columns.Add("Name", typeof(String));
+                    //    ds.Columns.Add("Type", typeof(String));
+                    //    ds.Columns.Add("Value", typeof(String));
+
+                    //    for (int i = 0; i < mgr.PropertySet0.NumProperties; i++)
+                    //    {
+                    //        ITypedPropertyValue p = mgr.PropertySet0.Properties[i];
+
+                    //        if (p.Value.GetType().GetInterfaces().Any(t => t == typeof(IList)))
+                    //        {
+                    //            for (int h = 0; h < ((IList)p.Value).Count; h++)
+                    //            {
+                    //                DataRow dr = ds.NewRow();
+                    //                dr.ItemArray = new Object[] { mgr.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier.GetDescription(map), p.VTType, ((IList)p.Value)[h] };
+                    //                ds.Rows.Add(dr);
+                    //            }
+                    //        }
+                    //        else
+                    //        {
+                    //            DataRow dr = ds.NewRow();
+                    //            dr.ItemArray = new Object[] { mgr.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier.GetDescription(map), p.VTType, p.Value };
+                    //            ds.Rows.Add(dr);
+                    //        }
+                    //    }
+
+                    //    ds.AcceptChanges();
+                    //    dgvOLEProps.DataSource = ds;
+                    //}
 #endif
                 }
             }
@@ -461,12 +541,11 @@ namespace StructuredStorageExplorer
             }
 
             if (n != null)
-            {
-
                 propertyGrid1.SelectedObject = n.Tag;
 
 
-
+            if (n != null)
+            {
                 CFStream targetStream = n.Tag as CFStream;
                 if (targetStream != null)
                 {
@@ -477,7 +556,6 @@ namespace StructuredStorageExplorer
                     this.hexEditor.ByteProvider = null;
                 }
             }
-
         }
 
         void hexEditor_ByteProviderChanged(object sender, EventArgs e)

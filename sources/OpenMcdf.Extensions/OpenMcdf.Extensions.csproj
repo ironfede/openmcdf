@@ -1,17 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{DB748C1D-D71C-442B-832D-2E33BE816CBB}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OpenMcdf.Extensions</RootNamespace>
-    <AssemblyName>OpenMcdf.Extensions</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
+     <TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
+    <Configurations>Debug;Release</Configurations>
+    <SignAssembly>true</SignAssembly>
+    <IncludeSymbols>true</IncludeSymbols>
+    <IncludeSource>true</IncludeSource>
+    <AssemblyOriginatorKeyFile>OpenMcdf.snk</AssemblyOriginatorKeyFile>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -33,50 +34,33 @@
     <DocumentationFile>..\..\bin\Release\OpenMcdf.Extensions\OpenMcdf.Extensions.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DB748C1D-D71C-442B-832D-2E33BE816CBB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OpenMcdf.Extensions</RootNamespace>
+    <AssemblyName>OpenMcdf.Extensions</AssemblyName>
+    <FileAlignment>512</FileAlignment>
     <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
     <AssemblyOriginatorKeyFile>OpenMcdf.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+  <PropertyGroup>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Version>2.2.1.4</Version>
+    <PackageLicenseUrl>https://opensource.org/licenses/MPL-2.0</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/ironfede/openmcdf</PackageProjectUrl>
+    <PackageIconUrl>http://a.fsdn.com/allura/p/openmcdf/icon</PackageIconUrl>
+    <RepositoryUrl>https://github.com/ironfede/openmcdf</RepositoryUrl>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
+    <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="CFStreamExtensions.cs" />
-    <Compile Include="OLEProperties\Interfaces\IBinarySerializable.cs" />
-    <Compile Include="OLEProperties\Interfaces\ITypedPropertyValue.cs" />
-    <Compile Include="OLEProperties\PropertyFactory.cs" />
-    <Compile Include="OLEProperties\PropertyIdentifierAndOffset.cs" />
-    <Compile Include="OLEProperties\PropertyReader.cs" />
-    <Compile Include="OLEProperties\PropertySet.cs" />
-    <Compile Include="OLEProperties\PropertySetStream.cs" />
-    <Compile Include="OLEProperties\ProperyIdentifiers.cs" />
-    <Compile Include="OLEProperties\TypedPropertyValue.cs" />
-    <Compile Include="OLEProperties\VTPropertyType.cs" />
-    <Compile Include="OLEProperties\VTVectorHeader.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj">
-      <Project>{56e15d4a-8a37-4c7c-bb44-fd59aff220c1}</Project>
-      <Name>OpenMcdf</Name>
-    </ProjectReference>
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="OpenMcdf.snk" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
