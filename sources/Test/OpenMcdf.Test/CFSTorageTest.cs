@@ -441,11 +441,11 @@ namespace OpenMcdf.Test
                 .AddStream("Level2Stream")
                 .SetData(Helpers.GetBuffer(100));
 
-            cf.Save("$Hel1");
+            cf.Save("$Hel3");
 
             cf.Close();
 
-            CompoundFile cf1 = new CompoundFile("$Hel1");
+            CompoundFile cf1 = new CompoundFile("$Hel3");
             try
             {
                 CFStream cs = cf1.RootStorage.GetStorage("Level_1").AddStream("Level2Stream");

@@ -68,7 +68,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.2.0.1</ApplicationVersion>
+    <ApplicationVersion>2.2.1.5</ApplicationVersion>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -88,9 +88,6 @@
     <PackageTags>Compound file, c#, structured storage</PackageTags>
   </PropertyGroup>
   <ItemGroup />
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
-  </ItemGroup>
   <ItemGroup>
     <None Include="OpenMcdf.snk" />
     <None Include="OpenMcdfClassDiagram.cd" />
