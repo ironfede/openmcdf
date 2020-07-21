@@ -87,7 +87,13 @@
     <RepositoryUrl>https://github.com/ironfede/openmcdf</RepositoryUrl>
     <PackageTags>Compound file, c#, structured storage</PackageTags>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
   <ItemGroup />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+  </ItemGroup>
   <ItemGroup>
     <None Include="OpenMcdf.snk" />
     <None Include="OpenMcdfClassDiagram.cd" />
