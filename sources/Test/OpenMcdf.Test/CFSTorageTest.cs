@@ -115,12 +115,14 @@ namespace OpenMcdf.Test
             String FILENAME = "MultipleStorage.cfs";
             CompoundFile cf = new CompoundFile(FILENAME);
 
-            CFStorage st = cf.RootStorage.TryGetStorage("MyStorage");
+            CFStorage st = null;
+            cf.RootStorage.TryGetStorage("MyStorage", out st);
             Assert.IsNotNull(st);
 
             try
             {
-                CFStorage nf = cf.RootStorage.TryGetStorage("IDONTEXIST");
+                CFStorage nf = null;
+                cf.RootStorage.TryGetStorage("IDONTEXIST", out nf);
                 Assert.IsNull(nf);
             }
             catch (Exception)
@@ -130,9 +132,11 @@ namespace OpenMcdf.Test
 
             try
             {
-                CFStream s = st.TryGetStream("MyStream");
+                CFStream s = null;
+                st.TryGetStream("MyStream", out s);
                 Assert.IsNotNull(s);
-                CFStream ns = st.TryGetStream("IDONTEXIST2");
+                CFStream ns = null;
+                st.TryGetStream("IDONTEXIST2", out ns);
                 Assert.IsNull(ns);
             }
             catch (Exception)
@@ -437,11 +441,11 @@ namespace OpenMcdf.Test
                 .AddStream("Level2Stream")
                 .SetData(Helpers.GetBuffer(100));
 
-            cf.Save("$Hel1");
+            cf.Save("$Hel3");
 
             cf.Close();
 
-            CompoundFile cf1 = new CompoundFile("$Hel1");
+            CompoundFile cf1 = new CompoundFile("$Hel3");
             try
             {
                 CFStream cs = cf1.RootStorage.GetStorage("Level_1").AddStream("Level2Stream");

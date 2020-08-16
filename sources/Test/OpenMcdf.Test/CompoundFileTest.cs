@@ -1047,6 +1047,19 @@ namespace OpenMcdf.Test
         }
 
         [TestMethod]
+        public void Test_FIX_GH_50()
+        {
+            try
+            {
+                var f = new CompoundFile("64-67.numberOfMiniFATSectors.docx", CFSUpdateMode.Update, CFSConfiguration.Default);
+            }
+            catch (Exception e)
+            {
+                Assert.IsTrue(e is CFFileFormatException);
+            }
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(CFCorruptedFileException))]
         public void Test_CorruptedSectorChain_Doc()
         {
