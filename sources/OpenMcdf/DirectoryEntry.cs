@@ -51,23 +51,9 @@ namespace OpenMcdf
 
             this.stgType = stgType;
 
-            switch (stgType)
+            if (stgType == StgType.StgStorage)
             {
-                case StgType.StgStream:
-
-                    this.storageCLSID = new Guid("00000000000000000000000000000000");
-                    this.creationDate = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-                    this.modifyDate = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-                    break;
-
-                case StgType.StgStorage:
-                    this.creationDate = BitConverter.GetBytes((DateTime.Now.ToFileTime()));
-                    break;
-
-                case StgType.StgRoot:
-                    this.creationDate = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-                    this.modifyDate = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-                    break;
+                this.creationDate = BitConverter.GetBytes((DateTime.Now.ToFileTime()));
             }
 
             this.SetEntryName(name);
@@ -110,7 +96,7 @@ namespace OpenMcdf
                 throw new CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
 
             if (entryName.Length > 31)
-                throw new CFException("Entry name MUST be smaller than 31 characters");
+                throw new CFException("Entry name MUST NOT exceed 31 characters");
 
 
 
@@ -187,7 +173,7 @@ namespace OpenMcdf
         }
 
         private Guid storageCLSID
-            = Guid.NewGuid();
+            = Guid.Empty;
 
         public Guid StorageCLSID
         {

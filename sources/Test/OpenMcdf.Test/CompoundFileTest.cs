@@ -915,7 +915,7 @@ namespace OpenMcdf.Test
             String storageName = "MyStorage";
             String streamName = "MyStream";
             int BUFFER_SIZE = 800 * Mb;
-            int iterationCount = 3;
+            int iterationCount = 1;
             int streamCount = 3;
 
             CompoundFile compoundFileInit = new CompoundFile(CFSVersion.Ver_4, CFSConfiguration.Default);
@@ -964,7 +964,7 @@ namespace OpenMcdf.Test
             String storageName = "MyStorage";
             String streamName = "MyStream";
             int BUFFER_SIZE = 800 * Mb;
-            int iterationCount = 6;
+            int iterationCount = 1;
             int streamCount = 1;
 
             CompoundFile compoundFile = new CompoundFile(CFSVersion.Ver_4, CFSConfiguration.Default);
