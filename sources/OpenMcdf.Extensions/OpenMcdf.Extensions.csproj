@@ -58,7 +58,7 @@
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>2.2.1.8</Version>
+    <Version>2.2.1.9</Version>
     <PackageLicenseUrl>https://opensource.org/licenses/MPL-2.0</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/ironfede/openmcdf</PackageProjectUrl>
     <PackageIconUrl>http://a.fsdn.com/allura/p/openmcdf/icon</PackageIconUrl>

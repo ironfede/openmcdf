@@ -68,7 +68,7 @@
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>2.2.1.8</ApplicationVersion>
+    <ApplicationVersion>2.2.1.9</ApplicationVersion>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.2.1.8</Version>
+    <Version>2.2.1.9</Version>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Authors>ironfede</Authors>
     <PackageLicenseUrl>https://opensource.org/licenses/MPL-2.0</PackageLicenseUrl>
