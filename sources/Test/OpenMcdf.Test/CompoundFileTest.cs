@@ -1082,6 +1082,26 @@ namespace OpenMcdf.Test
         }
 
         [TestMethod]
+        public void Test_WRONG_CORRUPTED_EXCEPTION()
+        {
+            var cf = new CompoundFile();
+
+            for (int i = 0; i < 100; i++)
+            {
+                cf.RootStorage.AddStream("Stream" + i).SetData(Helpers.GetBuffer(100000, 0xAA));
+            }
+
+            cf.RootStorage.AddStream("BigStream").SetData(Helpers.GetBuffer(5250000, 0xAA));
+
+            using (var stream = new MemoryStream())
+            {
+                cf.Save(stream);
+            }
+
+            cf.Close();
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(CFCorruptedFileException))]
         public void Test_CorruptedSectorChain_Doc2()
         {
