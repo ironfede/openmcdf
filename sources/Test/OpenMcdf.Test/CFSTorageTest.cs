@@ -108,6 +108,23 @@ namespace OpenMcdf.Test
 
         }
 
+        [TestMethod]
+        public void Test_enumerate()
+        {
+            var cf = new CompoundFile("MultipleStorage.cfs");
+            var stg = cf.RootStorage.GetStorage("MyStorage");
+            
+            bool found = false;
+
+            foreach(var item in stg.EnumerateChildren(false))
+                if (item.Name == "MyStream") found = true;
+            Assert.IsTrue(found);
+
+            found = false;
+            foreach (var item2 in stg.EnumerateChildren(true))
+                if (item2.Name == "AnotherStream") found = true;
+            Assert.IsTrue(found);
+        }
 
         [TestMethod]
         public void Test_TRY_GET_STREAM_STORAGE()
