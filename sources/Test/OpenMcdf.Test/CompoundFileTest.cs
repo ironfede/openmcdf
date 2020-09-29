@@ -928,7 +928,11 @@ namespace OpenMcdf.Test
             byte[] buffer = new byte[BUFFER_SIZE];
             for (int streamId = 0; streamId < streamCount; ++streamId)
             {
+#if NETCOREAPP
                 Array.Fill(buffer, b);
+#else
+                for (int i = 0; i < buffer.Length; i++) buffer[i] = b;
+#endif
                 CFStream sm = st.AddStream(streamName + streamId);
                 for (int iteration = 0; iteration < iterationCount; ++iteration)
                 {

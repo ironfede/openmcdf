@@ -61,7 +61,9 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_SUMMARY_INFO_READ()
         {
+#if NETCOREAPP
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+#endif
             using (CompoundFile cf = new CompoundFile("_Test.ppt"))
             {
                 var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();

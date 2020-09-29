@@ -23,8 +23,12 @@ namespace OpenMcdf.Test
         public static byte[] GetBuffer(int count, byte c)
         {
             byte[] b = new byte[count];
+#if NETCOREAPP
             Array.Fill(b, c);
-            return b;
+#else
+            for (int i = 0; i < b.Length; i++) b[i] = c;
+#endif
+			return b;
         }
 
         public static bool CompareBuffer(byte[] b, byte[] p)
