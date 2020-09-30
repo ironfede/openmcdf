@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenMcdf;
 
@@ -124,6 +125,10 @@ namespace OpenMcdf.Test
             foreach (var item2 in stg.EnumerateChildren(true))
                 if (item2.Name == "AnotherStream") found = true;
             Assert.IsTrue(found);
+
+            Assert.AreEqual(stg.EnumerateChildren(true).Where(e => e.IsStorage).Count(), 1);
+            Assert.AreEqual(stg.EnumerateChildren(false).Where(e => e.Name.Contains("Stream")).Count(), 2);
+            Assert.AreEqual(stg.EnumerateChildren(true).Where(e => e.Name.Contains("Stream")).Count(), 3);
         }
 
         [TestMethod]
