@@ -1,7 +1,7 @@
 ﻿<Project>
 	<Import Project="../Directory.Build.props" />
 	<PropertyGroup>	
-		<TargetFrameworks>net45;netcoreapp3.1</TargetFrameworks>
+		<TargetFrameworks>net45;netcoreapp5.0</TargetFrameworks>
 		<Configurations>Debug;Release</Configurations>
 		<AssemblyOriginatorKeyFile>$(SolutionDir)\OpenMcdf.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
