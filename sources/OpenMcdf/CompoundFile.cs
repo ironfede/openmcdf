@@ -2587,7 +2587,9 @@ namespace OpenMcdf
         /// </example>
         public void Close()
         {
+#pragma warning disable CS0618 //Type or member is obsolete
             this.Close(true);
+#pragma warning restore CS0618 //Type or member is obsolete
         }
 
         private bool closeStream = true;
@@ -2822,7 +2824,9 @@ namespace OpenMcdf
                 s.SetLength(tmpMS.Length);
 
                 tmpMS.Close();
+#pragma warning disable CS0618 //Type or member is obsolete
                 cf.Close(false);
+#pragma warning restore CS0618 //Type or member is obsolete
             }
         }
 
