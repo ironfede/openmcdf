@@ -1631,7 +1631,12 @@ namespace OpenMcdf
             directoryEntries[sid].Parent = null;
             directoryEntries[sid].StgType = StgType.StgInvalid;
             directoryEntries[sid].StartSetc = DirectoryEntry.ZERO;
+            directoryEntries[sid].StorageCLSID = Guid.Empty;
+            directoryEntries[sid].Size = 0;
+            directoryEntries[sid].StateBits = 0;
             directoryEntries[sid].StgColor = StgColor.Red;
+            directoryEntries[sid].CreationDate = new byte[8];
+            directoryEntries[sid].ModifyDate = new byte[8];
         }
 
 
