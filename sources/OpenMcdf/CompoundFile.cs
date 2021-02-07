@@ -2502,7 +2502,7 @@ namespace OpenMcdf
                 throw new CFDisposedException("Compound File closed: cannot access data");
             if (sid < 0)
                 throw new CFException("Invalid SID");
-            Guid g = new Guid("00000000000000000000000000000000");
+            Guid g = Guid.Empty;
             //find first storage containing a non-zero CLSID before SID in directory structure
             for (int i = sid - 1; i >= 0; i--)
             {
