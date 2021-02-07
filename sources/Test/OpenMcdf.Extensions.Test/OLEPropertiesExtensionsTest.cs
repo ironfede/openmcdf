@@ -2,7 +2,6 @@
 using System.Diagnostics;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Linq;
 
 namespace OpenMcdf.Extensions.Test
 {
@@ -160,7 +159,8 @@ namespace OpenMcdf.Extensions.Test
 
                     Assert.IsNotNull(co2.Properties);
                 }
-            }catch(Exception ex)
+            }
+            catch (Exception)
             {
                 Assert.Fail();
             }
@@ -199,7 +199,7 @@ namespace OpenMcdf.Extensions.Test
                         Debug.WriteLine(p.Value);
                     }
 
-                    
+
                     Assert.IsNotNull(co2.UserDefinedProperties.Properties);
                     foreach (OLEProperties.OLEProperty p in co2.UserDefinedProperties.Properties)
                     {
@@ -211,7 +211,7 @@ namespace OpenMcdf.Extensions.Test
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Assert.Fail();
             }
