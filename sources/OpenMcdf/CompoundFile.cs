@@ -1630,6 +1630,8 @@ namespace OpenMcdf
             directoryEntries[sid].Right = null;
             directoryEntries[sid].Parent = null;
             directoryEntries[sid].StgType = StgType.StgInvalid;
+            directoryEntries[sid].StartSetc = DirectoryEntry.ZERO;
+            directoryEntries[sid].StgColor = StgColor.Red;
         }
 
 
@@ -2530,9 +2532,7 @@ namespace OpenMcdf
             if (sid >= directoryEntries.Count)
                 throw new CFException("Invalid SID of the directory entry to remove");
 
-            //Random r = new Random();
-            directoryEntries[sid].SetEntryName("_DELETED_NAME_" + sid.ToString());
-            directoryEntries[sid].StgType = StgType.StgInvalid;
+            ResetDirectoryEntry(sid);
         }
 
         internal void FreeAssociatedData(int sid)

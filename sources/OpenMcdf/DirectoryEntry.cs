@@ -60,6 +60,11 @@ namespace OpenMcdf
                 this.StartSetc = ZERO;
             }
 
+            if (stgType == StgType.StgInvalid)
+            {
+                this.StartSetc = ZERO;
+            }
+
             if (name != String.Empty)
             {
                 this.SetEntryName(name);
