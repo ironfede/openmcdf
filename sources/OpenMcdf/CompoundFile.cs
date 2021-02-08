@@ -2393,8 +2393,8 @@ namespace OpenMcdf
         {
 
             IDirectoryEntry de = cFStream.DirEntry;
-
-            count = (int)Math.Min((long)(de.Size - offset), (long)count);
+           
+            count = (int)Math.Min((long)(buffer.Length - offset), (long)count);
 
             StreamView sView = null;
 

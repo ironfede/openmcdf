@@ -141,7 +141,7 @@ namespace OpenMcdf
 
         /// <summary>
         /// Read <paramref name="count"/> bytes associated with the stream object, starting from
-        /// a provided <paramref name="offset"/>. Method returns the effective count of bytes 
+        /// the provided <paramref name="position"/>. Method returns the effective count of bytes 
         /// read.
         /// </summary>
         /// <param name="buffer">Array of bytes that will contain stream data</param>
