@@ -45,6 +45,9 @@ namespace OpenMcdf
         internal static Int32 NOSTREAM
             = unchecked((int)0xFFFFFFFF);
 
+        internal static Int32 ZERO
+            = 0;
+
         private DirectoryEntry(String name, StgType stgType, IList<IDirectoryEntry> dirRepository)
         {
             this.dirRepository = dirRepository;
@@ -54,10 +57,18 @@ namespace OpenMcdf
             if (stgType == StgType.StgStorage)
             {
                 this.creationDate = BitConverter.GetBytes((DateTime.Now.ToFileTime()));
+                this.StartSetc = ZERO;
             }
 
-            this.SetEntryName(name);
+            if (stgType == StgType.StgInvalid)
+            {
+                this.StartSetc = ZERO;
+            }
 
+            if (name != String.Empty)
+            {
+                this.SetEntryName(name);
+            }
         }
 
         private byte[] entryName = new byte[64];
@@ -86,30 +97,37 @@ namespace OpenMcdf
 
         public void SetEntryName(String entryName)
         {
-            if (
-                entryName.Contains(@"\") ||
-                entryName.Contains(@"/") ||
-                entryName.Contains(@":") ||
-                entryName.Contains(@"!")
+            if (entryName == String.Empty)
+            {
+                this.entryName = new byte[64];
+                this.nameLength = 0;
+            }
+            else
+            {
+                if (
+                    entryName.Contains(@"\") ||
+                    entryName.Contains(@"/") ||
+                    entryName.Contains(@":") ||
+                    entryName.Contains(@"!")
 
-                )
-                throw new CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
+                    )
+                    throw new CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
 
-            if (entryName.Length > 31)
-                throw new CFException("Entry name MUST NOT exceed 31 characters");
+                if (entryName.Length > 31)
+                    throw new CFException("Entry name MUST NOT exceed 31 characters");
 
 
 
-            byte[] newName = null;
-            byte[] temp = Encoding.Unicode.GetBytes(entryName);
-            newName = new byte[64];
-            Buffer.BlockCopy(temp, 0, newName, 0, temp.Length);
-            newName[temp.Length] = 0x00;
-            newName[temp.Length + 1] = 0x00;
+                byte[] newName = null;
+                byte[] temp = Encoding.Unicode.GetBytes(entryName);
+                newName = new byte[64];
+                Buffer.BlockCopy(temp, 0, newName, 0, temp.Length);
+                newName[temp.Length] = 0x00;
+                newName[temp.Length + 1] = 0x00;
 
-            this.entryName = newName;
-            this.nameLength = (ushort)(temp.Length + 2);
-
+                this.entryName = newName;
+                this.nameLength = (ushort)(temp.Length + 2);
+            }
         }
 
         private ushort nameLength;
@@ -137,7 +155,7 @@ namespace OpenMcdf
                 stgType = value;
             }
         }
-        private StgColor stgColor = StgColor.Black;
+        private StgColor stgColor = StgColor.Red;
 
         public StgColor StgColor
         {

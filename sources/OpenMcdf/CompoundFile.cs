@@ -1630,6 +1630,13 @@ namespace OpenMcdf
             directoryEntries[sid].Right = null;
             directoryEntries[sid].Parent = null;
             directoryEntries[sid].StgType = StgType.StgInvalid;
+            directoryEntries[sid].StartSetc = DirectoryEntry.ZERO;
+            directoryEntries[sid].StorageCLSID = Guid.Empty;
+            directoryEntries[sid].Size = 0;
+            directoryEntries[sid].StateBits = 0;
+            directoryEntries[sid].StgColor = StgColor.Red;
+            directoryEntries[sid].CreationDate = new byte[8];
+            directoryEntries[sid].ModifyDate = new byte[8];
         }
 
 
@@ -2502,7 +2509,7 @@ namespace OpenMcdf
                 throw new CFDisposedException("Compound File closed: cannot access data");
             if (sid < 0)
                 throw new CFException("Invalid SID");
-            Guid g = new Guid("00000000000000000000000000000000");
+            Guid g = Guid.Empty;
             //find first storage containing a non-zero CLSID before SID in directory structure
             for (int i = sid - 1; i >= 0; i--)
             {
@@ -2530,9 +2537,7 @@ namespace OpenMcdf
             if (sid >= directoryEntries.Count)
                 throw new CFException("Invalid SID of the directory entry to remove");
 
-            //Random r = new Random();
-            directoryEntries[sid].SetEntryName("_DELETED_NAME_" + sid.ToString());
-            directoryEntries[sid].StgType = StgType.StgInvalid;
+            ResetDirectoryEntry(sid);
         }
 
         internal void FreeAssociatedData(int sid)
