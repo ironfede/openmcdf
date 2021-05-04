@@ -1064,6 +1064,45 @@ namespace OpenMcdf.Test
         }
 
         [TestMethod]
+        public void Test_FIX_GH_83()
+        {
+            try
+            {
+                byte[] bigDataBuffer = Helpers.GetBuffer(1024 * 1024 * 260);
+
+                using (FileStream fTest = new FileStream("BigFile.data", FileMode.Create))
+                {
+
+                    fTest.Write(bigDataBuffer, 0, 1024 * 1024 * 260);
+                    fTest.Flush();
+                    fTest.Close();
+
+                    var f = new CompoundFile();
+                    var cfStream = f.RootStorage.AddStream("NewStream");
+                    using (FileStream fs = new FileStream("BigFile.data", FileMode.Open))
+                    {
+                        cfStream.CopyFrom(fs);
+                    }
+                    f.Save("BigFile.cfs");
+                    f.Close();
+
+                }
+            }
+            catch (Exception e)
+            {
+                Assert.Fail();
+            }
+            finally
+            {
+                if (File.Exists("BigFile.data"))
+                    File.Delete("BigFile.data");
+
+                if (File.Exists("BigFile.cfs"))
+                    File.Delete("BigFile.cfs");
+            }
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(CFCorruptedFileException))]
         public void Test_CorruptedSectorChain_Doc()
         {

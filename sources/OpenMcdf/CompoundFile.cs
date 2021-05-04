@@ -221,24 +221,24 @@ namespace OpenMcdf
         ///     
         /// </code>
         /// </example>
-        public CompoundFile()
+        public CompoundFile(): this(CFSVersion.Ver_3,CFSConfiguration.Default)
         {
 
-            this.header = new Header();
-            this.sectorRecycle = false;
+            //this.header = new Header();
+            //this.sectorRecycle = false;
 
-            this.sectors.OnVer3SizeLimitReached += new Ver3SizeLimitReached(OnSizeLimitReached);
+            ////this.sectors.OnVer3SizeLimitReached += new Ver3SizeLimitReached(OnSizeLimitReached);
 
-            DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
-            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
+            //DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
+            //FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
-            //Root -- 
-            IDirectoryEntry de = DirectoryEntry.New("Root Entry", StgType.StgRoot, directoryEntries);
-            rootStorage = new CFStorage(this, de);
-            rootStorage.DirEntry.StgType = StgType.StgRoot;
-            rootStorage.DirEntry.StgColor = StgColor.Black;
+            ////Root -- 
+            //IDirectoryEntry de = DirectoryEntry.New("Root Entry", StgType.StgRoot, directoryEntries);
+            //rootStorage = new CFStorage(this, de);
+            //rootStorage.DirEntry.StgType = StgType.StgRoot;
+            //rootStorage.DirEntry.StgColor = StgColor.Black;
 
-            //this.InsertNewDirectoryEntry(rootStorage.DirEntry);
+            ////this.InsertNewDirectoryEntry(rootStorage.DirEntry);
         }
 
         void OnSizeLimitReached()
@@ -286,6 +286,10 @@ namespace OpenMcdf
             bool eraseFreeSectors = configFlags.HasFlag(CFSConfiguration.EraseFreeSectors);
 
             this.header = new Header((ushort)cfsVersion);
+
+            if (cfsVersion == CFSVersion.Ver_4)
+                this.sectors.OnVer3SizeLimitReached += new Ver3SizeLimitReached(OnSizeLimitReached);
+
             this.sectorRecycle = sectorRecycle;
 
 
@@ -1392,15 +1396,15 @@ namespace OpenMcdf
 
                 byte[] nextDIFATSectorBuffer = new byte[4];
 
-               
+
 
                 int i = 0;
-                
+
                 while (result.Count < header.FATSectorsNumber)
                 {
                     difatStream.Read(nextDIFATSectorBuffer, 0, 4);
                     nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
-                    
+
                     EnsureUniqueSectorIndex(nextSecID, processedSectors);
 
                     Sector s = sectors[nextSecID] as Sector;
@@ -1417,7 +1421,7 @@ namespace OpenMcdf
 
                     //difatStream.Read(nextDIFATSectorBuffer, 0, 4);
                     //nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
-                    
+
 
                     if (difatStream.Position == ((GetSectorSize() - 4) + i * GetSectorSize()))
                     {
@@ -2400,7 +2404,7 @@ namespace OpenMcdf
         {
 
             IDirectoryEntry de = cFStream.DirEntry;
-           
+
             count = (int)Math.Min((long)(buffer.Length - offset), (long)count);
 
             StreamView sView = null;

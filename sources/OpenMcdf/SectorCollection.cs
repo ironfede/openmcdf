@@ -31,6 +31,7 @@ namespace OpenMcdf
 
         private int count = 0;
 
+
         public event Ver3SizeLimitReached OnVer3SizeLimitReached;
 
         private List<ArrayList> largeArraySlices = new List<ArrayList>();
@@ -43,12 +44,12 @@ namespace OpenMcdf
         private bool sizeLimitReached = false;
         private void DoCheckSizeLimitReached()
         {
-            if (!sizeLimitReached && (count - 1 > MAX_SECTOR_V4_COUNT_LOCK_RANGE))
+            if (OnVer3SizeLimitReached != null && !sizeLimitReached && (count - 1 > MAX_SECTOR_V4_COUNT_LOCK_RANGE))
             {
-                if (OnVer3SizeLimitReached != null)
-                    OnVer3SizeLimitReached();
-
                 sizeLimitReached = true;
+                OnVer3SizeLimitReached();
+
+
             }
         }
 
@@ -82,7 +83,7 @@ namespace OpenMcdf
                 }
                 else
                     throw new CFException("Argument Out of Range, possibly corrupted file", new ArgumentOutOfRangeException("index", index, "Argument out of range"));
-                    
+
             }
 
             set
