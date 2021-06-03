@@ -316,7 +316,6 @@
             this.hexEditor.BackColor = System.Drawing.Color.WhiteSmoke;
             this.hexEditor.Dock = System.Windows.Forms.DockStyle.Fill;
             this.hexEditor.Font = new System.Drawing.Font("Courier New", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.hexEditor.LineInfoForeColor = System.Drawing.Color.Empty;
             this.hexEditor.LineInfoVisible = true;
             this.hexEditor.Location = new System.Drawing.Point(4, 4);
             this.hexEditor.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);

@@ -1,0 +1,53 @@
+﻿<Project>
+	<PropertyGroup>
+		<Deterministic>true</Deterministic>
+		<TargetFrameworks>net40;netstandard2.0</TargetFrameworks>
+		<Configurations>Debug;Release</Configurations>
+		<SignAssembly>true</SignAssembly>
+		<!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<IncludeSource>true</IncludeSource>
+		<AssemblyOriginatorKeyFile>$(SolutionDir)\OpenMcdf.snk</AssemblyOriginatorKeyFile>
+
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Version>2.2.1.11</Version>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+		
+		<Authors>ironfede</Authors>
+		<PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/ironfede/openmcdf</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/ironfede/openmcdf</RepositoryUrl>
+		<PackageTags>Compound file, c#, structured storage</PackageTags>
+		
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+		<NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
+		<CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+		<DocumentationFile>$(SolutionDir)bin\$(Configuration)\OpenMcdf\OpenMcdf.xml</DocumentationFile>
+		<OutputPath>$(SolutionDir)bin\$(Configuration)</OutputPath>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+      <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+    </PropertyGroup>
+	<ItemGroup>
+      <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+    </ItemGroup>
+	<ItemGroup>
+		<None Include="$(SolutionDir)icon.png" Pack="true" PackagePath="\"/>
+	</ItemGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+		<Optimize>false</Optimize>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<DebugType>portable</DebugType>
+		<Optimize>true</Optimize>
+		<DefineConstants>TRACE</DefineConstants>
+	</PropertyGroup>
+</Project>
