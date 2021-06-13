@@ -295,7 +295,7 @@ namespace OpenMcdf
             buffer[0] = (byte)val;
             buffer[1] = (byte)(val << 8);
             buffer[2] = (byte)(val << 16);
-            buffer[3] = (byte)(val << 32);
+            buffer[3] = (byte)(val << 24);
             Write(buffer, 0, 4);
         }
 
