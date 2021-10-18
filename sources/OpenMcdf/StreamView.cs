@@ -52,7 +52,7 @@ namespace OpenMcdf
             : this(sectorChain, sectorSize, stream)
         {
             this.isFatStream = isFatStream;
-            adjustLength(length, availableSectors);
+            AdjustLength(length, availableSectors);
         }
 
 
@@ -119,7 +119,8 @@ namespace OpenMcdf
         public int ReadInt32()
         {
             this.Read(buf, 0, 4);
-            return (((this.buf[0] | (this.buf[1] << 8)) | (this.buf[2] << 16)) | (this.buf[3] << 24));
+            var buffer = this.buf;
+            return BitConverter.ToInt32(buffer, 0);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -176,7 +177,7 @@ namespace OpenMcdf
 
                 if (nToRead != 0)
                 {
-					if (secIndex > sectorChain.Count) throw new CFCorruptedFileException("The file is probably corrupted.");
+                    if (secIndex > sectorChain.Count) throw new CFCorruptedFileException("The file is probably corrupted.");
 
                     Buffer.BlockCopy(
                         sectorChain[secIndex].GetData(),
@@ -216,17 +217,17 @@ namespace OpenMcdf
                     break;
             }
 
-            adjustLength(position);
+            AdjustLength(position);
 
             return position;
         }
 
-        private void adjustLength(long value)
+        private void AdjustLength(long value)
         {
-            adjustLength(value, null);
+            AdjustLength(value, null);
         }
 
-        private void adjustLength(long value, Queue<Sector> availableSectors)
+        private void AdjustLength(long value, Queue<Sector> availableSectors)
         {
             this.length = value;
 
@@ -286,7 +287,7 @@ namespace OpenMcdf
 
         public override void SetLength(long value)
         {
-            adjustLength(value);
+            AdjustLength(value);
         }
 
         public void WriteInt32(int val)
@@ -306,7 +307,7 @@ namespace OpenMcdf
 
             // Assure length
             if ((position + count) > length)
-                adjustLength((position + count));
+                AdjustLength((position + count));
 
             if (sectorChain != null)
             {

@@ -109,6 +109,22 @@ namespace OpenMcdf
             return data;
         }
 
+        public void CopyTo(Stream destinationStream, IByteArrayPool byteArrayPool, int position, long count)
+        {
+            if (data != null)
+            {
+                destinationStream.Write(data, 0, data.Length);
+            }
+            else
+            {
+                if (IsStreamed)
+                {
+                    var offset = size + id * size + position;
+                    stream.CopyTo(destinationStream, byteArrayPool, offset, Math.Min(size, count));
+                }
+            }
+        }
+
         //public void SetSectorData(byte[] b)
         //{
         //    this.data = b;

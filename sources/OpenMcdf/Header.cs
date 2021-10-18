@@ -13,13 +13,17 @@ namespace OpenMcdf
 {
     internal class Header
     {
+        /// <summary>
+        ///     Number of DIFAT entries in the header
+        /// </summary>
+        private const int HEADER_DIFAT_ENTRIES_COUNT = 109;
+
         //0 8 Compound document file identifier: D0H CFH 11H E0H A1H B1H 1AH E1H
-        private byte[] headerSignature
-            = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
 
         public byte[] HeaderSignature
         {
-            get { return headerSignature; }
+            get => _headerSignature ??= new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
+            private set => _headerSignature = value;
         }
 
         //8 16 Unique identifier (UID) of this file (not of interest in the following, may be all 0)
@@ -63,7 +67,7 @@ namespace OpenMcdf
         public ushort SectorShift
         {
             get { return sectorShift; }
-            
+
         }
 
         //32 2 Size of a short-sector in the short-stream container stream (➜6.1) in power-of-two (sssz),
@@ -171,7 +175,8 @@ namespace OpenMcdf
         }
 
         //76 436 First part of the master sector allocation table (➜5.1) containing 109 SecIDs
-        private int[] difat = new int[109];
+        private int[] difat = new int[HEADER_DIFAT_ENTRIES_COUNT];
+        private byte[] _headerSignature;
 
         public int[] DIFAT
         {
@@ -207,19 +212,17 @@ namespace OpenMcdf
 
             }
 
-            for (int i = 0; i < 109; i++)
+            for (int i = 0; i < HEADER_DIFAT_ENTRIES_COUNT; i++)
             {
                 difat[i] = Sector.FREESECT;
             }
-
-
         }
 
         public void Write(Stream stream)
         {
             StreamRW rw = new StreamRW(stream);
 
-            rw.Write(headerSignature);
+            rw.Write(HeaderSignature);
             rw.Write(clsid);
             rw.Write(minorVersion);
             rw.Write(majorVersion);
@@ -253,10 +256,12 @@ namespace OpenMcdf
 
         public void Read(Stream stream)
         {
-            StreamRW rw = new StreamRW(stream);
+            var rw = stream.ToStreamReader();
 
-            headerSignature = rw.ReadBytes(8);
-            CheckSignature();
+            var headerSignature = rw.ReadBytes(8);
+            CheckSignature(headerSignature);
+            HeaderSignature = headerSignature;
+
             clsid = rw.ReadBytes(16);
             minorVersion = rw.ReadUInt16();
             majorVersion = rw.ReadUInt16();
@@ -275,14 +280,11 @@ namespace OpenMcdf
             firstDIFATSectorID = rw.ReadInt32();
             difatSectorsNumber = rw.ReadUInt32();
 
-            for (int i = 0; i < 109; i++)
+            for (int i = 0; i < HEADER_DIFAT_ENTRIES_COUNT; i++)
             {
                 this.DIFAT[i] = rw.ReadInt32();
             }
-
-            rw.Close();
         }
-
 
         private void CheckVersion()
         {
@@ -290,17 +292,23 @@ namespace OpenMcdf
                 throw new CFFileFormatException("Unsupported Binary File Format version: OpenMcdf only supports Compound Files with major version equal to 3 or 4 ");
         }
 
-        /// <summary>
-        /// Structured Storage signature
-        /// </summary>
-        private byte[] OLE_CFS_SIGNATURE = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
-
-        private void CheckSignature()
+        private static void CheckSignature(byte[] headerSignature)
         {
-            for (int i = 0; i < headerSignature.Length; i++)
+            var success = headerSignature.Length == 8;
+            success = success
+            //var oleCfsSignature = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
+                      && headerSignature[0] == 0xD0
+                      && headerSignature[1] == 0xCF
+                      && headerSignature[2] == 0x11
+                      && headerSignature[3] == 0xE0
+                      && headerSignature[4] == 0xA1
+                      && headerSignature[5] == 0xB1
+                      && headerSignature[6] == 0x1A
+                      && headerSignature[7] == 0xE1;
+
+            if (!success)
             {
-                if (headerSignature[i] != OLE_CFS_SIGNATURE[i])
-                    throw new CFFileFormatException("Invalid OLE structured storage file");
+                throw new CFFileFormatException("Invalid OLE structured storage file");
             }
         }
     }

@@ -34,11 +34,11 @@ namespace OpenMcdf
 
         public event Ver3SizeLimitReached OnVer3SizeLimitReached;
 
-        private List<ArrayList> largeArraySlices = new List<ArrayList>();
+        private readonly List<ArrayList> _largeArraySlices;
 
         public SectorCollection()
         {
-
+            _largeArraySlices = new List<ArrayList>();
         }
 
         private bool sizeLimitReached = false;
@@ -79,7 +79,7 @@ namespace OpenMcdf
 
                 if ((index > -1) && (index < count))
                 {
-                    return (Sector)largeArraySlices[itemIndex][itemOffset];
+                    return (Sector)_largeArraySlices[itemIndex][itemOffset];
                 }
                 else
                     throw new CFException("Argument Out of Range, possibly corrupted file", new ArgumentOutOfRangeException("index", index, "Argument out of range"));
@@ -93,7 +93,7 @@ namespace OpenMcdf
 
                 if (index > -1 && index < count)
                 {
-                    largeArraySlices[itemIndex][itemOffset] = value;
+                    _largeArraySlices[itemIndex][itemOffset] = value;
                 }
                 else
                     throw new ArgumentOutOfRangeException("index", index, "Argument out of range");
@@ -108,16 +108,16 @@ namespace OpenMcdf
         {
             int itemIndex = count / SLICE_SIZE;
 
-            if (itemIndex < largeArraySlices.Count)
+            if (itemIndex < _largeArraySlices.Count)
             {
-                largeArraySlices[itemIndex].Add(item);
+                _largeArraySlices[itemIndex].Add(item);
                 count++;
             }
             else
             {
                 ArrayList ar = new ArrayList(SLICE_SIZE);
                 ar.Add(item);
-                largeArraySlices.Add(ar);
+                _largeArraySlices.Add(ar);
                 count++;
             }
 
@@ -134,12 +134,12 @@ namespace OpenMcdf
 
         public void Clear()
         {
-            foreach (ArrayList slice in largeArraySlices)
+            foreach (ArrayList slice in _largeArraySlices)
             {
                 slice.Clear();
             }
 
-            largeArraySlices.Clear();
+            _largeArraySlices.Clear();
 
             count = 0;
         }
@@ -179,11 +179,11 @@ namespace OpenMcdf
         public IEnumerator<Sector> GetEnumerator()
         {
 
-            for (int i = 0; i < largeArraySlices.Count; i++)
+            for (int i = 0; i < _largeArraySlices.Count; i++)
             {
-                for (int j = 0; j < largeArraySlices[i].Count; j++)
+                for (int j = 0; j < _largeArraySlices[i].Count; j++)
                 {
-                    yield return (Sector)largeArraySlices[i][j];
+                    yield return (Sector)_largeArraySlices[i][j];
 
                 }
             }
@@ -195,11 +195,11 @@ namespace OpenMcdf
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            for (int i = 0; i < largeArraySlices.Count; i++)
+            for (int i = 0; i < _largeArraySlices.Count; i++)
             {
-                for (int j = 0; j < largeArraySlices[i].Count; j++)
+                for (int j = 0; j < _largeArraySlices[i].Count; j++)
                 {
-                    yield return largeArraySlices[i][j];
+                    yield return _largeArraySlices[i][j];
                 }
             }
         }
