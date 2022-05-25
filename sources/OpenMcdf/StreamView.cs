@@ -127,6 +127,10 @@ namespace OpenMcdf
             int nRead = 0;
             int nToRead = 0;
 
+            // Don't try to read more bytes than this stream contains.
+            long intMax = Math.Min(Int32.MaxValue, this.length);
+            count = Math.Min((int)(intMax), count);
+
             if (sectorChain != null && sectorChain.Count > 0)
             {
                 // First sector
@@ -216,7 +220,8 @@ namespace OpenMcdf
                     break;
             }
 
-            adjustLength(position);
+            if (this.length <= position) // Dont't adjust the length when position is inside the bounds of 0 and the current length.
+                adjustLength(position);
 
             return position;
         }
