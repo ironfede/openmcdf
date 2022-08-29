@@ -580,14 +580,14 @@ namespace OpenMcdf
 
 
 
-                    // ...then we need to rethread the root of siblings tree...
+                    // ...then we Remove storage item from children tree...
+                    this.Children.Delete(foundObj, out altDel);
+
+                    // ...after which we need to rethread the root of siblings tree...
                     if (this.Children.Root != null)
                         this.DirEntry.Child = (this.Children.Root as IDirectoryEntry).SID;
                     else
                         this.DirEntry.Child = DirectoryEntry.NOSTREAM;
-
-                    // ...and finally Remove storage item from children tree...
-                    this.Children.Delete(foundObj, out altDel);
 
                     // ...and remove directory (storage) entry
 
