@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace OpenMcdf.Extensions.Test
@@ -84,6 +85,59 @@ namespace OpenMcdf.Extensions.Test
             String st = br.ReadString();
             Assert.IsTrue(st == cmp);
             cf.Close();
+        }
+
+        [TestMethod]
+        public void Test_AS_IOSTREAM_MULTISECTOR_WRITE()
+        {
+            byte[] data = new byte[670];
+            for (int i = 0; i < data.Length; i++)
+            {
+                data[i] = (byte)(i % 255);
+            }
+            
+            using (CompoundFile cf = new CompoundFile())
+            {
+                using (Stream s = cf.RootStorage.AddStream("ANewStream").AsIOStream())
+                {
+                    using (BinaryWriter bw = new BinaryWriter(s))
+                    {
+                        bw.Write(data);
+                        cf.Save("$ACFFile2.cfs");
+                        cf.Close();
+                    }
+                }
+            }
+
+            // Works
+            using (CompoundFile cf = new CompoundFile("$ACFFile2.cfs"))
+            {
+                using (BinaryReader br = new BinaryReader(cf.RootStorage.GetStream("ANewStream").AsIOStream()))
+                {
+                    byte[] readData = new byte[data.Length];
+                    int readCount = br.Read(readData, 0, readData.Length);
+                    Assert.IsTrue(readCount == readData.Length);
+                    Assert.IsTrue(data.SequenceEqual(readData));
+                    cf.Close();
+                }
+            }
+
+            // Won't work until #88 is fixed.
+            using (CompoundFile cf = new CompoundFile("$ACFFile2.cfs"))
+            {
+                using (Stream readStream = cf.RootStorage.GetStream("ANewStream").AsIOStream())
+                {
+                    byte[] readData;
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        readStream.CopyTo(ms);
+                        readData = ms.ToArray();
+                    }
+
+                    Assert.IsTrue(data.SequenceEqual(readData));
+                    cf.Close();
+                }
+            }
         }
     }
 }
