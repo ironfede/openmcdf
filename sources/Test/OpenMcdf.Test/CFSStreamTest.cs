@@ -1004,7 +1004,7 @@ namespace OpenMcdf.Test
             Buffer.BlockCopy(BitConverter.GetBytes((int)1), 0, s.GetData(), 0, 4);
             temp.Add(s);
 
-            StreamView sv = new StreamView(temp, 512, 0, null, a);
+            StreamView sv = new StreamView(temp, 512, 4, null, a);
             BinaryReader br = new BinaryReader(sv);
             Int32 t = br.ReadInt32();
 
