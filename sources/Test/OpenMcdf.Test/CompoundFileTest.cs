@@ -1184,7 +1184,7 @@ namespace OpenMcdf.Test
         //}
 
         [TestMethod]
-        public void Test_BUG_90_CompoundFile_Delete_Storages()
+        public void Test_FIX_BUG_90_CompoundFile_Delete_Storages()
         {
             using (var compoundFile = new CompoundFile())
             {
