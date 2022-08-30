@@ -1183,5 +1183,57 @@ namespace OpenMcdf.Test
         //    f.Save("Astorage.cfs");
         //}
 
+        [TestMethod]
+        public void Test_FIX_BUG_90_CompoundFile_Delete_Storages()
+        {
+            using (var compoundFile = new CompoundFile())
+            {
+                var root = compoundFile.RootStorage;
+                var storageNames = new HashSet<string>();
+
+                // add 99 storages to root
+                for (int i = 1; i <= 99; i++)
+                {
+                    var name = "Storage " + i;
+                    root.AddStorage(name);
+                    storageNames.Add(name);
+                }
+
+                // remove storages until tree becomes unbalanced and its Root changes
+                var rootChild = root.DirEntry.Child;
+                var newChild = rootChild;
+                var j = 1;
+                while (newChild == rootChild && j <= 99)
+                {
+                    var name = "Storage " + j;
+                    root.Delete(name);
+                    storageNames.Remove(name);
+                    newChild = ((DirectoryEntry)(root.Children.Root)).SID; // stop as soon as root.Children has a new Root
+                    j++;
+                }
+
+                // check if all remaining storages are still there
+                foreach (var storageName in storageNames)
+                {
+                    Assert.IsTrue(root.TryGetStorage(storageName, out var storage)); // <- no problem here
+                }
+
+                // write CompundFile into MemoryStream... 
+                using (var memStream = new MemoryStream())
+                {
+                    compoundFile.Save(memStream);
+
+                    // ....and read new CompundFile from that stream
+                    using (var newCf = new CompoundFile(memStream))
+                    {
+                        // check if all storages can be found in to copied CompundFile
+                        foreach (var storageName in storageNames)
+                        {
+                            Assert.IsTrue(newCf.RootStorage.TryGetStorage(storageName, out var storage)); //<- we will see some missing storages here
+                        }
+                    }
+                }
+            }
+        }
     }
 }
