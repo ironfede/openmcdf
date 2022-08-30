@@ -16,6 +16,10 @@ namespace OpenMcdf.Extensions.OLEProperties
         {
             get
             {
+
+#if NETSTANDARD2_0_OR_GREATER
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+#endif
                 return instance.Value;
             }
         }
@@ -407,12 +411,15 @@ namespace OpenMcdf.Extensions.OLEProperties
             {
                 uint size = br.ReadUInt32();
                 data = br.ReadBytes((int)size);
+
                 return Encoding.GetEncoding(codePage).GetString(data);
             }
 
             public override void WriteScalarValue(BinaryWriter bw, string pValue)
             {
+
                 data = Encoding.GetEncoding(codePage).GetBytes((String)pValue);
+
                 bw.Write((uint)data.Length);
                 bw.Write(data);
             }
@@ -612,7 +619,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        #endregion
+#endregion
 
     }
 }
