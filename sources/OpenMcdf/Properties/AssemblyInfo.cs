@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Federico Blaseotto")]
 [assembly: AssemblyProduct("OpenMcdf 2.2")]
-[assembly: AssemblyCopyright("Copyright © 2010-2021, Federico Blaseotto")]
+[assembly: AssemblyCopyright("Copyright © 2010-2022, Federico Blaseotto")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
