@@ -12,7 +12,7 @@ pool:
 variables:
   buildConfiguration: 'Release'
   libFramework: 'netstandard2.0'
-  appFramework: 'netcoreapp2.0'
+  appFramework: 'netcoreapp3.1'
   # pay attention to  slashes
   testsProject:  'sources/Test/OpenMcdf.Test/OpenMcdf.Test.csproj'
   buildProject: 'sources/OpenMcdf/OpenMcdf.csproj'
