@@ -1263,7 +1263,7 @@ namespace OpenMcdf.Test
             }
             catch (Exception ex)
             {
-                Assert.IsTrue(ex is CFException);
+                Assert.IsTrue(ex is CFException,, "Exception is " + ex.GetType());
             }
 
             try
@@ -1277,7 +1277,7 @@ namespace OpenMcdf.Test
             }
             catch (Exception ex)
             {
-                Assert.IsTrue(ex is CFException);
+                Assert.IsTrue(ex is CFException,, "Exception is " + ex.GetType());
             }
 
             FileStream fs = null;
@@ -1294,7 +1294,7 @@ namespace OpenMcdf.Test
             }
             catch (Exception ex)
             {
-                Assert.IsTrue(ex is CFException);
+                Assert.IsTrue(ex is CFException, "Exception is " + ex.GetType());
             }
 
             fs?.Close();
