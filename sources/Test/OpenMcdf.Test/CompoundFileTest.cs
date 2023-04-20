@@ -1235,5 +1235,74 @@ namespace OpenMcdf.Test
                 }
             }
         }
+
+
+        [TestMethod]
+        public void Test_FIX_BUG_96_CompoundFile_SaveOverwrite()
+        {
+            String filename = "MultipleStorage.cfs";
+            String filename2 = "MyFile2.dat";
+            String storageName = "MyStorage";
+            String streamName = "MyStream";
+
+            if (File.Exists(filename2))
+                File.Delete(filename2);
+
+            if (File.Exists(filename))
+            {
+                File.Copy(filename, filename2);
+            }
+
+            try
+            {
+                CompoundFile compoundFile = new CompoundFile(filename2);
+                var s = compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName);
+                s.Write(new byte[] { 0x0A, 0x0A }, 0);
+                compoundFile.Save(filename2);
+                compoundFile.Close();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is CFException);
+            }
+
+            try
+            {
+                string rootedPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + filename2;
+                CompoundFile compoundFile = new CompoundFile(rootedPath);
+                var s = compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName);
+                s.Write(new byte[] { 0x0A, 0x0A }, 0);
+                compoundFile.Save(rootedPath);
+                compoundFile.Close();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is CFException);
+            }
+
+            FileStream fs = null;
+
+            try
+            {
+
+                CompoundFile compoundFile = new CompoundFile(filename2);
+                fs = new FileStream(filename2, FileMode.Open);
+                var s = compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName);
+                s.Write(new byte[] { 0x0A, 0x0A }, 0);
+                compoundFile.Save(fs);
+                compoundFile.Close();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsTrue(ex is CFException);
+            }
+
+            fs?.Close();
+            fs?.Dispose();
+
+            if (File.Exists(filename2))
+                File.Delete(filename2);
+        }
     }
+
 }
