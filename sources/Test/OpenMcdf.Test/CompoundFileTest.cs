@@ -1236,6 +1236,38 @@ namespace OpenMcdf.Test
             }
         }
 
+        [TestMethod]
+        public void Test_FIX_BUG_94_GrowingSizeSave()
+        {
+            String filename = "_Test.ppt";
+            String filename2 = "MyFile4.dat";
+
+            if (File.Exists(filename2))
+                File.Delete(filename2);
+
+
+            if (File.Exists(filename))
+            {
+                File.Copy(filename, filename2);
+            }
+
+            var cf = new CompoundFile(filename2, CFSUpdateMode.Update, CFSConfiguration.EraseFreeSectors);
+            cf.RootStorage.Delete("PowerPoint Document");
+            cf.Commit();
+            cf.Close();
+
+            CompoundFile.ShrinkCompoundFile(filename2);
+
+            long length = new System.IO.FileInfo(filename).Length;
+            long length2 = new System.IO.FileInfo(filename2).Length;
+
+            Assert.IsTrue(length > length2);
+
+
+            if (File.Exists(filename2))
+                File.Delete(filename2);
+
+        }
 
         [TestMethod]
         public void Test_FIX_BUG_96_CompoundFile_SaveOverwrite()
