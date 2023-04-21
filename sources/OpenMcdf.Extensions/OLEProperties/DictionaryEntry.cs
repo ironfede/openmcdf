@@ -33,9 +33,9 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
             else
             {
-                nameBytes = br.ReadBytes(Length << 2);
+                nameBytes = br.ReadBytes(Length << 1);
 
-                int m = Length % 4;
+                int m = (Length * 2) % 4;
                 if (m > 0)
                     br.ReadBytes(m);
             }

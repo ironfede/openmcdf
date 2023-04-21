@@ -102,7 +102,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
 
             this.PropertyNames = (Dictionary<uint, string>)pStream.PropertySet0.Properties
-                .Where(p => p.PropertyType == PropertyType.DictionaryProperty).FirstOrDefault();
+                .Where(p => p.PropertyType == PropertyType.DictionaryProperty).FirstOrDefault()?.Value;
 
             this.Context = new PropertyContext()
             {
