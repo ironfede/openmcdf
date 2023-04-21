@@ -1268,7 +1268,7 @@ namespace OpenMcdf.Test
 
             try
             {
-                string rootedPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + filename2;
+                string rootedPath = Path.GetFullPath(filename2);
                 CompoundFile compoundFile = new CompoundFile(rootedPath);
                 var s = compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName);
                 s.Write(new byte[] { 0x0A, 0x0A }, 0);

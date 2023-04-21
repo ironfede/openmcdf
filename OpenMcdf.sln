@@ -1,20 +1,20 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27428.2015
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6C619B4F-100F-4D60-BEF1-60B770D24E5E}"
 	ProjectSection(SolutionItems) = preProject
+		azure-pipelines.yml = azure-pipelines.yml
 		OpenMcdf.snk = OpenMcdf.snk
 		sources\SharedAssemblyInfo.cs = sources\SharedAssemblyInfo.cs
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{8DC8730A-F254-4848-B272-BDFFCB5FDC00}"
 	ProjectSection(SolutionItems) = preProject
-		sources\TestFiles\2_MB-W.ppt = sources\TestFiles\2_MB-W.ppt
 		sources\Test\TestFiles\2custom.doc = sources\Test\TestFiles\2custom.doc
+		sources\TestFiles\2_MB-W.ppt = sources\TestFiles\2_MB-W.ppt
 		sources\Test\TestFiles\64-67.numberOfMiniFATSectors.docx = sources\Test\TestFiles\64-67.numberOfMiniFATSectors.docx
-		sources\TestFiles\_thumbs_bug_24.db = sources\TestFiles\_thumbs_bug_24.db
 		sources\TestFiles\BUG_16_.xls = sources\TestFiles\BUG_16_.xls
 		sources\Test\TestFiles\corrupted-sector-chain-2.doc = sources\Test\TestFiles\corrupted-sector-chain-2.doc
 		sources\Test\TestFiles\corrupted-sector-chain.cfs = sources\Test\TestFiles\corrupted-sector-chain.cfs
@@ -31,10 +31,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{
 		sources\TestFiles\MultipleStorage4.cfs = sources\TestFiles\MultipleStorage4.cfs
 		sources\Test\TestFiles\no_sectors.doc = sources\Test\TestFiles\no_sectors.doc
 		sources\TestFiles\report.xls = sources\TestFiles\report.xls
-		sources\TestFiles\report_name_fix.xls = sources\TestFiles\report_name_fix.xls
 		sources\TestFiles\reportREAD.xls = sources\TestFiles\reportREAD.xls
+		sources\TestFiles\report_name_fix.xls = sources\TestFiles\report_name_fix.xls
 		sources\TestFiles\testbad.ole = sources\TestFiles\testbad.ole
 		sources\Test\TestFiles\wstr_presets.doc = sources\Test\TestFiles\wstr_presets.doc
+		sources\TestFiles\_thumbs_bug_24.db = sources\TestFiles\_thumbs_bug_24.db
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf", "sources\OpenMcdf\OpenMcdf.csproj", "{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}"

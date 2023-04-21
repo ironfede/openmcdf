@@ -1902,7 +1902,7 @@ namespace OpenMcdf
         }
 
         /// <summary>
-        /// Saves the in-memory image of Compound File to a file.
+        /// Saves the in-memory image of Compound File opened in ReadOnly mode to a file.
         /// </summary>
         /// <param name="fileName">File name to write the compound file to</param>
         /// <exception cref="T:OpenMcdf.CFException">Raised if destination file is not seekable</exception>
