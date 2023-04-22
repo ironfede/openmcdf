@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OpenMcdf;
 using System.IO;
 using System.Diagnostics;
+using System.Linq.Expressions;
 
 namespace OpenMcdf.Test
 {
@@ -1233,6 +1234,21 @@ namespace OpenMcdf.Test
                         }
                     }
                 }
+            }
+        }
+
+        [TestMethod]
+        public void Test_FIX_BUG_75_ForeverLoop()
+        {
+            try
+            {
+                var cf = new CompoundFile("mediationform.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.Default & ~CFSConfiguration.NoValidationException);
+                var s = cf.RootStorage.GetStream("\u0001CompObj");
+                byte[] data = s.GetData();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOfType(ex, typeof(CFCorruptedFileException));
             }
         }
 

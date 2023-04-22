@@ -139,10 +139,15 @@ namespace StructuredStorageExplorer
                     cf = null;
                 }
 
+                CFSConfiguration cfg = CFSConfiguration.SectorRecycle | CFSConfiguration.EraseFreeSectors;
+
+                if (!Settings.Default.EnableValidation)
+                    cfg |= CFSConfiguration.NoValidationException;
+
                 //Load file
                 if (enableCommit)
                 {
-                    cf = new CompoundFile(fs, CFSUpdateMode.Update, CFSConfiguration.SectorRecycle | CFSConfiguration.NoValidationException | CFSConfiguration.EraseFreeSectors);
+                    cf = new CompoundFile(fs, CFSUpdateMode.Update, cfg);
                 }
                 else
                 {
@@ -153,6 +158,9 @@ namespace StructuredStorageExplorer
             }
             catch (Exception ex)
             {
+                cf?.Close();
+                fs?.Close();
+
                 treeView1.Nodes.Clear();
                 fileNameLabel.Text = String.Empty;
                 MessageBox.Show("Internal error: " + ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -399,162 +407,143 @@ namespace StructuredStorageExplorer
             // Get the node under the mouse cursor.
             // We intercept both left and right mouse clicks
             // and set the selected treenode according.
-
-            TreeNode n = treeView1.GetNodeAt(e.X, e.Y);
-
-            if (n != null)
+            try
             {
-                if (this.hexEditor.ByteProvider != null && this.hexEditor.ByteProvider.HasChanges())
+                TreeNode n = treeView1.GetNodeAt(e.X, e.Y);
+
+                if (n != null)
                 {
-                    if (MessageBox.Show("Do you want to save pending changes ?", "Save changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    if (this.hexEditor.ByteProvider != null && this.hexEditor.ByteProvider.HasChanges())
                     {
-                        this.hexEditor.ByteProvider.ApplyChanges();
+                        if (MessageBox.Show("Do you want to save pending changes ?", "Save changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                        {
+                            this.hexEditor.ByteProvider.ApplyChanges();
+                        }
                     }
-                }
 
-                treeView1.SelectedNode = n;
+                    treeView1.SelectedNode = n;
 
 
-                // The tag property contains the underlying CFItem.
-                CFItem target = (CFItem)n.Tag;
+                    // The tag property contains the underlying CFItem.
+                    CFItem target = (CFItem)n.Tag;
 
-                if (target.IsStream)
-                {
-                    addStorageStripMenuItem1.Enabled = false;
-                    addStreamToolStripMenuItem.Enabled = false;
-                    importDataStripMenuItem1.Enabled = true;
-                    exportDataToolStripMenuItem.Enabled = true;
+                    if (target.IsStream)
+                    {
+                        addStorageStripMenuItem1.Enabled = false;
+                        addStreamToolStripMenuItem.Enabled = false;
+                        importDataStripMenuItem1.Enabled = true;
+                        exportDataToolStripMenuItem.Enabled = true;
 
 #if OLE_PROPERTY
-                    if (target.Name == "\u0005SummaryInformation" || target.Name == "\u0005DocumentSummaryInformation")
-                    {
-                        OLEPropertiesContainer c = ((CFStream)target).AsOLEPropertiesContainer();
-
-                        DataTable ds = new DataTable();
-
-                        ds.Columns.Add("Name", typeof(String));
-                        ds.Columns.Add("Type", typeof(String));
-                        ds.Columns.Add("Value", typeof(String));
-
-                        foreach (var p in c.Properties)
+                        if (target.Name == "\u0005SummaryInformation" || target.Name == "\u0005DocumentSummaryInformation")
                         {
-                            if (p.Value.GetType() != typeof(byte[]) && p.Value.GetType().GetInterfaces().Any(t => t == typeof(IList)))
-                            {
-                                for (int h = 0; h < ((IList)p.Value).Count; h++)
-                                {
-                                    DataRow dr = ds.NewRow();
-                                    dr.ItemArray = new Object[] { p.PropertyName, p.VTType, ((IList)p.Value)[h] };
-                                    ds.Rows.Add(dr);
-                                }
-                            }
-                            else
-                            {
-                                DataRow dr = ds.NewRow();
-                                dr.ItemArray = new Object[] { p.PropertyName, p.VTType, p.Value };
-                                ds.Rows.Add(dr);
-                            }
-                        }
-                        ds.AcceptChanges();
-                        dgvOLEProps.DataSource = ds;
+                            OLEPropertiesContainer c = ((CFStream)target).AsOLEPropertiesContainer();
 
-                        if (c.HasUserDefinedProperties)
-                        {
-                            DataTable ds2 = new DataTable();
+                            DataTable ds = new DataTable();
 
-                            ds2.Columns.Add("Name", typeof(String));
-                            ds2.Columns.Add("Type", typeof(String));
-                            ds2.Columns.Add("Value", typeof(String));
+                            ds.Columns.Add("Name", typeof(String));
+                            ds.Columns.Add("Type", typeof(String));
+                            ds.Columns.Add("Value", typeof(String));
 
-                            foreach (var p in c.UserDefinedProperties.Properties)
+                            foreach (var p in c.Properties)
                             {
                                 if (p.Value.GetType() != typeof(byte[]) && p.Value.GetType().GetInterfaces().Any(t => t == typeof(IList)))
                                 {
                                     for (int h = 0; h < ((IList)p.Value).Count; h++)
                                     {
-                                        DataRow dr = ds2.NewRow();
+                                        DataRow dr = ds.NewRow();
                                         dr.ItemArray = new Object[] { p.PropertyName, p.VTType, ((IList)p.Value)[h] };
-                                        ds2.Rows.Add(dr);
+                                        ds.Rows.Add(dr);
                                     }
                                 }
                                 else
                                 {
-                                    DataRow dr = ds2.NewRow();
+                                    DataRow dr = ds.NewRow();
                                     dr.ItemArray = new Object[] { p.PropertyName, p.VTType, p.Value };
-                                    ds2.Rows.Add(dr);
+                                    ds.Rows.Add(dr);
                                 }
                             }
+                            ds.AcceptChanges();
+                            dgvOLEProps.DataSource = ds;
 
-                            ds2.AcceptChanges();
-                            dgvUserDefinedProperties.DataSource = ds2;
+                            if (c.HasUserDefinedProperties)
+                            {
+                                DataTable ds2 = new DataTable();
+
+                                ds2.Columns.Add("Name", typeof(String));
+                                ds2.Columns.Add("Type", typeof(String));
+                                ds2.Columns.Add("Value", typeof(String));
+
+                                foreach (var p in c.UserDefinedProperties.Properties)
+                                {
+                                    if (p.Value.GetType() != typeof(byte[]) && p.Value.GetType().GetInterfaces().Any(t => t == typeof(IList)))
+                                    {
+                                        for (int h = 0; h < ((IList)p.Value).Count; h++)
+                                        {
+                                            DataRow dr = ds2.NewRow();
+                                            dr.ItemArray = new Object[] { p.PropertyName, p.VTType, ((IList)p.Value)[h] };
+                                            ds2.Rows.Add(dr);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        DataRow dr = ds2.NewRow();
+                                        dr.ItemArray = new Object[] { p.PropertyName, p.VTType, p.Value };
+                                        ds2.Rows.Add(dr);
+                                    }
+                                }
+
+                                ds2.AcceptChanges();
+                                dgvUserDefinedProperties.DataSource = ds2;
+                            }
+
+
                         }
-
-                       
-                    }
-                    else
-                    {
-                        dgvOLEProps.DataSource = null;
-                    }
-
-                    //if (target.Name == "\u0005SummaryInformation" || target.Name == "\u0005DocumentSummaryInformation")
-                    //{
-                    //    ContainerType map = target.Name == "\u0005SummaryInformation" ? ContainerType.SummaryInfo : ContainerType.DocumentSummaryInfo;
-                    //    PropertySetStream mgr = ((CFStream)target).AsOLEProperties();
-
-                    //    DataTable ds = new DataTable();
-                    //    ds.Columns.Add("Name", typeof(String));
-                    //    ds.Columns.Add("Type", typeof(String));
-                    //    ds.Columns.Add("Value", typeof(String));
-
-                    //    for (int i = 0; i < mgr.PropertySet0.NumProperties; i++)
-                    //    {
-                    //        ITypedPropertyValue p = mgr.PropertySet0.Properties[i];
-
-                    //        if (p.Value.GetType().GetInterfaces().Any(t => t == typeof(IList)))
-                    //        {
-                    //            for (int h = 0; h < ((IList)p.Value).Count; h++)
-                    //            {
-                    //                DataRow dr = ds.NewRow();
-                    //                dr.ItemArray = new Object[] { mgr.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier.GetDescription(map), p.VTType, ((IList)p.Value)[h] };
-                    //                ds.Rows.Add(dr);
-                    //            }
-                    //        }
-                    //        else
-                    //        {
-                    //            DataRow dr = ds.NewRow();
-                    //            dr.ItemArray = new Object[] { mgr.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier.GetDescription(map), p.VTType, p.Value };
-                    //            ds.Rows.Add(dr);
-                    //        }
-                    //    }
-
-                    //    ds.AcceptChanges();
-                    //    dgvOLEProps.DataSource = ds;
-                    //}
+                        else
+                        {
+                            dgvOLEProps.DataSource = null;
+                        }
 #endif
-                }
-            }
-            else
-            {
-                addStorageStripMenuItem1.Enabled = true;
-                addStreamToolStripMenuItem.Enabled = true;
-                importDataStripMenuItem1.Enabled = false;
-                exportDataToolStripMenuItem.Enabled = false;
-            }
-
-            if (n != null)
-                propertyGrid1.SelectedObject = n.Tag;
-
-
-            if (n != null)
-            {
-                CFStream targetStream = n.Tag as CFStream;
-                if (targetStream != null)
-                {
-                    this.hexEditor.ByteProvider = new StreamDataProvider(targetStream);
+                    }
                 }
                 else
                 {
-                    this.hexEditor.ByteProvider = null;
+                    addStorageStripMenuItem1.Enabled = true;
+                    addStreamToolStripMenuItem.Enabled = true;
+                    importDataStripMenuItem1.Enabled = false;
+                    exportDataToolStripMenuItem.Enabled = false;
                 }
+
+                if (n != null)
+                    propertyGrid1.SelectedObject = n.Tag;
+
+
+                if (n != null)
+                {
+                    CFStream targetStream = n.Tag as CFStream;
+                    if (targetStream != null)
+                    {
+                        this.hexEditor.ByteProvider = new StreamDataProvider(targetStream);
+                    }
+                    else
+                    {
+                        this.hexEditor.ByteProvider = null;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+                cf?.Close();
+                fs?.Close();
+
+                cf = null;
+                fs = null;
+
+                treeView1.Nodes.Clear();
+                fileNameLabel.Text = String.Empty;
+
+                MessageBox.Show("Internal error: " + ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -576,6 +565,12 @@ namespace StructuredStorageExplorer
             CloseCurrentFile();
         }
 
-
+        private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            using (var pref = new PreferencesForm())
+            {
+                pref.ShowDialog();
+            }
+        }
     }
 }
