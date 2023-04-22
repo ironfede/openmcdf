@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0;net40</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
     <SignAssembly>true</SignAssembly>
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
@@ -78,7 +78,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.2.1.12</Version>
+    <Version>2.3.0.0</Version>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
     <Authors>ironfede</Authors>
     <PackageLicenseUrl>https://opensource.org/licenses/MPL-2.0</PackageLicenseUrl>
@@ -88,9 +88,10 @@
     <PackageTags>Compound file, c#, structured storage</PackageTags>
     <Description>OpenMcdf is a 100% .net / C# component that allows developers to manipulate Microsoft Compound Document File Format for OLE structured storage. 
 It supports read/write operations on streams and storages and traversal of structures tree.</Description>
-    <Copyright>Copyright © 2010-2022, Federico Blaseotto</Copyright>
+    <Copyright>Copyright © 2010-2023, Federico Blaseotto</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>Bug fixing #88 and #90</PackageReleaseNotes>
+    <PackageReleaseNotes>Bug fixing #75 #76 #84 #94 #96 
+Updated to .NET 6.0</PackageReleaseNotes>
     <Title>OpenMcdf</Title>
     <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>

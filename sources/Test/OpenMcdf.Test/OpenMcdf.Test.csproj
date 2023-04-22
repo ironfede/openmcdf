@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net45;net6.0</TargetFrameworks>
+    <TargetFrameworks>net45;net6.0</TargetFrameworks> 
     <IsPackable>false</IsPackable>
     <Configurations>Debug;Release</Configurations>
     <SignAssembly>true</SignAssembly>

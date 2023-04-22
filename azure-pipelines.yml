@@ -11,7 +11,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  libFramework: 'net6.0'
+  libFramework: 'netstandard2.0'
   appFramework: 'net6.0'
   # pay attention to  slashes
   testsProject:  'sources/Test/OpenMcdf.Test/OpenMcdf.Test.csproj'

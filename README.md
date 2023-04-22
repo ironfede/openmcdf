@@ -74,4 +74,4 @@ for (int i = 0; i < mgr.PropertySet0.NumProperties; i++)
   ...
 ```
 
-OpenMcdf runs happily on the [Mono](http://www.mono-project.com/) platform and supports now **.NET 6**
+OpenMcdf runs happily on the [Mono](http://www.mono-project.com/) platform and targets **netstandard 2.0** to allow maximum client compatibility AND .net framework 4 for legacy implementations.
