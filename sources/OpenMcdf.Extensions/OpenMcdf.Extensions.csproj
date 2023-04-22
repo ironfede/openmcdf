@@ -24,7 +24,7 @@
   </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
+    <DebugType>portable</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>..\..\bin\Debug\OpenMcdf.Extensions\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -33,7 +33,7 @@
     <DocumentationFile>..\..\bin\Debug\OpenMcdf.Extensions\OpenMcdf.Extensions.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>portable</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\bin\Release\OpenMcdf.Extensions\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>

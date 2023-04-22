@@ -90,8 +90,7 @@
 It supports read/write operations on streams and storages and traversal of structures tree.</Description>
     <Copyright>Copyright © 2010-2023, Federico Blaseotto</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>Bug fixing #75 #76 #84 #94 #96 
-Updated to .NET 6.0</PackageReleaseNotes>
+    <PackageReleaseNotes>Bug fixing #75 #76 #84 #94 #96 </PackageReleaseNotes>
     <Title>OpenMcdf</Title>
     <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
