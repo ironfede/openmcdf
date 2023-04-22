@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("-")]
 [assembly: AssemblyProduct("OpenMcdf.Extensions")]
-[assembly: AssemblyCopyright("Copyright © Federico Blaseotto, 2022")]
+[assembly: AssemblyCopyright("Copyright © Federico Blaseotto, 2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -38,4 +38,4 @@ using System.Runtime.InteropServices;
 // http://blog.paranoidcoding.com/2016/04/05/deterministic-builds-in-roslyn.html
 // and Compilers should be deterministic: same inputs generate same outputs
 // https://stackoverflow.com/questions/43019832/auto-versioning-in-visual-studio-2017-net-core/46985624#46985624
-[assembly: AssemblyVersion("2.2.1.12")]
+[assembly: AssemblyVersion("2.3.0.0")]
