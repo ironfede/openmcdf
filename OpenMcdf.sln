@@ -25,6 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{
 		sources\TestFiles\CyclicFAT.cfs = sources\TestFiles\CyclicFAT.cfs
 		sources\Test\TestFiles\empty_directory_chain.doc = sources\Test\TestFiles\empty_directory_chain.doc
 		sources\Test\TestFiles\english.presets.doc = sources\Test\TestFiles\english.presets.doc
+		sources\Test\TestFiles\mediationform.doc = sources\Test\TestFiles\mediationform.doc
 		sources\TestFiles\MultipleStorage.cfs = sources\TestFiles\MultipleStorage.cfs
 		sources\TestFiles\MultipleStorage2.cfs = sources\TestFiles\MultipleStorage2.cfs
 		sources\TestFiles\MultipleStorage3.cfs = sources\TestFiles\MultipleStorage3.cfs
