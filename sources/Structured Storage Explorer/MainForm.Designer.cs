@@ -46,6 +46,8 @@
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.updateCurrentFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openDataFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.fileNameLabel = new System.Windows.Forms.ToolStripStatusLabel();
@@ -59,8 +61,6 @@
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.dgvOLEProps = new System.Windows.Forms.DataGridView();
             this.dgvUserDefinedProperties = new System.Windows.Forms.DataGridView();
-            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -86,7 +86,8 @@
             // openFileDialog1
             // 
             this.openFileDialog1.Filter = "Office files (*.xls *.doc *.ppt)|*.xls;*.doc;*.ppt|Thumbs db files (Thumbs.db)|*." +
-    "db|MSI Setup files (*.msi)|*.msi|All files (*.*)|*.*";
+    "db|MSI Setup files (*.msi)|*.msi|Advanced Authoring Format  (*.aaf)|*.aaf|All fi" +
+    "les (*.*)|*.*";
             this.openFileDialog1.Title = "Open OLE Structured Storae file";
             // 
             // treeView1
@@ -97,7 +98,7 @@
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(423, 320);
+            this.treeView1.Size = new System.Drawing.Size(423, 319);
             this.treeView1.TabIndex = 4;
             this.treeView1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.treeView1_MouseUp);
             // 
@@ -224,6 +225,21 @@
             this.saveAsToolStripMenuItem.Text = "Save As...";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
             // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.preferencesToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(58, 29);
+            this.editToolStripMenuItem.Text = "Edit";
+            // 
+            // preferencesToolStripMenuItem
+            // 
+            this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(204, 34);
+            this.preferencesToolStripMenuItem.Text = "Preferences";
+            this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
+            // 
             // statusStrip1
             // 
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -258,7 +274,7 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.propertyGrid1);
             this.splitContainer1.Size = new System.Drawing.Size(425, 649);
-            this.splitContainer1.SplitterDistance = 322;
+            this.splitContainer1.SplitterDistance = 321;
             this.splitContainer1.SplitterWidth = 6;
             this.splitContainer1.TabIndex = 5;
             // 
@@ -268,7 +284,7 @@
             this.propertyGrid1.Location = new System.Drawing.Point(0, 0);
             this.propertyGrid1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(423, 319);
+            this.propertyGrid1.Size = new System.Drawing.Size(423, 320);
             this.propertyGrid1.TabIndex = 0;
             this.propertyGrid1.ToolbarVisible = false;
             // 
@@ -339,7 +355,7 @@
             this.tabPage2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabPage2.Size = new System.Drawing.Size(841, 608);
+            this.tabPage2.Size = new System.Drawing.Size(841, 616);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "OLE Properties";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -359,8 +375,8 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.dgvUserDefinedProperties);
-            this.splitContainer3.Size = new System.Drawing.Size(833, 598);
-            this.splitContainer3.SplitterDistance = 299;
+            this.splitContainer3.Size = new System.Drawing.Size(833, 606);
+            this.splitContainer3.SplitterDistance = 303;
             this.splitContainer3.SplitterWidth = 5;
             this.splitContainer3.TabIndex = 2;
             // 
@@ -372,7 +388,7 @@
             this.dgvOLEProps.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dgvOLEProps.Name = "dgvOLEProps";
             this.dgvOLEProps.RowHeadersWidth = 62;
-            this.dgvOLEProps.Size = new System.Drawing.Size(833, 299);
+            this.dgvOLEProps.Size = new System.Drawing.Size(833, 303);
             this.dgvOLEProps.TabIndex = 0;
             // 
             // dgvUserDefinedProperties
@@ -383,23 +399,8 @@
             this.dgvUserDefinedProperties.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dgvUserDefinedProperties.Name = "dgvUserDefinedProperties";
             this.dgvUserDefinedProperties.RowHeadersWidth = 62;
-            this.dgvUserDefinedProperties.Size = new System.Drawing.Size(833, 294);
+            this.dgvUserDefinedProperties.Size = new System.Drawing.Size(833, 298);
             this.dgvUserDefinedProperties.TabIndex = 1;
-            // 
-            // editToolStripMenuItem
-            // 
-            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.preferencesToolStripMenuItem});
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(58, 29);
-            this.editToolStripMenuItem.Text = "Edit";
-            // 
-            // preferencesToolStripMenuItem
-            // 
-            this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
-            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.preferencesToolStripMenuItem.Text = "Preferences";
-            this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
             // 
             // MainForm
             // 
