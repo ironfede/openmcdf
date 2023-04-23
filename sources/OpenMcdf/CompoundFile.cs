@@ -681,6 +681,11 @@ namespace OpenMcdf
 
                 header.Read(stream);
 
+                if (!configuration.HasFlag(CFSConfiguration.NoValidationException))
+                {
+                    ValidateHeader(header);
+                }
+
                 int n_sector = Ceiling(((double)(stream.Length - GetSectorSize()) / (double)GetSectorSize()));
 
                 if (stream.Length > 0x7FFFFF0)
@@ -706,6 +711,35 @@ namespace OpenMcdf
 
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Validate header values specified in [MS-CFB] document
+        /// </summary>
+        /// <param name="header">The Header sector of file to validate</param>
+        /// <exception cref="CFCorruptedFileException">If one of the validation checks fails a <see cref="T:OpenMcdf.CFCorruptedFileException">CFCorruptedFileException</see> exception will be thrown</exception>
+        private void ValidateHeader(Header header)
+        {
+            if (header.MiniSectorShift != 6)
+            {
+                throw new CFCorruptedFileException("Mini sector Shift MUST be 0x06");
+            }
+
+            if ((header.MajorVersion == 0x0003 && header.SectorShift != 9) || (header.MajorVersion == 0x0004 && header.SectorShift != 0x000c))
+            {
+                throw new CFCorruptedFileException("Sector Shift MUST be 0x0009 for Major Version 3 and 0x000c for Major Version 4");
+            }
+
+            if (header.MinSizeStandardStream != 4096)
+            {
+                throw new CFCorruptedFileException("Mini Stream Cut off size MUST be 4096 byte");
+            }
+
+            if (header.ByteOrder != 0xFFFE)
+            {
+                throw new CFCorruptedFileException("Byte order MUST be little endian (0xFFFE)");
+            }
+
         }
 
         private void LoadFile(String fileName)
@@ -2003,7 +2037,7 @@ namespace OpenMcdf
             if (!stream.CanSeek)
                 throw new CFException("Cannot save on a non-seekable stream");
 
-           
+
 
             CheckForLockSector();
             int sSize = GetSectorSize();
