@@ -85,7 +85,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     m = (int)size % 4;
 
                     if (m > 0 && !IsVariant)
-                        br.ReadBytes(m); // padding
+                        br.ReadBytes(4 - m); // padding
                     break;
 
                 case PropertyDimensions.IsVector:
@@ -106,7 +106,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                     m = (int)size % 4;
                     if (m > 0 && !IsVariant)
-                        br.ReadBytes(m); // padding
+                        br.ReadBytes(4 - m); // padding
                     break;
                 default:
                     break;
@@ -134,7 +134,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     m = (int)size % 4;
 
                     if (m > 0 && needsPadding)
-                        for (int i = 0; i < m; i++)  // padding
+                        for (int i = 0; i < 4 - m; i++)  // padding
                             bw.Write((byte)0);
                     break;
 
