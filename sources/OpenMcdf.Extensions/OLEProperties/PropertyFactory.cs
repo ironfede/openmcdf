@@ -1,35 +1,20 @@
 ﻿using OpenMcdf.Extensions.OLEProperties.Interfaces;
 using System;
-using System.Collections.Generic;
 using System.Text;
 using System.IO;
-using System.Threading;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    internal class PropertyFactory
+    internal abstract class PropertyFactory
     {
-        private static ThreadLocal<PropertyFactory> instance
-            = new ThreadLocal<PropertyFactory>(() => { return new PropertyFactory(); });
-
-        public static PropertyFactory Instance
+        static PropertyFactory()
         {
-            get
-            {
-
 #if NETSTANDARD2_0_OR_GREATER
-                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
-                return instance.Value;
-            }
         }
 
-        private PropertyFactory()
-        {
-
-        }
-
-        public ITypedPropertyValue NewProperty(VTPropertyType vType, int codePage, bool isVariant = false)
+        public ITypedPropertyValue NewProperty(VTPropertyType vType, int codePage, uint propertyIdentifier, bool isVariant = false)
         {
             ITypedPropertyValue pr = null;
 
@@ -75,8 +60,10 @@ namespace OpenMcdf.Extensions.OLEProperties
                     pr = new VT_UI8_Property(vType, isVariant);
                     break;
                 case VTPropertyType.VT_BSTR:
-                case VTPropertyType.VT_LPSTR:
                     pr = new VT_LPSTR_Property(vType, codePage, isVariant);
+                    break;
+                case VTPropertyType.VT_LPSTR:
+                    pr = CreateLpstrProperty(vType, codePage, propertyIdentifier, isVariant);
                     break;
                 case VTPropertyType.VT_LPWSTR:
                     pr = new VT_LPWSTR_Property(vType, codePage, isVariant);
@@ -94,7 +81,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     pr = new VT_EMPTY_Property(vType, isVariant);
                     break;
                 case VTPropertyType.VT_VARIANT_VECTOR:
-                    pr = new VT_VariantVector(vType, codePage, isVariant);
+                    pr = new VT_VariantVector(vType, codePage, isVariant, this, propertyIdentifier);
                     break;
                 case VTPropertyType.VT_CF:
                     pr = new VT_CF_Property(vType, isVariant);
@@ -108,6 +95,11 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
 
             return pr;
+        }
+
+        protected virtual ITypedPropertyValue CreateLpstrProperty(VTPropertyType vType, int codePage, uint propertyIdentifier, bool isVariant)
+        {
+            return new VT_LPSTR_Property(vType, codePage, isVariant);
         }
 
         #region Property implementations
@@ -396,7 +388,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_LPSTR_Property : TypedPropertyValue<string>
+        protected class VT_LPSTR_Property : TypedPropertyValue<string>
         {
 
             private byte[] data;
@@ -432,6 +424,14 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                 if (addNullTerminator)
                     bw.Write((byte)0);
+            }
+        }
+
+        protected class VT_Unaligned_LPSTR_Property : VT_LPSTR_Property
+        {
+            public VT_Unaligned_LPSTR_Property(VTPropertyType vType, int codePage, bool isVariant) : base(vType, codePage, isVariant)
+            {
+                this.NeedsPadding = false;
             }
         }
 
@@ -621,10 +621,15 @@ namespace OpenMcdf.Extensions.OLEProperties
         private class VT_VariantVector : TypedPropertyValue<object>
         {
             private readonly int codePage;
+            private readonly PropertyFactory factory;
+            private readonly uint propertyIdentifier;
 
-            public VT_VariantVector(VTPropertyType vType, int codePage, bool isVariant) : base(vType, isVariant)
+            public VT_VariantVector(VTPropertyType vType, int codePage, bool isVariant, PropertyFactory factory, uint propertyIdentifier) : base(vType, isVariant)
             {
                 this.codePage = codePage;
+                this.factory = factory;
+                this.propertyIdentifier = propertyIdentifier;
+                this.NeedsPadding = false;
             }
 
             public override object ReadScalarValue(System.IO.BinaryReader br)
@@ -632,7 +637,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 VTPropertyType vType = (VTPropertyType)br.ReadUInt16();
                 br.ReadUInt16(); // Ushort Padding
 
-                ITypedPropertyValue p = PropertyFactory.Instance.NewProperty(vType, codePage, true);
+                ITypedPropertyValue p = factory.NewProperty(vType, codePage, propertyIdentifier, true);
                 p.Read(br);
                 return p;
             }
@@ -647,5 +652,28 @@ namespace OpenMcdf.Extensions.OLEProperties
 
 #endregion
 
+    }
+
+    // The default property factory.
+    internal sealed class DefaultPropertyFactory : PropertyFactory 
+    {
+        public static PropertyFactory Instance { get; } = new DefaultPropertyFactory();
+    }
+
+    // A separate factory for DocumentSummaryInformation properties, to handle special cases with unaligned strings.
+    internal sealed class DocumentSummaryInfoPropertyFactory : PropertyFactory
+    {
+        public static PropertyFactory Instance { get; } = new DocumentSummaryInfoPropertyFactory();
+
+        protected override ITypedPropertyValue CreateLpstrProperty(VTPropertyType vType, int codePage, uint propertyIdentifier, bool isVariant)
+        {
+            // PIDDSI_HEADINGPAIR and PIDDSI_DOCPARTS use unaligned (unpadded) strings - the others are padded
+            if (propertyIdentifier == 0x0000000C || propertyIdentifier == 0x0000000D)
+            {
+                return new VT_Unaligned_LPSTR_Property(vType, codePage, isVariant);
+            }
+
+            return base.CreateLpstrProperty(vType, codePage, propertyIdentifier, isVariant);
+        }
     }
 }
