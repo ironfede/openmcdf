@@ -104,9 +104,9 @@ namespace OpenMcdf.Extensions.OLEProperties
                     this.propertyValue = res;
                     size = (int)(br.BaseStream.Position - currentPos);
 
-                    m = (int)size % 4;
-                    if (m > 0 && !IsVariant)
-                        br.ReadBytes(4 - m); // padding
+                    //m = (int)size % 4;
+                    //if (m > 0 && !IsVariant)
+                    //    br.ReadBytes(4 - m); // padding
                     break;
                 default:
                     break;
