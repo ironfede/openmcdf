@@ -251,7 +251,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 ps.FMTID1 = new Guid("{D5CDD502-2E9C-101B-9397-08002B2CF9AE}");
                 ps.Offset1 = 0;
 
-                foreach (var op in this.Properties)
+                foreach (var op in this.UserDefinedProperties.Properties)
                 {
                     ITypedPropertyValue p = PropertyFactory.Instance.NewProperty(op.VTType, ps.PropertySet1.PropertyContext.CodePage);
                     p.Value = op.Value;
