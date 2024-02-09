@@ -242,7 +242,8 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                 ps.PropertySet1 = new PropertySet
                 {
-                    NumProperties = (uint)this.UserDefinedProperties.Properties.Count(),
+                    // Number of user defined properties, plus 1 for the name dictionary
+                    NumProperties = (uint)this.UserDefinedProperties.Properties.Count() + 1,
                     PropertyIdentifierAndOffsets = new List<PropertyIdentifierAndOffset>(),
                     Properties = new List<Interfaces.IProperty>(),
                     PropertyContext = UserDefinedProperties.Context
@@ -251,13 +252,21 @@ namespace OpenMcdf.Extensions.OLEProperties
                 ps.FMTID1 = new Guid(WellKnownFMTID.FMTID_UserDefinedProperties);
                 ps.Offset1 = 0;
 
+                // Add the dictionary containing the property names
+                IDictionaryProperty dictionaryProperty = new DictionaryProperty(ps.PropertySet1.PropertyContext.CodePage)
+                {
+                    Value = this.UserDefinedProperties.PropertyNames
+                };
+                ps.PropertySet1.Properties.Add(dictionaryProperty);
+                ps.PropertySet1.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = 0, Offset = 0 });
+
+                // Add the properties themselves
                 foreach (var op in this.UserDefinedProperties.Properties)
                 {
                     ITypedPropertyValue p = PropertyFactory.Instance.NewProperty(op.VTType, ps.PropertySet1.PropertyContext.CodePage);
                     p.Value = op.Value;
                     ps.PropertySet1.Properties.Add(p);
                     ps.PropertySet1.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = op.PropertyIdentifier, Offset = 0 });
-
                 }
             }
 
