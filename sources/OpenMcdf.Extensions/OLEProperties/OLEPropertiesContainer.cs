@@ -89,10 +89,10 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             switch (pStream.FMTID0.ToString("B").ToUpperInvariant())
             {
-                case "{F29F85E0-4FF9-1068-AB91-08002B27B3D9}":
+                case WellKnownFMTID.FMTID_SummaryInformation:
                     this.ContainerType = ContainerType.SummaryInfo;
                     break;
-                case "{D5CDD502-2E9C-101B-9397-08002B2CF9AE}":
+                case WellKnownFMTID.FMTID_DocSummaryInformation:
                     this.ContainerType = ContainerType.DocumentSummaryInfo;
                     break;
                 default:
@@ -211,7 +211,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                 NumPropertySets = 1,
 
-                FMTID0 = this.ContainerType == ContainerType.SummaryInfo ? new Guid("{F29F85E0-4FF9-1068-AB91-08002B27B3D9}") : new Guid("{D5CDD502-2E9C-101B-9397-08002B2CF9AE}"),
+                FMTID0 = this.ContainerType == ContainerType.SummaryInfo ? new Guid(WellKnownFMTID.FMTID_SummaryInformation) : new Guid(WellKnownFMTID.FMTID_DocSummaryInformation),
                 Offset0 = 0,
 
                 FMTID1 = Guid.Empty,
@@ -248,7 +248,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     PropertyContext = UserDefinedProperties.Context
                 };
 
-                ps.FMTID1 = new Guid("{D5CDD502-2E9C-101B-9397-08002B2CF9AE}");
+                ps.FMTID1 = new Guid(WellKnownFMTID.FMTID_UserDefinedProperties);
                 ps.Offset1 = 0;
 
                 foreach (var op in this.UserDefinedProperties.Properties)
