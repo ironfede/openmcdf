@@ -131,7 +131,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             if (pStream.NumPropertySets == 2)
             {
-                UserDefinedProperties = new OLEPropertiesContainer(this.Context.CodePage, ContainerType.UserDefinedProperties);
+                UserDefinedProperties = new OLEPropertiesContainer(pStream.PropertySet1.PropertyContext.CodePage, ContainerType.UserDefinedProperties);
                 this.HasUserDefinedProperties = true;
 
                 UserDefinedProperties.ContainerType = ContainerType.UserDefinedProperties;

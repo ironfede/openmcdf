@@ -333,5 +333,43 @@ namespace OpenMcdf.Extensions.Test
             }
         }
 
+        // winUnicodeDictionary.doc contains a UserProperties section with the CP_WINUNICODE codepage, and LPWSTR string properties
+        [TestMethod]
+        public void Test_Read_Unicode_User_Properties_Dictionary()
+        {
+            using (CompoundFile cf = new CompoundFile("winUnicodeDictionary.doc"))
+            {
+                var dsiStream = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation");
+                var co = dsiStream.AsOLEPropertiesContainer();
+                var userProps = co.UserDefinedProperties;
+
+                // CodePage should be CP_WINUNICODE (1200) 
+                Assert.AreEqual(1200, userProps.Context.CodePage);
+
+                // There should be 5 property names present, and 6 properties (the properties include the code page)
+                Assert.AreEqual(5, userProps.PropertyNames.Count);
+                Assert.AreEqual(6, userProps.Properties.Count());
+                
+                // Check for expected names and values
+                var propArray = userProps.Properties.ToArray();
+                
+                // CodePage prop
+                Assert.AreEqual(1u, propArray[0].PropertyIdentifier);
+                Assert.AreEqual("0x00000001", propArray[0].PropertyName);
+                Assert.AreEqual((short)1200, propArray[0].Value);
+
+                // String properties
+                Assert.AreEqual("A\0", propArray[1].PropertyName);
+                Assert.AreEqual("\0", propArray[1].Value);
+                Assert.AreEqual("AB\0", propArray[2].PropertyName);
+                Assert.AreEqual("X\0", propArray[2].Value);
+                Assert.AreEqual("ABC\0", propArray[3].PropertyName);
+                Assert.AreEqual("XY\0", propArray[3].Value);
+                Assert.AreEqual("ABCD\0", propArray[4].PropertyName);
+                Assert.AreEqual("XYZ\0", propArray[4].Value);
+                Assert.AreEqual("ABCDE\0", propArray[5].PropertyName);
+                Assert.AreEqual("XYZ!\0", propArray[5].Value);
+            }
+        }
     }
 }
