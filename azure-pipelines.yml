@@ -15,6 +15,7 @@ variables:
   appFramework: 'net6.0'
   # pay attention to  slashes
   testsProject:  'sources/Test/OpenMcdf.Test/OpenMcdf.Test.csproj'
+  extensionTestsProject: 'sources/Test/OpenMcdf.Extensions.Test/OpenMcdf.Extensions.Test.csproj'
   buildProject: 'sources/OpenMcdf/OpenMcdf.csproj'
   # without filter it  will timoeout in azure AFTER 60+ min
   testFilter: 'Name!=Test_FIX_BUG_GH_14&Name!=Test_FIX_BUG_GH_15'
@@ -24,6 +25,11 @@ steps:
   displayName: 'dotnet build $(buildConfiguration)'
 
 - script: dotnet test -f $(appFramework)  $(testsProject) --filter="$(testFilter)" --logger trx
+  displayName: 'OpenMcdf unit tests'
+
+- script: dotnet test $(extensionTestsProject) --logger trx
+  displayName: 'OpenMcdf.Extensions unit tests'
+
 - task: PublishTestResults@2
   condition: succeededOrFailed()
   inputs:
