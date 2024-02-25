@@ -6,7 +6,7 @@ namespace OpenMcdf.Benchmark
     {
         private static void Main(string[] args)
         {
-            var summary = BenchmarkRunner.Run<InMemory>();
+            BenchmarkSwitcher.FromAssembly(typeof(Program).Assembly).Run(args);
         }
     }
 }
