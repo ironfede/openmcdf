@@ -36,4 +36,9 @@ namespace OpenMcdf.Extensions.OLEProperties
     {
         TypedPropertyValue = 0, DictionaryProperty = 1
     }
+
+    internal static class CodePages
+    {
+        public const int CP_WINUNICODE = 0x04B0;
+    }
 }

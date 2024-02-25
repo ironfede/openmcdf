@@ -7,8 +7,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 {
     public class DictionaryEntry
     {
-        private const int CP_WINUNICODE = 0x04B0;
-
         int codePage;
 
         public DictionaryEntry(int codePage)
@@ -27,7 +25,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             PropertyIdentifier = br.ReadUInt32();
             Length = br.ReadInt32();
 
-            if (codePage != CP_WINUNICODE)
+            if (codePage != CodePages.CP_WINUNICODE)
             {
                 nameBytes = br.ReadBytes(Length);
             }
