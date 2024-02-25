@@ -149,11 +149,11 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             var padding0 = bw.BaseStream.Position % 4;
 
-            //if (padding0 > 0)
-            //{
-            //    for (int p = 0; p < padding0; p++)
-            //        bw.Write((byte)0);
-            //}
+            if (padding0 > 0)
+            {
+                for (int p = 0; p < 4 - padding0; p++)
+                    bw.Write((byte)0);
+            }
 
             int size0 = (int)(bw.BaseStream.Position - oc0.OffsetPS);
 
@@ -183,7 +183,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                 int size1 = (int)(bw.BaseStream.Position - oc1.OffsetPS);
 
-                bw.Seek(oc1.OffsetPS + 4, System.IO.SeekOrigin.Begin);
+                bw.Seek(oc1.OffsetPS, System.IO.SeekOrigin.Begin);
                 bw.Write(size1);
             }
 
@@ -214,8 +214,8 @@ namespace OpenMcdf.Extensions.OLEProperties
             {
                 for (int i = 0; i < PropertySet1.PropertyIdentifierAndOffsets.Count; i++)
                 {
-                    bw.Seek((int)oc1.PropertyIdentifierOffsets[i], System.IO.SeekOrigin.Begin); //Offset of 4 to Offset value
-                    bw.Write(oc1.PropertyOffsets[i] - oc1.OffsetPS);
+                    bw.Seek((int)oc1.PropertyIdentifierOffsets[i] + 4, System.IO.SeekOrigin.Begin); //Offset of 4 to Offset value
+                    bw.Write((int)(oc1.PropertyOffsets[i] - oc1.OffsetPS));
                 }
             }
         }
