@@ -154,9 +154,10 @@ namespace OpenMcdf.Extensions.OLEProperties
                     UserDefinedProperties.properties.Add(op);
                 }
 
-                UserDefinedProperties.PropertyNames = (Dictionary<uint, string>)pStream.PropertySet1.Properties
+                var existingPropertyNames = (Dictionary<uint, string>)pStream.PropertySet1.Properties
                     .Where(p => p.PropertyType == PropertyType.DictionaryProperty).FirstOrDefault()?.Value;
 
+                UserDefinedProperties.PropertyNames = existingPropertyNames ?? new Dictionary<uint, string> ();
             }
         }
 
