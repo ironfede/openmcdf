@@ -90,6 +90,11 @@ namespace StructuredStorageExplorer
 
             propertyGrid1.SelectedObject = null;
             hexEditor.ByteProvider = null;
+
+#if OLE_PROPERTY
+            dgvUserDefinedProperties.DataSource = null;
+            dgvOLEProps.DataSource = null;
+#endif
         }
 
         private bool canUpdate = false;
@@ -424,6 +429,7 @@ namespace StructuredStorageExplorer
                     treeView1.SelectedNode = n;
 
 
+
                     // The tag property contains the underlying CFItem.
                     CFItem target = (CFItem)n.Tag;
 
@@ -435,6 +441,9 @@ namespace StructuredStorageExplorer
                         exportDataToolStripMenuItem.Enabled = true;
 
 #if OLE_PROPERTY
+                        dgvUserDefinedProperties.DataSource = null;
+                        dgvOLEProps.DataSource = null;
+
                         if (target.Name == "\u0005SummaryInformation" || target.Name == "\u0005DocumentSummaryInformation")
                         {
                             OLEPropertiesContainer c = ((CFStream)target).AsOLEPropertiesContainer();
@@ -496,12 +505,6 @@ namespace StructuredStorageExplorer
                                 ds2.AcceptChanges();
                                 dgvUserDefinedProperties.DataSource = ds2;
                             }
-
-
-                        }
-                        else
-                        {
-                            dgvOLEProps.DataSource = null;
                         }
 #endif
                     }
