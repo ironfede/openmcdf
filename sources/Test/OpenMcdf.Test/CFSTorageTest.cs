@@ -458,6 +458,46 @@ namespace OpenMcdf.Test
         }
 
         [TestMethod]
+        public void Test_FIX_BUG_116()
+        {
+            CompoundFile cf = new CompoundFile();
+            cf.RootStorage.AddStorage("AStorage")
+
+                .AddStream("AStream")
+                .SetData(Helpers.GetBuffer(100));
+
+            cf.SaveAs("Hello$File");
+
+            cf.Close();
+
+            CompoundFile cf1 = new CompoundFile("Hello$File", CFSUpdateMode.Update, CFSConfiguration.Default);
+
+            try
+            {
+
+                cf1.RootStorage.RenameItem("AStorage", "NewStorage");
+                cf1.Commit();
+                cf1.Close();
+
+            }
+            catch (Exception ex)
+            {
+               Assert.Fail(ex.Message);
+            }
+
+            try
+            {
+                CompoundFile cf2 = new CompoundFile("Hello$File");
+                var st2 = cf2.RootStorage.GetStorage("NewStorage");
+                Assert.IsNotNull(st2);
+            }catch(Exception ex)
+            {
+                Assert.Fail($"{ex.Message}");
+            }
+
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(OpenMcdf.CFCorruptedFileException))]
         public void Test_CORRUPTEDDOC_BUG36_SHOULD_THROW_CORRUPTED_FILE_EXCEPTION()
         {

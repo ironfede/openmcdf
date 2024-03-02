@@ -809,9 +809,12 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_RESIZE_STREAM_NO_TRANSITION()
         {
+            int INITIAL_SIZE = 1024 * 1024 * 2;
+            int DELTA_SIZE = 300;
+
             CompoundFile cf = null;
             //CFStream st = null;
-            byte[] b = Helpers.GetBuffer(1024 * 1024 * 2); //2MB buffer
+            byte[] b = Helpers.GetBuffer(INITIAL_SIZE); //2MB buffer
 
             cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
             cf.RootStorage.AddStream("AStream").SetData(b);
@@ -820,10 +823,22 @@ namespace OpenMcdf.Test
 
             cf = new CompoundFile("$Test_RESIZE_STREAM.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             CFStream item = cf.RootStorage.GetStream("AStream");
-            item.Resize(item.Size / 2);
+            item.Resize(INITIAL_SIZE - DELTA_SIZE);
             //cf.RootStorage.AddStream("BStream").SetData(b);
             cf.Commit(true);
             cf.Close();
+
+
+            cf = new CompoundFile("$Test_RESIZE_STREAM.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
+            item = cf.RootStorage.GetStream("AStream");
+            Assert.IsTrue(item != null);
+            Assert.IsTrue(item.Size == INITIAL_SIZE - DELTA_SIZE);
+
+            byte[] buffer = new byte[INITIAL_SIZE - DELTA_SIZE];
+            item.Read(buffer, 0, INITIAL_SIZE - DELTA_SIZE);
+            Assert.IsTrue(Helpers.CompareBuffer(b, buffer, INITIAL_SIZE - DELTA_SIZE));
+            cf.Close();
+
         }
 
         [TestMethod]
@@ -889,11 +904,13 @@ namespace OpenMcdf.Test
         }
 
         [TestMethod]
-        public void Test_RESIZE_MINISTREAM_NO_TRANSITION()
+        public void Test_RESIZE_MINISTREAM_NO_TRANSITION_MOD()
         {
             CompoundFile cf = null;
+            int INITIAL_SIZE = 1024 * 2;
+            int SIZE_DELTA = 148;
 
-            byte[] b = Helpers.GetBuffer(1024 * 2);
+            byte[] b = Helpers.GetBuffer(INITIAL_SIZE);
 
             cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
             cf.RootStorage.AddStream("MiniStream").SetData(b);
@@ -902,7 +919,7 @@ namespace OpenMcdf.Test
 
             cf = new CompoundFile("$Test_RESIZE_MINISTREAM.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle | CFSConfiguration.EraseFreeSectors);
             CFStream item = cf.RootStorage.GetStream("MiniStream");
-            item.Resize(item.Size / 2);
+            item.Resize(item.Size - SIZE_DELTA);
 
             cf.Commit();
             cf.Close();
@@ -911,12 +928,12 @@ namespace OpenMcdf.Test
             CFStream st = cf.RootStorage.GetStream("MiniStream");
 
             Assert.IsNotNull(st);
-            Assert.IsTrue(st.Size == 1024);
+            Assert.IsTrue(st.Size == (INITIAL_SIZE - SIZE_DELTA));
 
-            byte[] buffer = new byte[1024];
-            st.Read(buffer, 0, 1024);
+            byte[] buffer = new byte[INITIAL_SIZE - SIZE_DELTA];
+            st.Read(buffer, 0, INITIAL_SIZE - SIZE_DELTA);
 
-            Assert.IsTrue(Helpers.CompareBuffer(b, buffer, 1024));
+            Assert.IsTrue(Helpers.CompareBuffer(b, buffer, INITIAL_SIZE - SIZE_DELTA));
 
             cf.Close();
         }
@@ -1114,6 +1131,33 @@ namespace OpenMcdf.Test
             {
                 Assert.Fail("Unexpected exception raised: " + ex.Message);
             }
+        }
+
+        /// <summary>
+        /// Resize without transitio to smaller chain has a wrong behaviour
+        /// </summary>
+        [TestMethod]
+        public void TEST_RESIZE_STREAM_BUG_119()
+        {
+            var cf = new CompoundFile();
+            const string DATA = "data";
+            var st = cf.RootStorage.AddStream(DATA);
+            const int size = 10;
+            var data = Enumerable.Range(0, size).Select(v => (byte)v).ToArray();
+            st.SetData(data);
+            var ms = new MemoryStream();
+            cf.Save(ms);
+            cf.Close();
+
+            ms.Position = 0;
+            cf = new CompoundFile(ms, CFSUpdateMode.Update, CFSConfiguration.Default);
+            st = cf.RootStorage.GetStream(DATA);
+            byte[] buffer = new byte[size];
+            st.Read(buffer, 0, size);
+            st.Resize(5);   // <- can be any number smaller than the current size
+            st.Write(new byte[] { 0 }, 0); // <- exception here! //NO MORE
+            cf.Commit();
+            cf.Close();
         }
 
     }

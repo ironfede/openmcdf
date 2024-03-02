@@ -14,6 +14,7 @@ namespace OpenMcdf.Test
             r.NextBytes(b);
             return b;
         }
+
         public static void FillBufferWithRandomData(byte[] buffer)
         {
             Random r = new Random();

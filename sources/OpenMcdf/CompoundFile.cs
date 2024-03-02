@@ -2269,10 +2269,12 @@ namespace OpenMcdf
 
                     int nSec = (int)Math.Floor(((double)(Math.Abs(delta)) / newSectorSize)); //number of sectors to mark as free
 
+                    int startFreeSector = sectorChain.Count - nSec; // start sector to free
+
                     if (newSectorSize == Sector.MINISECTOR_SIZE)
-                        FreeMiniChain(sectorChain, nSec, this.eraseFreeSectors);
+                        FreeMiniChain(sectorChain, startFreeSector, this.eraseFreeSectors);
                     else
-                        FreeChain(sectorChain, nSec, this.eraseFreeSectors);
+                        FreeChain(sectorChain, startFreeSector, this.eraseFreeSectors);
                 }
 
                 if (sectorChain.Count > 0)
