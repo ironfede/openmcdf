@@ -86,9 +86,9 @@
     <PackageTags>Compound file, c#, structured storage</PackageTags>
     <Description>OpenMcdf is a 100% .net / C# component that allows developers to manipulate Microsoft Compound Document File Format for OLE structured storage. 
 It supports read/write operations on streams and storages and traversal of structures tree.</Description>
-    <Copyright>Copyright © 2010-2023, Federico Blaseotto</Copyright>
+    <Copyright>Copyright © 2010-2024, Federico Blaseotto</Copyright>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageReleaseNotes>Bug fixing and validation check added</PackageReleaseNotes>
+    <PackageReleaseNotes>Bug fixing (high priority for #119, issue with stream resizing) and enhancements in extensions</PackageReleaseNotes>
     <Title>OpenMcdf</Title>
     <PackageIcon>icon.png</PackageIcon>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>

@@ -58,14 +58,14 @@
   <PropertyGroup>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Version>2.3.0.1</Version>
+    <Version>2.3.1.0</Version>
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/ironfede/openmcdf</PackageProjectUrl>
     <PackageIconUrl></PackageIconUrl>
     <RepositoryUrl>https://github.com/ironfede/openmcdf</RepositoryUrl>
     <Title>OpenMcdf.Extensions</Title>
     <Description>Extensions for OLE Properties and IO.Stream interface for OpenMcdf (Beta)</Description>
-    <Copyright>Federico Blaseotto, 2022</Copyright>
+    <Copyright>Federico Blaseotto, 2024</Copyright>
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
