@@ -194,6 +194,41 @@ namespace OpenMcdf.Extensions.OLEProperties
                 properties.Remove(toRemove);
         }
 
+        /// <summary>
+        /// Create a new UserDefinedProperties container within this container.
+        /// </summary>
+        /// <remarks>
+        /// Only containers of type DocumentSummaryInfo can contain user defined properties.
+        /// </remarks>
+        /// <param name="codePage">The code page to use for the user defined properties.</param>
+        /// <returns>The UserDefinedProperties container.</returns>
+        /// <exception cref="CFInvalidOperation">If this container is a type that doesn't suppose user defined properties.</exception>
+        public OLEPropertiesContainer CreateUserDefinedProperties(int codePage)
+        {
+            // Only the DocumentSummaryInfo stream can contain a UserDefinedProperties
+            if (this.ContainerType != ContainerType.DocumentSummaryInfo)
+            {
+                throw new CFInvalidOperation($"Only a DocumentSummaryInfo can contain user defined properties. Current container type is {this.ContainerType}");
+            }
+
+            // Create the container, and add the codepage to the initial set of properties
+            UserDefinedProperties = new OLEPropertiesContainer(codePage, ContainerType.UserDefinedProperties)
+            {
+                PropertyNames = new Dictionary<uint, string>()
+            };
+
+            var op = new OLEProperty(UserDefinedProperties)
+            {
+                VTType = VTPropertyType.VT_I2,
+                PropertyIdentifier = 1,
+                Value = (short)codePage
+            };
+
+            UserDefinedProperties.properties.Add(op);
+            this.HasUserDefinedProperties = true;
+
+            return UserDefinedProperties;
+        }
 
         public void Save(CFStream cfStream)
         {
