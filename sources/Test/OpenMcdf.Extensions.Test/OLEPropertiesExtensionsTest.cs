@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
+using System.Collections.Generic;
 using OpenMcdf.Extensions.OLEProperties;
 
 namespace OpenMcdf.Extensions.Test
@@ -438,6 +439,27 @@ namespace OpenMcdf.Extensions.Test
                 Assert.AreEqual("DateProperty\0", propArray[4].PropertyName);
                 Assert.AreEqual(testNow, propArray[4].Value);
                 Assert.AreEqual(VTPropertyType.VT_FILETIME, propArray[4].VTType);
+            }
+        }
+
+        // Try to read a document which contains Vector/String properties
+        // refs https://github.com/ironfede/openmcdf/issues/98
+        [TestMethod]
+        public void Test_SUMMARY_INFO_READ_LPWSTRING_VECTOR()
+        {
+            using (CompoundFile cf = new CompoundFile("SampleWorkBook_bug98.xls"))
+            {
+                var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
+
+                var docPartsProperty = co.Properties.FirstOrDefault(property => property.PropertyIdentifier == 13); //13 == PIDDSI_DOCPARTS
+
+                Assert.IsNotNull(docPartsProperty);
+                
+                var docPartsValues = docPartsProperty.Value as IEnumerable<string>;
+                Assert.AreEqual(3, docPartsValues.Count());
+                Assert.AreEqual("Sheet1\0", docPartsValues.ElementAt(0));
+                Assert.AreEqual("Sheet2\0", docPartsValues.ElementAt(1));
+                Assert.AreEqual("Sheet3\0", docPartsValues.ElementAt(2));
             }
         }
     }
