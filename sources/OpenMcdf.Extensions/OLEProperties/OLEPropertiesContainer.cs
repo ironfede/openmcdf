@@ -175,6 +175,47 @@ namespace OpenMcdf.Extensions.OLEProperties
             properties.Add(property);
         }
 
+        /// <summary>
+        /// Create a new UserDefinedProperty.
+        /// </summary>
+        /// <param name="vtPropertyType">The type of property to create.</param>
+        /// <param name="name">The name of the new property.</param>
+        /// <returns>The new property, of null if this container can't contain user defined properties.</returns>
+        public OLEProperty AddUserDefinedProperty(VTPropertyType vtPropertyType, string name)
+        {
+            if (this.ContainerType != ContainerType.UserDefinedProperties)
+                return null;
+
+            // As per https://learn.microsoft.com/en-us/openspecs/windows_protocols/MS-OLEPS/4177a4bc-5547-49fe-a4d9-4767350fd9cf
+            // the property names have to be unique, and are case insensitive.
+            if (this.PropertyNames.Any(property => property.Value.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                throw new ArgumentException($"User defined property names must be unique and {name} already exists", nameof(name));
+            }
+    
+            // Work out a property identifier - must be > 1 and unique as per 
+            // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-oleps/333959a3-a999-4eca-8627-48a224e63e77
+            uint identifier = 2;
+
+            if (this.PropertyNames.Count > 0)
+            {
+                uint highestIdentifier = this.PropertyNames.Keys.Max();
+                identifier = Math.Max(highestIdentifier, 2) + 1;
+            }
+
+            this.PropertyNames[identifier] = name;
+
+            var op = new OLEProperty(this)
+            {
+                VTType = vtPropertyType,
+                PropertyIdentifier = identifier
+            };
+
+            properties.Add(op);
+
+            return op;
+        }
+
         public void RemoveProperty(uint propertyIdentifier)
         {
             //throw new NotImplementedException("API Unstable - Work in progress - Milestone 2.3.0.0");
