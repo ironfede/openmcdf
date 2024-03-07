@@ -1,45 +1,56 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace OpenMcdf.Extensions
 {
+    /// <summary>
+    /// A wrapper class to present a <see cref="CFStream"/> as a <see cref="Stream"/>.
+    /// </summary>
     public class StreamDecorator : Stream
     {
         private CFStream cfStream;
         private long position = 0;
 
+        /// <summary>
+        /// Create a new <see cref="StreamDecorator"/> for the specified <seealso cref="CFStream"/>.
+        /// </summary>
+        /// <param name="cfstream">The <see cref="CFStream"/> being wrapped.</param>
         public StreamDecorator(CFStream cfstream)
         {
             this.cfStream = cfstream;
         }
 
+        /// <inheritdoc/>
         public override bool CanRead
         {
             get { return true; }
         }
 
+        /// <inheritdoc/>
         public override bool CanSeek
         {
             get { return true; }
         }
 
+        /// <inheritdoc/>
         public override bool CanWrite
         {
             get { return true; }
         }
 
+        /// <inheritdoc/>
         public override void Flush()
         {
             // nothing to do;
         }
 
+        /// <inheritdoc/>
         public override long Length
         {
             get { return cfStream.Size; }
         }
 
+        /// <inheritdoc/>
         public override long Position
         {
             get
@@ -52,6 +63,7 @@ namespace OpenMcdf.Extensions
             }
         }
 
+        /// <inheritdoc/>
         public override int Read(byte[] buffer, int offset, int count)
         {
             if (count > buffer.Length)
@@ -71,6 +83,7 @@ namespace OpenMcdf.Extensions
             return count;
         }
 
+        /// <inheritdoc/>
         public override long Seek(long offset, SeekOrigin origin)
         {
             switch (origin)
@@ -91,17 +104,20 @@ namespace OpenMcdf.Extensions
             return position;
         }
 
+        /// <inheritdoc/>
         public override void SetLength(long value)
         {
             this.cfStream.Resize(value);
         }
 
+        /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)
         {
             this.cfStream.Write(buffer, position, offset, count);
             position += count;
         }
 
+        /// <inheritdoc/>
         public override void Close()
         {
             // Do nothing
