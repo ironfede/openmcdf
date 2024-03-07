@@ -17,7 +17,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             get
             {
 
-#if NETSTANDARD2_0_OR_GREATER
+#if NETSTANDARD2_0_OR_GREATER || NET6_0_OR_GREATER
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 #endif
                 return instance.Value;
