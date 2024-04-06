@@ -273,8 +273,22 @@ namespace OpenMcdf
 
         public override void Write(byte[] buffer, int offset, int count)
         {
+            this.WriteSpan(buffer.AsSpan(offset, count));
+
+        }
+
+#if NET6_0_OR_GREATER
+        public override void Write(ReadOnlySpan<byte> buffer)
+        {
+            this.WriteSpan(buffer);
+        }
+#endif
+
+        public void WriteSpan(ReadOnlySpan<byte> buffer)
+        {
             int byteWritten = 0;
             int roundByteWritten = 0;
+            int count = buffer.Length;
 
             // Assure length
             if ((position + count) > length)
@@ -290,18 +304,15 @@ namespace OpenMcdf
 
                 if (secOffset < sectorChain.Count)
                 {
-                    Buffer.BlockCopy(
-                        buffer,
-                        offset,
-                        sectorChain[secOffset].GetData(),
-                        secShift,
-                        roundByteWritten);
+                    var source = buffer.Slice(0, roundByteWritten);
+                    var dest = sectorChain[secOffset].GetData().AsSpan(secShift, roundByteWritten);
 
+                    source.CopyTo(dest);
                     sectorChain[secOffset].DirtyFlag = true;
                 }
 
                 byteWritten += roundByteWritten;
-                offset += roundByteWritten;
+                buffer = buffer.Slice(roundByteWritten);
                 secOffset++;
 
                 // Central sectors
@@ -309,17 +320,14 @@ namespace OpenMcdf
                 {
                     roundByteWritten = sectorSize;
 
-                    Buffer.BlockCopy(
-                        buffer,
-                        offset,
-                        sectorChain[secOffset].GetData(),
-                        0,
-                        roundByteWritten);
+                    var source = buffer.Slice(0, roundByteWritten);
+                    var dest = sectorChain[secOffset].GetData().AsSpan(0, roundByteWritten);
 
+                    source.CopyTo(dest);
                     sectorChain[secOffset].DirtyFlag = true;
 
                     byteWritten += roundByteWritten;
-                    offset += roundByteWritten;
+                    buffer = buffer.Slice(roundByteWritten);
                     secOffset++;
                 }
 
@@ -328,16 +336,11 @@ namespace OpenMcdf
 
                 if (roundByteWritten != 0)
                 {
-                    Buffer.BlockCopy(
-                        buffer,
-                        offset,
-                        sectorChain[secOffset].GetData(),
-                        0,
-                        roundByteWritten);
+                    var source = buffer.Slice(0, roundByteWritten);
+                    var dest = sectorChain[secOffset].GetData().AsSpan(0, roundByteWritten);
 
+                    source.CopyTo(dest);
                     sectorChain[secOffset].DirtyFlag = true;
-
-                    offset += roundByteWritten;
                     byteWritten += roundByteWritten;
                 }
 

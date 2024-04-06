@@ -42,6 +42,11 @@ namespace OpenMcdf
         /// <remarks>Existing associated data will be lost after method invocation</remarks>
         public void SetData(byte[] data)
         {
+            this.SetData(data.AsSpan());
+        }
+
+        public void SetData(ReadOnlySpan<byte> data)
+        {
             CheckDisposed();
 
             this.CompoundFile.FreeData(this);
@@ -57,7 +62,13 @@ namespace OpenMcdf
         /// its current size</remarks>
         public void Write(byte[] data, long position)
         {
-            this.Write(data, position, 0, data.Length);
+            this.Write(data.AsSpan(), position);
+        }
+
+        public void Write(ReadOnlySpan<byte> buffer, long position)
+        {
+            CheckDisposed();
+            this.CompoundFile.WriteData(this, buffer, position);
         }
 
         /// <summary>
@@ -73,8 +84,7 @@ namespace OpenMcdf
         /// its current size.</remarks>
         internal void Write(byte[] data, long position, int offset, int count)
         {
-            CheckDisposed();
-            this.CompoundFile.WriteData(this, data, position, offset, count);
+            this.Write(data.AsSpan(offset, count), position);
         }
 
         /// <summary>
@@ -101,6 +111,11 @@ namespace OpenMcdf
         /// to simplify its use inside loops.
         /// </remarks>
         public void Append(byte[] data)
+        {
+            this.Append(data.AsSpan());
+        }
+
+        public void Append(ReadOnlySpan<byte> data)
         {
             CheckDisposed();
             if (this.Size > 0)
