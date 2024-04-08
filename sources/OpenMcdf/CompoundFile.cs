@@ -523,7 +523,7 @@ namespace OpenMcdf
                 CheckForLockSector();
 
             sourceStream.Seek(0, SeekOrigin.Begin);
-            sourceStream.Write((byte[])Array.CreateInstance(typeof(byte), GetSectorSize()), 0, sSize);
+            sourceStream.Write(new byte[sSize], 0, sSize);
 
             CommitDirectory();
 
@@ -2052,7 +2052,7 @@ namespace OpenMcdf
                     }
                 }
 
-                stream.Write((byte[])Array.CreateInstance(typeof(byte), sSize), 0, sSize);
+                stream.Write(new byte[sSize], 0, sSize);
 
                 CommitDirectory();
 
