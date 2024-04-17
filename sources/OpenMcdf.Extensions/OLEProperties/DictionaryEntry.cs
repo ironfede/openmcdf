@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace OpenMcdf.Extensions.OLEProperties
@@ -55,7 +56,13 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         private string GetName()
         {
-            return Encoding.GetEncoding(this.codePage).GetString(nameBytes);
+
+            var result = Encoding.GetEncoding(this.codePage).GetString(nameBytes);
+
+            result = result.Trim('\0');
+
+            return result;
+
         }
 
 
