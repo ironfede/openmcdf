@@ -647,8 +647,8 @@ namespace OpenMcdf.Extensions.OLEProperties
             public override object ReadScalarValue(System.IO.BinaryReader br)
             {
 
-                int size = br.ReadInt32();
-                byte[] data = br.ReadBytes(size);
+                uint size = br.ReadUInt32();
+                byte[] data = br.ReadBytes((int)size);
                 return data;
                 //br.ReadUInt16();//padding
             }
@@ -656,8 +656,15 @@ namespace OpenMcdf.Extensions.OLEProperties
             public override void WriteScalarValue(BinaryWriter bw, object pValue)
             {
                 byte[] r = pValue as byte[];
-                if (r != null)
+                if (r is null)
+                {
+                    bw.Write(0u);
+                }
+                else
+                {
+                    bw.Write((uint)r.Length);
                     bw.Write(r);
+                }
             }
 
         }
@@ -671,17 +678,23 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             public override object ReadScalarValue(System.IO.BinaryReader br)
             {
-                int size = br.ReadInt32();
-                byte[] data = br.ReadBytes(size);
+                uint size = br.ReadUInt32();
+                byte[] data = br.ReadBytes((int)size);
                 return data;
             }
 
             public override void WriteScalarValue(BinaryWriter bw, object pValue)
             {
                 byte[] r = pValue as byte[];
-                if (r != null)
+                if (r is null)
+                {
+                    bw.Write(0u);
+                }
+                else
+                {
+                    bw.Write((uint)r.Length);
                     bw.Write(r);
-
+                }
             }
 
         }
