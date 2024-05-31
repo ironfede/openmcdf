@@ -2177,9 +2177,9 @@ namespace OpenMcdf
         /// INTERNAL DEVELOPMENT. DO NOT CALL.
         /// <param name="directoryEntry"></param>
         /// <param name="buffer"></param>
-        internal void AppendData(CFItem cfItem, Byte[] buffer)
+        internal void AppendData(CFItem cfItem, ReadOnlySpan<byte> buffer)
         {
-            WriteData(cfItem, cfItem.Size, buffer);
+            WriteData(cfItem, buffer, cfItem.Size);
         }
 
         /// <summary>
@@ -2394,14 +2394,8 @@ namespace OpenMcdf
             }
         }
 
-        internal void WriteData(CFItem cfItem, long position, byte[] buffer)
+        internal void WriteData(CFItem cfItem, ReadOnlySpan<byte> buffer, long position)
         {
-            WriteData(cfItem, buffer, position, 0, buffer.Length);
-        }
-
-        internal void WriteData(CFItem cfItem, byte[] buffer, long position, int offset, int count)
-        {
-
             if (buffer == null)
                 throw new CFInvalidOperation("Parameter [buffer] cannot be null");
 
@@ -2411,6 +2405,7 @@ namespace OpenMcdf
             if (buffer.Length == 0) return;
 
             // Get delta size induced by client
+            int count = buffer.Length;
             long delta = (position + count) - cfItem.Size < 0 ? 0 : (position + count) - cfItem.Size;
             long newLength = cfItem.Size + delta;
 
@@ -2430,7 +2425,7 @@ namespace OpenMcdf
             StreamView sv = new StreamView(sectorChain, _sectorSize, newLength, null, sourceStream);
 
             sv.Seek(position, SeekOrigin.Begin);
-            sv.Write(buffer, offset, count);
+            sv.WriteSpan(buffer);
 
             if (cfItem.Size < header.MinSizeStandardStream)
             {
@@ -2439,9 +2434,9 @@ namespace OpenMcdf
             }
         }
 
-        internal void WriteData(CFItem cfItem, Byte[] buffer)
+        internal void WriteData(CFItem cfItem, ReadOnlySpan<byte> buffer)
         {
-            WriteData(cfItem, 0, buffer);
+            WriteData(cfItem, buffer, 0);
         }
 
         /// <summary>
