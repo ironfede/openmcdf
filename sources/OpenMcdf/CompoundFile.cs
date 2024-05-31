@@ -117,8 +117,7 @@ namespace OpenMcdf
     /// </summary>
     public class CompoundFile : IDisposable
     {
-        private CFSConfiguration configuration
-            = CFSConfiguration.Default;
+        private CFSConfiguration configuration;
 
         /// <summary>
         /// Get the configuration parameters of the CompoundFile object.
@@ -169,6 +168,16 @@ namespace OpenMcdf
         /// Flag for unallocated sector zeroing out.
         /// </summary>
         private bool eraseFreeSectors = false;
+
+        private bool validationExceptionEnabled = true;
+
+        public bool ValidationExceptionEnabled
+        {
+            get { return validationExceptionEnabled; }
+        }
+
+        private CFSUpdateMode updateMode = CFSUpdateMode.ReadOnly;
+        private String fileName = String.Empty;
 
         /// <summary>
         /// Initial capacity of the flushing queue used
@@ -221,25 +230,7 @@ namespace OpenMcdf
         ///     
         /// </code>
         /// </example>
-        public CompoundFile() : this(CFSVersion.Ver_3, CFSConfiguration.Default)
-        {
-
-            //this.header = new Header();
-            //this.sectorRecycle = false;
-
-            ////this.sectors.OnVer3SizeLimitReached += new Ver3SizeLimitReached(OnSizeLimitReached);
-
-            //DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
-            //FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
-
-            ////Root -- 
-            //IDirectoryEntry de = DirectoryEntry.New("Root Entry", StgType.StgRoot, directoryEntries);
-            //rootStorage = new CFStorage(this, de);
-            //rootStorage.DirEntry.StgType = StgType.StgRoot;
-            //rootStorage.DirEntry.StgColor = StgColor.Black;
-
-            ////this.InsertNewDirectoryEntry(rootStorage.DirEntry);
-        }
+        public CompoundFile() : this(CFSVersion.Ver_3, CFSConfiguration.Default) { }
 
         void OnSizeLimitReached()
         {
@@ -280,19 +271,13 @@ namespace OpenMcdf
         /// </example>
         public CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags)
         {
-            this.configuration = configFlags;
-
-            bool sectorRecycle = configFlags.HasFlag(CFSConfiguration.SectorRecycle);
-            bool eraseFreeSectors = configFlags.HasFlag(CFSConfiguration.EraseFreeSectors);
-
+            SetConfigurationOptions(configFlags);
+            
             this.header = new Header((ushort)cfsVersion);
 
             if (cfsVersion == CFSVersion.Ver_4)
                 this.sectors.OnVer3SizeLimitReached += new Ver3SizeLimitReached(OnSizeLimitReached);
-
-            this.sectorRecycle = sectorRecycle;
-
-
+            
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
@@ -302,9 +287,6 @@ namespace OpenMcdf
             //this.InsertNewDirectoryEntry(rootDir);
 
             rootStorage = new CFStorage(this, rootDir);
-
-
-            //
         }
 
 
@@ -334,17 +316,7 @@ namespace OpenMcdf
         /// automatically recognized from the file. Sector recycle is turned off
         /// to achieve the best reading/writing performance in most common scenarios.
         /// </remarks>
-        public CompoundFile(String fileName)
-        {
-            this.sectorRecycle = false;
-            this.updateMode = CFSUpdateMode.ReadOnly;
-            this.eraseFreeSectors = false;
-
-            LoadFile(fileName);
-
-            DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
-            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
-        }
+        public CompoundFile(String fileName) : this(fileName, CFSUpdateMode.ReadOnly, CFSConfiguration.Default) { }
 
         /// <summary>
         /// Load an existing compound file.
@@ -373,26 +345,15 @@ namespace OpenMcdf
         /// </example>
         public CompoundFile(String fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters)
         {
-            this.configuration = configParameters;
-            this.validationExceptionEnabled = !configParameters.HasFlag(CFSConfiguration.NoValidationException);
-            this.sectorRecycle = configParameters.HasFlag(CFSConfiguration.SectorRecycle);
+            SetConfigurationOptions(configParameters);
             this.updateMode = updateMode;
-            this.eraseFreeSectors = configParameters.HasFlag(CFSConfiguration.EraseFreeSectors);
 
             LoadFile(fileName);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
         }
-
-        private bool validationExceptionEnabled = true;
-
-        public bool ValidationExceptionEnabled
-        {
-            get { return validationExceptionEnabled; }
-        }
-
-
+        
         /// <summary>
         /// Load an existing compound file.
         /// </summary>
@@ -421,13 +382,9 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFException">Raised stream is null</exception>
         public CompoundFile(Stream stream, CFSUpdateMode updateMode, CFSConfiguration configParameters)
         {
-            this.configuration = configParameters;
-            this.validationExceptionEnabled = !configParameters.HasFlag(CFSConfiguration.NoValidationException);
-            this.sectorRecycle = configParameters.HasFlag(CFSConfiguration.SectorRecycle);
-            this.eraseFreeSectors = configParameters.HasFlag(CFSConfiguration.EraseFreeSectors);
-            this.closeStream = !configParameters.HasFlag(CFSConfiguration.LeaveOpen);
-
+            SetConfigurationOptions(configParameters);
             this.updateMode = updateMode;
+
             LoadStream(stream);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
@@ -458,18 +415,7 @@ namespace OpenMcdf
         /// </example>
         /// <exception cref="T:OpenMcdf.CFException">Raised when trying to open a non-seekable stream</exception>
         /// <exception cref="T:OpenMcdf.CFException">Raised stream is null</exception>
-        public CompoundFile(Stream stream)
-        {
-            LoadStream(stream);
-
-            DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
-            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
-        }
-
-        private CFSUpdateMode updateMode = CFSUpdateMode.ReadOnly;
-        private String fileName = String.Empty;
-
-
+        public CompoundFile(Stream stream) : this(stream, CFSUpdateMode.ReadOnly, CFSConfiguration.Default) { }
 
         /// <summary>
         /// Commit data changes since the previously commit operation
@@ -664,6 +610,18 @@ namespace OpenMcdf
             //{
             //    throw new CFException("Internal error while committing data", ex);
             //}
+        }
+
+        /// <summary>
+        /// Set configuration parameters
+        /// </summary>
+        private void SetConfigurationOptions(CFSConfiguration configParameters)
+        {
+            this.configuration = configParameters;
+            this.validationExceptionEnabled = !configParameters.HasFlag(CFSConfiguration.NoValidationException);
+            this.sectorRecycle = configParameters.HasFlag(CFSConfiguration.SectorRecycle);
+            this.eraseFreeSectors = configParameters.HasFlag(CFSConfiguration.EraseFreeSectors);
+            this.closeStream = !configParameters.HasFlag(CFSConfiguration.LeaveOpen);
         }
 
         /// <summary>
