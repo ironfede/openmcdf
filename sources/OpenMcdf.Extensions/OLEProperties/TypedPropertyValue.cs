@@ -44,6 +44,8 @@ namespace OpenMcdf.Extensions.OLEProperties
             get { return isVariant; }
         }
 
+        protected virtual bool NeedsPadding { get; set; } = true;
+
         private PropertyDimensions CheckPropertyDimensions(VTPropertyType vtType)
         {
             if ((((ushort)vtType) & 0x1000) != 0)
@@ -73,40 +75,50 @@ namespace OpenMcdf.Extensions.OLEProperties
         public void Read(System.IO.BinaryReader br)
         {
             long currentPos = br.BaseStream.Position;
-            int size = 0;
-            int m = 0;
 
             switch (this.PropertyDimensions)
             {
                 case PropertyDimensions.IsScalar:
-                    this.propertyValue = ReadScalarValue(br);
-                    size = (int)(br.BaseStream.Position - currentPos);
+                    {
+                        this.propertyValue = ReadScalarValue(br);
+                        int size = (int)(br.BaseStream.Position - currentPos);
 
-                    m = (int)size % 4;
+                        int m = (int)size % 4;
 
-                    if (m > 0 && !IsVariant)
-                        br.ReadBytes(4 - m); // padding
+                        if (m > 0 && this.NeedsPadding)
+                            br.ReadBytes(4 - m); // padding
+                    }
+
                     break;
 
                 case PropertyDimensions.IsVector:
-                    uint nItems = br.ReadUInt32();
-
-                    List<T> res = new List<T>();
-
-
-                    for (int i = 0; i < nItems; i++)
                     {
-                        T s = ReadScalarValue(br);
+                        uint nItems = br.ReadUInt32();
 
-                        res.Add(s);
+                        List<T> res = new List<T>();
+
+
+                        for (int i = 0; i < nItems; i++)
+                        {
+                            T s = ReadScalarValue(br);
+
+                            res.Add(s);
+
+                            // The padding in a vector can be per-item
+                            int itemSize = (int)(br.BaseStream.Position - currentPos);
+
+                            int pad = (int)itemSize % 4;
+                            if (pad > 0 && this.NeedsPadding)
+                                br.ReadBytes(4 - pad); // padding
+                        }
+
+                        this.propertyValue = res;
+                        int size = (int)(br.BaseStream.Position - currentPos);
+
+                        int m = (int)size % 4;
+                        if (m > 0 && this.NeedsPadding)
+                            br.ReadBytes(4 - m); // padding
                     }
-
-                    this.propertyValue = res;
-                    size = (int)(br.BaseStream.Position - currentPos);
-
-                    m = (int)size % 4;
-                    if (m > 0 && !IsVariant)
-                        br.ReadBytes(4 - m); // padding
                     break;
                 default:
                     break;
@@ -120,7 +132,6 @@ namespace OpenMcdf.Extensions.OLEProperties
             long currentPos = bw.BaseStream.Position;
             int size = 0;
             int m = 0;
-            bool needsPadding = HasPadding();
 
             switch (this.PropertyDimensions)
             {
@@ -133,7 +144,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     size = (int)(bw.BaseStream.Position - currentPos);
                     m = (int)size % 4;
 
-                    if (m > 0 && needsPadding)
+                    if (m > 0 && this.NeedsPadding)
                         for (int i = 0; i < 4 - m; i++)  // padding
                             bw.Write((byte)0);
                     break;
@@ -147,37 +158,23 @@ namespace OpenMcdf.Extensions.OLEProperties
                     for (int i = 0; i < ((List<T>)this.propertyValue).Count; i++)
                     {
                         WriteScalarValue(bw, ((List<T>)this.propertyValue)[i]);
+
+                        size = (int)(bw.BaseStream.Position - currentPos);
+                        m = (int)size % 4;
+
+                        if (m > 0 && this.NeedsPadding)
+                            for (int q = 0; q < 4 - m; q++)  // padding
+                                bw.Write((byte)0);
                     }
 
                     size = (int)(bw.BaseStream.Position - currentPos);
                     m = (int)size % 4;
 
-                    if (m > 0 && needsPadding)
-                        for (int i = 0; i < m; i++)  // padding
+                    if (m > 0 && this.NeedsPadding)
+                        for (int i = 0; i < 4 - m; i++)  // padding
                             bw.Write((byte)0);
                     break;
             }
-        }
-
-        private bool HasPadding()
-        {
-
-            VTPropertyType vt = (VTPropertyType)((ushort)this.VTType & 0x00FF);
-
-            switch (vt)
-            {
-                case VTPropertyType.VT_LPSTR:
-                    if (this.IsVariant) return false;
-                    if (dim == PropertyDimensions.IsVector) return false;
-                    break;
-                case VTPropertyType.VT_VARIANT_VECTOR:
-                    if (dim == PropertyDimensions.IsVector) return false;
-                    break;
-                default:
-                    return true;
-            }
-
-            return true;
         }
     }
 }
