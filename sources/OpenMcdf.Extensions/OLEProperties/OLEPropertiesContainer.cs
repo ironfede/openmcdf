@@ -17,6 +17,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         public bool HasUserDefinedProperties { get; private set; }
 
         public ContainerType ContainerType { get; internal set; }
+        private Guid? FmtID0 { get; }
 
         public PropertyContext Context { get; private set; }
 
@@ -100,6 +101,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     break;
             }
 
+            this.FmtID0 = pStream.FMTID0;
 
             this.PropertyNames = (Dictionary<uint, string>)pStream.PropertySet0.Properties
                 .Where(p => p.PropertyType == PropertyType.DictionaryProperty).FirstOrDefault()?.Value;
@@ -238,6 +240,8 @@ namespace OpenMcdf.Extensions.OLEProperties
             Stream s = new StreamDecorator(cfStream);
             BinaryWriter bw = new BinaryWriter(s);
 
+            Guid fmtId0 = this.FmtID0 ?? (this.ContainerType == ContainerType.SummaryInfo ? new Guid(WellKnownFMTID.FMTID_SummaryInformation) : new Guid(WellKnownFMTID.FMTID_DocSummaryInformation));
+
             PropertySetStream ps = new PropertySetStream
             {
                 ByteOrder = 0xFFFE,
@@ -247,7 +251,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                 NumPropertySets = 1,
 
-                FMTID0 = this.ContainerType == ContainerType.SummaryInfo ? new Guid(WellKnownFMTID.FMTID_SummaryInformation) : new Guid(WellKnownFMTID.FMTID_DocSummaryInformation),
+                FMTID0 = fmtId0,
                 Offset0 = 0,
 
                 FMTID1 = Guid.Empty,
