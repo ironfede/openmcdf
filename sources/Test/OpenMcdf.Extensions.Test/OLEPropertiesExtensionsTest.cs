@@ -395,6 +395,7 @@ namespace OpenMcdf.Extensions.Test
                 userProperties.PropertyNames[3] = "BooleanProperty";
                 userProperties.PropertyNames[4] = "IntegerProperty";
                 userProperties.PropertyNames[5] = "DateProperty";
+                userProperties.PropertyNames[6] = "DoubleProperty";
 
                 var stringProperty = co.NewProperty(VTPropertyType.VT_LPSTR, 2);
                 stringProperty.Value = "Hello";
@@ -412,6 +413,10 @@ namespace OpenMcdf.Extensions.Test
                 timeProperty.Value = testNow;
                 userProperties.AddProperty(timeProperty);
 
+                var doubleProperty = co.NewProperty(VTPropertyType.VT_R8, 6);
+                doubleProperty.Value = 1.234567d;
+                userProperties.AddProperty(doubleProperty);
+
                 co.Save(dsiStream);
                 cf.SaveAs(@"test_add_user_defined_property.doc");
             }
@@ -420,7 +425,7 @@ namespace OpenMcdf.Extensions.Test
             {
                 var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
                 var propArray = co.UserDefinedProperties.Properties.ToArray();
-                Assert.AreEqual(propArray.Length, 5);
+                Assert.AreEqual(propArray.Length, 6);
 
                 // CodePage prop
                 Assert.AreEqual(1u, propArray[0].PropertyIdentifier);
@@ -440,6 +445,9 @@ namespace OpenMcdf.Extensions.Test
                 Assert.AreEqual("DateProperty", propArray[4].PropertyName);
                 Assert.AreEqual(testNow, propArray[4].Value);
                 Assert.AreEqual(VTPropertyType.VT_FILETIME, propArray[4].VTType);
+                Assert.AreEqual("DoubleProperty", propArray[5].PropertyName);
+                Assert.AreEqual(1.234567d, propArray[5].Value);
+                Assert.AreEqual(VTPropertyType.VT_R8, propArray[5].VTType);
             }
         }
     }
