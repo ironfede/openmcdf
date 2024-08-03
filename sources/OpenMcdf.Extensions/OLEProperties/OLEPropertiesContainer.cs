@@ -227,6 +227,13 @@ namespace OpenMcdf.Extensions.OLEProperties
                 }
             };
 
+            // If we're writing an AppSpecific property set and have property names, then add a dictinoary property
+            if (this.ContainerType == ContainerType.AppSpecific && this.PropertyNames.Count > 0)
+            {
+                AddDictionaryPropertyToPropertySet(this.PropertyNames, ps.PropertySet0);
+                ps.PropertySet0.NumProperties += 1;
+            }
+
             foreach (var op in this.Properties)
             {
                 ITypedPropertyValue p = PropertyFactory.Instance.NewProperty(op.VTType, this.Context.CodePage);
@@ -235,7 +242,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 ps.PropertySet0.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = op.PropertyIdentifier, Offset = 0 });
             }
 
-            ps.PropertySet0.NumProperties = (uint)this.Properties.Count();
+            // ps.PropertySet0.NumProperties = (uint)this.Properties.Count();
 
             if (HasUserDefinedProperties)
             {
@@ -254,12 +261,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 ps.Offset1 = 0;
 
                 // Add the dictionary containing the property names
-                IDictionaryProperty dictionaryProperty = new DictionaryProperty(ps.PropertySet1.PropertyContext.CodePage)
-                {
-                    Value = this.UserDefinedProperties.PropertyNames
-                };
-                ps.PropertySet1.Properties.Add(dictionaryProperty);
-                ps.PropertySet1.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = 0, Offset = 0 });
+                AddDictionaryPropertyToPropertySet(this.UserDefinedProperties.PropertyNames, ps.PropertySet1);
 
                 // Add the properties themselves
                 foreach (var op in this.UserDefinedProperties.Properties)
@@ -272,6 +274,16 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
 
             ps.Write(bw);
+        }
+
+        private void AddDictionaryPropertyToPropertySet(Dictionary<uint, string> propertyNames, PropertySet propertySet)
+        {
+            IDictionaryProperty dictionaryProperty = new DictionaryProperty(propertySet.PropertyContext.CodePage)
+            {
+                Value = propertyNames
+            };
+            propertySet.Properties.Add(dictionaryProperty);
+            propertySet.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = 0, Offset = 0 });
         }
     }
 }
