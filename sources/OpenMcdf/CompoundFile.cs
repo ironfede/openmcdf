@@ -1325,12 +1325,15 @@ namespace OpenMcdf
 
         private void EnsureUniqueSectorIndex(int nextSecID, HashSet<int> processedSectors)
         {
-            if (processedSectors.Contains(nextSecID) && this.validationExceptionEnabled)
+            if (!this.validationExceptionEnabled)
+            {
+                return;
+            }
+
+            if (!processedSectors.Add(nextSecID))
             {
                 throw new CFCorruptedFileException("The file is corrupted.");
             }
-
-            processedSectors.Add(nextSecID);
         }
 
         /// <summary>
