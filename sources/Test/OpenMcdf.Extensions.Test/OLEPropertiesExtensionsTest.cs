@@ -442,5 +442,17 @@ namespace OpenMcdf.Extensions.Test
                 Assert.AreEqual(VTPropertyType.VT_FILETIME, propArray[4].VTType);
             }
         }
+
+        [TestMethod]
+        public void Test_CLSID_PROPERTY()
+        {
+            var guid = new Guid("15891a95-bf6e-4409-b7d0-3a31c391fa31");
+            using (CompoundFile cf = new CompoundFile("CLSIDPropertyTest.file"))
+            {
+                var co = cf.RootStorage.GetStream("\u0005C3teagxwOttdbfkuIaamtae3Ie").AsOLEPropertiesContainer();
+                var clsidProp = co.Properties.First(x => x.PropertyName == "DocumentID");
+                Assert.AreEqual(guid, clsidProp.Value);
+            }
+        }
     }
 }

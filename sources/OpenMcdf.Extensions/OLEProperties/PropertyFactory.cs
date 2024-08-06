@@ -103,6 +103,9 @@ namespace OpenMcdf.Extensions.OLEProperties
                 case VTPropertyType.VT_BLOB:
                     pr = new VT_BLOB_Property(vType, isVariant);
                     break;
+                case VTPropertyType.VT_CLSID:
+                    pr = new VT_CLSID_Property(vType, isVariant);
+                    break;
                 default:
                     throw new Exception("Unrecognized property type");
             }
@@ -697,6 +700,27 @@ namespace OpenMcdf.Extensions.OLEProperties
                 }
             }
 
+        }
+
+        private class VT_CLSID_Property : TypedPropertyValue<object>
+        {
+            public VT_CLSID_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+            {
+
+            }
+
+            public override object ReadScalarValue(System.IO.BinaryReader br)
+            {
+                byte[] data = br.ReadBytes(16);
+                return new Guid(data);
+            }
+
+            public override void WriteScalarValue(BinaryWriter bw, object pValue)
+            {
+                byte[] r = pValue as byte[];
+                if (r != null)
+                    bw.Write(r);
+            }
         }
 
         private class VT_VariantVector : TypedPropertyValue<object>
