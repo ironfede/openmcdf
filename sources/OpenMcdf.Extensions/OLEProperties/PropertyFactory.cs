@@ -90,6 +90,9 @@ namespace OpenMcdf.Extensions.OLEProperties
                 case VTPropertyType.VT_BLOB:
                     pr = new VT_BLOB_Property(vType, isVariant);
                     break;
+                case VTPropertyType.VT_CLSID:
+                    pr = new VT_CLSID_Property(vType, isVariant);
+                    break;
                 default:
                     throw new Exception("Unrecognized property type");
             }
@@ -404,26 +407,86 @@ namespace OpenMcdf.Extensions.OLEProperties
                 uint size = br.ReadUInt32();
                 data = br.ReadBytes((int)size);
 
-                return Encoding.GetEncoding(codePage).GetString(data);
+                var result = Encoding.GetEncoding(codePage).GetString(data);
+                //result = result.Trim(new char[] { '\0' });
+
+                //if (this.codePage == CodePages.CP_WINUNICODE)
+                //{
+                //    result = result.Substring(0, result.Length - 2);
+                //}
+                //else
+                //{
+                //    result = result.Substring(0, result.Length - 1);
+                //}
+
+                return result;
             }
 
             public override void WriteScalarValue(BinaryWriter bw, string pValue)
             {
-                data = Encoding.GetEncoding(codePage).GetBytes(pValue);
-                uint dataLength = (uint)data.Length;
+                //bool addNullTerminator = true;
 
-                // The string data must be null terminated, so add a null byte if there isn't one already
-                bool addNullTerminator =
-                    dataLength == 0 || data[dataLength - 1] != '\0';
+                if (String.IsNullOrEmpty(pValue)) //|| String.IsNullOrEmpty(pValue.Trim(new char[] { '\0' })))
+                {
+                    bw.Write((uint)0);
+                }
+                else if (this.codePage == CodePages.CP_WINUNICODE)
+                {
 
-                if (addNullTerminator) 
-                    dataLength += 1;
+                    data = Encoding.GetEncoding(codePage).GetBytes(pValue);
 
-                bw.Write(dataLength);
-                bw.Write(data);
+                    //if (data.Length >= 2 && data[data.Length - 2] == '\0' && data[data.Length - 1] == '\0')
+                    //    addNullTerminator = false;
 
-                if (addNullTerminator)
-                    bw.Write((byte)0);
+                    uint dataLength = (uint)data.Length;
+
+                    //if (addNullTerminator)
+                    dataLength += 2;            // null terminator \u+0000
+
+                   // var mod = dataLength % 4;       // pad to multiple of 4 bytes
+
+                    bw.Write(dataLength);           // datalength of string + null char (unicode)
+                    bw.Write(data);                 // string
+
+
+                    //if (addNullTerminator)
+                    //{
+                    bw.Write('\0');                 // first byte of null unicode char
+                    bw.Write('\0');                 // second byte of null unicode char
+                    //}
+
+                    //for (int i = 0; i < (4 - mod); i++)   // padding
+                    //    bw.Write('\0');
+                }
+                else
+                {
+                    data = Encoding.GetEncoding(codePage).GetBytes(pValue);
+
+                    //if (data.Length >= 1 && data[data.Length - 1] == '\0')
+                    //    addNullTerminator = false;
+
+                    uint dataLength = (uint)data.Length;
+
+                    //if (addNullTerminator)
+                    dataLength += 1;            // null terminator \u+0000
+
+                    var mod = dataLength % 4;       // pad to multiple of 4 bytes
+
+                    bw.Write(dataLength);           // datalength of string + null char (unicode)
+                    bw.Write(data);                 // string
+
+
+                    //if (addNullTerminator)
+                    //{
+                    bw.Write('\0');                 // null terminator'\0'
+                    //}
+
+                    //for (int i = 0; i < (4 - mod); i++)   // padding
+                    //    bw.Write('\0');
+                }
+
+
+
             }
         }
 
@@ -449,8 +512,11 @@ namespace OpenMcdf.Extensions.OLEProperties
             public override string ReadScalarValue(System.IO.BinaryReader br)
             {
                 uint nChars = br.ReadUInt32();
-                data = br.ReadBytes((int)(nChars * 2));  //WChar
-                return Encoding.Unicode.GetString(data);
+                data = br.ReadBytes((int)((nChars * 2) - 2));  //WChar- null terminator
+                var result = Encoding.Unicode.GetString(data);
+                //result = result.Trim(new char[] { '\0' });
+
+                return result;
             }
 
             public override void WriteScalarValue(BinaryWriter bw, string pValue)
@@ -460,20 +526,25 @@ namespace OpenMcdf.Extensions.OLEProperties
                 // The written data length field is the number of characters (not bytes) and must include a null terminator
                 // add a null terminator if there isn't one already
                 var byteLength = data.Length;
-                bool addNullTerminator =
-                    byteLength == 0 || data[byteLength - 1] != '\0' || data[byteLength - 2] != '\0';
 
-                if (addNullTerminator)
-                    byteLength += 2;
+                //bool addNullTerminator =
+                //    byteLength == 0 || data[byteLength - 1] != '\0' || data[byteLength - 2] != '\0';
+
+                //if (addNullTerminator)
+                byteLength += 2;
 
                 bw.Write((uint)byteLength / 2);
                 bw.Write(data);
 
-                if (addNullTerminator)
-                {
-                    bw.Write((byte)0);
-                    bw.Write((byte)0);
-                }
+                //if (addNullTerminator)
+                //{
+                bw.Write((byte)0);
+                bw.Write((byte)0);
+                //}
+
+                //var mod = byteLength % 4;       // pad to multiple of 4 bytes
+                //for (int i = 0; i < (4 - mod); i++)   // padding
+                //    bw.Write('\0');
             }
         }
 
@@ -579,8 +650,8 @@ namespace OpenMcdf.Extensions.OLEProperties
             public override object ReadScalarValue(System.IO.BinaryReader br)
             {
 
-                int size = br.ReadInt32();
-                byte[] data = br.ReadBytes(size);
+                uint size = br.ReadUInt32();
+                byte[] data = br.ReadBytes((int)size);
                 return data;
                 //br.ReadUInt16();//padding
             }
@@ -588,8 +659,15 @@ namespace OpenMcdf.Extensions.OLEProperties
             public override void WriteScalarValue(BinaryWriter bw, object pValue)
             {
                 byte[] r = pValue as byte[];
-                if (r != null)
+                if (r is null)
+                {
+                    bw.Write(0u);
+                }
+                else
+                {
+                    bw.Write((uint)r.Length);
                     bw.Write(r);
+                }
             }
 
         }
@@ -603,9 +681,38 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             public override object ReadScalarValue(System.IO.BinaryReader br)
             {
-                int size = br.ReadInt32();
-                byte[] data = br.ReadBytes(size);
+                uint size = br.ReadUInt32();
+                byte[] data = br.ReadBytes((int)size);
                 return data;
+            }
+
+            public override void WriteScalarValue(BinaryWriter bw, object pValue)
+            {
+                byte[] r = pValue as byte[];
+                if (r is null)
+                {
+                    bw.Write(0u);
+                }
+                else
+                {
+                    bw.Write((uint)r.Length);
+                    bw.Write(r);
+                }
+            }
+
+        }
+
+        private class VT_CLSID_Property : TypedPropertyValue<object>
+        {
+            public VT_CLSID_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+            {
+
+            }
+
+            public override object ReadScalarValue(System.IO.BinaryReader br)
+            {
+                byte[] data = br.ReadBytes(16);
+                return new Guid(data);
             }
 
             public override void WriteScalarValue(BinaryWriter bw, object pValue)
@@ -613,9 +720,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 byte[] r = pValue as byte[];
                 if (r != null)
                     bw.Write(r);
-
             }
-
         }
 
         private class VT_VariantVector : TypedPropertyValue<object>
@@ -650,7 +755,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-#endregion
+        #endregion
 
     }
 

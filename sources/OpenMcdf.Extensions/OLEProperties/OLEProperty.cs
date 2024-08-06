@@ -33,10 +33,30 @@ namespace OpenMcdf.Extensions.OLEProperties
             internal set;
         }
 
+        object value;
+
         public object Value
         {
-            get;
-            set;
+            get
+            {
+                switch (VTType)
+                {
+                    case VTPropertyType.VT_LPSTR:
+                    case VTPropertyType.VT_LPWSTR:
+                        if (value is string str && !String.IsNullOrEmpty(str))
+                            return str.Trim('\0');
+                        break;
+                    default:
+                        return this.value;
+
+                }
+
+                return this.value;
+            }
+            set
+            {
+                this.value = value;
+            }
         }
 
         public override bool Equals(object obj)

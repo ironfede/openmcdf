@@ -144,14 +144,15 @@ namespace OpenMcdf.Extensions.Test
 
                 // The company property should exist but be empty
                 var companyProperty = co.Properties.First(prop => prop.PropertyName == "PIDDSI_COMPANY");
-                Assert.AreEqual("\0\0\0\0", companyProperty.Value);
+                Assert.AreEqual("", companyProperty.Value);
 
                 // As a sanity check, check that the value of a property that we don't change remains the same
                 var formatProperty = co.Properties.First(prop => prop.PropertyName == "PIDDSI_PRESFORMAT");
-                Assert.AreEqual("A4 Paper (210x297 mm)\0\0\0", formatProperty.Value);
+                Assert.AreEqual("A4 Paper (210x297 mm)", formatProperty.Value);
 
                 // The manager property shouldn't exist, and we'll add it
                 Assert.IsFalse(co.Properties.Any(prop => prop.PropertyName == "PIDDSI_MANAGER"));
+
                 var managerProp = co.NewProperty(VTPropertyType.VT_LPSTR, 0x0000000E, "PIDDSI_MANAGER");
                 co.AddProperty(managerProp);
 
@@ -160,6 +161,7 @@ namespace OpenMcdf.Extensions.Test
 
                 co.Save(dsiStream);
                 cf.SaveAs(@"test_modify_summary.ppt");
+                cf.Close() ;
             }
 
             using (CompoundFile cf = new CompoundFile("test_modify_summary.ppt"))
@@ -167,13 +169,13 @@ namespace OpenMcdf.Extensions.Test
                 var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
 
                 var companyProperty = co.Properties.First(prop => prop.PropertyName == "PIDDSI_COMPANY");
-                Assert.AreEqual("My Company\0", companyProperty.Value);
+                Assert.AreEqual("My Company", companyProperty.Value);
 
                 var formatProperty = co.Properties.First(prop => prop.PropertyName == "PIDDSI_PRESFORMAT");
-                Assert.AreEqual("A4 Paper (210x297 mm)\0\0\0", formatProperty.Value);
+                Assert.AreEqual("A4 Paper (210x297 mm)", formatProperty.Value);
 
                 var managerProperty = co.Properties.First(prop => prop.PropertyName == "PIDDSI_MANAGER");
-                Assert.AreEqual("The Boss\0", managerProperty.Value);
+                Assert.AreEqual("The Boss", managerProperty.Value);
             }
         }
 
@@ -307,11 +309,11 @@ namespace OpenMcdf.Extensions.Test
 
                 var authorProperty = co.Properties.First(prop => prop.PropertyName == "PIDSI_AUTHOR");
                 Assert.AreEqual(VTPropertyType.VT_LPWSTR, authorProperty.VTType);
-                Assert.AreEqual("zkyiqpqoroxnbdwhnjfqroxlgylpbgcwuhjfifpkvycugvuecoputqgknnbs\0", authorProperty.Value);
+                Assert.AreEqual("zkyiqpqoroxnbdwhnjfqroxlgylpbgcwuhjfifpkvycugvuecoputqgknnbs", authorProperty.Value);
 
                 var keyWordsProperty = co.Properties.First(prop => prop.PropertyName == "PIDSI_KEYWORDS");
                 Assert.AreEqual(VTPropertyType.VT_LPWSTR, keyWordsProperty.VTType);
-                Assert.AreEqual("abcdefghijk\0", keyWordsProperty.Value);
+                Assert.AreEqual("abcdefghijk", keyWordsProperty.Value);
 
                 authorProperty.Value = "ABC";
                 keyWordsProperty.Value = "";
@@ -326,11 +328,11 @@ namespace OpenMcdf.Extensions.Test
 
                 var authorProperty = co.Properties.First(prop => prop.PropertyName == "PIDSI_AUTHOR");
                 Assert.AreEqual(VTPropertyType.VT_LPWSTR, authorProperty.VTType);
-                Assert.AreEqual("ABC\0", authorProperty.Value);
+                Assert.AreEqual("ABC", authorProperty.Value);
 
                 var keyWordsProperty = co.Properties.First(prop => prop.PropertyName == "PIDSI_KEYWORDS");
                 Assert.AreEqual(VTPropertyType.VT_LPWSTR, keyWordsProperty.VTType);
-                Assert.AreEqual("\0", keyWordsProperty.Value);
+                Assert.AreEqual("", keyWordsProperty.Value);
             }
         }
 
@@ -360,16 +362,16 @@ namespace OpenMcdf.Extensions.Test
                 Assert.AreEqual((short)1200, propArray[0].Value);
 
                 // String properties
-                Assert.AreEqual("A\0", propArray[1].PropertyName);
-                Assert.AreEqual("\0", propArray[1].Value);
-                Assert.AreEqual("AB\0", propArray[2].PropertyName);
-                Assert.AreEqual("X\0", propArray[2].Value);
-                Assert.AreEqual("ABC\0", propArray[3].PropertyName);
-                Assert.AreEqual("XY\0", propArray[3].Value);
-                Assert.AreEqual("ABCD\0", propArray[4].PropertyName);
-                Assert.AreEqual("XYZ\0", propArray[4].Value);
-                Assert.AreEqual("ABCDE\0", propArray[5].PropertyName);
-                Assert.AreEqual("XYZ!\0", propArray[5].Value);
+                Assert.AreEqual("A", propArray[1].PropertyName);
+                Assert.AreEqual("", propArray[1].Value);
+                Assert.AreEqual("AB", propArray[2].PropertyName);
+                Assert.AreEqual("X", propArray[2].Value);
+                Assert.AreEqual("ABC", propArray[3].PropertyName);
+                Assert.AreEqual("XY", propArray[3].Value);
+                Assert.AreEqual("ABCD", propArray[4].PropertyName);
+                Assert.AreEqual("XYZ", propArray[4].Value);
+                Assert.AreEqual("ABCDE", propArray[5].PropertyName);
+                Assert.AreEqual("XYZ!", propArray[5].Value);
             }
         }
 
@@ -427,20 +429,21 @@ namespace OpenMcdf.Extensions.Test
                 Assert.AreEqual((short)-535, propArray[0].Value);
 
                 // User properties
-                Assert.AreEqual("StringProperty\0", propArray[1].PropertyName);
-                Assert.AreEqual("Hello\0", propArray[1].Value);
+                Assert.AreEqual("StringProperty", propArray[1].PropertyName);
+                Assert.AreEqual("Hello", propArray[1].Value);
                 Assert.AreEqual(VTPropertyType.VT_LPSTR, propArray[1].VTType);
-                Assert.AreEqual("BooleanProperty\0", propArray[2].PropertyName);
+                Assert.AreEqual("BooleanProperty", propArray[2].PropertyName);
                 Assert.AreEqual(true, propArray[2].Value);
                 Assert.AreEqual(VTPropertyType.VT_BOOL, propArray[2].VTType);
-                Assert.AreEqual("IntegerProperty\0", propArray[3].PropertyName);
+                Assert.AreEqual("IntegerProperty", propArray[3].PropertyName);
                 Assert.AreEqual(3456, propArray[3].Value);
                 Assert.AreEqual(VTPropertyType.VT_I4, propArray[3].VTType);
-                Assert.AreEqual("DateProperty\0", propArray[4].PropertyName);
+                Assert.AreEqual("DateProperty", propArray[4].PropertyName);
                 Assert.AreEqual(testNow, propArray[4].Value);
                 Assert.AreEqual(VTPropertyType.VT_FILETIME, propArray[4].VTType);
             }
         }
+
 
         // Try to read a document which contains Vector/String properties
         // refs https://github.com/ironfede/openmcdf/issues/98
@@ -460,6 +463,19 @@ namespace OpenMcdf.Extensions.Test
                 Assert.AreEqual("Sheet1\0", docPartsValues.ElementAt(0));
                 Assert.AreEqual("Sheet2\0", docPartsValues.ElementAt(1));
                 Assert.AreEqual("Sheet3\0", docPartsValues.ElementAt(2));
+            }
+        }
+      
+        [TestMethod]
+        public void Test_CLSID_PROPERTY()
+        {
+            var guid = new Guid("15891a95-bf6e-4409-b7d0-3a31c391fa31");
+            using (CompoundFile cf = new CompoundFile("CLSIDPropertyTest.file"))
+            {
+                var co = cf.RootStorage.GetStream("\u0005C3teagxwOttdbfkuIaamtae3Ie").AsOLEPropertiesContainer();
+                var clsidProp = co.Properties.First(x => x.PropertyName == "DocumentID");
+                Assert.AreEqual(guid, clsidProp.Value);
+
             }
         }
     }
