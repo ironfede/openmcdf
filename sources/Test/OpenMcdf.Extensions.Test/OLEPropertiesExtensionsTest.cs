@@ -460,9 +460,9 @@ namespace OpenMcdf.Extensions.Test
                 
                 var docPartsValues = docPartsProperty.Value as IEnumerable<string>;
                 Assert.AreEqual(3, docPartsValues.Count());
-                Assert.AreEqual("Sheet1\0", docPartsValues.ElementAt(0));
-                Assert.AreEqual("Sheet2\0", docPartsValues.ElementAt(1));
-                Assert.AreEqual("Sheet3\0", docPartsValues.ElementAt(2));
+                Assert.AreEqual("Sheet1", docPartsValues.ElementAt(0));
+                Assert.AreEqual("Sheet2", docPartsValues.ElementAt(1));
+                Assert.AreEqual("Sheet3", docPartsValues.ElementAt(2));
             }
         }
       
