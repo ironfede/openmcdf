@@ -34,6 +34,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{
 		sources\TestFiles\report.xls = sources\TestFiles\report.xls
 		sources\TestFiles\reportREAD.xls = sources\TestFiles\reportREAD.xls
 		sources\TestFiles\report_name_fix.xls = sources\TestFiles\report_name_fix.xls
+		sources\Test\TestFiles\SampleWorkBook_bug98.xls = sources\Test\TestFiles\SampleWorkBook_bug98.xls
 		sources\TestFiles\testbad.ole = sources\TestFiles\testbad.ole
 		sources\Test\TestFiles\winUnicodeDictionary.doc = sources\Test\TestFiles\winUnicodeDictionary.doc
 		sources\Test\TestFiles\wstr_presets.doc = sources\Test\TestFiles\wstr_presets.doc
