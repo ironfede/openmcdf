@@ -486,5 +486,58 @@ namespace OpenMcdf.Extensions.Test
 
             }
         }
+
+        // The test file 'report.xls' contains a DocumentSummaryInfo section, but no user defined properties.
+        //    This tests adding a new user defined properties section to the existing DocumentSummaryInfo.
+        [TestMethod]
+        public void Test_ADD_USER_DEFINED_PROPERTIES_SECTION()
+        {
+            if (File.Exists("test_add_user_defined_properties.xls"))
+                File.Delete("test_add_user_defined_properties.xls");
+
+            using (CompoundFile cf = new CompoundFile("report.xls"))
+            {
+                var dsiStream = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation");
+                var co = dsiStream.AsOLEPropertiesContainer();
+
+                Assert.IsFalse(co.HasUserDefinedProperties);
+                Assert.IsNull(co.UserDefinedProperties);
+
+                var newUserDefinedProperties = co.CreateUserDefinedProperties(65001); // 65001 - UTF-8
+
+                newUserDefinedProperties.PropertyNames[2] = "MyCustomProperty";
+
+                var newProperty = co.NewProperty(VTPropertyType.VT_LPSTR, 2);
+                newProperty.Value = "Testing";
+                newUserDefinedProperties.AddProperty(newProperty);
+
+                co.Save(dsiStream);
+                cf.SaveAs("test_add_user_defined_properties.xls");
+            }
+
+            using (CompoundFile cf = new CompoundFile("test_add_user_defined_properties.xls"))
+            {
+                var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
+
+                // User defined properties should be present now
+                Assert.IsTrue(co.HasUserDefinedProperties);
+                Assert.IsNotNull(co.UserDefinedProperties);
+                Assert.AreEqual(65001, co.UserDefinedProperties.Context.CodePage);
+
+                // And the expected properties should the there
+                var propArray = co.UserDefinedProperties.Properties.ToArray();
+                Assert.AreEqual(propArray.Length, 2);
+
+                // CodePage prop
+                Assert.AreEqual(1u, propArray[0].PropertyIdentifier);
+                Assert.AreEqual("0x00000001", propArray[0].PropertyName);
+                Assert.AreEqual((short)-535, propArray[0].Value);
+
+                // User properties
+                Assert.AreEqual("MyCustomProperty", propArray[1].PropertyName);
+                Assert.AreEqual("Testing", propArray[1].Value);
+                Assert.AreEqual(VTPropertyType.VT_LPSTR, propArray[1].VTType);
+            }
+        }
     }
 }
