@@ -27,7 +27,7 @@ namespace OpenMcdf
     }
 
     /// <summary>
-    /// Configuration parameters for the compund files.
+    /// Configuration parameters for the compound files.
     /// They can be OR-combined to configure 
     /// <see cref="T:OpenMcdf.CompoundFile">Compound file</see> behaviour.
     /// All flags are NOT set by Default.
@@ -112,7 +112,7 @@ namespace OpenMcdf
     /// Standard Microsoft&#169; Compound File implementation.
     /// It is also known as OLE/COM structured storage 
     /// and contains a hierarchy of storage and stream objects providing
-    /// efficent storage of multiple kinds of documents in a single file.
+    /// efficient storage of multiple kinds of documents in a single file.
     /// Version 3 and 4 of specifications are supported.
     /// </summary>
     public class CompoundFile : IDisposable
@@ -1146,7 +1146,7 @@ namespace OpenMcdf
                 nCurrentSectors++;
 
                 //... so, adding a FAT sector may induce DIFAT sectors to increase by one
-                // and consequently this may induce ANOTHER FAT sector (TO-THINK: May this condition occure ?)
+                // and consequently this may induce ANOTHER FAT sector (TO-THINK: May this condition occur ?)
                 if (nDIFATSectors * DIFAT_SECTOR_FAT_ENTRIES_COUNT <
                     (header.FATSectorsNumber > HEADER_DIFAT_ENTRIES_COUNT ?
                     header.FATSectorsNumber - HEADER_DIFAT_ENTRIES_COUNT :
@@ -1569,7 +1569,7 @@ namespace OpenMcdf
                     return GetMiniSectorChain(secID);
 
                 default:
-                    throw new CFException("Unsupproted chain type");
+                    throw new CFException("Unsupported chain type");
             }
         }
 
@@ -2668,7 +2668,7 @@ namespace OpenMcdf
 
         /// <summary>
         /// When called from user code, release all resources, otherwise, in the case runtime called it,
-        /// only unmanagd resources are released.
+        /// only unmanaged resources are released.
         /// </summary>
         /// <param name="disposing">If true, method has been called from User code, if false it's been called from .net runtime</param>
         protected virtual void Dispose(bool disposing)
@@ -2760,7 +2760,7 @@ namespace OpenMcdf
         /// <summary>
         /// Get a list of all entries with a given name contained in the document.
         /// </summary>
-        /// <param name="entryName">Name of entries to retrive</param>
+        /// <param name="entryName">Name of entries to retrieve</param>
         /// <returns>A list of name-matching entries</returns>
         /// <remarks>This function is aimed to speed up entity lookup in 
         /// flat-structure files (only one or little more known entries)
