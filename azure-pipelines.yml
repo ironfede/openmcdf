@@ -24,7 +24,7 @@ steps:
 - script: dotnet build --configuration $(buildConfiguration) -f $(libFramework) $(buildProject)
   displayName: 'dotnet build $(buildConfiguration)'
 
-- script: dotnet test -f $(appFramework)  $(testsProject) --filter="$(testFilter)" --logger trx
+- script: dotnet test -f $(appFramework)  $(testsProject) --filter="$(testFilter)" --collect:"XPlat Code Coverage"  --logger trx
   displayName: 'OpenMcdf unit tests'
 
 - script: dotnet test $(extensionTestsProject) --logger trx
