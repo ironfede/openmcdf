@@ -85,9 +85,9 @@ namespace OpenMcdf.Extensions.OLEProperties
                 NameDictionary = customDict;
             }
 
-            if (NameDictionary.ContainsKey(identifier))
+            if (NameDictionary.TryGetValue(identifier, out string value))
             {
-                return NameDictionary[identifier];
+                return value;
             }
 
             return "0x" + identifier.ToString("x8");
