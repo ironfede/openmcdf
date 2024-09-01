@@ -220,7 +220,7 @@ namespace OpenMcdf
                     break;
             }
 
-            if (this.length <= position) // Dont't adjust the length when position is inside the bounds of 0 and the current length.
+            if (this.length <= position) // Don't adjust the length when position is inside the bounds of 0 and the current length.
                 adjustLength(position);
 
             return position;
@@ -239,7 +239,7 @@ namespace OpenMcdf
 
             if (delta > 0)
             {
-                // enlargment required
+                // Enlargement required
 
                 int nSec = (int)Math.Ceiling(((double)delta / sectorSize));
 

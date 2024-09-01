@@ -880,7 +880,7 @@ namespace OpenMcdf.Test
 
         }
 
-        #region Copy heper method
+        #region Copy helper method
         /// <summary>
         /// Copies the given <paramref name="source"/> to the given <paramref name="destination"/>
         /// </summary>

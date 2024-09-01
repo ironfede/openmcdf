@@ -143,7 +143,7 @@ namespace OpenMcdf
 
         /// <summary>
         /// Size in bytes of the item. It has a valid value 
-        /// only if entity is a stream, otherwise it is setted to zero.
+        /// only if entity is a stream, otherwise it is set to zero.
         /// </summary>
         public long Size
         {

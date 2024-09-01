@@ -610,7 +610,7 @@ namespace OpenMcdf.Test
 
             CompoundFile cf2 = new CompoundFile(filename);
 
-            // Execption in next line!
+            // Exception in next line!
             cf2.RootStorage.Delete(zeroLengthName);
 
             CFStream zeroStream2 = null;
@@ -1134,7 +1134,7 @@ namespace OpenMcdf.Test
         }
 
         /// <summary>
-        /// Resize without transitio to smaller chain has a wrong behaviour
+        /// Resize without transition to smaller chain has a wrong behavior
         /// </summary>
         [TestMethod]
         public void TEST_RESIZE_STREAM_BUG_119()

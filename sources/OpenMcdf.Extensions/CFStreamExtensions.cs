@@ -25,7 +25,7 @@ namespace OpenMcdf.Extensions
         ///// as a OLE properties Stream.
         ///// </summary>
         ///// <param name="cfStream"></param>
-        ///// <returns>A <see cref="T:OpenMcdf.OLEProperties.PropertySetStream">OLE Propertie stream</see></returns>
+        ///// <returns>A <see cref="T:OpenMcdf.OLEProperties.PropertySetStream">OLE Property Set Stream</see></returns>
         //public static OLEProperties.PropertySetStream AsOLEProperties(this CFStream cfStream)
         //{
         //    var result = new OLEProperties.PropertySetStream();

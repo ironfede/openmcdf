@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("StucturedStorageExplorer")]
-[assembly: AssemblyDescription("COM/OLE Stuctured Storage Viewer - Sample application for OpenMCDF component.")]
+[assembly: AssemblyDescription("COM/OLE Structured Storage Viewer - Sample application for OpenMCDF component.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("StucturedStorageExplorer")]

@@ -411,7 +411,7 @@ namespace StructuredStorageExplorer
         {
             // Get the node under the mouse cursor.
             // We intercept both left and right mouse clicks
-            // and set the selected treenode according.
+            // and set the selected TreeNode according.
             try
             {
                 TreeNode n = treeView1.GetNodeAt(e.X, e.Y);

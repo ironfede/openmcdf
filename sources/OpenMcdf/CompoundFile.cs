@@ -29,7 +29,7 @@ namespace OpenMcdf
     /// <summary>
     /// Configuration parameters for the compound files.
     /// They can be OR-combined to configure 
-    /// <see cref="T:OpenMcdf.CompoundFile">Compound file</see> behaviour.
+    /// <see cref="T:OpenMcdf.CompoundFile">Compound file</see> behavior.
     /// All flags are NOT set by Default.
     /// </summary>
     [Flags]
@@ -775,7 +775,7 @@ namespace OpenMcdf
                 if (s.Id == -1)
                     throw new CFException("Invalid minisector index");
 
-                // Ministream sectors already allocated
+                // MiniStream sectors already allocated
                 miniStreamView.Seek(Sector.MINISECTOR_SIZE * s.Id, SeekOrigin.Begin);
                 miniStreamView.Write(s.GetData(), 0, Sector.MINISECTOR_SIZE);
             }
@@ -1732,7 +1732,7 @@ namespace OpenMcdf
             {
 
 
-                // If there're more left siblings load them...
+                // If there are more left siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.LeftSibling]);
                 //NullifyChildNodes(directoryEntries[de.LeftSibling]);
             }
@@ -1741,7 +1741,7 @@ namespace OpenMcdf
             {
                 levelSIDs.Add(de.RightSibling);
 
-                // If there're more right siblings load them...
+                // If there are more right siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.RightSibling]);
                 //NullifyChildNodes(directoryEntries[de.RightSibling]);
             }
@@ -1753,7 +1753,7 @@ namespace OpenMcdf
             {
                 levelSIDs.Add(de.LeftSibling);
 
-                // If there're more left siblings load them...
+                // If there are more left siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.LeftSibling]);
             }
 
@@ -1761,7 +1761,7 @@ namespace OpenMcdf
             {
                 levelSIDs.Add(de.RightSibling);
 
-                // If there're more right siblings load them...
+                // If there are more right siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.RightSibling]);
             }
 
@@ -2291,7 +2291,7 @@ namespace OpenMcdf
                 //Set up destination chain
                 AllocateMiniSectorChain(destSv.BaseSectorChain);
 
-                // Persist to normal strea
+                // Persist to normal stream
                 PersistMiniStreamToStream(destSv.BaseSectorChain);
 
                 //Update dir item
