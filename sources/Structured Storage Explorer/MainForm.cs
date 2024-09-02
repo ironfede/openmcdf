@@ -1,20 +1,15 @@
 ﻿#define OLE_PROPERTY
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using OpenMcdf;
 using System.IO;
-using System.Resources;
 using System.Globalization;
 using StructuredStorageExplorer.Properties;
-using Be.Windows.Forms;
 using OpenMcdf.Extensions.OLEProperties;
-using OpenMcdf.Extensions.OLEProperties.Interfaces;
 using OpenMcdf.Extensions;
 using System.Linq;
 using System.Collections;

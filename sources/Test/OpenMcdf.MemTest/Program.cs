@@ -1,8 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Diagnostics;
-
-using OpenMcdf;
 //This project is used for profiling memory and performances of OpenMCDF .
 
 namespace OpenMcdf.MemTest

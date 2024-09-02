@@ -6,9 +6,6 @@
  * 
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace OpenMcdf

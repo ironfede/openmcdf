@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OpenMcdf.Extensions.OLEProperties
+﻿namespace OpenMcdf.Extensions.OLEProperties
 {
     public enum VTPropertyType : ushort
     {
