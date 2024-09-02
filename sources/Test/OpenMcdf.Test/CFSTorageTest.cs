@@ -482,7 +482,7 @@ namespace OpenMcdf.Test
             }
             catch (Exception ex)
             {
-               Assert.Fail(ex.Message);
+                Assert.Fail(ex.Message);
             }
 
             try
@@ -490,7 +490,8 @@ namespace OpenMcdf.Test
                 CompoundFile cf2 = new CompoundFile("Hello$File");
                 var st2 = cf2.RootStorage.GetStorage("NewStorage");
                 Assert.IsNotNull(st2);
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Assert.Fail($"{ex.Message}");
             }

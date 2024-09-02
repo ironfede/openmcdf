@@ -71,7 +71,7 @@ namespace OpenMcdf.Test
         [TestMethod()]
         public void CountTest()
         {
-            
+
             int count = 0;
 
             SectorCollection target = new SectorCollection(); // TODO: Initialize to an appropriate value
@@ -181,7 +181,7 @@ namespace OpenMcdf.Test
                 target.Add(null);
             }
 
-            
+
             Sector item = new Sector(4096);
             target.Add(item);
             Assert.IsTrue(target.Count == 580);

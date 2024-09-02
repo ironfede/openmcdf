@@ -5,5 +5,5 @@ using System.Text;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    
+
 }

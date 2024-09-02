@@ -12,7 +12,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public PropertyContext PropertyContext
         {
-            get;  set;
+            get; set;
         }
 
         public uint Size { get; set; }

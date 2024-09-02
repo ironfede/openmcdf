@@ -443,7 +443,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     //if (addNullTerminator)
                     dataLength += 2;            // null terminator \u+0000
 
-                   // var mod = dataLength % 4;       // pad to multiple of 4 bytes
+                    // var mod = dataLength % 4;       // pad to multiple of 4 bytes
 
                     bw.Write(dataLength);           // datalength of string + null char (unicode)
                     bw.Write(data);                 // string
@@ -761,7 +761,7 @@ namespace OpenMcdf.Extensions.OLEProperties
     }
 
     // The default property factory.
-    internal sealed class DefaultPropertyFactory : PropertyFactory 
+    internal sealed class DefaultPropertyFactory : PropertyFactory
     {
         public static PropertyFactory Instance { get; } = new DefaultPropertyFactory();
     }

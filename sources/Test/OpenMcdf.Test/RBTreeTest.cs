@@ -16,7 +16,7 @@ namespace OpenMcdf.Test
     {
         public RBTreeTest()
         {
-            
+
         }
 
         private TestContext testContextInstance;
@@ -64,7 +64,7 @@ namespace OpenMcdf.Test
             List<IDirectoryEntry> repo = new List<IDirectoryEntry>();
             for (int i = 0; i < count; i++)
             {
-                IDirectoryEntry de =  DirectoryEntry.New(i.ToString(), StgType.StgInvalid, repo);
+                IDirectoryEntry de = DirectoryEntry.New(i.ToString(), StgType.StgInvalid, repo);
             }
 
             return repo;
@@ -107,7 +107,7 @@ namespace OpenMcdf.Test
             try
             {
                 IRBNode n;
-                rbTree.Delete(DirectoryEntry.Mock("5", StgType.StgInvalid),out n);
+                rbTree.Delete(DirectoryEntry.Mock("5", StgType.StgInvalid), out n);
                 rbTree.Delete(DirectoryEntry.Mock("24", StgType.StgInvalid), out n);
                 rbTree.Delete(DirectoryEntry.Mock("7", StgType.StgInvalid), out n);
             }
@@ -134,7 +134,7 @@ namespace OpenMcdf.Test
 
             //}
 
-          
+
         }
 
         private static void VerifyProperties(RBTree t)
@@ -146,7 +146,7 @@ namespace OpenMcdf.Test
             VerifyProperty5(t.Root);
         }
 
-        private static Color NodeColor(IRBNode n) 
+        private static Color NodeColor(IRBNode n)
         {
             return n == null ? Color.BLACK : n.Color;
         }
@@ -166,7 +166,7 @@ namespace OpenMcdf.Test
             Assert.IsTrue(NodeColor(root) == Color.BLACK);
         }
 
-        private static void VerifyProperty4(IRBNode n) 
+        private static void VerifyProperty4(IRBNode n)
         {
 
             if (NodeColor(n) == Color.RED)

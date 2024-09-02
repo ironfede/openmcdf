@@ -13,10 +13,10 @@ namespace OpenMcdf.Extensions.Test
     {
         public CFSStreamExtensionsTest()
         {
-          
+
         }
 
-       
+
         private TestContext testContextInstance;
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace OpenMcdf.Extensions.Test
             {
                 data[i] = (byte)(i % 255);
             }
-            
+
             using (CompoundFile cf = new CompoundFile())
             {
                 using (Stream s = cf.RootStorage.AddStream("ANewStream").AsIOStream())

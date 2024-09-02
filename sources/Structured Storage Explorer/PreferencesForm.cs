@@ -17,7 +17,7 @@ namespace StructuredStorageExplorer
             InitializeComponent();
         }
 
-        
+
 
         private void btnSavePreferences_Click(object sender, EventArgs e)
         {

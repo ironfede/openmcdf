@@ -134,7 +134,7 @@ namespace OpenMcdf
         public void InitFATData()
         {
             data = new byte[size];
-            
+
             for (int i = 0; i < size; i++)
                 data[i] = 0xFF;
 

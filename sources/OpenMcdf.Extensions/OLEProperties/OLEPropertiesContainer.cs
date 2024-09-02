@@ -157,7 +157,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 var existingPropertyNames = (Dictionary<uint, string>)pStream.PropertySet1.Properties
                     .Where(p => p.PropertyType == PropertyType.DictionaryProperty).FirstOrDefault()?.Value;
 
-                UserDefinedProperties.PropertyNames = existingPropertyNames ?? new Dictionary<uint, string> ();
+                UserDefinedProperties.PropertyNames = existingPropertyNames ?? new Dictionary<uint, string>();
             }
         }
 
@@ -262,7 +262,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 }
             };
 
-            PropertyFactory factory = 
+            PropertyFactory factory =
                 this.ContainerType == ContainerType.DocumentSummaryInfo ? DocumentSummaryInfoPropertyFactory.Instance : DefaultPropertyFactory.Instance;
 
             foreach (var op in this.Properties)

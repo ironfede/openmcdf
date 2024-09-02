@@ -272,12 +272,12 @@ namespace OpenMcdf
         public CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags)
         {
             SetConfigurationOptions(configFlags);
-            
+
             this.header = new Header((ushort)cfsVersion);
 
             if (cfsVersion == CFSVersion.Ver_4)
                 this.sectors.OnVer3SizeLimitReached += new Ver3SizeLimitReached(OnSizeLimitReached);
-            
+
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
@@ -353,7 +353,7 @@ namespace OpenMcdf
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
         }
-        
+
         /// <summary>
         /// Load an existing compound file.
         /// </summary>

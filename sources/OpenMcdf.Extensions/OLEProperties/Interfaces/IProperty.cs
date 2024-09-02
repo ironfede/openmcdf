@@ -17,6 +17,6 @@ namespace OpenMcdf.Extensions.OLEProperties.Interfaces
         {
             get;
         }
-       
+
     }
 }

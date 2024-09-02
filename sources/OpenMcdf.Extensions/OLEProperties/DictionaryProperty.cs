@@ -51,7 +51,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             if (m > 0)
             {
-                for(int i = 0; i < m; i++)
+                for (int i = 0; i < m; i++)
                 {
                     br.ReadByte();
                 }
@@ -69,7 +69,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         public void Write(BinaryWriter bw)
         {
             long curPos = bw.BaseStream.Position;
-            
+
             bw.Write(entries.Count);
 
             foreach (KeyValuePair<uint, string> kv in entries)

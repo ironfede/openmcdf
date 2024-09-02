@@ -138,7 +138,7 @@ namespace OpenMcdf
                     return String.Empty;
             }
 
-            
+
         }
 
         /// <summary>

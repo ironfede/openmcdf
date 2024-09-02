@@ -217,7 +217,7 @@ namespace OpenMcdf.MemTest
         private static void AddNodes(String depth, CFStorage cfs)
         {
 
-            Action<CFItem> va = delegate(CFItem target)
+            Action<CFItem> va = delegate (CFItem target)
             {
 
                 String temp = target.Name + (target is CFStorage ? "" : " (" + target.Size + " bytes )");

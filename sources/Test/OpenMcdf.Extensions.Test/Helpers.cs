@@ -28,10 +28,10 @@ namespace OpenMcdf.Extensions.Test
             if (b == null && p == null)
                 throw new Exception("Null buffers");
 
-            if (b == null && p != null) 
+            if (b == null && p != null)
                 return false;
 
-            if (b != null && p == null) 
+            if (b != null && p == null)
                 return false;
 
             if (b.Length != p.Length)
