@@ -37,8 +37,8 @@ namespace StructuredStorageExplorer
 #endif
 
             //Load images for icons from resx
-            Image folderImage = (Image)Properties.Resources.ResourceManager.GetObject("storage");
-            Image streamImage = (Image)Properties.Resources.ResourceManager.GetObject("stream");
+            Image folderImage = (Image)Resources.ResourceManager.GetObject("storage");
+            Image streamImage = (Image)Resources.ResourceManager.GetObject("stream");
             //Image olePropsImage = (Image)Properties.Resources.ResourceManager.GetObject("oleprops");
 
             treeView1.ImageList = new ImageList();

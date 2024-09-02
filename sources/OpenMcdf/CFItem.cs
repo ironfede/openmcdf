@@ -92,7 +92,7 @@ namespace OpenMcdf
         public static bool operator ==(CFItem leftItem, CFItem rightItem)
         {
             // If both are null, or both are same instance, return true.
-            if (System.Object.ReferenceEquals(leftItem, rightItem))
+            if (ReferenceEquals(leftItem, rightItem))
             {
                 return true;
             }

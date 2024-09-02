@@ -170,7 +170,7 @@ namespace OpenMcdf
 
                         this.data = null;
                         this.dirtyFlag = false;
-                        this.id = Sector.ENDOFCHAIN;
+                        this.id = ENDOFCHAIN;
                         this.size = 0;
 
                     }

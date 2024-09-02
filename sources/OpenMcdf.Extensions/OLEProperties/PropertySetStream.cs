@@ -66,13 +66,13 @@ namespace OpenMcdf.Extensions.OLEProperties
             // Read properties (P0)
             for (int i = 0; i < PropertySet0.NumProperties; i++)
             {
-                br.BaseStream.Seek(Offset0 + PropertySet0.PropertyIdentifierAndOffsets[i].Offset, System.IO.SeekOrigin.Begin);
+                br.BaseStream.Seek(Offset0 + PropertySet0.PropertyIdentifierAndOffsets[i].Offset, SeekOrigin.Begin);
                 PropertySet0.Properties.Add(ReadProperty(PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier, PropertySet0.PropertyContext.CodePage, br, factory));
             }
 
             if (NumPropertySets == 2)
             {
-                br.BaseStream.Seek(Offset1, System.IO.SeekOrigin.Begin);
+                br.BaseStream.Seek(Offset1, SeekOrigin.Begin);
                 PropertySet1 = new PropertySet();
                 PropertySet1.Size = br.ReadUInt32();
                 PropertySet1.NumProperties = br.ReadUInt32();
@@ -91,7 +91,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 // Read properties
                 for (int i = 0; i < PropertySet1.NumProperties; i++)
                 {
-                    br.BaseStream.Seek(Offset1 + PropertySet1.PropertyIdentifierAndOffsets[i].Offset, System.IO.SeekOrigin.Begin);
+                    br.BaseStream.Seek(Offset1 + PropertySet1.PropertyIdentifierAndOffsets[i].Offset, SeekOrigin.Begin);
                     PropertySet1.Properties.Add(ReadProperty(PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier, PropertySet1.PropertyContext.CodePage, br, DefaultPropertyFactory.Instance));
                 }
             }
@@ -184,20 +184,20 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                 int size1 = (int)(bw.BaseStream.Position - oc1.OffsetPS);
 
-                bw.Seek(oc1.OffsetPS, System.IO.SeekOrigin.Begin);
+                bw.Seek(oc1.OffsetPS, SeekOrigin.Begin);
                 bw.Write(size1);
             }
 
-            bw.Seek(oc0.OffsetPS, System.IO.SeekOrigin.Begin);
+            bw.Seek(oc0.OffsetPS, SeekOrigin.Begin);
             bw.Write(size0);
 
             int shiftO1 = 2 + 2 + 4 + 16 + 4 + 16; //OFFSET0
-            bw.Seek(shiftO1, System.IO.SeekOrigin.Begin);
+            bw.Seek(shiftO1, SeekOrigin.Begin);
             bw.Write(oc0.OffsetPS);
 
             if (NumPropertySets == 2)
             {
-                bw.Seek(shiftO1 + 4 + 16, System.IO.SeekOrigin.Begin);
+                bw.Seek(shiftO1 + 4 + 16, SeekOrigin.Begin);
                 bw.Write(oc1.OffsetPS);
             }
 
@@ -205,7 +205,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             for (int i = 0; i < PropertySet0.PropertyIdentifierAndOffsets.Count; i++)
             {
-                bw.Seek((int)oc0.PropertyIdentifierOffsets[i] + 4, System.IO.SeekOrigin.Begin); //Offset of 4 to Offset value
+                bw.Seek((int)oc0.PropertyIdentifierOffsets[i] + 4, SeekOrigin.Begin); //Offset of 4 to Offset value
                 bw.Write((int)(oc0.PropertyOffsets[i] - oc0.OffsetPS));
             }
 
@@ -215,7 +215,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             {
                 for (int i = 0; i < PropertySet1.PropertyIdentifierAndOffsets.Count; i++)
                 {
-                    bw.Seek((int)oc1.PropertyIdentifierOffsets[i] + 4, System.IO.SeekOrigin.Begin); //Offset of 4 to Offset value
+                    bw.Seek((int)oc1.PropertyIdentifierOffsets[i] + 4, SeekOrigin.Begin); //Offset of 4 to Offset value
                     bw.Write((int)(oc1.PropertyOffsets[i] - oc1.OffsetPS));
                 }
             }
