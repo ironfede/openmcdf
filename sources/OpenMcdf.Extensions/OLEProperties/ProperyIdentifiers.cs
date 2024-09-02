@@ -64,30 +64,26 @@ namespace OpenMcdf.Extensions.OLEProperties
 
     public static class Extensions
     {
-        public static String GetDescription(this uint identifier, ContainerType map, Dictionary<uint, string> customDict = null)
+        public static string GetDescription(this uint identifier, ContainerType map, Dictionary<uint, string> customDict = null)
         {
-            Dictionary<uint, string> NameDictionary = new Dictionary<uint, string>();
+            Dictionary<uint, string> nameDictionary = customDict;
 
-            if (customDict == null)
+            if (nameDictionary is null)
             {
                 switch (map)
                 {
                     case ContainerType.SummaryInfo:
-                        NameDictionary = CommonIdentifiers.PropertyIdentifiersSummaryInfo;
+                        nameDictionary = CommonIdentifiers.PropertyIdentifiersSummaryInfo;
                         break;
                     case ContainerType.DocumentSummaryInfo:
-                        NameDictionary = CommonIdentifiers.PropertyIdentifiersDocumentSummaryInfo;
+                        nameDictionary = CommonIdentifiers.PropertyIdentifiersDocumentSummaryInfo;
                         break;
                 }
             }
-            else
-            {
-                NameDictionary = customDict;
-            }
 
-            if (NameDictionary.ContainsKey(identifier))
+            if (nameDictionary?.TryGetValue(identifier, out string value) == true)
             {
-                return NameDictionary[identifier];
+                return value;
             }
 
             return "0x" + identifier.ToString("x8");
