@@ -1,6 +1,17 @@
 # Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
 
+#### Visual Studio Spell Checker ####
+
+[*]
+spelling_exclusion_path = .\exclusion.dic
+
+#### VS Spell Checker ####
+
+vsspell_section_id = root
+vsspell_determine_resource_file_language_from_name = true
+vsspell_ignored_words_root = clear_inherited|File:exclusion.dic
+
 # C# files
 [*.cs]
 
