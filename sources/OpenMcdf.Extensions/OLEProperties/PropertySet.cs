@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    internal class PropertySet
+    internal sealed class PropertySet
     {
 
         public PropertyContext PropertyContext

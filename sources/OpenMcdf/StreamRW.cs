@@ -10,7 +10,7 @@ using System.IO;
 
 namespace OpenMcdf
 {
-    internal class StreamRW
+    internal sealed class StreamRW
     {
         private byte[] buffer = new byte[8];
         private Stream stream;

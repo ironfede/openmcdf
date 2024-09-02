@@ -18,7 +18,7 @@ namespace OpenMcdf
         Normal, Mini, FAT, DIFAT, RangeLockSector, Directory
     }
 
-    internal class Sector : IDisposable
+    internal sealed class Sector : IDisposable
     {
         public static int MINISECTOR_SIZE = 64;
 
@@ -148,12 +148,11 @@ namespace OpenMcdf
 
         private object lockObject = new Object();
 
-        /// <summary>
-        /// When called from user code, release all resources, otherwise, in the case runtime called it,
-        /// only unmanaged resources are released.
-        /// </summary>
-        /// <param name="disposing">If true, method has been called from User code, if false it's been called from .net runtime</param>
-        protected virtual void Dispose(bool disposing)
+        #region IDisposable Members
+
+        private bool _disposed;//false
+
+        void IDisposable.Dispose()
         {
             try
             {
@@ -161,18 +160,10 @@ namespace OpenMcdf
                 {
                     lock (lockObject)
                     {
-                        if (disposing)
-                        {
-                            // Call from user code...
-
-
-                        }
-
                         this.data = null;
                         this.dirtyFlag = false;
                         this.id = ENDOFCHAIN;
                         this.size = 0;
-
                     }
                 }
             }
@@ -180,17 +171,6 @@ namespace OpenMcdf
             {
                 _disposed = true;
             }
-
-        }
-
-        #region IDisposable Members
-
-        private bool _disposed;//false
-
-        void IDisposable.Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         #endregion

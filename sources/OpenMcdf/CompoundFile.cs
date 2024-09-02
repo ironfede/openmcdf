@@ -15,7 +15,7 @@ using System.IO;
 
 namespace OpenMcdf
 {
-    internal class CFItemComparer : IComparer<CFItem>
+    internal sealed class CFItemComparer : IComparer<CFItem>
     {
         public int Compare(CFItem x, CFItem y)
         {

@@ -16,7 +16,7 @@ namespace OpenMcdf
     /// <summary>
     /// Stream decorator for a Sector or miniSector chain
     /// </summary>
-    internal class StreamView : Stream
+    internal sealed class StreamView : Stream
     {
         private int sectorSize;
 

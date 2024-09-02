@@ -5,7 +5,7 @@ using System.IO;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    internal class PropertySetStream
+    internal sealed class PropertySetStream
     {
 
 

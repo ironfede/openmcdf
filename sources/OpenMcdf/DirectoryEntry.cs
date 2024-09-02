@@ -29,7 +29,7 @@ namespace OpenMcdf
         Black = 1
     }
 
-    internal class DirectoryEntry : IDirectoryEntry
+    internal sealed class DirectoryEntry : IDirectoryEntry
     {
         internal const int THIS_IS_GREATER = 1;
         internal const int OTHER_IS_GREATER = -1;
