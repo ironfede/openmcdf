@@ -15,13 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="TestFiles\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\TestFiles\winUnicodeDictionary.doc" Link="TestFiles\winUnicodeDictionary.doc">
+    <Content Include="..\TestFiles\winUnicodeDictionary.doc" Link="TestFiles\winUnicodeDictionary.doc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
 
 </Project>
