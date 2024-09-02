@@ -778,7 +778,7 @@ namespace OpenMcdf.Test
                 CompoundFile file = new CompoundFile(fs, CFSUpdateMode.ReadOnly, CFSConfiguration.LeaveOpen);
 
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Assert.IsTrue(fs.CanRead && fs.CanSeek && fs.CanWrite);
             }
@@ -808,7 +808,7 @@ namespace OpenMcdf.Test
                 cf2.Commit();
                 cf2.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Assert.IsTrue(fs.CanRead && fs.CanSeek && fs.CanWrite);
             }
@@ -1006,7 +1006,7 @@ namespace OpenMcdf.Test
                 Assert.IsTrue(st.GetData().Count() == 31220);
                 f.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Assert.Fail("Release Memory flag caused error");
             }
@@ -1086,7 +1086,7 @@ namespace OpenMcdf.Test
 
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Assert.Fail();
             }
