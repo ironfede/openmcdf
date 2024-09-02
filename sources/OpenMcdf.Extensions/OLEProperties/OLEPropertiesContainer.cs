@@ -1,8 +1,8 @@
-﻿using System;
+﻿using OpenMcdf.Extensions.OLEProperties.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using OpenMcdf.Extensions.OLEProperties.Interfaces;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {

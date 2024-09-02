@@ -8,10 +8,10 @@
 
 #define FLAT_WRITE // No optimization on the number of write operations
 
+using RedBlackTree;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using RedBlackTree;
 
 namespace OpenMcdf
 {

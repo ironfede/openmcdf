@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RedBlackTree;
+using System;
+using System.Collections.Generic;
 
 namespace OpenMcdf.Test
 {

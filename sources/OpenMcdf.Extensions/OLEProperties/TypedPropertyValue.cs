@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using OpenMcdf.Extensions.OLEProperties.Interfaces;
+using System.Collections.Generic;
 using System.IO;
-using OpenMcdf.Extensions.OLEProperties.Interfaces;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {

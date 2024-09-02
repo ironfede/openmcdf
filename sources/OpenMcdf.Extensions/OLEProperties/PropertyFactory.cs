@@ -1,7 +1,7 @@
 ﻿using OpenMcdf.Extensions.OLEProperties.Interfaces;
 using System;
-using System.Text;
 using System.IO;
+using System.Text;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {

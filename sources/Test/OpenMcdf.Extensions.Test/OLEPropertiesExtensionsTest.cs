@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenMcdf.Extensions.OLEProperties;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
-using System.Collections.Generic;
-using OpenMcdf.Extensions.OLEProperties;
 
 namespace OpenMcdf.Extensions.Test
 {
