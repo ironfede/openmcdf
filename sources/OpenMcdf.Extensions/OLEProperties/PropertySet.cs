@@ -49,7 +49,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             VTPropertyType vType = (VTPropertyType)br.ReadUInt16();
             br.ReadUInt16(); // Ushort Padding
-            PropertyContext.CodePage = (int)(ushort)br.ReadInt16();
+            PropertyContext.CodePage = (ushort)br.ReadInt16();
 
             br.BaseStream.Position = currPos;
         }

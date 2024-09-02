@@ -101,7 +101,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 if (addNullTerminator)
                     byteLength += 2;
 
-                bw.Write((uint)byteLength / 2);
+                bw.Write(byteLength / 2);
                 bw.Write(nameBytes);
 
                 if (addNullTerminator)

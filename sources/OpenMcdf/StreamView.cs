@@ -130,7 +130,7 @@ namespace OpenMcdf
             if (sectorChain != null && sectorChain.Count > 0)
             {
                 // First sector
-                int secIndex = (int)(position / (long)sectorSize);
+                int secIndex = (int)(position / sectorSize);
 
                 // Bytes to read count is the min between request count
                 // and sector border
@@ -231,7 +231,7 @@ namespace OpenMcdf
         {
             this.length = value;
 
-            long delta = value - ((long)this.sectorChain.Count * (long)sectorSize);
+            long delta = value - (sectorChain.Count * (long)sectorSize);
 
             if (delta > 0)
             {
@@ -312,10 +312,10 @@ namespace OpenMcdf
             if (sectorChain != null)
             {
                 // First sector
-                int secOffset = (int)(position / (long)sectorSize);
+                int secOffset = (int)(position / sectorSize);
                 int secShift = (int)(position % sectorSize);
 
-                roundByteWritten = (int)Math.Min(sectorSize - (int)(position % (long)sectorSize), count);
+                roundByteWritten = Math.Min(sectorSize - (int)(position % sectorSize), count);
 
                 if (secOffset < sectorChain.Count)
                 {

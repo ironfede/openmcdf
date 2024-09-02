@@ -101,7 +101,7 @@ namespace OpenMcdf
 
                 if (IsStreamed)
                 {
-                    stream.Seek((long)size + (long)this.id * (long)size, SeekOrigin.Begin);
+                    stream.Seek(size + id * (long)size, SeekOrigin.Begin);
                     stream.Read(data, 0, size);
                 }
             }

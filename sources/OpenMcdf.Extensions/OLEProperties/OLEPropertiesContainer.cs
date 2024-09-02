@@ -120,7 +120,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 var op = new OLEProperty(this)
                 {
                     VTType = p.VTType,
-                    PropertyIdentifier = (uint)pStream.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier,
+                    PropertyIdentifier = pStream.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier,
                     Value = p.Value
                 };
 
@@ -147,7 +147,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     var op = new OLEProperty(UserDefinedProperties);
 
                     op.VTType = p.VTType;
-                    op.PropertyIdentifier = (uint)pStream.PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier;
+                    op.PropertyIdentifier = pStream.PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier;
                     op.Value = p.Value;
 
                     UserDefinedProperties.properties.Add(op);

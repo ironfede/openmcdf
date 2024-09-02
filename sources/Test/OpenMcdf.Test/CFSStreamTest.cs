@@ -1016,7 +1016,7 @@ namespace OpenMcdf.Test
             Stream a = null;
             List<Sector> temp = new List<Sector>();
             Sector s = new Sector(512);
-            Buffer.BlockCopy(BitConverter.GetBytes((int)1), 0, s.GetData(), 0, 4);
+            Buffer.BlockCopy(BitConverter.GetBytes(1), 0, s.GetData(), 0, 4);
             temp.Add(s);
 
             StreamView sv = new StreamView(temp, 512, 4, null, a);
