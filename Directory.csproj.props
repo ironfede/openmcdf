@@ -1,0 +1,7 @@
+<!-- See https://docs.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props -->
+<Project>
+  <PropertyGroup>
+    <!-- C# 10 is the default for dotnet 6 -->
+    <LangVersion>10</LangVersion>
+  </PropertyGroup>
+</Project>
