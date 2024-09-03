@@ -50,7 +50,6 @@ namespace OpenMcdf.Benchmark
             _readBuffer = null;
         }
 
-
         [Benchmark]
         public void Test()
         {

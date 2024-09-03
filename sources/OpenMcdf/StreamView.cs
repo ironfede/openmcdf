@@ -6,7 +6,6 @@
  * 
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -50,9 +49,6 @@ namespace OpenMcdf
             this.isFatStream = isFatStream;
             adjustLength(length, availableSectors);
         }
-
-
-
 
         public List<Sector> BaseSectorChain
         {

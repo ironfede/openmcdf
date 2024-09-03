@@ -88,13 +88,11 @@ namespace OpenMcdf.Test
             }
         }
 
-
         [TestMethod]
         public void Test_RBTREE_DELETE()
         {
             RBTree rbTree = new RBTree();
             System.Collections.Generic.IList<IDirectoryEntry> repo = GetDirectoryRepository(25);
-
 
             foreach (var item in repo)
             {
@@ -113,11 +111,8 @@ namespace OpenMcdf.Test
                 Assert.Fail("Item removal failed: " + ex.Message);
             }
 
-
-
             //    CFItem c;
             //    bool s = rbTree.TryLookup(new CFMock("7", StgType.StgStream), out c);
-
 
             //    Assert.IsFalse(s);
 
@@ -128,9 +123,7 @@ namespace OpenMcdf.Test
             //    Assert.IsTrue(rbTree.TryLookup(new CFMock("12", StgType.StgStream), out c));
             //    Assert.IsTrue(c.Name == "12");
 
-
             //}
-
 
         }
 
@@ -211,8 +204,6 @@ namespace OpenMcdf.Test
 
             return pathBlackCount;
         }
-
-
 
         [TestMethod]
         public void Test_RBTREE_ENUMERATE()

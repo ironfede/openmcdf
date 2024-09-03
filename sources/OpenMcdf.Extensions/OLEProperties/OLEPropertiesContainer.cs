@@ -126,7 +126,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                     Value = p.Value
                 };
 
-
                 properties.Add(op);
             }
 
@@ -178,7 +177,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             return op;
         }
-
 
         public void AddProperty(OLEProperty property)
         {

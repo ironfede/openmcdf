@@ -6,10 +6,8 @@
  * 
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
-
 using RedBlackTree;
 using System;
-
 
 namespace OpenMcdf
 {

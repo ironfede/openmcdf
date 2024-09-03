@@ -5,7 +5,6 @@ namespace OpenMcdf.Extensions
     public static class CFStreamExtension
     {
 
-
         /// <summary>
         /// Return the current <see cref="T:OpenMcdf.CFStream">CFStream</see> object 
         /// as a <see cref="T:System.IO.Stream">Stream</see> object.

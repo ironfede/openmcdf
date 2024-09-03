@@ -63,6 +63,5 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         }
 
-
     }
 }

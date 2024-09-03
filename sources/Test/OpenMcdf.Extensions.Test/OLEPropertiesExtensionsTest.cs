@@ -19,7 +19,6 @@ namespace OpenMcdf.Extensions.Test
 
         }
 
-
         private TestContext testContextInstance;
 
         /// <summary>
@@ -253,7 +252,6 @@ namespace OpenMcdf.Extensions.Test
                         Debug.WriteLine(p.Value);
                     }
 
-
                     Assert.IsNotNull(co2.UserDefinedProperties.Properties);
                     foreach (OLEProperties.OLEProperty p in co2.UserDefinedProperties.Properties)
                     {
@@ -453,7 +451,6 @@ namespace OpenMcdf.Extensions.Test
                 Assert.AreEqual(VTPropertyType.VT_R8, propArray[5].VTType);
             }
         }
-
 
         // Try to read a document which contains Vector/String properties
         // refs https://github.com/ironfede/openmcdf/issues/98

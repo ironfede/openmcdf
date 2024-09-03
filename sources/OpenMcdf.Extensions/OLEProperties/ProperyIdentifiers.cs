@@ -88,6 +88,5 @@ namespace OpenMcdf.Extensions.OLEProperties
             return "0x" + identifier.ToString("x8");
         }
 
-
     }
 }

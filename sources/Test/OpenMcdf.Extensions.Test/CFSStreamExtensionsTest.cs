@@ -16,7 +16,6 @@ namespace OpenMcdf.Extensions.Test
 
         }
 
-
         private TestContext testContextInstance;
 
         /// <summary>

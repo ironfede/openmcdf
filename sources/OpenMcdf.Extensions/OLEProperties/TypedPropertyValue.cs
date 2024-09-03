@@ -67,7 +67,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public abstract T ReadScalarValue(System.IO.BinaryReader br);
 
-
         public void Read(System.IO.BinaryReader br)
         {
             long currentPos = br.BaseStream.Position;
@@ -92,7 +91,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                         uint nItems = br.ReadUInt32();
 
                         List<T> res = new List<T>();
-
 
                         for (int i = 0; i < nItems; i++)
                         {

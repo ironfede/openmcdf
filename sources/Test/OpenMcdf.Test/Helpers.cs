@@ -50,7 +50,6 @@ namespace OpenMcdf.Test
             if (b != null && p == null)
                 return false;
 
-
             for (int i = 0; i < count; i++)
             {
                 if (b[i] != p[i])

@@ -6,10 +6,8 @@
  * 
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
-
 using System;
 using System.IO;
-
 
 namespace OpenMcdf
 {
@@ -47,7 +45,6 @@ namespace OpenMcdf
 
         private int size = 0;
         private Stream stream;
-
 
         public Sector(int size, Stream stream)
         {
@@ -180,8 +177,5 @@ namespace OpenMcdf
 
         #endregion
     }
-
-
-
 
 }

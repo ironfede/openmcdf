@@ -100,7 +100,6 @@ namespace OpenMcdf.MemTest
             cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             cf.RootStorage.GetStorage("MiniStorage").Delete("miniSt");
 
-
             cf.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").Append(bE);
             cf.Commit();
             cf.Close();
@@ -157,7 +156,6 @@ namespace OpenMcdf.MemTest
             cfst.Append(cmp);
             cf.Commit(true);
             sw.Stop();
-
 
             cf.Close();
 

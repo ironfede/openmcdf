@@ -102,7 +102,6 @@ namespace OpenMcdf.Test
             Assert.IsNotNull(strg);
             Assert.IsTrue(strg.Name == maxCharactersStorageName);
 
-
             // Try Stream entry name with max characters.
             Assert.IsNotNull(cf.RootStorage.AddStream(maxCharactersStreamName));
             CFStream strm = cf.RootStorage.GetStream(maxCharactersStreamName);
@@ -229,7 +228,6 @@ namespace OpenMcdf.Test
                 }
             }
 
-
         }
 
         [TestMethod]
@@ -344,7 +342,6 @@ namespace OpenMcdf.Test
 
             // Test Phase 2
 
-
             cfTest = new CompoundFile("8_Streams.cfs");
 
             testSt = cfTest.RootStorage.GetStream("B");
@@ -384,7 +381,6 @@ namespace OpenMcdf.Test
 
             cfTest.Close();
 
-
             File.Copy("8_Streams.cfs", "6_Streams.cfs", true);
             File.Delete("8_Streams.cfs");
 
@@ -403,9 +399,7 @@ namespace OpenMcdf.Test
 
             //Test Phase 3
 
-
             cfTest = new CompoundFile("6_Streams.cfs");
-
 
             bool catched = false;
 
@@ -477,7 +471,6 @@ namespace OpenMcdf.Test
             cf.Commit();
             cf.Close();
 
-
             cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             cf.RootStorage.CLSID = new Guid("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
             cf.Commit();
@@ -491,7 +484,6 @@ namespace OpenMcdf.Test
             cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             cf.RootStorage.AddStorage("AnotherStorage").AddStream("ANS").Append(bE);
             cf.RootStorage.Delete("MyStorage");
-
 
             cf.Commit();
             cf.Close();
@@ -513,7 +505,6 @@ namespace OpenMcdf.Test
 
             cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             cf.RootStorage.GetStorage("MiniStorage").Delete("miniSt");
-
 
             cf.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").Append(bE);
 
@@ -559,7 +550,6 @@ namespace OpenMcdf.Test
             cf.Commit();
             cf.Close();
 
-
             //Test Phase 7
 
             cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
@@ -596,7 +586,6 @@ namespace OpenMcdf.Test
 
             Assert.IsTrue(result.Count == 3);
         }
-
 
         [TestMethod]
         public void Test_CORRUPTED_CYCLIC_FAT_CHECK()
@@ -670,7 +659,6 @@ namespace OpenMcdf.Test
                     st.Append(buffer);
                 }
 
-
                 if (File.Exists("$ItemsLargeNumber.cfs"))
                     File.Delete("$ItemsLargeNumber.cfs");
 
@@ -716,7 +704,6 @@ namespace OpenMcdf.Test
             cf.Close();
         }
 
-
         [TestMethod]
         public void Test_FIX_BUG_17_CORRUPTED_PPT_FILE()
         {
@@ -752,7 +739,6 @@ namespace OpenMcdf.Test
 
         }
 
-
         [TestMethod]
         public void Test_FIX_BUG_28_CompoundFile_Delete_ChildElementMaintainsFiles()
         {
@@ -782,7 +768,6 @@ namespace OpenMcdf.Test
             {
                 Assert.IsTrue(fs.CanRead && fs.CanSeek && fs.CanWrite);
             }
-
 
         }
 
@@ -861,7 +846,6 @@ namespace OpenMcdf.Test
         //}
 
         //}
-
 
         [TestMethod]
         public void Test_COPY_ENTRIES_FROM_TO_STORAGE()
@@ -1262,7 +1246,6 @@ namespace OpenMcdf.Test
             if (File.Exists(filename2))
                 File.Delete(filename2);
 
-
             if (File.Exists(filename))
             {
                 File.Copy(filename, filename2);
@@ -1279,7 +1262,6 @@ namespace OpenMcdf.Test
             long length2 = new System.IO.FileInfo(filename2).Length;
 
             Assert.IsTrue(length > length2);
-
 
             if (File.Exists(filename2))
                 File.Delete(filename2);

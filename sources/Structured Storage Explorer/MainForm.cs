@@ -46,14 +46,10 @@ namespace StructuredStorageExplorer
             treeView1.ImageList.Images.Add(streamImage);
             //treeView1.ImageList.Images.Add(olePropsImage);
 
-
-
             saveAsToolStripMenuItem.Enabled = false;
             updateCurrentFileToolStripMenuItem.Enabled = false;
 
         }
-
-
 
         private void OpenFile()
         {
@@ -205,8 +201,6 @@ namespace StructuredStorageExplorer
             cfs.VisitEntries(va, false);
         }
 
-
-
         private void exportDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //No export if storage
@@ -318,7 +312,6 @@ namespace StructuredStorageExplorer
                     }
                 }
 
-
                 RefreshTree();
             }
         }
@@ -401,7 +394,6 @@ namespace StructuredStorageExplorer
             }
         }
 
-
         private void treeView1_MouseUp(object sender, MouseEventArgs e)
         {
             // Get the node under the mouse cursor.
@@ -422,8 +414,6 @@ namespace StructuredStorageExplorer
                     }
 
                     treeView1.SelectedNode = n;
-
-
 
                     // The tag property contains the underlying CFItem.
                     CFItem target = (CFItem)n.Tag;
@@ -515,7 +505,6 @@ namespace StructuredStorageExplorer
 
                 if (n != null)
                     propertyGrid1.SelectedObject = n.Tag;
-
 
                 if (n != null)
                 {

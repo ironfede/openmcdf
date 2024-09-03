@@ -9,8 +9,6 @@
 using System;
 using System.IO;
 
-
-
 namespace OpenMcdf
 {
 
@@ -50,7 +48,6 @@ namespace OpenMcdf
             this.CompoundFile.FreeData(this);
             this.CompoundFile.WriteData(this, data);
         }
-
 
         /// <summary>
         /// Write a data buffer to a specific position into current CFStream object
@@ -138,7 +135,6 @@ namespace OpenMcdf
             return this.CompoundFile.GetData(this);
         }
 
-
         /// <summary>
         /// Read <paramref name="count"/> bytes associated with the stream object, starting from
         /// the provided <paramref name="position"/>. Method returns the effective count of bytes 
@@ -171,8 +167,6 @@ namespace OpenMcdf
             CheckDisposed();
             return this.CompoundFile.ReadData(this, position, buffer, 0, count);
         }
-
-
 
         /// <summary>
         /// Read <paramref name="count"/> bytes associated with the stream object, starting from
@@ -208,7 +202,6 @@ namespace OpenMcdf
             return this.CompoundFile.ReadData(this, position, buffer, offset, count);
         }
 
-
         /// <summary>
         /// Copy data from an existing stream.
         /// </summary>
@@ -231,7 +224,6 @@ namespace OpenMcdf
             input.Read(buffer, 0, (int)input.Length);
             this.SetData(buffer);
         }
-
 
         /// <summary>
         /// Resize stream padding with zero if enlarging, trimming data if reducing size.

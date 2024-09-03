@@ -54,18 +54,13 @@ namespace RedBlackTree
             set;
         }
 
-
         Color Color
 
         { get; set; }
 
-
-
         IRBNode Parent { get; set; }
 
-
         IRBNode Grandparent();
-
 
         IRBNode Sibling();
         //        {
@@ -109,7 +104,6 @@ namespace RedBlackTree
         {
             this.Root = root;
         }
-
 
         private IRBNode LookupNode(IRBNode template)
         {
@@ -201,8 +195,6 @@ namespace RedBlackTree
             l.Right = n;
             n.Parent = l;
         }
-
-
 
         public void Insert(IRBNode newNode)
         {
@@ -346,7 +338,6 @@ namespace RedBlackTree
             return n;
         }
 
-
         public void Delete(IRBNode template, out IRBNode deletedAlt)
         {
             deletedAlt = null;
@@ -378,7 +369,6 @@ namespace RedBlackTree
                 Root.Color = Color.BLACK;
             }
 
-
             return;
         }
 
@@ -389,7 +379,6 @@ namespace RedBlackTree
             else
                 DeleteCase2(n);
         }
-
 
         private void DeleteCase2(IRBNode n)
         {
@@ -625,7 +614,6 @@ namespace RedBlackTree
         //internal event Action<RBNode<V>> NodeDeleted;
         internal event Action<IRBNode, NodeOperation> NodeOperation;
 
-
     }
 
     internal enum NodeOperation
@@ -636,6 +624,5 @@ namespace RedBlackTree
         ParentAssigned,
         ValueAssigned
     }
-
 
 }

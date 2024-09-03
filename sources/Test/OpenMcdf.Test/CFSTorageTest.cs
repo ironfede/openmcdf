@@ -107,7 +107,6 @@ namespace OpenMcdf.Test
 
         }
 
-
         [TestMethod]
         public void Test_TRY_GET_STREAM_STORAGE()
         {
@@ -223,8 +222,6 @@ namespace OpenMcdf.Test
                 if (output != null)
                     output.Close();
 
-
-
             }
         }
 
@@ -249,7 +246,6 @@ namespace OpenMcdf.Test
             {
                 output = new FileStream("LogEntriesCorrupted_2.txt", FileMode.Create);
 
-
                 using (TextWriter tw = new StreamWriter(output))
                 {
 
@@ -271,10 +267,8 @@ namespace OpenMcdf.Test
                 if (output != null)
                     output.Close();
 
-
             }
         }
-
 
         [TestMethod]
         public void Test_VISIT_STORAGE()
@@ -300,7 +294,6 @@ namespace OpenMcdf.Test
 
             ncf.Save(FILENAME);
             ncf.Close();
-
 
             // Read...
 

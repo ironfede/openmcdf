@@ -69,14 +69,11 @@ namespace OpenMcdf
             set { dirEntry = value; }
         }
 
-
-
         internal int CompareTo(CFItem other)
         {
 
             return this.dirEntry.CompareTo(other.DirEntry);
         }
-
 
         #endregion
 
@@ -138,7 +135,6 @@ namespace OpenMcdf
                     return String.Empty;
             }
 
-
         }
 
         /// <summary>
@@ -152,7 +148,6 @@ namespace OpenMcdf
                 return this.dirEntry.Size;
             }
         }
-
 
         /// <summary>
         /// Return true if item is Storage

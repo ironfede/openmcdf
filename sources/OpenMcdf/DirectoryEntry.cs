@@ -117,8 +117,6 @@ namespace OpenMcdf
                 if (entryName.Length > 31)
                     throw new CFException("Entry name MUST NOT exceed 31 characters");
 
-
-
                 byte[] newName = null;
                 byte[] temp = Encoding.Unicode.GetBytes(entryName);
                 newName = new byte[64];
@@ -207,7 +205,6 @@ namespace OpenMcdf
             }
         }
 
-
         private Int32 stateBits;
 
         public Int32 StateBits
@@ -269,7 +266,6 @@ namespace OpenMcdf
                 size = value;
             }
         }
-
 
         public int CompareTo(object obj)
         {
@@ -431,7 +427,6 @@ namespace OpenMcdf
             get { return GetEntryName(); }
         }
 
-
         public RedBlackTree.IRBNode Left
         {
             get
@@ -564,14 +559,10 @@ namespace OpenMcdf
             return de;
         }
 
-
-
-
         public override string ToString()
         {
             return this.Name + " [" + this.sid + "]" + (this.stgType == StgType.StgStream ? "Stream" : "Storage");
         }
-
 
         public void AssignValueTo(RedBlackTree.IRBNode other)
         {

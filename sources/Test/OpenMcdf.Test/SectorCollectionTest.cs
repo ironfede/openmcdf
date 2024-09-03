@@ -4,7 +4,6 @@ using System;
 namespace OpenMcdf.Test
 {
 
-
     /// <summary>
     ///This is a test class for SectorCollectionTest and is intended
     ///to contain all SectorCollectionTest Unit Tests
@@ -12,7 +11,6 @@ namespace OpenMcdf.Test
     [TestClass()]
     public class SectorCollectionTest
     {
-
 
         private TestContext testContextInstance;
 
@@ -62,7 +60,6 @@ namespace OpenMcdf.Test
         //
         #endregion
 
-
         /// <summary>
         ///A test for Count
         ///</summary>
@@ -81,7 +78,6 @@ namespace OpenMcdf.Test
 
             target.Add(s);
             Assert.IsTrue(target.Count == actual + 1);
-
 
             for (int i = 0; i < 5000; i++)
                 target.Add(s);
@@ -161,7 +157,6 @@ namespace OpenMcdf.Test
                 target.Add(null);
             }
 
-
             Sector item = new Sector(4096);
             target.Add(item);
             Assert.IsTrue(target.Count == 580);
@@ -178,7 +173,6 @@ namespace OpenMcdf.Test
             {
                 target.Add(null);
             }
-
 
             Sector item = new Sector(4096);
             target.Add(item);

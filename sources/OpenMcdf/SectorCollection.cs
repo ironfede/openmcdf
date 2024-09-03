@@ -30,7 +30,6 @@ namespace OpenMcdf
 
         private int count = 0;
 
-
         public event Ver3SizeLimitReached OnVer3SizeLimitReached;
 
         private List<ArrayList> largeArraySlices = new List<ArrayList>();
@@ -47,7 +46,6 @@ namespace OpenMcdf
             {
                 sizeLimitReached = true;
                 OnVer3SizeLimitReached();
-
 
             }
         }

@@ -6,7 +6,6 @@
  * 
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
-
 using System.IO;
 
 namespace OpenMcdf
@@ -178,13 +177,11 @@ namespace OpenMcdf
             get { return difat; }
         }
 
-
         public Header()
             : this(3)
         {
 
         }
-
 
         public Header(ushort version)
         {
@@ -204,14 +201,12 @@ namespace OpenMcdf
                 default:
                     throw new CFException("Invalid Compound File Format version");
 
-
             }
 
             for (int i = 0; i < 109; i++)
             {
                 difat[i] = Sector.FREESECT;
             }
-
 
         }
 
@@ -282,7 +277,6 @@ namespace OpenMcdf
 
             rw.Close();
         }
-
 
         private void CheckVersion()
         {

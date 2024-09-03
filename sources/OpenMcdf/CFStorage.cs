@@ -6,11 +6,9 @@
  * 
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
-
 using RedBlackTree;
 using System;
 using System.Collections.Generic;
-
 
 namespace OpenMcdf
 {
@@ -71,7 +69,6 @@ namespace OpenMcdf
             }
         }
 
-
         /// <summary>
         /// Create a CFStorage using an existing directory (previously loaded).
         /// </summary>
@@ -129,8 +126,6 @@ namespace OpenMcdf
             if (String.IsNullOrEmpty(streamName))
                 throw new CFException("Stream name cannot be null or empty");
 
-
-
             IDirectoryEntry dirEntry = DirectoryEntry.TryNew(streamName, StgType.StgStream, this.CompoundFile.GetDirectories());
 
             // Add new Stream directory entry
@@ -153,7 +148,6 @@ namespace OpenMcdf
 
             return new CFStream(this.CompoundFile, dirEntry);
         }
-
 
         /// <summary>
         /// Get a named <see cref="T:OpenMcdf.CFStream">stream</see> contained in the current storage if existing.
@@ -292,7 +286,6 @@ namespace OpenMcdf
             }
         }
 
-
         /// <summary>
         /// Get a named storage contained in the current one if existing.
         /// </summary>
@@ -411,7 +404,6 @@ namespace OpenMcdf
 
             return result;
         }
-
 
         /// <summary>
         /// Create new child storage directory inside the current storage.
@@ -562,7 +554,6 @@ namespace OpenMcdf
             if (((IDirectoryEntry)foundObj).StgType == StgType.StgRoot)
                 throw new CFException("Root storage cannot be removed");
 
-
             IRBNode altDel = null;
             switch (((IDirectoryEntry)foundObj).StgType)
             {
@@ -576,9 +567,6 @@ namespace OpenMcdf
                         IDirectoryEntry ded = de as IDirectoryEntry;
                         temp.Delete(ded.Name);
                     }
-
-
-
 
                     // ...then we Remove storage item from children tree...
                     this.Children.Delete(foundObj, out altDel);
@@ -623,8 +611,6 @@ namespace OpenMcdf
 
                     this.CompoundFile.InvalidateDirectoryEntry(((IDirectoryEntry)foundObj).SID);
 
-
-
                     break;
             }
 
@@ -636,13 +622,10 @@ namespace OpenMcdf
             //        ((IDirectoryEntry)target).SID--;
             //    }                   
 
-
             //    ((IDirectoryEntry)target).LeftSibling--;
             //};
 
-
         }
-
 
         /// <summary>
         /// Rename a Stream or Storage item in the current storage

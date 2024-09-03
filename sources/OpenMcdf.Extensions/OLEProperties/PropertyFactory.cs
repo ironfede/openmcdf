@@ -219,8 +219,6 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-
-
         private class VT_UI2_Property : TypedPropertyValue<ushort>
         {
             public VT_UI2_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
@@ -311,7 +309,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                 bw.Write(pValue);
             }
         }
-
 
         private class VT_R4_Property : TypedPropertyValue<float>
         {
@@ -449,7 +446,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                     bw.Write(dataLength);           // datalength of string + null char (unicode)
                     bw.Write(data);                 // string
 
-
                     //if (addNullTerminator)
                     //{
                     bw.Write('\0');                 // first byte of null unicode char
@@ -476,7 +472,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                     bw.Write(dataLength);           // datalength of string + null char (unicode)
                     bw.Write(data);                 // string
 
-
                     //if (addNullTerminator)
                     //{
                     bw.Write('\0');                 // null terminator'\0'
@@ -485,8 +480,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                     //for (int i = 0; i < (4 - mod); i++)   // padding
                     //    bw.Write('\0');
                 }
-
-
 
             }
         }
@@ -584,7 +577,6 @@ namespace OpenMcdf.Extensions.OLEProperties
             {
                 Decimal d;
 
-
                 br.ReadInt16(); // wReserved
                 byte scale = br.ReadByte();
                 byte sign = br.ReadByte();
@@ -607,7 +599,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                 bool sign = (parts[3] & 0x80000000) != 0;
                 byte scale = (byte)((parts[3] >> 16) & 0x7F);
-
 
                 bw.Write((short)0);
                 bw.Write(scale);
