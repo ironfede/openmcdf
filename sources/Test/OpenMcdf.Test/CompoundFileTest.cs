@@ -15,7 +15,6 @@ namespace OpenMcdf.Test
     {
         public CompoundFileTest()
         {
-
         }
 
         private TestContext testContextInstance;
@@ -687,7 +686,6 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_FIX_BUG_16_CORRUPTED_AFTER_RESIZE()
         {
-
             const string FILE_PATH = @"BUG_16_.xls";
 
             CompoundFile cf = new CompoundFile(FILE_PATH);
@@ -707,7 +705,6 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_FIX_BUG_17_CORRUPTED_PPT_FILE()
         {
-
             const string FILE_PATH = @"2_MB-W.ppt";
 
             using (CompoundFile file = new CompoundFile(FILE_PATH))
@@ -1057,7 +1054,6 @@ namespace OpenMcdf.Test
 
                 using (FileStream fTest = new FileStream("BigFile.data", FileMode.Create))
                 {
-
                     fTest.Write(bigDataBuffer, 0, 1024 * 1024 * 260);
                     fTest.Flush();
                     fTest.Close();
@@ -1315,7 +1311,6 @@ namespace OpenMcdf.Test
 
             try
             {
-
                 CompoundFile compoundFile = new CompoundFile(filename2);
                 fs = new FileStream(filename2, FileMode.Open);
                 var s = compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName);

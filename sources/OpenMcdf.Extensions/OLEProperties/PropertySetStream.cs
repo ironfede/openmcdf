@@ -7,7 +7,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 {
     internal sealed class PropertySetStream
     {
-
         public ushort ByteOrder { get; set; }
         public ushort Version { get; set; }
         public uint SystemIdentifier { get; set; }
@@ -24,7 +23,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public PropertySetStream()
         {
-
         }
 
         public void Read(System.IO.BinaryReader br)
@@ -158,7 +156,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             if (NumPropertySets == 2)
             {
-
                 oc1.OffsetPS = (int)bw.BaseStream.Position;
 
                 bw.Write(PropertySet1.Size);

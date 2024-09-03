@@ -16,7 +16,6 @@ namespace OpenMcdf.Extensions.Test
     {
         public OLEPropertiesExtensionsTest()
         {
-
         }
 
         private TestContext testContextInstance;

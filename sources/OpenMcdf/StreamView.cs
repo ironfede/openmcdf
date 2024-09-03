@@ -72,7 +72,6 @@ namespace OpenMcdf
 
         public override void Flush()
         {
-
         }
 
         private long length;

@@ -13,7 +13,6 @@ namespace OpenMcdf.Test
     {
         public RBTreeTest()
         {
-
         }
 
         private TestContext testContextInstance;
@@ -143,7 +142,6 @@ namespace OpenMcdf.Test
 
         private static void VerifyProperty1(IRBNode n)
         {
-
             Assert.IsTrue(NodeColor(n) == Color.RED || NodeColor(n) == Color.BLACK);
 
             if (n == null) return;
@@ -158,7 +156,6 @@ namespace OpenMcdf.Test
 
         private static void VerifyProperty4(IRBNode n)
         {
-
             if (NodeColor(n) == Color.RED)
             {
                 Assert.IsTrue((NodeColor(n.Left) == Color.BLACK));
@@ -191,7 +188,6 @@ namespace OpenMcdf.Test
                 }
                 else
                 {
-
                     Assert.IsTrue(blackCount == pathBlackCount);
 
                 }

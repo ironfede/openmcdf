@@ -16,7 +16,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 
     public static class CommonIdentifiers
     {
-
         public static Dictionary<uint, string> PropertyIdentifiersSummaryInfo = new Dictionary<uint, string>()
         {
             {0x00000001,"CodePageString" },

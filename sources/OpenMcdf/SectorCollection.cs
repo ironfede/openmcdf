@@ -36,7 +36,6 @@ namespace OpenMcdf
 
         public SectorCollection()
         {
-
         }
 
         private bool sizeLimitReached = false;
@@ -175,7 +174,6 @@ namespace OpenMcdf
 
         public IEnumerator<Sector> GetEnumerator()
         {
-
             for (int i = 0; i < largeArraySlices.Count; i++)
             {
                 for (int j = 0; j < largeArraySlices[i].Count; j++)

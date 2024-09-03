@@ -12,12 +12,10 @@ namespace OpenMcdf.Test
     [TestClass]
     public class CFSStreamTest
     {
-
         //const String TestContext.TestDir = "C:\\TestOutputFiles\\";
 
         public CFSStreamTest()
         {
-
         }
 
         private TestContext testContextInstance;
@@ -544,7 +542,6 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS()
         {
-
             Random r = new Random();
 
             for (int i = r.Next(1, 100); i < 1024 * 1024 * 70; i = i << 1)
@@ -557,7 +554,6 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS_STREAM()
         {
-
             Random r = new Random();
 
             for (int i = r.Next(1, 100); i < 1024 * 1024 * 70; i = i << 1)
@@ -628,7 +624,6 @@ namespace OpenMcdf.Test
 
         private void SingleTransactedChange(int size)
         {
-
             String filename = "INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS.cfs";
 
             if (File.Exists(filename))
@@ -657,7 +652,6 @@ namespace OpenMcdf.Test
 
         private void SingleWriteReadMatching(int size)
         {
-
             String filename = "INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS.cfs";
 
             if (File.Exists(filename))

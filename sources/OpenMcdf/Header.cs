@@ -180,12 +180,10 @@ namespace OpenMcdf
         public Header()
             : this(3)
         {
-
         }
 
         public Header(ushort version)
         {
-
             switch (version)
             {
                 case 3:

@@ -41,7 +41,6 @@ namespace RedBlackTree
     /// </summary>
     public interface IRBNode : IComparable
     {
-
         IRBNode Left
         {
             get;
@@ -97,7 +96,6 @@ namespace RedBlackTree
 
         public RBTree()
         {
-
         }
 
         public RBTree(IRBNode root)
@@ -512,7 +510,6 @@ namespace RedBlackTree
 
             if (walker.Right != null)
             {
-
                 DoVisitTreeNodes(action, walker.Right);
             }
 

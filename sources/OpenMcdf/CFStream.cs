@@ -11,7 +11,6 @@ using System.IO;
 
 namespace OpenMcdf
 {
-
     /// <summary>
     /// OLE structured storage <see cref="T:OpenMcdf.CFStream">stream</see> Object
     /// It is contained inside a Storage object in a file-directory

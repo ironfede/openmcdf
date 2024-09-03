@@ -8,7 +8,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 {
     public class OLEPropertiesContainer
     {
-
         public Dictionary<uint, string> PropertyNames = null;
 
         public OLEPropertiesContainer UserDefinedProperties { get; private set; }

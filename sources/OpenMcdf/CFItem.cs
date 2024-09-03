@@ -71,7 +71,6 @@ namespace OpenMcdf
 
         internal int CompareTo(CFItem other)
         {
-
             return this.dirEntry.CompareTo(other.DirEntry);
         }
 

@@ -9,7 +9,6 @@ namespace OpenMcdf.MemTest
     {
         static void Main(string[] args)
         {
-
             //TestMultipleStreamCommit();
             TestCode();
             //StressMemory();
@@ -145,7 +144,6 @@ namespace OpenMcdf.MemTest
             sw.Start();
             for (int i = 0; i < N_LOOP; i++)
             {
-
                 cfst.Append(b);
                 cf.Commit(true);
 
@@ -196,7 +194,6 @@ namespace OpenMcdf.MemTest
             sw.Start();
             for (int i = 0; i < 42; i++)
             {
-
                 fs.Seek(b.Length * i, SeekOrigin.Begin);
                 fs.Write(b, 0, b.Length);
 
@@ -212,10 +209,8 @@ namespace OpenMcdf.MemTest
 
         private static void AddNodes(String depth, CFStorage cfs)
         {
-
             Action<CFItem> va = delegate (CFItem target)
             {
-
                 String temp = target.Name + (target is CFStorage ? "" : " (" + target.Size + " bytes )");
 
                 //Stream
@@ -224,7 +219,6 @@ namespace OpenMcdf.MemTest
 
                 if (target is CFStorage)
                 {  //Storage
-
                     String newDepth = depth + "    ";
 
                     //Recursion into the storage

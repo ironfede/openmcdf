@@ -17,7 +17,6 @@ namespace OpenMcdf
 
         public StreamRW(Stream stream)
         {
-
             this.stream = stream;
         }
 

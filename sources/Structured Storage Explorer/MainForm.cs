@@ -18,7 +18,6 @@ using System.Windows.Forms;
 
 namespace StructuredStorageExplorer
 {
-
     /// <summary>
     /// Sample Structured Storage viewer to 
     /// demonstrate use of OpenMCDF
@@ -118,7 +117,6 @@ namespace StructuredStorageExplorer
 
         private void LoadFile(string fileName, bool enableCommit)
         {
-
             fs = new FileStream(
                 fileName,
                 FileMode.Open,
@@ -181,7 +179,6 @@ namespace StructuredStorageExplorer
 
                 if (target.IsStream)
                 {
-
                     //Stream
                     temp.ImageIndex = 1;
                     temp.SelectedImageIndex = 1;
@@ -370,12 +367,10 @@ namespace StructuredStorageExplorer
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
-
         }
 
         private void newStripMenuItem1_Click(object sender, EventArgs e)
         {
-
             CreateNewFile();
         }
 
@@ -389,7 +384,6 @@ namespace StructuredStorageExplorer
                 }
                 catch
                 {
-
                 }
             }
         }
@@ -521,7 +515,6 @@ namespace StructuredStorageExplorer
             }
             catch (Exception ex)
             {
-
                 cf?.Close();
                 fs?.Close();
 
@@ -537,7 +530,6 @@ namespace StructuredStorageExplorer
 
         void hexEditor_ByteProviderChanged(object sender, EventArgs e)
         {
-
         }
 
         private void closeStripMenuItem1_Click(object sender, EventArgs e)

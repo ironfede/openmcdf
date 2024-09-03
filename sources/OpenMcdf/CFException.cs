@@ -30,13 +30,11 @@ namespace OpenMcdf
         public CFException(string message)
             : base(message, null)
         {
-
         }
 
         public CFException(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
 
     }
@@ -62,13 +60,11 @@ namespace OpenMcdf
         public CFDisposedException(string message)
             : base(message, null)
         {
-
         }
 
         public CFDisposedException(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
 
     }
@@ -93,13 +89,11 @@ namespace OpenMcdf
         public CFFileFormatException(string message)
             : base(message, null)
         {
-
         }
 
         public CFFileFormatException(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
 
     }
@@ -124,13 +118,11 @@ namespace OpenMcdf
         public CFItemNotFound(string message)
             : base(message, null)
         {
-
         }
 
         public CFItemNotFound(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
 
     }
@@ -154,13 +146,11 @@ namespace OpenMcdf
         public CFInvalidOperation(string message)
             : base(message, null)
         {
-
         }
 
         public CFInvalidOperation(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
 
     }
@@ -189,13 +179,11 @@ namespace OpenMcdf
         public CFDuplicatedItemException(string message)
             : base(message, null)
         {
-
         }
 
         public CFDuplicatedItemException(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
     }
 
@@ -221,13 +209,11 @@ namespace OpenMcdf
         public CFCorruptedFileException(string message)
             : base(message, null)
         {
-
         }
 
         public CFCorruptedFileException(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
 
     }

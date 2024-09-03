@@ -2,7 +2,6 @@
 {
     public interface IProperty : IBinarySerializable
     {
-
         object Value
         {
             get;

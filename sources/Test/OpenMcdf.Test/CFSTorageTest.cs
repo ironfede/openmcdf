@@ -15,7 +15,6 @@ namespace OpenMcdf.Test
 
         public CFSTorageTest()
         {
-
         }
 
         private TestContext testContextInstance;
@@ -201,7 +200,6 @@ namespace OpenMcdf.Test
 
                 using (TextWriter tw = new StreamWriter(output))
                 {
-
                     Action<CFItem> va = delegate (CFItem item)
                        {
                            tw.WriteLine(item.Name);
@@ -248,7 +246,6 @@ namespace OpenMcdf.Test
 
                 using (TextWriter tw = new StreamWriter(output))
                 {
-
                     Action<CFItem> va = delegate (CFItem item)
                     {
                         tw.WriteLine(item.Name);
@@ -467,7 +464,6 @@ namespace OpenMcdf.Test
 
             try
             {
-
                 cf1.RootStorage.RenameItem("AStorage", "NewStorage");
                 cf1.Commit();
                 cf1.Close();

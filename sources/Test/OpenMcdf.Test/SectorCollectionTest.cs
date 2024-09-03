@@ -3,7 +3,6 @@ using System;
 
 namespace OpenMcdf.Test
 {
-
     /// <summary>
     ///This is a test class for SectorCollectionTest and is intended
     ///to contain all SectorCollectionTest Unit Tests
@@ -11,7 +10,6 @@ namespace OpenMcdf.Test
     [TestClass()]
     public class SectorCollectionTest
     {
-
         private TestContext testContextInstance;
 
         /// <summary>
@@ -66,7 +64,6 @@ namespace OpenMcdf.Test
         [TestMethod()]
         public void CountTest()
         {
-
             int count = 0;
 
             SectorCollection target = new SectorCollection(); // TODO: Initialize to an appropriate value
@@ -134,7 +131,6 @@ namespace OpenMcdf.Test
         [TestMethod()]
         public void SectorCollectionConstructorTest()
         {
-
             SectorCollection target = new SectorCollection();
 
             Assert.IsNotNull(target);

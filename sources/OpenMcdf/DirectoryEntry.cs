@@ -269,7 +269,6 @@ namespace OpenMcdf
 
         public int CompareTo(object obj)
         {
-
             IDirectoryEntry otherDir = obj as IDirectoryEntry;
 
             if (otherDir == null)
@@ -318,7 +317,6 @@ namespace OpenMcdf
         /// <returns>(not warranted) unique hash for byte array</returns>
         private static ulong fnv_hash(byte[] buffer)
         {
-
             ulong h = 2166136261;
             int i;
 
@@ -456,7 +454,6 @@ namespace OpenMcdf
             }
             set
             {
-
                 rightSibling = value != null ? ((IDirectoryEntry)value).SID : NOSTREAM;
 
                 if (rightSibling != NOSTREAM)

@@ -13,7 +13,6 @@ namespace OpenMcdf.Extensions.Test
     {
         public CFSStreamExtensionsTest()
         {
-
         }
 
         private TestContext testContextInstance;
