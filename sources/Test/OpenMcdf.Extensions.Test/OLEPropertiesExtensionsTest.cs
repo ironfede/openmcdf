@@ -100,7 +100,6 @@ namespace OpenMcdf.Extensions.Test
 
                 cf.Close();
             }
-
         }
 
         [TestMethod]
@@ -124,7 +123,6 @@ namespace OpenMcdf.Extensions.Test
 
                 cf.Close();
             }
-
         }
 
         // Modify some document summary information properties, save to a file, and then validate the expected results
@@ -216,7 +214,6 @@ namespace OpenMcdf.Extensions.Test
                 Debug.WriteLine(ex.Message);
                 Assert.Fail();
             }
-
         }
 
         [TestMethod]
@@ -267,7 +264,6 @@ namespace OpenMcdf.Extensions.Test
                 Debug.WriteLine(ex.Message);
                 Assert.Fail();
             }
-
         }
 
         [TestMethod]
@@ -290,7 +286,6 @@ namespace OpenMcdf.Extensions.Test
 
                 cf.Close();
             }
-
         }
 
         // Test that we can modify an LPWSTR property, and the value is null terminated as required
@@ -481,7 +476,6 @@ namespace OpenMcdf.Extensions.Test
                 var co = cf.RootStorage.GetStream("\u0005C3teagxwOttdbfkuIaamtae3Ie").AsOLEPropertiesContainer();
                 var clsidProp = co.Properties.First(x => x.PropertyName == "DocumentID");
                 Assert.AreEqual(guid, clsidProp.Value);
-
             }
         }
 

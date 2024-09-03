@@ -54,5 +54,4 @@ namespace StructuredStorageExplorer
             return ((CFItem)node.Tag).IsStream;
         }
     }
-
 }

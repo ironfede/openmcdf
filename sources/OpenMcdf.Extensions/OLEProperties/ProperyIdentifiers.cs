@@ -56,7 +56,6 @@ namespace OpenMcdf.Extensions.OLEProperties
             {0x0000000E,"PIDDSI_MANAGER" },
             {0x0000000F,"PIDDSI_COMPANY" },
             {0x00000010,"PIDDSI_LINKSDIRTY" }
-
         };
     }
 
@@ -86,6 +85,5 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             return "0x" + identifier.ToString("x8");
         }
-
     }
 }

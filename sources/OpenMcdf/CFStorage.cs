@@ -236,7 +236,6 @@ namespace OpenMcdf
             catch (CFDisposedException)
             {
                 result = false;
-
             }
 
             return result;
@@ -395,7 +394,6 @@ namespace OpenMcdf
                     cfStorage = new CFStorage(this.CompoundFile, outDe as IDirectoryEntry);
                     result = true;
                 }
-
             }
             catch (CFDisposedException)
             {
@@ -624,7 +622,6 @@ namespace OpenMcdf
 
             //    ((IDirectoryEntry)target).LeftSibling--;
             //};
-
         }
 
         /// <summary>

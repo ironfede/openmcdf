@@ -187,11 +187,9 @@ namespace OpenMcdf
                 position += nRead;
 
                 return nRead;
-
             }
             else
                 return 0;
-
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -371,7 +369,6 @@ namespace OpenMcdf
                 }
 
                 position += count;
-
             }
         }
     }

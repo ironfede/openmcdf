@@ -62,7 +62,6 @@ namespace OpenMcdf
         public ushort SectorShift
         {
             get { return sectorShift; }
-
         }
 
         //32 2 Size of a short-sector in the short-stream container stream (➜6.1) in power-of-two (sssz),
@@ -198,14 +197,12 @@ namespace OpenMcdf
 
                 default:
                     throw new CFException("Invalid Compound File Format version");
-
             }
 
             for (int i = 0; i < 109; i++)
             {
                 difat[i] = Sector.FREESECT;
             }
-
         }
 
         public void Write(Stream stream)

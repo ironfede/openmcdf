@@ -59,8 +59,6 @@ namespace OpenMcdf.Extensions.OLEProperties
             result = result.Trim('\0');
 
             return result;
-
         }
-
     }
 }

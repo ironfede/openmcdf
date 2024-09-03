@@ -36,7 +36,6 @@ namespace OpenMcdf
             : base(message, innerException)
         {
         }
-
     }
 
     /// <summary>
@@ -66,7 +65,6 @@ namespace OpenMcdf
             : base(message, innerException)
         {
         }
-
     }
 
     /// <summary>
@@ -95,7 +93,6 @@ namespace OpenMcdf
             : base(message, innerException)
         {
         }
-
     }
 
     /// <summary>
@@ -124,7 +121,6 @@ namespace OpenMcdf
             : base(message, innerException)
         {
         }
-
     }
 
     /// <summary>
@@ -152,7 +148,6 @@ namespace OpenMcdf
             : base(message, innerException)
         {
         }
-
     }
 
     /// <summary>
@@ -215,7 +210,5 @@ namespace OpenMcdf
             : base(message, innerException)
         {
         }
-
     }
-
 }

@@ -486,7 +486,6 @@ namespace OpenMcdf
                     sourceStream.Flush();
                     s.DirtyFlag = false;
                     gap = false;
-
                 }
                 else
                 {
@@ -684,7 +683,6 @@ namespace OpenMcdf
             {
                 throw new CFCorruptedFileException("Byte order MUST be little endian (0xFFFE)");
             }
-
         }
 
         private void LoadFile(String fileName)
@@ -698,7 +696,6 @@ namespace OpenMcdf
                 if (this.updateMode == CFSUpdateMode.ReadOnly)
                 {
                     fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-
                 }
                 else
                 {
@@ -706,7 +703,6 @@ namespace OpenMcdf
                 }
 
                 Load(fs);
-
             }
             catch
             {
@@ -1012,7 +1008,6 @@ namespace OpenMcdf
                 {
                     sectors.Add(s);
                     s.Id = sectors.Count - 1;
-
                 }
             }
 
@@ -1038,7 +1033,6 @@ namespace OpenMcdf
 
                 _transactionLockAllocated = true;
             }
-
         }
 
         /// <summary>
@@ -1163,7 +1157,6 @@ namespace OpenMcdf
                     }
 
                     difatStream.Write(BitConverter.GetBytes(FATsectorChain[i].Id), 0, sizeof(int));
-
                 }
             }
 
@@ -1410,7 +1403,6 @@ namespace OpenMcdf
             }
 
             return result;
-
         }
 
         /// <summary>
@@ -1457,7 +1449,6 @@ namespace OpenMcdf
 
                 EnsureUniqueSectorIndex(next, processedSectors);
                 nextSecID = next;
-
             }
 
             return result;
@@ -1805,7 +1796,6 @@ namespace OpenMcdf
 
                 //We are not inserting dirs. Do not use 'InsertNewDirectoryEntry'
                 de.Read(dirReader, this.Version);
-
             }
         }
 
@@ -1920,7 +1910,6 @@ namespace OpenMcdf
 
                 fs?.Flush();
                 fs?.Close();
-
             }
         }
 
@@ -1993,7 +1982,6 @@ namespace OpenMcdf
                     stream.Write(s.GetData(), 0, sSize);
 
                     //s.ReleaseData();
-
                 }
 
                 stream.Seek(0, SeekOrigin.Begin);
@@ -2033,7 +2021,6 @@ namespace OpenMcdf
                             Sector s = new Sector(GetSectorSize(), sourceStream);
                             s.Id = idx;
                             sectors[idx] = s;
-
                         }
 
                         freeList.Enqueue(sectors[idx]);
@@ -2157,7 +2144,6 @@ namespace OpenMcdf
                     }
 
                     // No transition caused by size change
-
                 }
             }
 
@@ -2198,7 +2184,6 @@ namespace OpenMcdf
                     cfItem.DirEntry.StartSetc = Sector.ENDOFCHAIN;
                     cfItem.DirEntry.Size = 0;
                 }
-
             }
             else if (transitionToMini)                          //############## TRANSITION TO MINISTREAM
             {
@@ -2433,7 +2418,6 @@ namespace OpenMcdf
 
                 result = br.ReadBytes((int)de.Size);
                 br.Close();
-
             }
             else
             {
@@ -2443,7 +2427,6 @@ namespace OpenMcdf
                 result = new byte[(int)de.Size];
 
                 sView.Read(result, 0, result.Length);
-
             }
 
             return result;
@@ -2651,7 +2634,6 @@ namespace OpenMcdf
             {
                 _disposed = true;
             }
-
         }
 
         internal bool IsClosed

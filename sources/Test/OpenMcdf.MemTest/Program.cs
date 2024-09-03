@@ -177,7 +177,6 @@ namespace OpenMcdf.MemTest
 
             Console.WriteLine("Closed Final " + sw.ElapsedMilliseconds);
             Console.ReadKey();
-
         }
 
         private static void DummyFile()
@@ -196,7 +195,6 @@ namespace OpenMcdf.MemTest
             {
                 fs.Seek(b.Length * i, SeekOrigin.Begin);
                 fs.Write(b, 0, b.Length);
-
             }
 
             fs.Close();
@@ -223,7 +221,6 @@ namespace OpenMcdf.MemTest
 
                     //Recursion into the storage
                     AddNodes(newDepth, (CFStorage)target);
-
                 }
             };
 
@@ -270,7 +267,6 @@ namespace OpenMcdf.MemTest
 
             TimeSpan sp = (DateTime.Now - start);
             Console.WriteLine(sp.TotalMilliseconds);
-
         }
 
         private static byte[] GetBuffer(int count)

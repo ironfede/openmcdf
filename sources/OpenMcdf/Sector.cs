@@ -177,5 +177,4 @@ namespace OpenMcdf
 
         #endregion
     }
-
 }

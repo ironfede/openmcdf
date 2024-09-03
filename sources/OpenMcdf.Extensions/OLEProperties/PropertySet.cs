@@ -52,6 +52,5 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             br.BaseStream.Position = currPos;
         }
-
     }
 }

@@ -468,7 +468,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                     //for (int i = 0; i < (4 - mod); i++)   // padding
                     //    bw.Write('\0');
                 }
-
             }
         }
 
@@ -546,7 +545,6 @@ namespace OpenMcdf.Extensions.OLEProperties
             public override void WriteScalarValue(BinaryWriter bw, DateTime pValue)
             {
                 bw.Write((pValue).ToFileTime());
-
             }
         }
 
@@ -609,9 +607,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             public override void WriteScalarValue(BinaryWriter bw, bool pValue)
             {
                 bw.Write(pValue ? (ushort)0xFFFF : (ushort)0);
-
             }
-
         }
 
         private class VT_CF_Property : TypedPropertyValue<object>
@@ -641,7 +637,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                     bw.Write(r);
                 }
             }
-
         }
 
         private class VT_BLOB_Property : TypedPropertyValue<object>
@@ -670,7 +665,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                     bw.Write(r);
                 }
             }
-
         }
 
         private class VT_CLSID_Property : TypedPropertyValue<object>

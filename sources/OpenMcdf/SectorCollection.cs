@@ -45,7 +45,6 @@ namespace OpenMcdf
             {
                 sizeLimitReached = true;
                 OnVer3SizeLimitReached();
-
             }
         }
 
@@ -79,7 +78,6 @@ namespace OpenMcdf
                 }
                 else
                     throw new CFException("Argument Out of Range, possibly corrupted file", new ArgumentOutOfRangeException("index", index, "Argument out of range"));
-
             }
 
             set
@@ -125,7 +123,6 @@ namespace OpenMcdf
             DoCheckSizeLimitReached();
 
             add(item);
-
         }
 
         public void Clear()
@@ -179,7 +176,6 @@ namespace OpenMcdf
                 for (int j = 0; j < largeArraySlices[i].Count; j++)
                 {
                     yield return (Sector)largeArraySlices[i][j];
-
                 }
             }
         }

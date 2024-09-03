@@ -103,7 +103,6 @@ namespace OpenMcdf.Test
             cf.RootStorage.VisitEntries(va, true);
 
             tw.Close();
-
         }
 
         [TestMethod]
@@ -213,13 +212,11 @@ namespace OpenMcdf.Test
             {
                 Assert.IsTrue(ex is CFCorruptedFileException);
                 Assert.IsTrue(f != null && f.IsClosed);
-
             }
             finally
             {
                 if (output != null)
                     output.Close();
-
             }
         }
 
@@ -263,7 +260,6 @@ namespace OpenMcdf.Test
             {
                 if (output != null)
                     output.Close();
-
             }
         }
 
@@ -444,7 +440,6 @@ namespace OpenMcdf.Test
             {
                 Assert.IsTrue(ex.GetType() == typeof(CFDuplicatedItemException));
             }
-
         }
 
         [TestMethod]
@@ -467,7 +462,6 @@ namespace OpenMcdf.Test
                 cf1.RootStorage.RenameItem("AStorage", "NewStorage");
                 cf1.Commit();
                 cf1.Close();
-
             }
             catch (Exception ex)
             {
@@ -484,7 +478,6 @@ namespace OpenMcdf.Test
             {
                 Assert.Fail($"{ex.Message}");
             }
-
         }
 
         [TestMethod]

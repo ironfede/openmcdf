@@ -17,7 +17,6 @@ namespace StructuredStorageExplorer
             Settings.Default.Save();
             this.DialogResult = DialogResult.OK;
             this.Close();
-
         }
 
         private void btnCancelPreferences_Click(object sender, EventArgs e)

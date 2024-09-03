@@ -486,7 +486,6 @@ namespace RedBlackTree
             {
                 DoVisitTree(action, walker.Right);
             }
-
         }
 
         internal void VisitTreeNodes(Action<IRBNode> action)
@@ -512,7 +511,6 @@ namespace RedBlackTree
             {
                 DoVisitTreeNodes(action, walker.Right);
             }
-
         }
 
         public class RBTreeEnumerator : IEnumerator<IRBNode>
@@ -610,7 +608,6 @@ namespace RedBlackTree
         internal event Action<IRBNode> NodeInserted;
         //internal event Action<RBNode<V>> NodeDeleted;
         internal event Action<IRBNode, NodeOperation> NodeOperation;
-
     }
 
     internal enum NodeOperation
@@ -621,5 +618,4 @@ namespace RedBlackTree
         ParentAssigned,
         ValueAssigned
     }
-
 }

@@ -299,7 +299,6 @@ namespace OpenMcdf
                 }
 
                 return 0;
-
             }
 
             //   return String.Compare(Encoding.Unicode.GetString(this.EntryName).ToUpper(), Encoding.Unicode.GetString(other.EntryName).ToUpper());
@@ -458,7 +457,6 @@ namespace OpenMcdf
 
                 if (rightSibling != NOSTREAM)
                     dirRepository[rightSibling].Parent = this;
-
             }
         }
 

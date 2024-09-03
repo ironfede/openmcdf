@@ -123,7 +123,6 @@ namespace OpenMcdf.Test
             //    Assert.IsTrue(c.Name == "12");
 
             //}
-
         }
 
         private static void VerifyProperties(RBTree t)
@@ -189,7 +188,6 @@ namespace OpenMcdf.Test
                 else
                 {
                     Assert.IsTrue(blackCount == pathBlackCount);
-
                 }
 
                 return pathBlackCount;

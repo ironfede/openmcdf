@@ -47,7 +47,6 @@ namespace StructuredStorageExplorer
 
             saveAsToolStripMenuItem.Enabled = false;
             updateCurrentFileToolStripMenuItem.Enabled = false;
-
         }
 
         private void OpenFile()
@@ -286,7 +285,6 @@ namespace StructuredStorageExplorer
             }
             else
                 MessageBox.Show("Cannot update a compound document that is not based on a stream or on a file", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
         }
 
         private void addStreamToolStripMenuItem_Click(object sender, EventArgs e)

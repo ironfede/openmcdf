@@ -81,7 +81,6 @@ namespace OpenMcdf.Test
             FileInfo dstFile = new FileInfo("MultipleStorage_Deleted_Compress.cfs");
 
             Assert.IsTrue(srcFile.Length > dstFile.Length);
-
         }
 
         [TestMethod]
@@ -158,7 +157,6 @@ namespace OpenMcdf.Test
             FileInfo dstFile = new FileInfo("MultipleStorage_Deleted_Compress.cfs");
 
             Assert.IsFalse(srcFile.Length > dstFile.Length);
-
         }
 
         [TestMethod]
@@ -226,7 +224,6 @@ namespace OpenMcdf.Test
                     cf.Close();
                 }
             }
-
         }
 
         [TestMethod]
@@ -270,7 +267,6 @@ namespace OpenMcdf.Test
             f.RootStorage.Delete("PoorBook");
             f.Commit();
             f.Close();
-
         }
 
         [TestMethod]
@@ -405,7 +401,6 @@ namespace OpenMcdf.Test
             try
             {
                 testSt = cfTest.RootStorage.GetStream("D");
-
             }
             catch (Exception ex)
             {
@@ -574,7 +569,6 @@ namespace OpenMcdf.Test
 
             sw.Stop();
             Console.WriteLine(sw.ElapsedMilliseconds);
-
         }
 
         [TestMethod]
@@ -593,7 +587,6 @@ namespace OpenMcdf.Test
             try
             {
                 f = new CompoundFile("CyclicFAT.cfs");
-
             }
             catch (Exception ex)
             {
@@ -638,7 +631,6 @@ namespace OpenMcdf.Test
                 if (File.Exists("$OpenMcdf$LargeFile.cfs"))
                     File.Delete("$OpenMcdf$LargeFile.cfs");
             }
-
         }
 
         [TestMethod]
@@ -680,7 +672,6 @@ namespace OpenMcdf.Test
                 //if (File.Exists("$ItemsLargeNumber.cfs"))
                 //    File.Delete("$ItemsLargeNumber.cfs");
             }
-
         }
 
         [TestMethod]
@@ -733,7 +724,6 @@ namespace OpenMcdf.Test
             {
                 cf.RootStorage.VisitEntries(item => Console.WriteLine(item.Name), recursive: false);
             }
-
         }
 
         [TestMethod]
@@ -759,13 +749,11 @@ namespace OpenMcdf.Test
             {
                 fs = new FileStream("CorruptedDoc_bug36.doc", FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite);
                 CompoundFile file = new CompoundFile(fs, CFSUpdateMode.ReadOnly, CFSConfiguration.LeaveOpen);
-
             }
             catch (Exception)
             {
                 Assert.IsTrue(fs.CanRead && fs.CanSeek && fs.CanWrite);
             }
-
         }
 
         [TestMethod]
@@ -856,7 +844,6 @@ namespace OpenMcdf.Test
 
             cfDst.Close();
             cfSrc.Close();
-
         }
 
         #region Copy helper method
@@ -883,7 +870,6 @@ namespace OpenMcdf.Test
                     var destinationStream = destination.AddStream(action.Name);
                     if (sourceStream != null) destinationStream.SetData(sourceStream.GetData());
                 }
-
             }, false);
         }
         #endregion
@@ -1067,7 +1053,6 @@ namespace OpenMcdf.Test
 
                     f.Save("BigFile.cfs");
                     f.Close();
-
                 }
             }
             catch (Exception)
@@ -1261,7 +1246,6 @@ namespace OpenMcdf.Test
 
             if (File.Exists(filename2))
                 File.Delete(filename2);
-
         }
 
         [TestMethod]
@@ -1330,5 +1314,4 @@ namespace OpenMcdf.Test
                 File.Delete(filename2);
         }
     }
-
 }
