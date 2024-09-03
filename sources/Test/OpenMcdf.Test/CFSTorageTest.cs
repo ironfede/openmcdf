@@ -425,6 +425,7 @@ namespace OpenMcdf.Test
             {
                 File.Delete("$Hel1");
             }
+
             if (File.Exists("$Hel2"))
             {
                 File.Delete("$Hel2");

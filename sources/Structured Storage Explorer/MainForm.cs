@@ -467,6 +467,7 @@ namespace StructuredStorageExplorer
                                     ds.Rows.Add(dr);
                                 }
                             }
+
                             ds.AcceptChanges();
                             dgvOLEProps.DataSource = ds;
 

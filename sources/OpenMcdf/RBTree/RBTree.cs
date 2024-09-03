@@ -24,6 +24,7 @@ namespace RedBlackTree
         {
         }
     }
+
     public class RBTreeDuplicatedItemException : RBTreeException
     {
         public RBTreeDuplicatedItemException(String msg)
@@ -164,6 +165,7 @@ namespace RedBlackTree
                 else
                     oldn.Parent.Right = newn;
             }
+
             if (newn != null)
             {
                 newn.Parent = oldn.Parent;
@@ -179,6 +181,7 @@ namespace RedBlackTree
             {
                 r.Left.Parent = n;
             }
+
             r.Left = n;
             n.Parent = r;
         }
@@ -249,6 +252,7 @@ namespace RedBlackTree
                         }
                     }
                 }
+
                 insertedNode.Parent = n;
             }
 

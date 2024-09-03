@@ -123,6 +123,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             {
             }
         }
+
         private class VT_I1_Property : TypedPropertyValue<sbyte>
         {
             public VT_I1_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)

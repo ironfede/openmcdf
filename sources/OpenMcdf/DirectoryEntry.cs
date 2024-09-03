@@ -79,6 +79,7 @@ namespace OpenMcdf
             {
                 return entryName;
             }
+
             //set
             //{
             //    entryName = value;
@@ -155,6 +156,7 @@ namespace OpenMcdf
                 stgType = value;
             }
         }
+
         private StgColor stgColor = StgColor.Red;
 
         public StgColor StgColor
@@ -254,6 +256,7 @@ namespace OpenMcdf
                 startSetc = value;
             }
         }
+
         private long size;
         public long Size
         {

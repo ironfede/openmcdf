@@ -189,6 +189,7 @@ namespace OpenMcdf.Test
             {
                 blackCount++;
             }
+
             if (n == null)
             {
                 if (pathBlackCount == -1)
@@ -201,6 +202,7 @@ namespace OpenMcdf.Test
                     Assert.IsTrue(blackCount == pathBlackCount);
 
                 }
+
                 return pathBlackCount;
             }
 

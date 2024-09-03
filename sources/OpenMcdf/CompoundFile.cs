@@ -1058,6 +1058,7 @@ namespace OpenMcdf
             }
 
         }
+
         /// <summary>
         /// Allocate space, setup sectors id and refresh header
         /// for the new or updated FAT sector chain.
@@ -1540,6 +1541,7 @@ namespace OpenMcdf
                     EnsureUniqueSectorIndex(nextSecID, processedSectors);
                 }
             }
+
             return result;
         }
 
@@ -2510,6 +2512,7 @@ namespace OpenMcdf
 
             return result;
         }
+
         public byte[] GetDataBySID(int sid)
         {
             if (_disposed)
@@ -2540,8 +2543,10 @@ namespace OpenMcdf
             {
                 throw new CFException("Cannot get data for SID");
             }
+
             return result;
         }
+
         public Guid getGuidBySID(int sid)
         {
             if (_disposed)
@@ -2551,6 +2556,7 @@ namespace OpenMcdf
             IDirectoryEntry de = directoryEntries[sid];
             return de.StorageCLSID;
         }
+
         public Guid getGuidForStream(int sid)
         {
             if (_disposed)
@@ -2566,6 +2572,7 @@ namespace OpenMcdf
                     return directoryEntries[i].StorageCLSID;
                 }
             }
+
             return g;
         }
 

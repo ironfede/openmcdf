@@ -115,6 +115,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                         if (m > 0 && this.NeedsPadding)
                             br.ReadBytes(4 - m); // padding
                     }
+
                     break;
                 default:
                     break;

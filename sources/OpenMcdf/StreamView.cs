@@ -259,6 +259,7 @@ namespace OpenMcdf
                     {
                         t.InitFATData();
                     }
+
                     sectorChain.Add(t);
                     nSec--;
                 }
@@ -269,6 +270,7 @@ namespace OpenMcdf
                 //    sectorChain.Add(t);
                 //}
             }
+
             //else
             //{
             //    // FREE Sectors

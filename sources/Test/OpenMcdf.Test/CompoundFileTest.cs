@@ -825,6 +825,7 @@ namespace OpenMcdf.Test
             Assert.IsTrue(!String.IsNullOrEmpty(cf.GetNameDirEntry(2)));
             Assert.IsTrue(cf.GetNumDirectories() > 0);
         }
+
         //[TestMethod]
         //public void Test_CORRUPTED_CYCLIC_DIFAT_VALIDATION_CHECK()
         //{
@@ -935,6 +936,7 @@ namespace OpenMcdf.Test
 
                 b++;
             }
+
             compoundFile.Close();
 
             compoundFile = new CompoundFile(filename, CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
@@ -977,6 +979,7 @@ namespace OpenMcdf.Test
                     sm.Append(Helpers.GetBuffer(BUFFER_SIZE, b));
                 }
             }
+
             compoundFile.Save(filename);
             compoundFile.Close();
 
@@ -1081,6 +1084,7 @@ namespace OpenMcdf.Test
                     {
                         cfStream.CopyFrom(fs);
                     }
+
                     f.Save("BigFile.cfs");
                     f.Close();
 

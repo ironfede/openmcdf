@@ -272,6 +272,7 @@ namespace OpenMcdf.Extensions.Test
             }
 
         }
+
         [TestMethod]
         public void Test_SUMMARY_INFO_READ_LPWSTRING()
         {
