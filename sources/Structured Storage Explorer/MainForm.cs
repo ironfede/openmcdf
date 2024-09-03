@@ -1,23 +1,18 @@
 ﻿#define OLE_PROPERTY
 
+using OpenMcdf;
+using OpenMcdf.Extensions;
+using OpenMcdf.Extensions.OLEProperties;
+using StructuredStorageExplorer.Properties;
 using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
-using OpenMcdf;
-using System.IO;
-using System.Resources;
 using System.Globalization;
-using StructuredStorageExplorer.Properties;
-using Be.Windows.Forms;
-using OpenMcdf.Extensions.OLEProperties;
-using OpenMcdf.Extensions.OLEProperties.Interfaces;
-using OpenMcdf.Extensions;
+using System.IO;
 using System.Linq;
-using System.Collections;
+using System.Windows.Forms;
 
 // Author Federico Blaseotto
 
@@ -42,8 +37,8 @@ namespace StructuredStorageExplorer
 #endif
 
             //Load images for icons from resx
-            Image folderImage = (Image)Properties.Resources.ResourceManager.GetObject("storage");
-            Image streamImage = (Image)Properties.Resources.ResourceManager.GetObject("stream");
+            Image folderImage = (Image)Resources.ResourceManager.GetObject("storage");
+            Image streamImage = (Image)Resources.ResourceManager.GetObject("stream");
             //Image olePropsImage = (Image)Properties.Resources.ResourceManager.GetObject("oleprops");
 
             treeView1.ImageList = new ImageList();
@@ -411,7 +406,7 @@ namespace StructuredStorageExplorer
         {
             // Get the node under the mouse cursor.
             // We intercept both left and right mouse clicks
-            // and set the selected treenode according.
+            // and set the selected TreeNode according.
             try
             {
                 TreeNode n = treeView1.GetNodeAt(e.X, e.Y);

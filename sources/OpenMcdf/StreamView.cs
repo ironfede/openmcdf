@@ -9,18 +9,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Collections;
 using System.IO;
-using System.Collections.Specialized;
-using System.Diagnostics;
 
 namespace OpenMcdf
 {
     /// <summary>
     /// Stream decorator for a Sector or miniSector chain
     /// </summary>
-    internal class StreamView : Stream
+    internal sealed class StreamView : Stream
     {
         private int sectorSize;
 
@@ -134,7 +130,7 @@ namespace OpenMcdf
             if (sectorChain != null && sectorChain.Count > 0)
             {
                 // First sector
-                int secIndex = (int)(position / (long)sectorSize);
+                int secIndex = (int)(position / sectorSize);
 
                 // Bytes to read count is the min between request count
                 // and sector border
@@ -180,7 +176,7 @@ namespace OpenMcdf
 
                 if (nToRead != 0)
                 {
-					if (secIndex > sectorChain.Count) throw new CFCorruptedFileException("The file is probably corrupted.");
+                    if (secIndex > sectorChain.Count) throw new CFCorruptedFileException("The file is probably corrupted.");
 
                     Buffer.BlockCopy(
                         sectorChain[secIndex].GetData(),
@@ -220,7 +216,7 @@ namespace OpenMcdf
                     break;
             }
 
-            if (this.length <= position) // Dont't adjust the length when position is inside the bounds of 0 and the current length.
+            if (this.length <= position) // Don't adjust the length when position is inside the bounds of 0 and the current length.
                 adjustLength(position);
 
             return position;
@@ -235,11 +231,11 @@ namespace OpenMcdf
         {
             this.length = value;
 
-            long delta = value - ((long)this.sectorChain.Count * (long)sectorSize);
+            long delta = value - (sectorChain.Count * (long)sectorSize);
 
             if (delta > 0)
             {
-                // enlargment required
+                // Enlargement required
 
                 int nSec = (int)Math.Ceiling(((double)delta / sectorSize));
 
@@ -316,10 +312,10 @@ namespace OpenMcdf
             if (sectorChain != null)
             {
                 // First sector
-                int secOffset = (int)(position / (long)sectorSize);
+                int secOffset = (int)(position / sectorSize);
                 int secShift = (int)(position % sectorSize);
 
-                roundByteWritten = (int)Math.Min(sectorSize - (int)(position % (long)sectorSize), count);
+                roundByteWritten = Math.Min(sectorSize - (int)(position % sectorSize), count);
 
                 if (secOffset < sectorChain.Count)
                 {

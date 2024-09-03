@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using OpenMcdf;
 using System.IO;
 
 namespace OpenMcdf.PerfTest

@@ -92,7 +92,7 @@ namespace OpenMcdf
         public static bool operator ==(CFItem leftItem, CFItem rightItem)
         {
             // If both are null, or both are same instance, return true.
-            if (System.Object.ReferenceEquals(leftItem, rightItem))
+            if (ReferenceEquals(leftItem, rightItem))
             {
                 return true;
             }
@@ -138,12 +138,12 @@ namespace OpenMcdf
                     return String.Empty;
             }
 
-            
+
         }
 
         /// <summary>
         /// Size in bytes of the item. It has a valid value 
-        /// only if entity is a stream, otherwise it is setted to zero.
+        /// only if entity is a stream, otherwise it is set to zero.
         /// </summary>
         public long Size
         {

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.IO;
 using System.Diagnostics;
-
-using OpenMcdf;
+using System.IO;
 //This project is used for profiling memory and performances of OpenMCDF .
 
 namespace OpenMcdf.MemTest
@@ -217,7 +215,7 @@ namespace OpenMcdf.MemTest
         private static void AddNodes(String depth, CFStorage cfs)
         {
 
-            Action<CFItem> va = delegate(CFItem target)
+            Action<CFItem> va = delegate (CFItem target)
             {
 
                 String temp = target.Name + (target is CFStorage ? "" : " (" + target.Size + " bytes )");

@@ -11,7 +11,7 @@ using System.IO;
 
 namespace OpenMcdf
 {
-    internal class Header
+    internal sealed class Header
     {
         //0 8 Compound document file identifier: D0H CFH 11H E0H A1H B1H 1AH E1H
         private byte[] headerSignature
@@ -63,7 +63,7 @@ namespace OpenMcdf
         public ushort SectorShift
         {
             get { return sectorShift; }
-            
+
         }
 
         //32 2 Size of a short-sector in the short-stream container stream (➜6.1) in power-of-two (sssz),

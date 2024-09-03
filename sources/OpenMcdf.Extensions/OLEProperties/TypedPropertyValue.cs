@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using OpenMcdf.Extensions.OLEProperties.Interfaces;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using OpenMcdf.Extensions.OLEProperties.Interfaces;
-using System.Linq;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
@@ -83,7 +79,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                         this.propertyValue = ReadScalarValue(br);
                         int size = (int)(br.BaseStream.Position - currentPos);
 
-                        int m = (int)size % 4;
+                        int m = size % 4;
 
                         if (m > 0 && this.NeedsPadding)
                             br.ReadBytes(4 - m); // padding
@@ -107,7 +103,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                             // The padding in a vector can be per-item
                             int itemSize = (int)(br.BaseStream.Position - currentPos);
 
-                            int pad = (int)itemSize % 4;
+                            int pad = itemSize % 4;
                             if (pad > 0 && this.NeedsPadding)
                                 br.ReadBytes(4 - pad); // padding
                         }
@@ -115,7 +111,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                         this.propertyValue = res;
                         int size = (int)(br.BaseStream.Position - currentPos);
 
-                        int m = (int)size % 4;
+                        int m = size % 4;
                         if (m > 0 && this.NeedsPadding)
                             br.ReadBytes(4 - m); // padding
                     }
@@ -142,7 +138,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                     WriteScalarValue(bw, (T)this.propertyValue);
                     size = (int)(bw.BaseStream.Position - currentPos);
-                    m = (int)size % 4;
+                    m = size % 4;
 
                     if (m > 0 && this.NeedsPadding)
                         for (int i = 0; i < 4 - m; i++)  // padding
@@ -160,7 +156,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                         WriteScalarValue(bw, ((List<T>)this.propertyValue)[i]);
 
                         size = (int)(bw.BaseStream.Position - currentPos);
-                        m = (int)size % 4;
+                        m = size % 4;
 
                         if (m > 0 && this.NeedsPadding)
                             for (int q = 0; q < 4 - m; q++)  // padding
@@ -168,7 +164,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     }
 
                     size = (int)(bw.BaseStream.Position - currentPos);
-                    m = (int)size % 4;
+                    m = size % 4;
 
                     if (m > 0 && this.NeedsPadding)
                         for (int i = 0; i < 4 - m; i++)  // padding

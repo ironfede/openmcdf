@@ -1,7 +1,7 @@
 ﻿using OpenMcdf.Extensions.OLEProperties.Interfaces;
 using System;
-using System.Text;
 using System.IO;
+using System.Text;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
@@ -443,7 +443,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     //if (addNullTerminator)
                     dataLength += 2;            // null terminator \u+0000
 
-                   // var mod = dataLength % 4;       // pad to multiple of 4 bytes
+                    // var mod = dataLength % 4;       // pad to multiple of 4 bytes
 
                     bw.Write(dataLength);           // datalength of string + null char (unicode)
                     bw.Write(data);                 // string
@@ -602,7 +602,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             public override void WriteScalarValue(BinaryWriter bw, Decimal pValue)
             {
-                int[] parts = Decimal.GetBits((Decimal)pValue);
+                int[] parts = Decimal.GetBits(pValue);
 
                 bool sign = (parts[3] & 0x80000000) != 0;
                 byte scale = (byte)((parts[3] >> 16) & 0x7F);
@@ -628,14 +628,14 @@ namespace OpenMcdf.Extensions.OLEProperties
             public override bool ReadScalarValue(System.IO.BinaryReader br)
             {
 
-                this.propertyValue = br.ReadUInt16() == (ushort)0xFFFF ? true : false;
+                this.propertyValue = br.ReadUInt16() == 0xFFFF ? true : false;
                 return (bool)propertyValue;
                 //br.ReadUInt16();//padding
             }
 
             public override void WriteScalarValue(BinaryWriter bw, bool pValue)
             {
-                bw.Write((bool)pValue ? (ushort)0xFFFF : (ushort)0);
+                bw.Write(pValue ? (ushort)0xFFFF : (ushort)0);
 
             }
 
@@ -761,7 +761,7 @@ namespace OpenMcdf.Extensions.OLEProperties
     }
 
     // The default property factory.
-    internal sealed class DefaultPropertyFactory : PropertyFactory 
+    internal sealed class DefaultPropertyFactory : PropertyFactory
     {
         public static PropertyFactory Instance { get; } = new DefaultPropertyFactory();
     }

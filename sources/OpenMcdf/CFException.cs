@@ -141,8 +141,8 @@ namespace OpenMcdf
     [Serializable]
     public class CFInvalidOperation : CFException
     {
-         public CFInvalidOperation()
-            : base()
+        public CFInvalidOperation()
+           : base()
         {
         }
 

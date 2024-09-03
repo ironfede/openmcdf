@@ -7,7 +7,6 @@
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
 using System;
-using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -24,7 +23,7 @@ namespace OpenMcdf
     /// large array that may create some problem to GC collection 
     /// (see http://www.simple-talk.com/dotnet/.net-framework/the-dangers-of-the-large-object-heap/ )
     /// </summary>
-    internal class SectorCollection : IList<Sector>
+    internal sealed class SectorCollection : IList<Sector>
     {
         private const int MAX_SECTOR_V4_COUNT_LOCK_RANGE = 524287; //0x7FFFFF00 for Version 4
         private const int SLICE_SIZE = 4096;

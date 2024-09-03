@@ -88,7 +88,7 @@
             this.openFileDialog1.Filter = "Office files (*.xls *.doc *.ppt)|*.xls;*.doc;*.ppt|Thumbs db files (Thumbs.db)|*." +
     "db|MSI Setup files (*.msi)|*.msi|Advanced Authoring Format  (*.aaf)|*.aaf|All fi" +
     "les (*.*)|*.*";
-            this.openFileDialog1.Title = "Open OLE Structured Storae file";
+            this.openFileDialog1.Title = "Open OLE Structured Storage file";
             // 
             // treeView1
             // 

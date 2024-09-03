@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.IO;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace OpenMcdf.Extensions.Test
 {
@@ -13,10 +13,10 @@ namespace OpenMcdf.Extensions.Test
     {
         public CFSStreamExtensionsTest()
         {
-          
+
         }
 
-       
+
         private TestContext testContextInstance;
 
         /// <summary>
@@ -95,7 +95,7 @@ namespace OpenMcdf.Extensions.Test
             {
                 data[i] = (byte)(i % 255);
             }
-            
+
             using (CompoundFile cf = new CompoundFile())
             {
                 using (Stream s = cf.RootStorage.AddStream("ANewStream").AsIOStream())

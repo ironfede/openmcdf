@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using OpenMcdf.Extensions.OLEProperties;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Linq;
-using System.Collections.Generic;
-using OpenMcdf.Extensions.OLEProperties;
 
 namespace OpenMcdf.Extensions.Test
 {
@@ -161,7 +161,7 @@ namespace OpenMcdf.Extensions.Test
 
                 co.Save(dsiStream);
                 cf.SaveAs(@"test_modify_summary.ppt");
-                cf.Close() ;
+                cf.Close();
             }
 
             using (CompoundFile cf = new CompoundFile("test_modify_summary.ppt"))
@@ -212,7 +212,8 @@ namespace OpenMcdf.Extensions.Test
 
                     Assert.IsNotNull(co2.Properties);
                 }
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
                 Assert.Fail();
@@ -252,7 +253,7 @@ namespace OpenMcdf.Extensions.Test
                         Debug.WriteLine(p.Value);
                     }
 
-                    
+
                     Assert.IsNotNull(co2.UserDefinedProperties.Properties);
                     foreach (OLEProperties.OLEProperty p in co2.UserDefinedProperties.Properties)
                     {
@@ -352,10 +353,10 @@ namespace OpenMcdf.Extensions.Test
                 // There should be 5 property names present, and 6 properties (the properties include the code page)
                 Assert.AreEqual(5, userProps.PropertyNames.Count);
                 Assert.AreEqual(6, userProps.Properties.Count());
-                
+
                 // Check for expected names and values
                 var propArray = userProps.Properties.ToArray();
-                
+
                 // CodePage prop
                 Assert.AreEqual(1u, propArray[0].PropertyIdentifier);
                 Assert.AreEqual("0x00000001", propArray[0].PropertyName);
@@ -465,7 +466,7 @@ namespace OpenMcdf.Extensions.Test
                 var docPartsProperty = co.Properties.FirstOrDefault(property => property.PropertyIdentifier == 13); //13 == PIDDSI_DOCPARTS
 
                 Assert.IsNotNull(docPartsProperty);
-                
+
                 var docPartsValues = docPartsProperty.Value as IEnumerable<string>;
                 Assert.AreEqual(3, docPartsValues.Count());
                 Assert.AreEqual("Sheet1", docPartsValues.ElementAt(0));
@@ -473,7 +474,7 @@ namespace OpenMcdf.Extensions.Test
                 Assert.AreEqual("Sheet3", docPartsValues.ElementAt(2));
             }
         }
-      
+
         [TestMethod]
         public void Test_CLSID_PROPERTY()
         {

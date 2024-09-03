@@ -1,9 +1,8 @@
-﻿using System;
+﻿using OpenMcdf.Extensions.OLEProperties.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using OpenMcdf.Extensions.OLEProperties.Interfaces;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
@@ -123,7 +122,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 var op = new OLEProperty(this)
                 {
                     VTType = p.VTType,
-                    PropertyIdentifier = (uint)pStream.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier,
+                    PropertyIdentifier = pStream.PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier,
                     Value = p.Value
                 };
 
@@ -150,7 +149,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     var op = new OLEProperty(UserDefinedProperties);
 
                     op.VTType = p.VTType;
-                    op.PropertyIdentifier = (uint)pStream.PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier;
+                    op.PropertyIdentifier = pStream.PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier;
                     op.Value = p.Value;
 
                     UserDefinedProperties.properties.Add(op);
@@ -159,7 +158,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 var existingPropertyNames = (Dictionary<uint, string>)pStream.PropertySet1.Properties
                     .Where(p => p.PropertyType == PropertyType.DictionaryProperty).FirstOrDefault()?.Value;
 
-                UserDefinedProperties.PropertyNames = existingPropertyNames ?? new Dictionary<uint, string> ();
+                UserDefinedProperties.PropertyNames = existingPropertyNames ?? new Dictionary<uint, string>();
             }
         }
 
@@ -266,7 +265,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 }
             };
 
-            PropertyFactory factory = 
+            PropertyFactory factory =
                 this.ContainerType == ContainerType.DocumentSummaryInfo ? DocumentSummaryInfoPropertyFactory.Instance : DefaultPropertyFactory.Instance;
 
             foreach (var op in this.Properties)

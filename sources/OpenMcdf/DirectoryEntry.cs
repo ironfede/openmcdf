@@ -8,8 +8,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
+using System.Text;
 
 namespace OpenMcdf
 {
@@ -29,7 +29,7 @@ namespace OpenMcdf
         Black = 1
     }
 
-    internal class DirectoryEntry : IDirectoryEntry
+    internal sealed class DirectoryEntry : IDirectoryEntry
     {
         internal const int THIS_IS_GREATER = 1;
         internal const int OTHER_IS_GREATER = -1;
@@ -433,16 +433,16 @@ namespace OpenMcdf
         {
             get
             {
-                if (leftSibling == DirectoryEntry.NOSTREAM)
+                if (leftSibling == NOSTREAM)
                     return null;
 
                 return dirRepository[leftSibling];
             }
             set
             {
-                leftSibling = value != null ? ((IDirectoryEntry)value).SID : DirectoryEntry.NOSTREAM;
+                leftSibling = value != null ? ((IDirectoryEntry)value).SID : NOSTREAM;
 
-                if (leftSibling != DirectoryEntry.NOSTREAM)
+                if (leftSibling != NOSTREAM)
                     dirRepository[leftSibling].Parent = this;
             }
         }
@@ -451,7 +451,7 @@ namespace OpenMcdf
         {
             get
             {
-                if (rightSibling == DirectoryEntry.NOSTREAM)
+                if (rightSibling == NOSTREAM)
                     return null;
 
                 return dirRepository[rightSibling];
@@ -459,9 +459,9 @@ namespace OpenMcdf
             set
             {
 
-                rightSibling = value != null ? ((IDirectoryEntry)value).SID : DirectoryEntry.NOSTREAM;
+                rightSibling = value != null ? ((IDirectoryEntry)value).SID : NOSTREAM;
 
-                if (rightSibling != DirectoryEntry.NOSTREAM)
+                if (rightSibling != NOSTREAM)
                     dirRepository[rightSibling].Parent = this;
 
             }

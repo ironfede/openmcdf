@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace OpenMcdf.Test
 {
@@ -20,7 +17,7 @@ namespace OpenMcdf.Test
             Random r = new Random();
             r.NextBytes(buffer);
         }
-        public static void FillBuffer(byte[] buffer,byte c)
+        public static void FillBuffer(byte[] buffer, byte c)
         {
             for (int i = 0; i < buffer.Length; i++)
             {
@@ -31,7 +28,7 @@ namespace OpenMcdf.Test
         public static byte[] GetBuffer(int count, byte c)
         {
             byte[] b = new byte[count];
-            FillBuffer(b,c);
+            FillBuffer(b, c);
             return b;
         }
 

@@ -7,9 +7,9 @@
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
 
+using RedBlackTree;
 using System;
 using System.Collections.Generic;
-using RedBlackTree;
 
 
 namespace OpenMcdf
@@ -81,7 +81,7 @@ namespace OpenMcdf
             : base(compFile)
         {
             if (dirEntry == null || dirEntry.SID < 0)
-                throw new CFException("Attempting to create a CFStorage using an unitialized directory");
+                throw new CFException("Attempting to create a CFStorage using an uninitialized directory");
 
             this.DirEntry = dirEntry;
         }

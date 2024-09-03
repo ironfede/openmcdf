@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Forms;
+﻿using OpenMcdf;
+using System;
 using System.Drawing;
-using OpenMcdf;
+using System.Windows.Forms;
 
 namespace StructuredStorageExplorer
 {

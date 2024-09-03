@@ -1,5 +1,4 @@
 ﻿using OpenMcdf.Extensions.OLEProperties.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -51,7 +50,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             if (m > 0)
             {
-                for(int i = 0; i < m; i++)
+                for (int i = 0; i < m; i++)
                 {
                     br.ReadByte();
                 }
@@ -69,7 +68,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         public void Write(BinaryWriter bw)
         {
             long curPos = bw.BaseStream.Position;
-            
+
             bw.Write(entries.Count);
 
             foreach (KeyValuePair<uint, string> kv in entries)
@@ -102,7 +101,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 if (addNullTerminator)
                     byteLength += 2;
 
-                bw.Write((uint)byteLength / 2);
+                bw.Write(byteLength / 2);
                 bw.Write(nameBytes);
 
                 if (addNullTerminator)

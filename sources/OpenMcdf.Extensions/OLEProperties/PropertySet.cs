@@ -1,18 +1,16 @@
 ﻿using OpenMcdf.Extensions.OLEProperties.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Linq;
 using System.IO;
+using System.Linq;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    internal class PropertySet
+    internal sealed class PropertySet
     {
 
         public PropertyContext PropertyContext
         {
-            get;  set;
+            get; set;
         }
 
         public uint Size { get; set; }
@@ -51,7 +49,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             VTPropertyType vType = (VTPropertyType)br.ReadUInt16();
             br.ReadUInt16(); // Ushort Padding
-            PropertyContext.CodePage = (int)(ushort)br.ReadInt16();
+            PropertyContext.CodePage = (ushort)br.ReadInt16();
 
             br.BaseStream.Position = currPos;
         }

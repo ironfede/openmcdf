@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.IO;
 
 namespace OpenMcdf.Test
@@ -18,7 +18,7 @@ namespace OpenMcdf.Test
                 OpenMcdf.StreamRW reader = new OpenMcdf.StreamRW(memStream);
                 actual = reader.ReadInt64();
             }
-            Assert.AreEqual((long)input, actual);
+            Assert.AreEqual(input, actual);
         }
 
         [TestMethod]
@@ -32,7 +32,7 @@ namespace OpenMcdf.Test
                 OpenMcdf.StreamRW reader = new OpenMcdf.StreamRW(memStream);
                 actual = reader.ReadInt64();
             }
-            Assert.AreEqual((long)input, actual);
+            Assert.AreEqual(input, actual);
         }
 
         [TestMethod]
@@ -46,7 +46,7 @@ namespace OpenMcdf.Test
                 OpenMcdf.StreamRW reader = new OpenMcdf.StreamRW(memStream);
                 actual = reader.ReadInt64();
             }
-            Assert.AreEqual((long)input, actual);
+            Assert.AreEqual(input, actual);
         }
     }
 }

@@ -18,7 +18,7 @@ namespace OpenMcdf
         Normal, Mini, FAT, DIFAT, RangeLockSector, Directory
     }
 
-    internal class Sector : IDisposable
+    internal sealed class Sector : IDisposable
     {
         public static int MINISECTOR_SIZE = 64;
 
@@ -101,7 +101,7 @@ namespace OpenMcdf
 
                 if (IsStreamed)
                 {
-                    stream.Seek((long)size + (long)this.id * (long)size, SeekOrigin.Begin);
+                    stream.Seek(size + id * (long)size, SeekOrigin.Begin);
                     stream.Read(data, 0, size);
                 }
             }
@@ -134,7 +134,7 @@ namespace OpenMcdf
         public void InitFATData()
         {
             data = new byte[size];
-            
+
             for (int i = 0; i < size; i++)
                 data[i] = 0xFF;
 
@@ -148,12 +148,11 @@ namespace OpenMcdf
 
         private object lockObject = new Object();
 
-        /// <summary>
-        /// When called from user code, release all resources, otherwise, in the case runtime called it,
-        /// only unmanagd resources are released.
-        /// </summary>
-        /// <param name="disposing">If true, method has been called from User code, if false it's been called from .net runtime</param>
-        protected virtual void Dispose(bool disposing)
+        #region IDisposable Members
+
+        private bool _disposed;//false
+
+        void IDisposable.Dispose()
         {
             try
             {
@@ -161,18 +160,10 @@ namespace OpenMcdf
                 {
                     lock (lockObject)
                     {
-                        if (disposing)
-                        {
-                            // Call from user code...
-
-
-                        }
-
                         this.data = null;
                         this.dirtyFlag = false;
-                        this.id = Sector.ENDOFCHAIN;
+                        this.id = ENDOFCHAIN;
                         this.size = 0;
-
                     }
                 }
             }
@@ -180,17 +171,6 @@ namespace OpenMcdf
             {
                 _disposed = true;
             }
-
-        }
-
-        #region IDisposable Members
-
-        private bool _disposed;//false
-
-        void IDisposable.Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         #endregion

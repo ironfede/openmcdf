@@ -1,10 +1,8 @@
-﻿using System;
-using System.Text;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using OpenMcdf;
 using System.IO;
+using System.Linq;
 
 namespace OpenMcdf.Test
 {
@@ -610,7 +608,7 @@ namespace OpenMcdf.Test
 
             CompoundFile cf2 = new CompoundFile(filename);
 
-            // Execption in next line!
+            // Exception in next line!
             cf2.RootStorage.Delete(zeroLengthName);
 
             CFStream zeroStream2 = null;
@@ -1018,7 +1016,7 @@ namespace OpenMcdf.Test
             Stream a = null;
             List<Sector> temp = new List<Sector>();
             Sector s = new Sector(512);
-            Buffer.BlockCopy(BitConverter.GetBytes((int)1), 0, s.GetData(), 0, 4);
+            Buffer.BlockCopy(BitConverter.GetBytes(1), 0, s.GetData(), 0, 4);
             temp.Add(s);
 
             StreamView sv = new StreamView(temp, 512, 4, null, a);
@@ -1134,7 +1132,7 @@ namespace OpenMcdf.Test
         }
 
         /// <summary>
-        /// Resize without transitio to smaller chain has a wrong behaviour
+        /// Resize without transition to smaller chain has a wrong behavior
         /// </summary>
         [TestMethod]
         public void TEST_RESIZE_STREAM_BUG_119()

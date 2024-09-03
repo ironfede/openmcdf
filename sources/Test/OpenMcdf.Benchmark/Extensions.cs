@@ -1,7 +1,6 @@
-﻿using System;
-using System.IO;
-using BenchmarkDotNet.Attributes;
+﻿using BenchmarkDotNet.Attributes;
 using OpenMcdf.Extensions;
+using System.IO;
 
 namespace OpenMcdf.Benchmark
 {

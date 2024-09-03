@@ -6,14 +6,11 @@
  * 
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace OpenMcdf
 {
-    internal class StreamRW
+    internal sealed class StreamRW
     {
         private byte[] buffer = new byte[8];
         private Stream stream;
@@ -44,7 +41,7 @@ namespace OpenMcdf
         public int ReadInt32()
         {
             this.stream.Read(buffer, 0, 4);
-            return (int)(buffer[0] | (buffer[1] << 8) | (buffer[2] << 16) | (buffer[3] << 24));
+            return buffer[0] | (buffer[1] << 8) | (buffer[2] << 16) | (buffer[3] << 24);
         }
 
         public uint ReadUInt32()
