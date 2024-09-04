@@ -157,9 +157,9 @@ namespace OpenMcdf.Test
         {
             if (NodeColor(n) == Color.RED)
             {
-                Assert.IsTrue((NodeColor(n.Left) == Color.BLACK));
-                Assert.IsTrue((NodeColor(n.Right) == Color.BLACK));
-                Assert.IsTrue((NodeColor(n.Parent) == Color.BLACK));
+                Assert.IsTrue(NodeColor(n.Left) == Color.BLACK);
+                Assert.IsTrue(NodeColor(n.Right) == Color.BLACK);
+                Assert.IsTrue(NodeColor(n.Parent) == Color.BLACK);
             }
 
             if (n == null) return;

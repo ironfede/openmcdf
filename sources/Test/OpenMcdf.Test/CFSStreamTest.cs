@@ -951,15 +951,15 @@ namespace OpenMcdf.Test
             cf.Save("SectorRecycleLarger.cfs");
             cf.Close();
 
-            Assert.IsFalse((new FileInfo("SectorRecycle.cfs").Length) >= (new FileInfo("SectorRecycleLarger.cfs").Length));
+            Assert.IsFalse(new FileInfo("SectorRecycle.cfs").Length >= new FileInfo("SectorRecycleLarger.cfs").Length);
 
             cf = new CompoundFile("SectorRecycle.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.SectorRecycle);
             st = cf.RootStorage.AddStream("BStream");
             st.Append(Helpers.GetBuffer(1024 * 1024 * 1));
             cf.Save("SectorRecycleSmaller.cfs");
             cf.Close();
-            long larger = (new FileInfo("SectorRecycle.cfs").Length);
-            long smaller = (new FileInfo("SectorRecycleSmaller.cfs").Length);
+            long larger = new FileInfo("SectorRecycle.cfs").Length;
+            long smaller = new FileInfo("SectorRecycleSmaller.cfs").Length;
 
             Assert.IsTrue(larger >= smaller, "Larger size:" + larger.ToString() + " - Smaller size:" + smaller.ToString());
         }

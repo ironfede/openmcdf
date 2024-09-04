@@ -512,7 +512,7 @@ namespace OpenMcdf
                     foreach (IRBNode n in subStorages)
                     {
                         IDirectoryEntry d = n as IDirectoryEntry;
-                        (new CFStorage(this.CompoundFile, d)).VisitEntries(action, recursive);
+                        new CFStorage(this.CompoundFile, d).VisitEntries(action, recursive);
                     }
             }
         }
@@ -557,7 +557,7 @@ namespace OpenMcdf
             {
                 case StgType.StgStorage:
 
-                    CFStorage temp = new CFStorage(this.CompoundFile, ((IDirectoryEntry)foundObj));
+                    CFStorage temp = new CFStorage(this.CompoundFile, (IDirectoryEntry)foundObj);
 
                     // This is a storage. we have to remove children items first
                     foreach (IRBNode de in temp.Children)

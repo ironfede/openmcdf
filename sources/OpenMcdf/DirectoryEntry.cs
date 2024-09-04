@@ -56,7 +56,7 @@ namespace OpenMcdf
 
             if (stgType == StgType.StgStorage)
             {
-                this.creationDate = BitConverter.GetBytes((DateTime.Now.ToFileTime()));
+                this.creationDate = BitConverter.GetBytes(DateTime.Now.ToFileTime());
                 this.StartSetc = ZERO;
             }
 

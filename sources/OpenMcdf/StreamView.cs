@@ -110,7 +110,7 @@ namespace OpenMcdf
         public int ReadInt32()
         {
             this.Read(buf, 0, 4);
-            return (((this.buf[0] | (this.buf[1] << 8)) | (this.buf[2] << 16)) | (this.buf[3] << 24));
+            return this.buf[0] | (this.buf[1] << 8) | (this.buf[2] << 16) | (this.buf[3] << 24);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -120,7 +120,7 @@ namespace OpenMcdf
 
             // Don't try to read more bytes than this stream contains.
             long intMax = Math.Min(Int32.MaxValue, this.length);
-            count = Math.Min((int)(intMax), count);
+            count = Math.Min((int)intMax, count);
 
             if (sectorChain != null && sectorChain.Count > 0)
             {
@@ -227,7 +227,7 @@ namespace OpenMcdf
             {
                 // Enlargement required
 
-                int nSec = (int)Math.Ceiling(((double)delta / sectorSize));
+                int nSec = (int)Math.Ceiling((double)delta / sectorSize);
 
                 while (nSec > 0)
                 {
@@ -299,7 +299,7 @@ namespace OpenMcdf
 
             // Assure length
             if ((position + count) > length)
-                adjustLength((position + count));
+                adjustLength(position + count);
 
             if (sectorChain != null)
             {

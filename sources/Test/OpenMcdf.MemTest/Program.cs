@@ -265,7 +265,7 @@ namespace OpenMcdf.MemTest
 
             cf.Close();
 
-            TimeSpan sp = (DateTime.Now - start);
+            TimeSpan sp = DateTime.Now - start;
             Console.WriteLine(sp.TotalMilliseconds);
         }
 

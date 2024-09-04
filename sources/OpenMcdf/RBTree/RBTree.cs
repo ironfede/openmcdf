@@ -546,7 +546,7 @@ namespace RedBlackTree
             public bool MoveNext()
             {
                 position++;
-                return (position < heap.Count);
+                return position < heap.Count;
             }
 
             public void Reset()

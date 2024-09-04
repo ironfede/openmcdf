@@ -20,7 +20,7 @@ namespace OpenMcdf
         public int Compare(CFItem x, CFItem y)
         {
             // X CompareTo Y : X > Y --> 1 ; X < Y  --> -1
-            return (x.DirEntry.CompareTo(y.DirEntry));
+            return x.DirEntry.CompareTo(y.DirEntry);
 
             //Compare X < Y --> -1
         }
@@ -274,7 +274,7 @@ namespace OpenMcdf
                 this.sectors.OnVer3SizeLimitReached += new Ver3SizeLimitReached(OnSizeLimitReached);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
-            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
+            FAT_SECTOR_ENTRIES_COUNT = GetSectorSize() / 4;
 
             //Root --
             IDirectoryEntry rootDir = DirectoryEntry.New("Root Entry", StgType.StgRoot, directoryEntries);
@@ -345,7 +345,7 @@ namespace OpenMcdf
             LoadFile(fileName);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
-            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
+            FAT_SECTOR_ENTRIES_COUNT = GetSectorSize() / 4;
         }
 
         /// <summary>
@@ -382,7 +382,7 @@ namespace OpenMcdf
             LoadStream(stream);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
-            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
+            FAT_SECTOR_ENTRIES_COUNT = GetSectorSize() / 4;
         }
 
         /// <summary>
@@ -631,7 +631,7 @@ namespace OpenMcdf
                     ValidateHeader(header);
                 }
 
-                int n_sector = Ceiling(((stream.Length - GetSectorSize()) / (double)GetSectorSize()));
+                int n_sector = Ceiling((stream.Length - GetSectorSize()) / (double)GetSectorSize());
 
                 if (stream.Length > 0x7FFFFF0)
                     this._transactionLockAllocated = true;
@@ -1383,7 +1383,7 @@ namespace OpenMcdf
                     //difatStream.Read(nextDIFATSectorBuffer, 0, 4);
                     //nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
 
-                    if (difatStream.Position == ((GetSectorSize() - 4) + i * GetSectorSize()))
+                    if (difatStream.Position == (GetSectorSize() - 4 + i * GetSectorSize()))
                     {
                         // Skip DIFAT chain fields considering the possibility that the last FAT entry has been already read
                         difatStream.Read(nextDIFATSectorBuffer, 0, 4);
@@ -1874,14 +1874,14 @@ namespace OpenMcdf
                 {
                     if (Path.IsPathRooted(fileName))
                     {
-                        if (((FileStream)(this.sourceStream)).Name == fileName)
+                        if (((FileStream)this.sourceStream).Name == fileName)
                         {
                             raiseSaveFileEx = true;
                         }
                     }
                     else
                     {
-                        if (((FileStream)(this.sourceStream)).Name == (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + fileName))
+                        if (((FileStream)this.sourceStream).Name == (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + fileName))
                         {
                             raiseSaveFileEx = true;
                         }
@@ -1948,7 +1948,7 @@ namespace OpenMcdf
             {
                 if (this.HasSourceStream && this.sourceStream != null && this.sourceStream is FileStream && stream is FileStream)
                 {
-                    if (((FileStream)(this.sourceStream)).Name == ((FileStream)(stream)).Name)
+                    if (((FileStream)this.sourceStream).Name == ((FileStream)stream).Name)
                     {
                         throw new CFInvalidOperation("Cannot overwrite current backing file. Compound File should be opened in UpdateMode and Commit() method should be called to persist changes");
                     }
@@ -2159,7 +2159,7 @@ namespace OpenMcdf
                 }
                 else if (delta < 0) // Reducing size...
                 {
-                    int nSec = (int)Math.Floor(((double)(Math.Abs(delta)) / newSectorSize)); //number of sectors to mark as free
+                    int nSec = (int)Math.Floor((double)Math.Abs(delta) / newSectorSize); //number of sectors to mark as free
 
                     int startFreeSector = sectorChain.Count - nSec; // start sector to free
 
@@ -2301,7 +2301,7 @@ namespace OpenMcdf
             if (buffer.Length == 0) return;
 
             // Get delta size induced by client
-            long delta = (position + count) - cfItem.Size < 0 ? 0 : (position + count) - cfItem.Size;
+            long delta = position + count - cfItem.Size < 0 ? 0 : position + count - cfItem.Size;
             long newLength = cfItem.Size + delta;
 
             SetStreamLength(cfItem, newLength);

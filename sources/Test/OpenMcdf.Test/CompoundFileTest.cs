@@ -956,7 +956,7 @@ namespace OpenMcdf.Test
             byte c = 0x0A;
             for (int i = 0; i < iterationCount; i++)
             {
-                compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + 0.ToString()).Read(readBuffer, (BUFFER_SIZE + ((long)BUFFER_SIZE * i)) - 15, 15);
+                compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + 0.ToString()).Read(readBuffer, BUFFER_SIZE + ((long)BUFFER_SIZE * i) - 15, 15);
                 Assert.IsTrue(readBuffer.All(by => by == c));
                 c++;
             }
@@ -1175,7 +1175,7 @@ namespace OpenMcdf.Test
                     var name = "Storage " + j;
                     root.Delete(name);
                     storageNames.Remove(name);
-                    newChild = ((DirectoryEntry)(root.Children.Root)).SID; // stop as soon as root.Children has a new Root
+                    newChild = ((DirectoryEntry)root.Children.Root).SID; // stop as soon as root.Children has a new Root
                     j++;
                 }
 
