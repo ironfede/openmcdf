@@ -101,14 +101,14 @@ It supports read/write operations on streams and storages and traversal of struc
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\README.md">
+    <Content Include="..\..\README.md">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
-    </None>
-    <None Include="..\icon.png">
+    </Content>
+    <Content Include="..\icon.png">
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
-    </None>
+    </Content>
     <None Include="OpenMcdf.snk" />
     <None Include="OpenMcdfClassDiagram.cd" />
   </ItemGroup>
