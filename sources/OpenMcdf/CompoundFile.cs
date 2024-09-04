@@ -781,8 +781,7 @@ namespace OpenMcdf
                     header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE,
                     null,
                     this.sourceStream,
-                    true
-                    );
+                    true);
 
             StreamView miniStreamView
                 = new StreamView(
@@ -1051,8 +1050,7 @@ namespace OpenMcdf
                     header.FATSectorsNumber * GetSectorSize(),
                     null,
                     sourceStream,
-                    true
-                    );
+                    true);
 
             // Write FAT chain values --
 
@@ -1197,8 +1195,7 @@ namespace OpenMcdf
                     0,
                     difatStream.BaseSectorChain[difatStream.BaseSectorChain.Count - 1].GetData(),
                     GetSectorSize() - sizeof(int),
-                    sizeof(int)
-                    );
+                    sizeof(int));
             }
             else
                 header.FirstDIFATSectorID = Sector.ENDOFCHAIN;
@@ -1358,8 +1355,7 @@ namespace OpenMcdf
                             (header.FATSectorsNumber - N_HEADER_FAT_ENTRY) * 4 :
                             0,
                         null,
-                            sourceStream
-                        );
+                            sourceStream);
 
                 byte[] nextDIFATSectorBuffer = new byte[4];
 
@@ -2129,8 +2125,7 @@ namespace OpenMcdf
             {
                 if (
                     (length < header.MinSizeStandardStream && cfItem.DirEntry.Size >= header.MinSizeStandardStream)
-                    || (length >= header.MinSizeStandardStream && cfItem.DirEntry.Size < header.MinSizeStandardStream)
-                   )
+                    || (length >= header.MinSizeStandardStream && cfItem.DirEntry.Size < header.MinSizeStandardStream))
                 {
                     if (cfItem.DirEntry.Size < header.MinSizeStandardStream)
                     {

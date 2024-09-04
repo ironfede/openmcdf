@@ -121,8 +121,7 @@ namespace StructuredStorageExplorer
                 FileMode.Open,
                 enableCommit ?
                     FileAccess.ReadWrite
-                    : FileAccess.Read
-                );
+                    : FileAccess.Read);
 
             try
             {
@@ -171,8 +170,7 @@ namespace StructuredStorageExplorer
             {
                 TreeNode temp = node.Nodes.Add(
                     target.Name,
-                    target.Name + (target.IsStream ? " (" + target.Size + " bytes )" : "")
-                    );
+                    target.Name + (target.IsStream ? " (" + target.Size + " bytes )" : ""));
 
                 temp.Tag = target;
 
@@ -219,8 +217,7 @@ namespace StructuredStorageExplorer
                 if (
                     Char.GetUnicodeCategory(c) == UnicodeCategory.LetterNumber
                     || Char.GetUnicodeCategory(c) == UnicodeCategory.LowercaseLetter
-                    || Char.GetUnicodeCategory(c) == UnicodeCategory.UppercaseLetter
-                    )
+                    || Char.GetUnicodeCategory(c) == UnicodeCategory.UppercaseLetter)
 
                     sanitizedFileName += c;
             }

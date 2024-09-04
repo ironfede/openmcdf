@@ -109,9 +109,7 @@ namespace OpenMcdf
                     entryName.Contains(@"\") ||
                     entryName.Contains(@"/") ||
                     entryName.Contains(@":") ||
-                    entryName.Contains(@"!")
-
-                    )
+                    entryName.Contains(@"!"))
                     throw new CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
 
                 if (entryName.Length > 31)

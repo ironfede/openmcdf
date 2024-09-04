@@ -141,8 +141,7 @@ namespace OpenMcdf
                         (int)(position % sectorSize),
                         buffer,
                         offset,
-                        nToRead
-                        );
+                        nToRead);
                 }
 
                 nRead += nToRead;
@@ -159,8 +158,7 @@ namespace OpenMcdf
                         0,
                         buffer,
                         offset + nRead,
-                        nToRead
-                        );
+                        nToRead);
 
                     nRead += nToRead;
                     secIndex++;
@@ -178,8 +176,7 @@ namespace OpenMcdf
                         0,
                         buffer,
                         offset + nRead,
-                        nToRead
-                        );
+                        nToRead);
 
                     nRead += nToRead;
                 }
@@ -319,8 +316,7 @@ namespace OpenMcdf
                         offset,
                         sectorChain[secOffset].GetData(),
                         secShift,
-                        roundByteWritten
-                        );
+                        roundByteWritten);
 
                     sectorChain[secOffset].DirtyFlag = true;
                 }
@@ -339,8 +335,7 @@ namespace OpenMcdf
                         offset,
                         sectorChain[secOffset].GetData(),
                         0,
-                        roundByteWritten
-                        );
+                        roundByteWritten);
 
                     sectorChain[secOffset].DirtyFlag = true;
 
@@ -359,8 +354,7 @@ namespace OpenMcdf
                         offset,
                         sectorChain[secOffset].GetData(),
                         0,
-                        roundByteWritten
-                        );
+                        roundByteWritten);
 
                     sectorChain[secOffset].DirtyFlag = true;
 
