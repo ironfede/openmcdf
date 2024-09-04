@@ -2150,7 +2150,7 @@ namespace OpenMcdf
             Queue<Sector> freeList = null;
             StreamView sv = null;
 
-            if (!transitionToMini && !transitionToNormal)   //############  NO TRANSITION
+            if (!transitionToMini && !transitionToNormal) //############  NO TRANSITION
             {
                 if (delta > 0) // Enlarging stream...
                 {
@@ -2162,7 +2162,7 @@ namespace OpenMcdf
                     //Set up  destination chain
                     SetSectorChain(sectorChain);
                 }
-                else if (delta < 0)  // Reducing size...
+                else if (delta < 0) // Reducing size...
                 {
                     int nSec = (int)Math.Floor(((double)(Math.Abs(delta)) / newSectorSize)); //number of sectors to mark as free
 
@@ -2185,7 +2185,7 @@ namespace OpenMcdf
                     cfItem.DirEntry.Size = 0;
                 }
             }
-            else if (transitionToMini)                          //############## TRANSITION TO MINISTREAM
+            else if (transitionToMini) //############## TRANSITION TO MINISTREAM
             {
                 // Transition Normal chain -> Mini chain
 
@@ -2241,7 +2241,7 @@ namespace OpenMcdf
                     cfItem.DirEntry.Size = 0;
                 }
             }
-            else if (transitionToNormal)                        //############## TRANSITION TO NORMAL STREAM
+            else if (transitionToNormal) //############## TRANSITION TO NORMAL STREAM
             {
                 // Transition Mini chain -> Normal chain
 

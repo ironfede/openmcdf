@@ -140,7 +140,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     m = size % 4;
 
                     if (m > 0 && this.NeedsPadding)
-                        for (int i = 0; i < 4 - m; i++)  // padding
+                        for (int i = 0; i < 4 - m; i++) // padding
                             bw.Write((byte)0);
                     break;
 
@@ -158,7 +158,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                         m = size % 4;
 
                         if (m > 0 && this.NeedsPadding)
-                            for (int q = 0; q < 4 - m; q++)  // padding
+                            for (int q = 0; q < 4 - m; q++) // padding
                                 bw.Write((byte)0);
                     }
 
@@ -166,7 +166,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     m = size % 4;
 
                     if (m > 0 && this.NeedsPadding)
-                        for (int i = 0; i < 4 - m; i++)  // padding
+                        for (int i = 0; i < 4 - m; i++) // padding
                             bw.Write((byte)0);
                     break;
             }

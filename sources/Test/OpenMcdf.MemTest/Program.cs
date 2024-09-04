@@ -216,7 +216,7 @@ namespace OpenMcdf.MemTest
                 Console.WriteLine(depth + temp);
 
                 if (target is CFStorage)
-                {  //Storage
+                { //Storage
                     String newDepth = depth + "    ";
 
                     //Recursion into the storage
