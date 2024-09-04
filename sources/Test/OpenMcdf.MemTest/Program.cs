@@ -57,7 +57,7 @@ namespace OpenMcdf.MemTest
 
             File.Copy("8_Streams.cfs", "6_Streams.cfs", true);
 
-            cf = new CompoundFile("6_Streams.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle|CFSConfiguration.EraseFreeSectors);
+            cf = new CompoundFile("6_Streams.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle | CFSConfiguration.EraseFreeSectors);
             cf.RootStorage.Delete("D");
             cf.RootStorage.Delete("G");
             cf.Commit();
