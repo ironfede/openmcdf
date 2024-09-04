@@ -4,7 +4,8 @@ namespace OpenMcdf.Extensions.OLEProperties
 {
     public enum Behavior
     {
-        CaseSensitive, CaseInsensitive
+        CaseSensitive,
+        CaseInsensitive
     }
 
     public class PropertyContext
@@ -27,12 +28,15 @@ namespace OpenMcdf.Extensions.OLEProperties
 
     public enum PropertyDimensions
     {
-        IsScalar, IsVector, IsArray
+        IsScalar,
+        IsVector,
+        IsArray
     }
 
     public enum PropertyType
     {
-        TypedPropertyValue = 0, DictionaryProperty = 1
+        TypedPropertyValue = 0,
+        DictionaryProperty = 1
     }
 
     internal static class CodePages

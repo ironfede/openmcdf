@@ -15,7 +15,12 @@ namespace OpenMcdf
 {
     internal enum SectorType
     {
-        Normal, Mini, FAT, DIFAT, RangeLockSector, Directory
+        Normal,
+        Mini,
+        FAT,
+        DIFAT,
+        RangeLockSector,
+        Directory
     }
 
     internal sealed class Sector : IDisposable

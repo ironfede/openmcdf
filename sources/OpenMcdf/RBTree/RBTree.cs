@@ -33,7 +33,8 @@ namespace RedBlackTree
         }
     }
 
-    public enum Color { RED = 0, BLACK = 1 }
+    public enum Color { RED = 0,
+        BLACK = 1 }
 
     /// <summary>
     /// Red Black Node interface
@@ -629,7 +630,10 @@ namespace RedBlackTree
 
     internal enum NodeOperation
     {
-        LeftAssigned, RightAssigned, ColorAssigned, ParentAssigned,
+        LeftAssigned,
+        RightAssigned,
+        ColorAssigned,
+        ParentAssigned,
         ValueAssigned
     }
 
