@@ -4,18 +4,18 @@ using System;
 namespace OpenMcdf.Test
 {
     /// <summary>
-    ///This is a test class for SectorCollectionTest and is intended
-    ///to contain all SectorCollectionTest Unit Tests
-    ///</summary>
+    /// This is a test class for SectorCollectionTest and is intended
+    /// to contain all SectorCollectionTest Unit Tests
+    /// </summary>
     [TestClass()]
     public class SectorCollectionTest
     {
         private TestContext testContextInstance;
 
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
         public TestContext TestContext
         {
             get
@@ -59,8 +59,8 @@ namespace OpenMcdf.Test
         #endregion
 
         /// <summary>
-        ///A test for Count
-        ///</summary>
+        /// A test for Count
+        /// </summary>
         [TestMethod()]
         public void CountTest()
         {
@@ -83,8 +83,8 @@ namespace OpenMcdf.Test
         }
 
         /// <summary>
-        ///A test for Item
-        ///</summary>
+        /// A test for Item
+        /// </summary>
         [TestMethod()]
         public void ItemTest()
         {
@@ -126,8 +126,8 @@ namespace OpenMcdf.Test
         }
 
         /// <summary>
-        ///A test for SectorCollection Constructor
-        ///</summary>
+        /// A test for SectorCollection Constructor
+        /// </summary>
         [TestMethod()]
         public void SectorCollectionConstructorTest()
         {
@@ -142,8 +142,8 @@ namespace OpenMcdf.Test
         }
 
         /// <summary>
-        ///A test for Add
-        ///</summary>
+        /// A test for Add
+        /// </summary>
         [TestMethod()]
         public void AddTest()
         {
@@ -159,8 +159,8 @@ namespace OpenMcdf.Test
         }
 
         /// <summary>
-        ///A test for GetEnumerator
-        ///</summary>
+        /// A test for GetEnumerator
+        /// </summary>
         [TestMethod()]
         public void GetEnumeratorTest()
         {
