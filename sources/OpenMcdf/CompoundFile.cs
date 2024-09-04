@@ -1379,7 +1379,7 @@ namespace OpenMcdf
                         s = new Sector(GetSectorSize(), sourceStream);
                         s.Type = SectorType.FAT;
                         s.Id = nextSecID;
-                        sectors[nextSecID] = s;//UUU
+                        sectors[nextSecID] = s; //UUU
                     }
 
                     result.Add(s);
@@ -2579,7 +2579,7 @@ namespace OpenMcdf
 
         #region IDisposable Members
 
-        private bool _disposed;//false
+        private bool _disposed; //false
 
         void IDisposable.Dispose()
         {
