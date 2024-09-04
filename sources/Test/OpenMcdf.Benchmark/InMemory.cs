@@ -10,7 +10,7 @@ namespace OpenMcdf.Benchmark
     [CsvExporter]
     [HtmlExporter]
     [MarkdownExporter]
-    //[DryCoreJob] // I always forget this attribute, so please leave it commented out 
+    //[DryCoreJob] // I always forget this attribute, so please leave it commented out
     [MemoryDiagnoser]
     [Orderer(SummaryOrderPolicy.FastestToSlowest)]
     public class InMemory : IDisposable
@@ -50,7 +50,6 @@ namespace OpenMcdf.Benchmark
             _stream = null;
             _readBuffer = null;
         }
-
 
         [Benchmark]
         public void Test()

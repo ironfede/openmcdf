@@ -46,7 +46,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                         break;
                     default:
                         return this.value;
-
                 }
 
                 return this.value;
@@ -69,6 +68,5 @@ namespace OpenMcdf.Extensions.OLEProperties
         {
             return (int)this.PropertyIdentifier;
         }
-
     }
 }

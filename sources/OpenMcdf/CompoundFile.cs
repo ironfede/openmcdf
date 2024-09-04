@@ -1,9 +1,9 @@
 ﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
- * 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * The Original Code is OpenMCDF - Compound Document Format library.
- * 
+ *
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
 #define FLAT_WRITE // No optimization on the number of write operations
@@ -20,7 +20,7 @@ namespace OpenMcdf
         public int Compare(CFItem x, CFItem y)
         {
             // X CompareTo Y : X > Y --> 1 ; X < Y  --> -1
-            return (x.DirEntry.CompareTo(y.DirEntry));
+            return x.DirEntry.CompareTo(y.DirEntry);
 
             //Compare X < Y --> -1
         }
@@ -28,7 +28,7 @@ namespace OpenMcdf
 
     /// <summary>
     /// Configuration parameters for the compound files.
-    /// They can be OR-combined to configure 
+    /// They can be OR-combined to configure
     /// <see cref="T:OpenMcdf.CompoundFile">Compound file</see> behavior.
     /// All flags are NOT set by Default.
     /// </summary>
@@ -36,14 +36,14 @@ namespace OpenMcdf
     public enum CFSConfiguration
     {
         /// <summary>
-        /// Sector Recycling turn off, 
-        /// free sectors erasing off, 
+        /// Sector Recycling turn off,
+        /// free sectors erasing off,
         /// format validation exception raised
         /// </summary>
         Default = 1,
 
         /// <summary>
-        /// Sector recycling reduces data writing performances 
+        /// Sector recycling reduces data writing performances
         /// but avoids space wasting in scenarios with frequently
         /// data manipulation of the same streams.
         /// </summary>
@@ -56,7 +56,7 @@ namespace OpenMcdf
 
         /// <summary>
         /// No exception is raised when a validation error occurs.
-        /// This can possibly lead to a security issue but gives 
+        /// This can possibly lead to a security issue but gives
         /// a chance to corrupted files to load.
         /// </summary>
         NoValidationException = 8,
@@ -92,9 +92,9 @@ namespace OpenMcdf
     {
         /// <summary>
         /// ReadOnly update mode prevents overwriting
-        /// of the opened file. 
-        /// Data changes are allowed but they have to be 
-        /// persisted on a different file when required 
+        /// of the opened file.
+        /// Data changes are allowed but they have to be
+        /// persisted on a different file when required
         /// using <see cref="M:OpenMcdf.CompoundFile.Save">method</see>
         /// </summary>
         ReadOnly,
@@ -110,7 +110,7 @@ namespace OpenMcdf
 
     /// <summary>
     /// Standard Microsoft&#169; Compound File implementation.
-    /// It is also known as OLE/COM structured storage 
+    /// It is also known as OLE/COM structured storage
     /// and contains a hierarchy of storage and stream objects providing
     /// efficient storage of multiple kinds of documents in a single file.
     /// Version 3 and 4 of specifications are supported.
@@ -191,9 +191,7 @@ namespace OpenMcdf
         /// </summary>
         private const int FLUSHING_BUFFER_MAX_SIZE = 1024 * 1024 * 16;
 
-
         private SectorCollection sectors = new SectorCollection();
-
 
         /// <summary>
         /// CompoundFile header
@@ -205,15 +203,14 @@ namespace OpenMcdf
         /// </summary>
         internal Stream sourceStream = null;
 
-
         /// <summary>
         /// Create a blank, version 3 compound file.
-        /// Sector recycle is turned off to achieve the best reading/writing 
+        /// Sector recycle is turned off to achieve the best reading/writing
         /// performance in most common scenarios.
         /// </summary>
         /// <example>
         /// <code>
-        /// 
+        ///
         ///     byte[] b = new byte[10000];
         ///     for (int i = 0; i &lt; 10000; i++)
         ///     {
@@ -227,14 +224,13 @@ namespace OpenMcdf
         ///     myStream.SetData(b);
         ///     cf.Save("MyCompoundFile.cfs");
         ///     cf.Close();
-        ///     
+        ///
         /// </code>
         /// </example>
         public CompoundFile() : this(CFSVersion.Ver_3, CFSConfiguration.Default) { }
 
         void OnSizeLimitReached()
         {
-
             Sector rangeLockSector = new Sector(GetSectorSize(), sourceStream);
             sectors.Add(rangeLockSector);
 
@@ -244,7 +240,6 @@ namespace OpenMcdf
             _lockSectorId = rangeLockSector.Id;
         }
 
-
         /// <summary>
         /// Create a new, blank, compound file.
         /// </summary>
@@ -252,7 +247,7 @@ namespace OpenMcdf
         /// <param name="configFlags">Set <see cref="T:OpenMcdf.CFSConfiguration">configuration</see> parameters for the new compound file</param>
         /// <example>
         /// <code>
-        /// 
+        ///
         ///     byte[] b = new byte[10000];
         ///     for (int i = 0; i &lt; 10000; i++)
         ///     {
@@ -266,7 +261,7 @@ namespace OpenMcdf
         ///     myStream.SetData(b);
         ///     cf.Save("MyCompoundFile.cfs");
         ///     cf.Close();
-        ///     
+        ///
         /// </code>
         /// </example>
         public CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags)
@@ -279,16 +274,15 @@ namespace OpenMcdf
                 this.sectors.OnVer3SizeLimitReached += new Ver3SizeLimitReached(OnSizeLimitReached);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
-            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
+            FAT_SECTOR_ENTRIES_COUNT = GetSectorSize() / 4;
 
-            //Root -- 
+            //Root --
             IDirectoryEntry rootDir = DirectoryEntry.New("Root Entry", StgType.StgRoot, directoryEntries);
             rootDir.StgColor = StgColor.Black;
             //this.InsertNewDirectoryEntry(rootDir);
 
             rootStorage = new CFStorage(this, rootDir);
         }
-
 
         /// <summary>
         /// Load an existing compound file.
@@ -311,7 +305,7 @@ namespace OpenMcdf
         /// </example>
         /// <remarks>
         /// File will be open in read-only mode: it has to be saved
-        /// with a different filename. A wrapping implementation has to be provided 
+        /// with a different filename. A wrapping implementation has to be provided
         /// in order to remove/substitute an existing file. Version will be
         /// automatically recognized from the file. Sector recycle is turned off
         /// to achieve the best reading/writing performance in most common scenarios.
@@ -328,7 +322,7 @@ namespace OpenMcdf
         /// <example>
         /// <code>
         /// String srcFilename = "data_YOU_CAN_CHANGE.xls";
-        /// 
+        ///
         /// CompoundFile cf = new CompoundFile(srcFilename, UpdateMode.Update, true, true);
         ///
         /// Random r = new Random();
@@ -336,7 +330,7 @@ namespace OpenMcdf
         /// byte[] buffer = GetBuffer(r.Next(3, 4095), 0x0A);
         ///
         /// cf.RootStorage.AddStream("MyStream").SetData(buffer);
-        /// 
+        ///
         /// //This will persist data to the underlying media.
         /// cf.Commit();
         /// cf.Close();
@@ -351,7 +345,7 @@ namespace OpenMcdf
             LoadFile(fileName);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
-            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
+            FAT_SECTOR_ENTRIES_COUNT = GetSectorSize() / 4;
         }
 
         /// <summary>
@@ -363,9 +357,9 @@ namespace OpenMcdf
         /// <param name="eraseFreeSectors">If true, overwrite with zeros unallocated sectors</param>
         /// <example>
         /// <code>
-        /// 
+        ///
         /// String filename = "reportREAD.xls";
-        ///   
+        ///
         /// FileStream fs = new FileStream(filename, FileMode.Open);
         /// CompoundFile cf = new CompoundFile(fs, UpdateMode.ReadOnly, false, false);
         /// CFStream foundStream = cf.RootStorage.GetStream("Workbook");
@@ -388,9 +382,8 @@ namespace OpenMcdf
             LoadStream(stream);
 
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
-            FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
+            FAT_SECTOR_ENTRIES_COUNT = GetSectorSize() / 4;
         }
-
 
         /// <summary>
         /// Load an existing compound file from a stream.
@@ -398,9 +391,9 @@ namespace OpenMcdf
         /// <param name="stream">Streamed compound file</param>
         /// <example>
         /// <code>
-        /// 
+        ///
         /// String filename = "reportREAD.xls";
-        ///   
+        ///
         /// FileStream fs = new FileStream(filename, FileMode.Open);
         /// CompoundFile cf = new CompoundFile(fs);
         /// CFStream foundStream = cf.RootStorage.GetStream("Workbook");
@@ -423,7 +416,7 @@ namespace OpenMcdf
         /// </summary>
         /// <remarks>
         /// This method can be used
-        /// only if the supporting stream has been opened in 
+        /// only if the supporting stream has been opened in
         /// <see cref="T:OpenMcdf.UpdateMode">Update mode</see>.
         /// </remarks>
         public void Commit()
@@ -436,15 +429,14 @@ namespace OpenMcdf
         private Queue<Sector> flushingQueue = new Queue<Sector>(FLUSHING_QUEUE_SIZE);
 #endif
 
-
         /// <summary>
         /// Commit data changes since the previously commit operation
         /// to the underlying supporting stream or file on the disk.
         /// </summary>
         /// <param name="releaseMemory">If true, release loaded sectors to limit memory usage but reduces following read operations performance</param>
         /// <remarks>
-        /// This method can be used only if 
-        /// the supporting stream has been opened in 
+        /// This method can be used only if
+        /// the supporting stream has been opened in
         /// <see cref="T:OpenMcdf.UpdateMode">Update mode</see>.
         /// </remarks>
         public void Commit(bool releaseMemory)
@@ -475,7 +467,6 @@ namespace OpenMcdf
 
             bool gap = true;
 
-
             for (int i = 0; i < sectors.Count; i++)
             {
 #if FLAT_WRITE
@@ -495,7 +486,6 @@ namespace OpenMcdf
                     sourceStream.Flush();
                     s.DirtyFlag = false;
                     gap = false;
-
                 }
                 else
                 {
@@ -504,13 +494,10 @@ namespace OpenMcdf
 
                 if (s != null && releaseMemory)
                 {
-
                     s.ReleaseData();
                     s = null;
                     sectors[i] = null;
                 }
-
-
 
 #else
                
@@ -644,11 +631,10 @@ namespace OpenMcdf
                     ValidateHeader(header);
                 }
 
-                int n_sector = Ceiling(((stream.Length - GetSectorSize()) / (double)GetSectorSize()));
+                int n_sector = Ceiling((stream.Length - GetSectorSize()) / (double)GetSectorSize());
 
                 if (stream.Length > 0x7FFFFF0)
                     this._transactionLockAllocated = true;
-
 
                 sectors = new SectorCollection();
                 //sectors = new ArrayList();
@@ -697,12 +683,10 @@ namespace OpenMcdf
             {
                 throw new CFCorruptedFileException("Byte order MUST be little endian (0xFFFE)");
             }
-
         }
 
         private void LoadFile(String fileName)
         {
-
             this.fileName = fileName;
 
             FileStream fs = null;
@@ -712,7 +696,6 @@ namespace OpenMcdf
                 if (this.updateMode == CFSUpdateMode.ReadOnly)
                 {
                     fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-
                 }
                 else
                 {
@@ -720,7 +703,6 @@ namespace OpenMcdf
                 }
 
                 Load(fs);
-
             }
             catch
             {
@@ -739,21 +721,19 @@ namespace OpenMcdf
             if (!stream.CanSeek)
                 throw new CFException("Cannot load a non-seekable Stream");
 
-
             stream.Seek(0, SeekOrigin.Begin);
 
             Load(stream);
         }
 
         /// <summary>
-        /// Return true if this compound file has been 
+        /// Return true if this compound file has been
         /// loaded from an existing file or stream
         /// </summary>
         public bool HasSourceStream
         {
             get { return sourceStream != null; }
         }
-
 
         private void PersistMiniStreamToStream(List<Sector> miniSectorChain)
         {
@@ -801,8 +781,7 @@ namespace OpenMcdf
                     header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE,
                     null,
                     this.sourceStream,
-                    true
-                    );
+                    true);
 
             StreamView miniStreamView
                 = new StreamView(
@@ -811,7 +790,6 @@ namespace OpenMcdf
                     this.rootStorage.Size,
                     null,
                     sourceStream);
-
 
             // Set updated/new sectors within the ministream
             // We are writing data in a NORMAL Sector chain.
@@ -1023,14 +1001,12 @@ namespace OpenMcdf
         /// <param name="sectorChain">The new or updated generic sector chain</param>
         private void AllocateSectorChain(List<Sector> sectorChain)
         {
-
             foreach (Sector s in sectorChain)
             {
                 if (s.Id == -1)
                 {
                     sectors.Add(s);
                     s.Id = sectors.Count - 1;
-
                 }
             }
 
@@ -1056,8 +1032,8 @@ namespace OpenMcdf
 
                 _transactionLockAllocated = true;
             }
-
         }
+
         /// <summary>
         /// Allocate space, setup sectors id and refresh header
         /// for the new or updated FAT sector chain.
@@ -1074,14 +1050,12 @@ namespace OpenMcdf
                     header.FATSectorsNumber * GetSectorSize(),
                     null,
                     sourceStream,
-                    true
-                    );
+                    true);
 
             // Write FAT chain values --
 
             for (int i = 0; i < sectorChain.Count - 1; i++)
             {
-
                 Sector sN = sectorChain[i + 1];
                 Sector sC = sectorChain[i];
 
@@ -1157,7 +1131,6 @@ namespace OpenMcdf
                 }
             }
 
-
             List<Sector> difatSectors =
                         GetSectorChain(-1, SectorType.DIFAT);
 
@@ -1182,7 +1155,6 @@ namespace OpenMcdf
                     }
 
                     difatStream.Write(BitConverter.GetBytes(FATsectorChain[i].Id), 0, sizeof(int));
-
                 }
             }
 
@@ -1198,7 +1170,6 @@ namespace OpenMcdf
             }
 
             header.DIFATSectorsNumber = (uint)nDIFATSectors;
-
 
             // Chain first sector
             if (difatStream.BaseSectorChain != null && difatStream.BaseSectorChain.Count > 0)
@@ -1224,8 +1195,7 @@ namespace OpenMcdf
                     0,
                     difatStream.BaseSectorChain[difatStream.BaseSectorChain.Count - 1].GetData(),
                     GetSectorSize() - sizeof(int),
-                    sizeof(int)
-                    );
+                    sizeof(int));
             }
             else
                 header.FirstDIFATSectorID = Sector.ENDOFCHAIN;
@@ -1251,7 +1221,6 @@ namespace OpenMcdf
 
             header.FATSectorsNumber = fatSv.BaseSectorChain.Count;
         }
-
 
         /// <summary>
         /// Get the DIFAT Sector chain
@@ -1292,7 +1261,7 @@ namespace OpenMcdf
 
                     // Strictly speaking, the following condition is not correct from
                     // a specification point of view:
-                    // only ENDOFCHAIN should break DIFAT chain but 
+                    // only ENDOFCHAIN should break DIFAT chain but
                     // a lot of existing compound files use FREESECT as DIFAT chain termination
                     if (nextSecID == Sector.FREESECT || nextSecID == Sector.ENDOFCHAIN) break;
 
@@ -1386,12 +1355,9 @@ namespace OpenMcdf
                             (header.FATSectorsNumber - N_HEADER_FAT_ENTRY) * 4 :
                             0,
                         null,
-                            sourceStream
-                        );
+                            sourceStream);
 
                 byte[] nextDIFATSectorBuffer = new byte[4];
-
-
 
                 int i = 0;
 
@@ -1409,7 +1375,7 @@ namespace OpenMcdf
                         s = new Sector(GetSectorSize(), sourceStream);
                         s.Type = SectorType.FAT;
                         s.Id = nextSecID;
-                        sectors[nextSecID] = s;//UUU
+                        sectors[nextSecID] = s; //UUU
                     }
 
                     result.Add(s);
@@ -1417,8 +1383,7 @@ namespace OpenMcdf
                     //difatStream.Read(nextDIFATSectorBuffer, 0, 4);
                     //nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
 
-
-                    if (difatStream.Position == ((GetSectorSize() - 4) + i * GetSectorSize()))
+                    if (difatStream.Position == (GetSectorSize() - 4 + i * GetSectorSize()))
                     {
                         // Skip DIFAT chain fields considering the possibility that the last FAT entry has been already read
                         difatStream.Read(nextDIFATSectorBuffer, 0, 4);
@@ -1434,7 +1399,6 @@ namespace OpenMcdf
             }
 
             return result;
-
         }
 
         /// <summary>
@@ -1481,9 +1445,7 @@ namespace OpenMcdf
 
                 EnsureUniqueSectorIndex(next, processedSectors);
                 nextSecID = next;
-
             }
-
 
             return result;
         }
@@ -1540,9 +1502,9 @@ namespace OpenMcdf
                     EnsureUniqueSectorIndex(nextSecID, processedSectors);
                 }
             }
+
             return result;
         }
-
 
         /// <summary>
         /// Get a sector chain from a compound file given the first sector ID
@@ -1553,7 +1515,6 @@ namespace OpenMcdf
         /// <returns>A list of Sectors as the result of their concatenation</returns>
         internal List<Sector> GetSectorChain(int secID, SectorType chainType)
         {
-
             switch (chainType)
             {
                 case SectorType.DIFAT:
@@ -1576,13 +1537,13 @@ namespace OpenMcdf
         private CFStorage rootStorage;
 
         /// <summary>
-        /// The entry point object that represents the 
+        /// The entry point object that represents the
         /// root of the structures tree to get or set storage or
         /// stream data.
         /// </summary>
         /// <example>
         /// <code>
-        /// 
+        ///
         ///    //Create a compound file
         ///    string FILENAME = "MyFileName.cfs";
         ///    CompoundFile ncf = new CompoundFile();
@@ -1616,8 +1577,6 @@ namespace OpenMcdf
             }
         }
 
-
-
         /// <summary>
         /// Reset a directory entry setting it to StgInvalid in the Directory.
         /// </summary>
@@ -1637,8 +1596,6 @@ namespace OpenMcdf
             directoryEntries[sid].CreationDate = new byte[8];
             directoryEntries[sid].ModifyDate = new byte[8];
         }
-
-
 
         //internal class NodeFactory : IRBTreeDeserializer<CFItem>
         //{
@@ -1670,11 +1627,9 @@ namespace OpenMcdf
         //        node.Value.DirEntry.RightSibling = from.DirEntry.RightSibling;
         //}
 
-
         internal RBTree GetChildrenTree(int sid)
         {
             RBTree bst = new RBTree();
-
 
             // Load children from their original tree.
             DoLoadChildren(bst, directoryEntries[sid]);
@@ -1699,10 +1654,8 @@ namespace OpenMcdf
             return bst;
         }
 
-
         private void DoLoadChildren(RBTree bst, IDirectoryEntry de)
         {
-
             if (de.Child != DirectoryEntry.NOSTREAM)
             {
                 if (directoryEntries[de.Child].StgType == StgType.StgInvalid) return;
@@ -1730,8 +1683,6 @@ namespace OpenMcdf
 
             if (de.LeftSibling != DirectoryEntry.NOSTREAM)
             {
-
-
                 // If there are more left siblings load them...
                 DoLoadSiblings(bst, directoryEntries[de.LeftSibling]);
                 //NullifyChildNodes(directoryEntries[de.LeftSibling]);
@@ -1799,7 +1750,6 @@ namespace OpenMcdf
 
                 if (!Enum.IsDefined(typeof(StgType), directoryEntries[sid].StgType))
                 {
-
                     if (this.validationExceptionEnabled)
                     {
                         //this.Close();
@@ -1818,7 +1768,6 @@ namespace OpenMcdf
             return false;
         }
 
-
         /// <summary>
         /// Load directory entries from compound file. Header and FAT MUST be already loaded.
         /// </summary>
@@ -1836,7 +1785,6 @@ namespace OpenMcdf
             StreamView dirReader
                 = new StreamView(directoryChain, GetSectorSize(), directoryChain.Count * GetSectorSize(), null, sourceStream);
 
-
             while (dirReader.Position < directoryChain.Count * GetSectorSize())
             {
                 IDirectoryEntry de
@@ -1844,11 +1792,8 @@ namespace OpenMcdf
 
                 //We are not inserting dirs. Do not use 'InsertNewDirectoryEntry'
                 de.Read(dirReader, this.Version);
-
             }
         }
-
-
 
         /// <summary>
         ///  Commit directory entries change on the Current Source stream
@@ -1929,16 +1874,15 @@ namespace OpenMcdf
                 {
                     if (Path.IsPathRooted(fileName))
                     {
-                        if (((FileStream)(this.sourceStream)).Name == fileName)
+                        if (((FileStream)this.sourceStream).Name == fileName)
                         {
                             raiseSaveFileEx = true;
                         }
                     }
                     else
                     {
-                        if (((FileStream)(this.sourceStream)).Name == (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + fileName))
+                        if (((FileStream)this.sourceStream).Name == (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + fileName))
                         {
-
                             raiseSaveFileEx = true;
                         }
                     }
@@ -1962,13 +1906,12 @@ namespace OpenMcdf
 
                 fs?.Flush();
                 fs?.Close();
-
             }
         }
 
         /// <summary>
         /// Saves the in-memory image of Compound File to a stream.
-        /// </summary>        
+        /// </summary>
         /// <remarks>
         /// Destination Stream must be seekable. Uncommitted data will be persisted to the destination stream.
         /// </remarks>
@@ -1998,8 +1941,6 @@ namespace OpenMcdf
             if (!stream.CanSeek)
                 throw new CFException("Cannot save on a non-seekable stream");
 
-
-
             CheckForLockSector();
             int sSize = GetSectorSize();
 
@@ -2007,7 +1948,7 @@ namespace OpenMcdf
             {
                 if (this.HasSourceStream && this.sourceStream != null && this.sourceStream is FileStream && stream is FileStream)
                 {
-                    if (((FileStream)(this.sourceStream)).Name == ((FileStream)(stream)).Name)
+                    if (((FileStream)this.sourceStream).Name == ((FileStream)stream).Name)
                     {
                         throw new CFInvalidOperation("Cannot overwrite current backing file. Compound File should be opened in UpdateMode and Commit() method should be called to persist changes");
                     }
@@ -2024,9 +1965,9 @@ namespace OpenMcdf
                     if (s == null)
                     {
                         // Load source (unmodified) sectors
-                        // Here we have to ignore "Dirty flag" of 
+                        // Here we have to ignore "Dirty flag" of
                         // sectors because we are NOT modifying the source
-                        // in a differential way but ALL sectors need to be 
+                        // in a differential way but ALL sectors need to be
                         // persisted on the destination stream
                         s = new Sector(sSize, sourceStream);
                         s.Id = i;
@@ -2034,11 +1975,9 @@ namespace OpenMcdf
                         //sectors[i] = s;
                     }
 
-
                     stream.Write(s.GetData(), 0, sSize);
 
                     //s.ReleaseData();
-
                 }
 
                 stream.Seek(0, SeekOrigin.Begin);
@@ -2051,7 +1990,6 @@ namespace OpenMcdf
             }
         }
 
-
         /// <summary>
         /// Scan FAT o miniFAT for free sectors to reuse.
         /// </summary>
@@ -2063,7 +2001,6 @@ namespace OpenMcdf
 
             if (sType == SectorType.Normal)
             {
-
                 List<Sector> FatChain = GetSectorChain(-1, SectorType.FAT);
                 StreamView fatStream = new StreamView(FatChain, GetSectorSize(), header.FATSectorsNumber * GetSectorSize(), null, sourceStream);
 
@@ -2080,7 +2017,6 @@ namespace OpenMcdf
                             Sector s = new Sector(GetSectorSize(), sourceStream);
                             s.Id = idx;
                             sectors[idx] = s;
-
                         }
 
                         freeList.Enqueue(sectors[idx]);
@@ -2173,7 +2109,6 @@ namespace OpenMcdf
 
             long oldSize = cfItem.Size;
 
-
             // Get Sector chain and delta size induced by client
             List<Sector> sectorChain = GetSectorChain(cfItem.DirEntry.StartSetc, oldSectorType);
             long delta = length - cfItem.Size;
@@ -2190,8 +2125,7 @@ namespace OpenMcdf
             {
                 if (
                     (length < header.MinSizeStandardStream && cfItem.DirEntry.Size >= header.MinSizeStandardStream)
-                    || (length >= header.MinSizeStandardStream && cfItem.DirEntry.Size < header.MinSizeStandardStream)
-                   )
+                    || (length >= header.MinSizeStandardStream && cfItem.DirEntry.Size < header.MinSizeStandardStream))
                 {
                     if (cfItem.DirEntry.Size < header.MinSizeStandardStream)
                     {
@@ -2205,15 +2139,13 @@ namespace OpenMcdf
                     }
 
                     // No transition caused by size change
-
                 }
             }
-
 
             Queue<Sector> freeList = null;
             StreamView sv = null;
 
-            if (!transitionToMini && !transitionToNormal)   //############  NO TRANSITION
+            if (!transitionToMini && !transitionToNormal) //############  NO TRANSITION
             {
                 if (delta > 0) // Enlarging stream...
                 {
@@ -2225,10 +2157,9 @@ namespace OpenMcdf
                     //Set up  destination chain
                     SetSectorChain(sectorChain);
                 }
-                else if (delta < 0)  // Reducing size...
+                else if (delta < 0) // Reducing size...
                 {
-
-                    int nSec = (int)Math.Floor(((double)(Math.Abs(delta)) / newSectorSize)); //number of sectors to mark as free
+                    int nSec = (int)Math.Floor((double)Math.Abs(delta) / newSectorSize); //number of sectors to mark as free
 
                     int startFreeSector = sectorChain.Count - nSec; // start sector to free
 
@@ -2248,9 +2179,8 @@ namespace OpenMcdf
                     cfItem.DirEntry.StartSetc = Sector.ENDOFCHAIN;
                     cfItem.DirEntry.Size = 0;
                 }
-
             }
-            else if (transitionToMini)                          //############## TRANSITION TO MINISTREAM
+            else if (transitionToMini) //############## TRANSITION TO MINISTREAM
             {
                 // Transition Normal chain -> Mini chain
 
@@ -2306,7 +2236,7 @@ namespace OpenMcdf
                     cfItem.DirEntry.Size = 0;
                 }
             }
-            else if (transitionToNormal)                        //############## TRANSITION TO NORMAL STREAM
+            else if (transitionToNormal) //############## TRANSITION TO NORMAL STREAM
             {
                 // Transition Mini chain -> Normal chain
 
@@ -2362,7 +2292,6 @@ namespace OpenMcdf
 
         internal void WriteData(CFItem cfItem, byte[] buffer, long position, int offset, int count)
         {
-
             if (buffer == null)
                 throw new CFInvalidOperation("Parameter [buffer] cannot be null");
 
@@ -2372,7 +2301,7 @@ namespace OpenMcdf
             if (buffer.Length == 0) return;
 
             // Get delta size induced by client
-            long delta = (position + count) - cfItem.Size < 0 ? 0 : (position + count) - cfItem.Size;
+            long delta = position + count - cfItem.Size < 0 ? 0 : position + count - cfItem.Size;
             long newLength = cfItem.Size + delta;
 
             SetStreamLength(cfItem, newLength);
@@ -2413,7 +2342,6 @@ namespace OpenMcdf
             throw new NotImplementedException();
         }
 
-
         internal int ReadData(CFStream cFStream, long position, byte[] buffer, int count)
         {
             if (count > buffer.Length)
@@ -2425,7 +2353,6 @@ namespace OpenMcdf
 
             StreamView sView = null;
 
-
             if (de.Size < header.MinSizeStandardStream)
             {
                 sView
@@ -2433,10 +2360,8 @@ namespace OpenMcdf
             }
             else
             {
-
                 sView = new StreamView(GetSectorChain(de.StartSetc, SectorType.Normal), GetSectorSize(), de.Size, null, sourceStream);
             }
-
 
             sView.Seek(position, SeekOrigin.Begin);
             int result = sView.Read(buffer, 0, count);
@@ -2446,13 +2371,11 @@ namespace OpenMcdf
 
         internal int ReadData(CFStream cFStream, long position, byte[] buffer, int offset, int count)
         {
-
             IDirectoryEntry de = cFStream.DirEntry;
 
             count = (int)Math.Min(buffer.Length - offset, (long)count);
 
             StreamView sView = null;
-
 
             if (de.Size < header.MinSizeStandardStream)
             {
@@ -2461,10 +2384,8 @@ namespace OpenMcdf
             }
             else
             {
-
                 sView = new StreamView(GetSectorChain(de.StartSetc, SectorType.Normal), GetSectorSize(), de.Size, null, sourceStream);
             }
-
 
             sView.Seek(position, SeekOrigin.Begin);
             int result = sView.Read(buffer, offset, count);
@@ -2472,10 +2393,8 @@ namespace OpenMcdf
             return result;
         }
 
-
         internal byte[] GetData(CFStream cFStream)
         {
-
             if (_disposed)
                 throw new CFDisposedException("Compound File closed: cannot access data");
 
@@ -2487,7 +2406,6 @@ namespace OpenMcdf
 
             if (de.Size < header.MinSizeStandardStream)
             {
-
                 StreamView miniView
                     = new StreamView(GetSectorChain(de.StartSetc, SectorType.Mini), Sector.MINISECTOR_SIZE, de.Size, null, sourceStream);
 
@@ -2495,7 +2413,6 @@ namespace OpenMcdf
 
                 result = br.ReadBytes((int)de.Size);
                 br.Close();
-
             }
             else
             {
@@ -2505,11 +2422,11 @@ namespace OpenMcdf
                 result = new byte[(int)de.Size];
 
                 sView.Read(result, 0, result.Length);
-
             }
 
             return result;
         }
+
         public byte[] GetDataBySID(int sid)
         {
             if (_disposed)
@@ -2540,8 +2457,10 @@ namespace OpenMcdf
             {
                 throw new CFException("Cannot get data for SID");
             }
+
             return result;
         }
+
         public Guid getGuidBySID(int sid)
         {
             if (_disposed)
@@ -2551,6 +2470,7 @@ namespace OpenMcdf
             IDirectoryEntry de = directoryEntries[sid];
             return de.StorageCLSID;
         }
+
         public Guid getGuidForStream(int sid)
         {
             if (_disposed)
@@ -2566,6 +2486,7 @@ namespace OpenMcdf
                     return directoryEntries[i].StorageCLSID;
                 }
             }
+
             return g;
         }
 
@@ -2578,7 +2499,6 @@ namespace OpenMcdf
         {
             return i > 0 ? i : 0;
         }
-
 
         internal void InvalidateDirectoryEntry(int sid)
         {
@@ -2628,7 +2548,7 @@ namespace OpenMcdf
         ///    try
         ///    {
         ///        byte[] temp = st.GetStream("MyStream").GetData();
-        ///        
+        ///
         ///        // The following line will fail because back-end object has been closed
         ///        Assert.Fail("Stream without media");
         ///    }
@@ -2654,7 +2574,7 @@ namespace OpenMcdf
 
         #region IDisposable Members
 
-        private bool _disposed;//false
+        private bool _disposed; //false
 
         void IDisposable.Dispose()
         {
@@ -2709,7 +2629,6 @@ namespace OpenMcdf
             {
                 _disposed = true;
             }
-
         }
 
         internal bool IsClosed
@@ -2733,7 +2652,6 @@ namespace OpenMcdf
         //    get { return directoryEntries; }
         //}
 
-
         internal IDirectoryEntry RootEntry
         {
             get
@@ -2755,14 +2673,12 @@ namespace OpenMcdf
             return result;
         }
 
-
-
         /// <summary>
         /// Get a list of all entries with a given name contained in the document.
         /// </summary>
         /// <param name="entryName">Name of entries to retrieve</param>
         /// <returns>A list of name-matching entries</returns>
-        /// <remarks>This function is aimed to speed up entity lookup in 
+        /// <remarks>This function is aimed to speed up entity lookup in
         /// flat-structure files (only one or little more known entries)
         /// without the performance penalty related to entities hierarchy constraints.
         /// There is no implied hierarchy in the returned list.
@@ -2809,7 +2725,6 @@ namespace OpenMcdf
             return directoryEntries[id].StgType;
         }
 
-
         /// <summary>
         /// Compress free space by removing unallocated sectors from compound file
         /// effectively reducing stream or file size.
@@ -2819,9 +2734,9 @@ namespace OpenMcdf
         /// </remarks>
         /// <example>
         /// <code>
-        /// 
+        ///
         ///  //This code has been extracted from unit test
-        ///  
+        ///
         ///    String FILENAME = "MultipleStorage3.cfs";
         ///
         ///    FileInfo srcFile = new FileInfo(FILENAME);
@@ -2832,7 +2747,7 @@ namespace OpenMcdf
         ///
         ///    CFStorage st = cf.RootStorage.GetStorage("MyStorage");
         ///    st = st.GetStorage("AnotherStorage");
-        ///    
+        ///
         ///    Assert.IsNotNull(st);
         ///    st.Delete("Another2Stream"); //17Kb
         ///    cf.Commit();
@@ -2887,9 +2802,9 @@ namespace OpenMcdf
         /// </remarks>
         /// <example>
         /// <code>
-        /// 
+        ///
         ///  //This code has been extracted from unit test
-        ///  
+        ///
         ///    String FILENAME = "MultipleStorage3.cfs";
         ///
         ///    FileInfo srcFile = new FileInfo(FILENAME);
@@ -2900,7 +2815,7 @@ namespace OpenMcdf
         ///
         ///    CFStorage st = cf.RootStorage.GetStorage("MyStorage");
         ///    st = st.GetStorage("AnotherStorage");
-        ///    
+        ///
         ///    Assert.IsNotNull(st);
         ///    st.Delete("Another2Stream"); //17Kb
         ///    cf.Commit();

@@ -1,19 +1,16 @@
 ﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
- * 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * The Original Code is OpenMCDF - Compound Document Format library.
- * 
+ *
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
 using System;
 using System.IO;
 
-
-
 namespace OpenMcdf
 {
-
     /// <summary>
     /// OLE structured storage <see cref="T:OpenMcdf.CFStream">stream</see> Object
     /// It is contained inside a Storage object in a file-directory
@@ -51,13 +48,12 @@ namespace OpenMcdf
             this.CompoundFile.WriteData(this, data);
         }
 
-
         /// <summary>
         /// Write a data buffer to a specific position into current CFStream object
         /// </summary>
         /// <param name="data">Data buffer to Write</param>
         /// <param name="position">Position into the stream object to start writing from</param>
-        /// <remarks>Current stream will be extended to receive data buffer over 
+        /// <remarks>Current stream will be extended to receive data buffer over
         /// its current size</remarks>
         public void Write(byte[] data, long position)
         {
@@ -65,15 +61,15 @@ namespace OpenMcdf
         }
 
         /// <summary>
-        /// Write <paramref name="count">count</paramref> bytes of a data buffer to a specific position into 
+        /// Write <paramref name="count">count</paramref> bytes of a data buffer to a specific position into
         /// the current CFStream object starting from the specified position.
         /// </summary>
         /// <param name="data">Data buffer to copy bytes from</param>
         /// <param name="position">Position into the stream object to start writing from</param>
-        /// <param name="offset">The zero-based byte offset in buffer at which to 
+        /// <param name="offset">The zero-based byte offset in buffer at which to
         /// begin copying bytes to the current <see cref="T:OpenMcdf.CFStream">CFStream</see>. </param>
         /// <param name="count">The number of bytes to be written to the current <see cref="T:OpenMcdf.CFStream">CFStream</see> </param>
-        /// <remarks>Current stream will be extended to receive data buffer over 
+        /// <remarks>Current stream will be extended to receive data buffer over
         /// its current size.</remarks>
         internal void Write(byte[] data, long position, int offset, int count)
         {
@@ -98,7 +94,7 @@ namespace OpenMcdf
         /// </example>
         /// <param name="data">Data bytes to append to this stream</param>
         /// <remarks>
-        /// This method allows user to create stream with more than 2GB of data, 
+        /// This method allows user to create stream with more than 2GB of data,
         /// appending data to the end of existing ones.
         /// Large streams (>2GB) are only supported by CFS version 4.
         /// Append data can also be invoked on streams with no data in order
@@ -138,10 +134,9 @@ namespace OpenMcdf
             return this.CompoundFile.GetData(this);
         }
 
-
         /// <summary>
         /// Read <paramref name="count"/> bytes associated with the stream object, starting from
-        /// the provided <paramref name="position"/>. Method returns the effective count of bytes 
+        /// the provided <paramref name="position"/>. Method returns the effective count of bytes
         /// read.
         /// </summary>
         /// <param name="buffer">Array of bytes that will contain stream data</param>
@@ -172,11 +167,9 @@ namespace OpenMcdf
             return this.CompoundFile.ReadData(this, position, buffer, 0, count);
         }
 
-
-
         /// <summary>
         /// Read <paramref name="count"/> bytes associated with the stream object, starting from
-        /// a provided <paramref name="position"/>. Method returns the effective count of bytes 
+        /// a provided <paramref name="position"/>. Method returns the effective count of bytes
         /// read.
         /// </summary>
         /// <param name="buffer">Array of bytes that will contain stream data</param>
@@ -208,7 +201,6 @@ namespace OpenMcdf
             return this.CompoundFile.ReadData(this, position, buffer, offset, count);
         }
 
-
         /// <summary>
         /// Copy data from an existing stream.
         /// </summary>
@@ -231,7 +223,6 @@ namespace OpenMcdf
             input.Read(buffer, 0, (int)input.Length);
             this.SetData(buffer);
         }
-
 
         /// <summary>
         /// Resize stream padding with zero if enlarging, trimming data if reducing size.

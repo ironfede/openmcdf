@@ -1,9 +1,9 @@
 ﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
- * 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * The Original Code is OpenMCDF - Compound Document Format library.
- * 
+ *
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
 using System;
@@ -30,15 +30,12 @@ namespace OpenMcdf
         public CFException(string message)
             : base(message, null)
         {
-
         }
 
         public CFException(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
-
     }
 
     /// <summary>
@@ -62,15 +59,12 @@ namespace OpenMcdf
         public CFDisposedException(string message)
             : base(message, null)
         {
-
         }
 
         public CFDisposedException(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
-
     }
 
     /// <summary>
@@ -93,15 +87,12 @@ namespace OpenMcdf
         public CFFileFormatException(string message)
             : base(message, null)
         {
-
         }
 
         public CFFileFormatException(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
-
     }
 
     /// <summary>
@@ -124,15 +115,12 @@ namespace OpenMcdf
         public CFItemNotFound(string message)
             : base(message, null)
         {
-
         }
 
         public CFItemNotFound(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
-
     }
 
     /// <summary>
@@ -154,15 +142,12 @@ namespace OpenMcdf
         public CFInvalidOperation(string message)
             : base(message, null)
         {
-
         }
 
         public CFInvalidOperation(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
-
     }
 
     /// <summary>
@@ -170,8 +155,8 @@ namespace OpenMcdf
     /// </summary>
     /// <remarks>
     /// Items are compared by name as indicated by specs.
-    /// Two items with the same name CANNOT be added within 
-    /// the same storage or sub-storage. 
+    /// Two items with the same name CANNOT be added within
+    /// the same storage or sub-storage.
     /// </remarks>
     [Serializable]
     public class CFDuplicatedItemException : CFException
@@ -189,18 +174,16 @@ namespace OpenMcdf
         public CFDuplicatedItemException(string message)
             : base(message, null)
         {
-
         }
 
         public CFDuplicatedItemException(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
     }
 
     /// <summary>
-    /// Raised when trying to load a Compound File with invalid, corrupted or mismatched fields (4.1 - specifications) 
+    /// Raised when trying to load a Compound File with invalid, corrupted or mismatched fields (4.1 - specifications)
     /// </summary>
     /// <remarks>
     /// This exception is NOT raised when Compound file has been opened with NO_VALIDATION_EXCEPTION option.
@@ -221,15 +204,11 @@ namespace OpenMcdf
         public CFCorruptedFileException(string message)
             : base(message, null)
         {
-
         }
 
         public CFCorruptedFileException(string message, Exception innerException)
             : base(message, innerException)
         {
-
         }
-
     }
-
 }

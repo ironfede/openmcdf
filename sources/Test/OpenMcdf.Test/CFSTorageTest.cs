@@ -15,15 +15,14 @@ namespace OpenMcdf.Test
 
         public CFSTorageTest()
         {
-
         }
 
         private TestContext testContextInstance;
 
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
         public TestContext TestContext
         {
             get
@@ -42,14 +41,14 @@ namespace OpenMcdf.Test
         //
         // Use ClassInitialize to run code before running the first test in the class
         // [ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext) 
+        //public static void MyClassInitialize(TestContext testContext)
 
         //
         // Use ClassCleanup to run code after all tests in a class have run
         // [ClassCleanup()]
         // public static void MyClassCleanup() { }
         //
-        // Use TestInitialize to run code before running each test 
+        // Use TestInitialize to run code before running each test
         // [TestInitialize()]
         // public void MyTestInitialize() { }
         //
@@ -104,9 +103,7 @@ namespace OpenMcdf.Test
             cf.RootStorage.VisitEntries(va, true);
 
             tw.Close();
-
         }
-
 
         [TestMethod]
         public void Test_TRY_GET_STREAM_STORAGE()
@@ -202,7 +199,6 @@ namespace OpenMcdf.Test
 
                 using (TextWriter tw = new StreamWriter(output))
                 {
-
                     Action<CFItem> va = delegate (CFItem item)
                        {
                            tw.WriteLine(item.Name);
@@ -216,15 +212,11 @@ namespace OpenMcdf.Test
             {
                 Assert.IsTrue(ex is CFCorruptedFileException);
                 Assert.IsTrue(f != null && f.IsClosed);
-
             }
             finally
             {
                 if (output != null)
                     output.Close();
-
-
-
             }
         }
 
@@ -249,10 +241,8 @@ namespace OpenMcdf.Test
             {
                 output = new FileStream("LogEntriesCorrupted_2.txt", FileMode.Create);
 
-
                 using (TextWriter tw = new StreamWriter(output))
                 {
-
                     Action<CFItem> va = delegate (CFItem item)
                     {
                         tw.WriteLine(item.Name);
@@ -270,11 +260,8 @@ namespace OpenMcdf.Test
             {
                 if (output != null)
                     output.Close();
-
-
             }
         }
-
 
         [TestMethod]
         public void Test_VISIT_STORAGE()
@@ -300,7 +287,6 @@ namespace OpenMcdf.Test
 
             ncf.Save(FILENAME);
             ncf.Close();
-
 
             // Read...
 
@@ -425,6 +411,7 @@ namespace OpenMcdf.Test
             {
                 File.Delete("$Hel1");
             }
+
             if (File.Exists("$Hel2"))
             {
                 File.Delete("$Hel2");
@@ -453,7 +440,6 @@ namespace OpenMcdf.Test
             {
                 Assert.IsTrue(ex.GetType() == typeof(CFDuplicatedItemException));
             }
-
         }
 
         [TestMethod]
@@ -473,11 +459,9 @@ namespace OpenMcdf.Test
 
             try
             {
-
                 cf1.RootStorage.RenameItem("AStorage", "NewStorage");
                 cf1.Commit();
                 cf1.Close();
-
             }
             catch (Exception ex)
             {
@@ -494,7 +478,6 @@ namespace OpenMcdf.Test
             {
                 Assert.Fail($"{ex.Message}");
             }
-
         }
 
         [TestMethod]

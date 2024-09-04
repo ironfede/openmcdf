@@ -17,6 +17,7 @@ namespace OpenMcdf.Test
             Random r = new Random();
             r.NextBytes(buffer);
         }
+
         public static void FillBuffer(byte[] buffer, byte c)
         {
             for (int i = 0; i < buffer.Length; i++)
@@ -48,7 +49,6 @@ namespace OpenMcdf.Test
 
             if (b != null && p == null)
                 return false;
-
 
             for (int i = 0; i < count; i++)
             {

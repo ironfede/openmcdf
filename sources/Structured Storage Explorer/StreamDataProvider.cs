@@ -21,7 +21,6 @@ namespace StructuredStorageExplorer
         /// </summary>
         ByteCollection _bytes;
 
-
         /// <summary>
         /// Initializes a new instance of the DynamicByteProvider class.
         /// </summary>
@@ -88,7 +87,6 @@ namespace StructuredStorageExplorer
         /// Occurs, when InsertBytes or DeleteBytes method is called.
         /// </summary>
         public event EventHandler LengthChanged;
-
 
         /// <summary>
         /// Reads a byte from the byte collection.

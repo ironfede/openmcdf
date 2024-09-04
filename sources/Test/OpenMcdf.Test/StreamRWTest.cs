@@ -18,6 +18,7 @@ namespace OpenMcdf.Test
                 OpenMcdf.StreamRW reader = new OpenMcdf.StreamRW(memStream);
                 actual = reader.ReadInt64();
             }
+
             Assert.AreEqual(input, actual);
         }
 
@@ -32,6 +33,7 @@ namespace OpenMcdf.Test
                 OpenMcdf.StreamRW reader = new OpenMcdf.StreamRW(memStream);
                 actual = reader.ReadInt64();
             }
+
             Assert.AreEqual(input, actual);
         }
 
@@ -46,6 +48,7 @@ namespace OpenMcdf.Test
                 OpenMcdf.StreamRW reader = new OpenMcdf.StreamRW(memStream);
                 actual = reader.ReadInt64();
             }
+
             Assert.AreEqual(input, actual);
         }
     }

@@ -7,8 +7,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 {
     internal sealed class PropertySetStream
     {
-
-
         public ushort ByteOrder { get; set; }
         public ushort Version { get; set; }
         public uint SystemIdentifier { get; set; }
@@ -25,7 +23,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public PropertySetStream()
         {
-
         }
 
         public void Read(System.IO.BinaryReader br)
@@ -130,7 +127,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                 bw.Write(Offset1);
             }
 
-
             oc0.OffsetPS = (int)bw.BaseStream.Position;
             bw.Write(PropertySet0.Size);
             bw.Write(PropertySet0.NumProperties);
@@ -158,12 +154,8 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             int size0 = (int)(bw.BaseStream.Position - oc0.OffsetPS);
 
-
-
             if (NumPropertySets == 2)
             {
-
-
                 oc1.OffsetPS = (int)bw.BaseStream.Position;
 
                 bw.Write(PropertySet1.Size);
@@ -209,8 +201,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                 bw.Write((int)(oc0.PropertyOffsets[i] - oc0.OffsetPS));
             }
 
-
-
             if (PropertySet1 != null)
             {
                 for (int i = 0; i < PropertySet1.PropertyIdentifierAndOffsets.Count; i++)
@@ -220,8 +210,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                 }
             }
         }
-
-
 
         private IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br, PropertyFactory factory)
         {

@@ -13,15 +13,14 @@ namespace OpenMcdf.Test
     {
         public RBTreeTest()
         {
-
         }
 
         private TestContext testContextInstance;
 
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
         public TestContext TestContext
         {
             get
@@ -46,7 +45,7 @@ namespace OpenMcdf.Test
         // [ClassCleanup()]
         // public static void MyClassCleanup() { }
         //
-        // Use TestInitialize to run code before running each test 
+        // Use TestInitialize to run code before running each test
         // [TestInitialize()]
         // public void MyTestInitialize() { }
         //
@@ -88,13 +87,11 @@ namespace OpenMcdf.Test
             }
         }
 
-
         [TestMethod]
         public void Test_RBTREE_DELETE()
         {
             RBTree rbTree = new RBTree();
             System.Collections.Generic.IList<IDirectoryEntry> repo = GetDirectoryRepository(25);
-
 
             foreach (var item in repo)
             {
@@ -113,11 +110,8 @@ namespace OpenMcdf.Test
                 Assert.Fail("Item removal failed: " + ex.Message);
             }
 
-
-
             //    CFItem c;
             //    bool s = rbTree.TryLookup(new CFMock("7", StgType.StgStream), out c);
-
 
             //    Assert.IsFalse(s);
 
@@ -128,10 +122,7 @@ namespace OpenMcdf.Test
             //    Assert.IsTrue(rbTree.TryLookup(new CFMock("12", StgType.StgStream), out c));
             //    Assert.IsTrue(c.Name == "12");
 
-
             //}
-
-
         }
 
         private static void VerifyProperties(RBTree t)
@@ -150,7 +141,6 @@ namespace OpenMcdf.Test
 
         private static void VerifyProperty1(IRBNode n)
         {
-
             Assert.IsTrue(NodeColor(n) == Color.RED || NodeColor(n) == Color.BLACK);
 
             if (n == null) return;
@@ -165,12 +155,11 @@ namespace OpenMcdf.Test
 
         private static void VerifyProperty4(IRBNode n)
         {
-
             if (NodeColor(n) == Color.RED)
             {
-                Assert.IsTrue((NodeColor(n.Left) == Color.BLACK));
-                Assert.IsTrue((NodeColor(n.Right) == Color.BLACK));
-                Assert.IsTrue((NodeColor(n.Parent) == Color.BLACK));
+                Assert.IsTrue(NodeColor(n.Left) == Color.BLACK);
+                Assert.IsTrue(NodeColor(n.Right) == Color.BLACK);
+                Assert.IsTrue(NodeColor(n.Parent) == Color.BLACK);
             }
 
             if (n == null) return;
@@ -189,6 +178,7 @@ namespace OpenMcdf.Test
             {
                 blackCount++;
             }
+
             if (n == null)
             {
                 if (pathBlackCount == -1)
@@ -197,10 +187,9 @@ namespace OpenMcdf.Test
                 }
                 else
                 {
-
                     Assert.IsTrue(blackCount == pathBlackCount);
-
                 }
+
                 return pathBlackCount;
             }
 
@@ -209,8 +198,6 @@ namespace OpenMcdf.Test
 
             return pathBlackCount;
         }
-
-
 
         [TestMethod]
         public void Test_RBTREE_ENUMERATE()

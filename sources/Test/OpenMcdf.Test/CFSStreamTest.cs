@@ -12,20 +12,18 @@ namespace OpenMcdf.Test
     [TestClass]
     public class CFSStreamTest
     {
-
         //const String TestContext.TestDir = "C:\\TestOutputFiles\\";
 
         public CFSStreamTest()
         {
-
         }
 
         private TestContext testContextInstance;
 
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
         public TestContext TestContext
         {
             get
@@ -50,7 +48,7 @@ namespace OpenMcdf.Test
         // [ClassCleanup()]
         // public static void MyClassCleanup() { }
         //
-        // Use TestInitialize to run code before running each test 
+        // Use TestInitialize to run code before running each test
         // [TestInitialize()]
         // public void MyTestInitialize() { }
         //
@@ -142,7 +140,6 @@ namespace OpenMcdf.Test
 
             if (File.Exists("ZERO_LENGTH_STREAM.cfs"))
                 File.Delete("ZERO_LENGTH_STREAM.cfs");
-
         }
 
         [TestMethod]
@@ -192,9 +189,7 @@ namespace OpenMcdf.Test
 
             if (File.Exists("ZERO_LENGTH_STREAM_RE2.cfs"))
                 File.Delete("ZERO_LENGTH_STREAM_RE2.cfs");
-
         }
-
 
         [TestMethod]
         public void Test_WRITE_STREAM_WITH_DIFAT()
@@ -211,7 +206,6 @@ namespace OpenMcdf.Test
             cf.Save("WRITE_STREAM_WITH_DIFAT.cfs");
             cf.Close();
 
-
             CompoundFile cf2 = new CompoundFile("WRITE_STREAM_WITH_DIFAT.cfs");
             CFStream st = cf2.RootStorage.GetStream("MyStream");
 
@@ -224,9 +218,7 @@ namespace OpenMcdf.Test
 
             if (File.Exists("WRITE_STREAM_WITH_DIFAT.cfs"))
                 File.Delete("WRITE_STREAM_WITH_DIFAT.cfs");
-
         }
-
 
         [TestMethod]
         public void Test_WRITE_MINISTREAM_READ_REWRITE_STREAM()
@@ -303,10 +295,8 @@ namespace OpenMcdf.Test
             if (File.Exists("WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs"))
                 File.Delete("WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs");
 
-
             if (File.Exists("WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs"))
                 File.Delete("WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
-
         }
 
         [TestMethod]
@@ -331,7 +321,6 @@ namespace OpenMcdf.Test
 
             if (File.Exists("reportRW_SMALL.xls"))
                 File.Delete("reportRW_SMALL.xls");
-
         }
 
         [TestMethod]
@@ -356,7 +345,6 @@ namespace OpenMcdf.Test
 
             if (File.Exists("RE_WRITE_SMALLER_MINI_STREAM.xls"))
                 File.Delete("RE_WRITE_SMALLER_MINI_STREAM.xls");
-
         }
 
         [TestMethod]
@@ -377,10 +365,8 @@ namespace OpenMcdf.Test
             cf.Commit();
             cf.Close();
 
-
             if (File.Exists("reportOverwrite.xls"))
                 File.Delete("reportOverwrite.xls");
-
         }
 
         [TestMethod]
@@ -419,7 +405,6 @@ namespace OpenMcdf.Test
                 // Random commit, not on single addition
                 //if (r.Next(0, 100) > 50)
                 //    cf.UpdateFile();
-
             }
 
             cf.Save(dstFilename + "PP");
@@ -430,8 +415,6 @@ namespace OpenMcdf.Test
 
             if (File.Exists("reportOverwriteMultiple.xlsPP"))
                 File.Delete("reportOverwriteMultiple.xlsPP");
-
-
         }
 
         [TestMethod]
@@ -463,8 +446,6 @@ namespace OpenMcdf.Test
 
             if (File.Exists("reportOverwriteMultiple.xlsPP"))
                 File.Delete("reportOverwriteMultiple.xlsPP");
-
-
         }
 
         [TestMethod]
@@ -489,11 +470,7 @@ namespace OpenMcdf.Test
 
             if (File.Exists("reportOverwrite2.xlsPP"))
                 File.Delete("reportOverwrite2.xlsPP");
-
-
         }
-
-
 
         [TestMethod]
         public void Test_DELETE_STREAM_1()
@@ -523,7 +500,6 @@ namespace OpenMcdf.Test
             cf.Close();
         }
 
-
         [TestMethod]
         public void Test_WRITE_AND_READ_CFS()
         {
@@ -547,38 +523,30 @@ namespace OpenMcdf.Test
             Assert.IsNotNull(sm2);
             Assert.IsTrue(sm2.Size == 220);
 
-
             if (File.Exists(filename))
                 File.Delete(filename);
-
-
         }
 
         [TestMethod]
         public void Test_INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS()
         {
-
             Random r = new Random();
 
             for (int i = r.Next(1, 100); i < 1024 * 1024 * 70; i = i << 1)
             {
                 SingleWriteReadMatching(i + r.Next(0, 3));
             }
-
         }
-
 
         [TestMethod]
         public void Test_INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS_STREAM()
         {
-
             Random r = new Random();
 
             for (int i = r.Next(1, 100); i < 1024 * 1024 * 70; i = i << 1)
             {
                 SingleWriteReadMatchingSTREAMED(i + r.Next(0, 3));
             }
-
         }
 
         [TestMethod]
@@ -642,7 +610,6 @@ namespace OpenMcdf.Test
 
         private void SingleTransactedChange(int size)
         {
-
             String filename = "INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS.cfs";
 
             if (File.Exists(filename))
@@ -671,7 +638,6 @@ namespace OpenMcdf.Test
 
         private void SingleWriteReadMatching(int size)
         {
-
             String filename = "INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS.cfs";
 
             if (File.Exists(filename))
@@ -723,7 +689,6 @@ namespace OpenMcdf.Test
             cf2.Close();
         }
 
-
         [TestMethod]
         public void Test_APPEND_DATA_TO_STREAM()
         {
@@ -744,7 +709,6 @@ namespace OpenMcdf.Test
             cf = new CompoundFile(ms);
             byte[] data = cf.RootStorage.GetStream("MyMiniStream").GetData();
             Assert.IsTrue(Helpers.CompareBuffer(cmp, data));
-
         }
 
         [TestMethod]
@@ -764,9 +728,7 @@ namespace OpenMcdf.Test
             byte[] data = cf.RootStorage.GetStream("MyImportedStream").GetData();
 
             Assert.IsTrue(Helpers.CompareBuffer(b, data));
-
         }
-
 
 #if LARGETEST
 
@@ -826,7 +788,6 @@ namespace OpenMcdf.Test
             cf.Commit(true);
             cf.Close();
 
-
             cf = new CompoundFile("$Test_RESIZE_STREAM.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
             item = cf.RootStorage.GetStream("AStream");
             Assert.IsTrue(item != null);
@@ -836,7 +797,6 @@ namespace OpenMcdf.Test
             item.Read(buffer, 0, INITIAL_SIZE - DELTA_SIZE);
             Assert.IsTrue(Helpers.CompareBuffer(b, buffer, INITIAL_SIZE - DELTA_SIZE));
             cf.Close();
-
         }
 
         [TestMethod]
@@ -898,7 +858,6 @@ namespace OpenMcdf.Test
             byte[] buffer = new byte[2048];
             item.Read(buffer, 0, 2048);
             Assert.IsTrue(Helpers.CompareBuffer(b, buffer));
-
         }
 
         [TestMethod]
@@ -964,7 +923,6 @@ namespace OpenMcdf.Test
             Assert.IsTrue(
                 new FileInfo("$Test_RESIZE_MINISTREAM_RECYCLE.cfs").Length
                 == new FileInfo("$Test_RESIZE_MINISTREAM_RECYCLE2.cfs").Length);
-
         }
 
         [TestMethod]
@@ -982,7 +940,6 @@ namespace OpenMcdf.Test
             cf.Save("SectorRecycle.cfs");
             cf.Close();
 
-
             cf = new CompoundFile("SectorRecycle.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             cf.RootStorage.Delete("AStream");
             cf.Commit(true);
@@ -994,21 +951,18 @@ namespace OpenMcdf.Test
             cf.Save("SectorRecycleLarger.cfs");
             cf.Close();
 
-            Assert.IsFalse((new FileInfo("SectorRecycle.cfs").Length) >= (new FileInfo("SectorRecycleLarger.cfs").Length));
+            Assert.IsFalse(new FileInfo("SectorRecycle.cfs").Length >= new FileInfo("SectorRecycleLarger.cfs").Length);
 
             cf = new CompoundFile("SectorRecycle.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.SectorRecycle);
             st = cf.RootStorage.AddStream("BStream");
             st.Append(Helpers.GetBuffer(1024 * 1024 * 1));
             cf.Save("SectorRecycleSmaller.cfs");
             cf.Close();
-            long larger = (new FileInfo("SectorRecycle.cfs").Length);
-            long smaller = (new FileInfo("SectorRecycleSmaller.cfs").Length);
+            long larger = new FileInfo("SectorRecycle.cfs").Length;
+            long smaller = new FileInfo("SectorRecycleSmaller.cfs").Length;
 
             Assert.IsTrue(larger >= smaller, "Larger size:" + larger.ToString() + " - Smaller size:" + smaller.ToString());
-
         }
-
-
 
         [TestMethod]
         public void TEST_STREAM_VIEW()
@@ -1026,7 +980,6 @@ namespace OpenMcdf.Test
             Assert.IsTrue(t == 1);
         }
 
-
         [TestMethod]
         public void Test_STREAM_VIEW_2()
         {
@@ -1041,7 +994,6 @@ namespace OpenMcdf.Test
 
             Assert.IsTrue(t == 1);
         }
-
 
         /// <summary>
         /// Write a sequence of Int32 greater than sector size,
@@ -1157,6 +1109,5 @@ namespace OpenMcdf.Test
             cf.Commit();
             cf.Close();
         }
-
     }
 }

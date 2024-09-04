@@ -2,7 +2,6 @@
 
 namespace OpenMcdf.Extensions
 {
-
     public static class OlePropertiesExtensions
     {
         /// <summary>

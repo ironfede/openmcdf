@@ -18,9 +18,8 @@ using System.Windows.Forms;
 
 namespace StructuredStorageExplorer
 {
-
     /// <summary>
-    /// Sample Structured Storage viewer to 
+    /// Sample Structured Storage viewer to
     /// demonstrate use of OpenMCDF
     /// </summary>
     public partial class MainForm : Form
@@ -46,14 +45,9 @@ namespace StructuredStorageExplorer
             treeView1.ImageList.Images.Add(streamImage);
             //treeView1.ImageList.Images.Add(olePropsImage);
 
-
-
             saveAsToolStripMenuItem.Enabled = false;
             updateCurrentFileToolStripMenuItem.Enabled = false;
-
         }
-
-
 
         private void OpenFile()
         {
@@ -122,14 +116,12 @@ namespace StructuredStorageExplorer
 
         private void LoadFile(string fileName, bool enableCommit)
         {
-
             fs = new FileStream(
                 fileName,
                 FileMode.Open,
                 enableCommit ?
                     FileAccess.ReadWrite
-                    : FileAccess.Read
-                );
+                    : FileAccess.Read);
 
             try
             {
@@ -178,14 +170,12 @@ namespace StructuredStorageExplorer
             {
                 TreeNode temp = node.Nodes.Add(
                     target.Name,
-                    target.Name + (target.IsStream ? " (" + target.Size + " bytes )" : "")
-                    );
+                    target.Name + (target.IsStream ? " (" + target.Size + " bytes )" : ""));
 
                 temp.Tag = target;
 
                 if (target.IsStream)
                 {
-
                     //Stream
                     temp.ImageIndex = 1;
                     temp.SelectedImageIndex = 1;
@@ -204,8 +194,6 @@ namespace StructuredStorageExplorer
             //Visit NON-recursively (first level only)
             cfs.VisitEntries(va, false);
         }
-
-
 
         private void exportDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -229,8 +217,7 @@ namespace StructuredStorageExplorer
                 if (
                     Char.GetUnicodeCategory(c) == UnicodeCategory.LetterNumber
                     || Char.GetUnicodeCategory(c) == UnicodeCategory.LowercaseLetter
-                    || Char.GetUnicodeCategory(c) == UnicodeCategory.UppercaseLetter
-                    )
+                    || Char.GetUnicodeCategory(c) == UnicodeCategory.UppercaseLetter)
 
                     sanitizedFileName += c;
             }
@@ -295,7 +282,6 @@ namespace StructuredStorageExplorer
             }
             else
                 MessageBox.Show("Cannot update a compound document that is not based on a stream or on a file", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-
         }
 
         private void addStreamToolStripMenuItem_Click(object sender, EventArgs e)
@@ -317,7 +303,6 @@ namespace StructuredStorageExplorer
                         MessageBox.Show("Cannot insert a duplicated item", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
-
 
                 RefreshTree();
             }
@@ -377,12 +362,10 @@ namespace StructuredStorageExplorer
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
         {
-
         }
 
         private void newStripMenuItem1_Click(object sender, EventArgs e)
         {
-
             CreateNewFile();
         }
 
@@ -396,11 +379,9 @@ namespace StructuredStorageExplorer
                 }
                 catch
                 {
-
                 }
             }
         }
-
 
         private void treeView1_MouseUp(object sender, MouseEventArgs e)
         {
@@ -422,8 +403,6 @@ namespace StructuredStorageExplorer
                     }
 
                     treeView1.SelectedNode = n;
-
-
 
                     // The tag property contains the underlying CFItem.
                     CFItem target = (CFItem)n.Tag;
@@ -467,6 +446,7 @@ namespace StructuredStorageExplorer
                                     ds.Rows.Add(dr);
                                 }
                             }
+
                             ds.AcceptChanges();
                             dgvOLEProps.DataSource = ds;
 
@@ -515,7 +495,6 @@ namespace StructuredStorageExplorer
                 if (n != null)
                     propertyGrid1.SelectedObject = n.Tag;
 
-
                 if (n != null)
                 {
                     CFStream targetStream = n.Tag as CFStream;
@@ -531,7 +510,6 @@ namespace StructuredStorageExplorer
             }
             catch (Exception ex)
             {
-
                 cf?.Close();
                 fs?.Close();
 
@@ -547,7 +525,6 @@ namespace StructuredStorageExplorer
 
         void hexEditor_ByteProviderChanged(object sender, EventArgs e)
         {
-
         }
 
         private void closeStripMenuItem1_Click(object sender, EventArgs e)

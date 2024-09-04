@@ -8,7 +8,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 {
     public class OLEPropertiesContainer
     {
-
         public Dictionary<uint, string> PropertyNames = null;
 
         public OLEPropertiesContainer UserDefinedProperties { get; private set; }
@@ -126,7 +125,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                     Value = p.Value
                 };
 
-
                 properties.Add(op);
             }
 
@@ -178,7 +176,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             return op;
         }
-
 
         public void AddProperty(OLEProperty property)
         {

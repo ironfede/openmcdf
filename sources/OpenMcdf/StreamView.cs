@@ -1,11 +1,10 @@
 ﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
- * 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * The Original Code is OpenMCDF - Compound Document Format library.
- * 
+ *
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
-
 
 using System;
 using System.Collections.Generic;
@@ -51,9 +50,6 @@ namespace OpenMcdf
             adjustLength(length, availableSectors);
         }
 
-
-
-
         public List<Sector> BaseSectorChain
         {
             get { return sectorChain; }
@@ -76,7 +72,6 @@ namespace OpenMcdf
 
         public override void Flush()
         {
-
         }
 
         private long length;
@@ -115,7 +110,7 @@ namespace OpenMcdf
         public int ReadInt32()
         {
             this.Read(buf, 0, 4);
-            return (((this.buf[0] | (this.buf[1] << 8)) | (this.buf[2] << 16)) | (this.buf[3] << 24));
+            return this.buf[0] | (this.buf[1] << 8) | (this.buf[2] << 16) | (this.buf[3] << 24);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -125,7 +120,7 @@ namespace OpenMcdf
 
             // Don't try to read more bytes than this stream contains.
             long intMax = Math.Min(Int32.MaxValue, this.length);
-            count = Math.Min((int)(intMax), count);
+            count = Math.Min((int)intMax, count);
 
             if (sectorChain != null && sectorChain.Count > 0)
             {
@@ -146,8 +141,7 @@ namespace OpenMcdf
                         (int)(position % sectorSize),
                         buffer,
                         offset,
-                        nToRead
-                        );
+                        nToRead);
                 }
 
                 nRead += nToRead;
@@ -164,8 +158,7 @@ namespace OpenMcdf
                         0,
                         buffer,
                         offset + nRead,
-                        nToRead
-                        );
+                        nToRead);
 
                     nRead += nToRead;
                     secIndex++;
@@ -183,8 +176,7 @@ namespace OpenMcdf
                         0,
                         buffer,
                         offset + nRead,
-                        nToRead
-                        );
+                        nToRead);
 
                     nRead += nToRead;
                 }
@@ -192,11 +184,9 @@ namespace OpenMcdf
                 position += nRead;
 
                 return nRead;
-
             }
             else
                 return 0;
-
         }
 
         public override long Seek(long offset, SeekOrigin origin)
@@ -237,7 +227,7 @@ namespace OpenMcdf
             {
                 // Enlargement required
 
-                int nSec = (int)Math.Ceiling(((double)delta / sectorSize));
+                int nSec = (int)Math.Ceiling((double)delta / sectorSize);
 
                 while (nSec > 0)
                 {
@@ -259,6 +249,7 @@ namespace OpenMcdf
                     {
                         t.InitFATData();
                     }
+
                     sectorChain.Add(t);
                     nSec--;
                 }
@@ -269,6 +260,7 @@ namespace OpenMcdf
                 //    sectorChain.Add(t);
                 //}
             }
+
             //else
             //{
             //    // FREE Sectors
@@ -307,7 +299,7 @@ namespace OpenMcdf
 
             // Assure length
             if ((position + count) > length)
-                adjustLength((position + count));
+                adjustLength(position + count);
 
             if (sectorChain != null)
             {
@@ -324,8 +316,7 @@ namespace OpenMcdf
                         offset,
                         sectorChain[secOffset].GetData(),
                         secShift,
-                        roundByteWritten
-                        );
+                        roundByteWritten);
 
                     sectorChain[secOffset].DirtyFlag = true;
                 }
@@ -344,8 +335,7 @@ namespace OpenMcdf
                         offset,
                         sectorChain[secOffset].GetData(),
                         0,
-                        roundByteWritten
-                        );
+                        roundByteWritten);
 
                     sectorChain[secOffset].DirtyFlag = true;
 
@@ -364,8 +354,7 @@ namespace OpenMcdf
                         offset,
                         sectorChain[secOffset].GetData(),
                         0,
-                        roundByteWritten
-                        );
+                        roundByteWritten);
 
                     sectorChain[secOffset].DirtyFlag = true;
 
@@ -374,7 +363,6 @@ namespace OpenMcdf
                 }
 
                 position += count;
-
             }
         }
     }

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Diagnostics;
 #endif
 
-// ------------------------------------------------------------- 
+// -------------------------------------------------------------
 // This is a porting from java code, under MIT license of       |
 // the beautiful Red-Black Tree implementation you can find at  |
 // http://en.literateprograms.org/Red-black_tree_(Java)#chunk   |
@@ -24,6 +24,7 @@ namespace RedBlackTree
         {
         }
     }
+
     public class RBTreeDuplicatedItemException : RBTreeException
     {
         public RBTreeDuplicatedItemException(String msg)
@@ -32,14 +33,14 @@ namespace RedBlackTree
         }
     }
 
-    public enum Color { RED = 0, BLACK = 1 }
+    public enum Color { RED = 0,
+        BLACK = 1 }
 
     /// <summary>
     /// Red Black Node interface
     /// </summary>
     public interface IRBNode : IComparable
     {
-
         IRBNode Left
         {
             get;
@@ -52,18 +53,13 @@ namespace RedBlackTree
             set;
         }
 
-
         Color Color
 
         { get; set; }
 
-
-
         IRBNode Parent { get; set; }
 
-
         IRBNode Grandparent();
-
 
         IRBNode Sibling();
         //        {
@@ -100,14 +96,12 @@ namespace RedBlackTree
 
         public RBTree()
         {
-
         }
 
         public RBTree(IRBNode root)
         {
             this.Root = root;
         }
-
 
         private IRBNode LookupNode(IRBNode template)
         {
@@ -164,6 +158,7 @@ namespace RedBlackTree
                 else
                     oldn.Parent.Right = newn;
             }
+
             if (newn != null)
             {
                 newn.Parent = oldn.Parent;
@@ -179,6 +174,7 @@ namespace RedBlackTree
             {
                 r.Left.Parent = n;
             }
+
             r.Left = n;
             n.Parent = r;
         }
@@ -197,8 +193,6 @@ namespace RedBlackTree
             l.Right = n;
             n.Parent = l;
         }
-
-
 
         public void Insert(IRBNode newNode)
         {
@@ -249,6 +243,7 @@ namespace RedBlackTree
                         }
                     }
                 }
+
                 insertedNode.Parent = n;
             }
 
@@ -341,7 +336,6 @@ namespace RedBlackTree
             return n;
         }
 
-
         public void Delete(IRBNode template, out IRBNode deletedAlt)
         {
             deletedAlt = null;
@@ -373,7 +367,6 @@ namespace RedBlackTree
                 Root.Color = Color.BLACK;
             }
 
-
             return;
         }
 
@@ -384,7 +377,6 @@ namespace RedBlackTree
             else
                 DeleteCase2(n);
         }
-
 
         private void DeleteCase2(IRBNode n)
         {
@@ -494,7 +486,6 @@ namespace RedBlackTree
             {
                 DoVisitTree(action, walker.Right);
             }
-
         }
 
         internal void VisitTreeNodes(Action<IRBNode> action)
@@ -518,10 +509,8 @@ namespace RedBlackTree
 
             if (walker.Right != null)
             {
-
                 DoVisitTreeNodes(action, walker.Right);
             }
-
         }
 
         public class RBTreeEnumerator : IEnumerator<IRBNode>
@@ -557,7 +546,7 @@ namespace RedBlackTree
             public bool MoveNext()
             {
                 position++;
-                return (position < heap.Count);
+                return position < heap.Count;
             }
 
             public void Reset()
@@ -619,15 +608,14 @@ namespace RedBlackTree
         internal event Action<IRBNode> NodeInserted;
         //internal event Action<RBNode<V>> NodeDeleted;
         internal event Action<IRBNode, NodeOperation> NodeOperation;
-
-
     }
 
     internal enum NodeOperation
     {
-        LeftAssigned, RightAssigned, ColorAssigned, ParentAssigned,
+        LeftAssigned,
+        RightAssigned,
+        ColorAssigned,
+        ParentAssigned,
         ValueAssigned
     }
-
-
 }

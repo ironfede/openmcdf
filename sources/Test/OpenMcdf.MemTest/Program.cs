@@ -9,7 +9,6 @@ namespace OpenMcdf.MemTest
     {
         static void Main(string[] args)
         {
-
             //TestMultipleStreamCommit();
             TestCode();
             //StressMemory();
@@ -58,7 +57,7 @@ namespace OpenMcdf.MemTest
 
             File.Copy("8_Streams.cfs", "6_Streams.cfs", true);
 
-            cf = new CompoundFile("6_Streams.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle|CFSConfiguration.EraseFreeSectors);
+            cf = new CompoundFile("6_Streams.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle | CFSConfiguration.EraseFreeSectors);
             cf.RootStorage.Delete("D");
             cf.RootStorage.Delete("G");
             cf.Commit();
@@ -99,7 +98,6 @@ namespace OpenMcdf.MemTest
 
             cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             cf.RootStorage.GetStorage("MiniStorage").Delete("miniSt");
-
 
             cf.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").Append(bE);
             cf.Commit();
@@ -146,7 +144,6 @@ namespace OpenMcdf.MemTest
             sw.Start();
             for (int i = 0; i < N_LOOP; i++)
             {
-
                 cfst.Append(b);
                 cf.Commit(true);
 
@@ -157,7 +154,6 @@ namespace OpenMcdf.MemTest
             cfst.Append(cmp);
             cf.Commit(true);
             sw.Stop();
-
 
             cf.Close();
 
@@ -181,7 +177,6 @@ namespace OpenMcdf.MemTest
 
             Console.WriteLine("Closed Final " + sw.ElapsedMilliseconds);
             Console.ReadKey();
-
         }
 
         private static void DummyFile()
@@ -198,10 +193,8 @@ namespace OpenMcdf.MemTest
             sw.Start();
             for (int i = 0; i < 42; i++)
             {
-
                 fs.Seek(b.Length * i, SeekOrigin.Begin);
                 fs.Write(b, 0, b.Length);
-
             }
 
             fs.Close();
@@ -214,10 +207,8 @@ namespace OpenMcdf.MemTest
 
         private static void AddNodes(String depth, CFStorage cfs)
         {
-
             Action<CFItem> va = delegate (CFItem target)
             {
-
                 String temp = target.Name + (target is CFStorage ? "" : " (" + target.Size + " bytes )");
 
                 //Stream
@@ -225,13 +216,11 @@ namespace OpenMcdf.MemTest
                 Console.WriteLine(depth + temp);
 
                 if (target is CFStorage)
-                {  //Storage
-
+                { //Storage
                     String newDepth = depth + "    ";
 
                     //Recursion into the storage
                     AddNodes(newDepth, (CFStorage)target);
-
                 }
             };
 
@@ -244,7 +233,7 @@ namespace OpenMcdf.MemTest
             String srcFilename = Directory.GetCurrentDirectory() + @"\testfile\report.xls";
             String dstFilename = Directory.GetCurrentDirectory() + @"\testfile\reportOverwriteMultiple.xls";
             //Console.WriteLine(Directory.GetCurrentDirectory());
-            //Console.ReadKey(); 
+            //Console.ReadKey();
             File.Copy(srcFilename, dstFilename, true);
 
             CompoundFile cf = new CompoundFile(dstFilename, CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
@@ -276,9 +265,8 @@ namespace OpenMcdf.MemTest
 
             cf.Close();
 
-            TimeSpan sp = (DateTime.Now - start);
+            TimeSpan sp = DateTime.Now - start;
             Console.WriteLine(sp.TotalMilliseconds);
-
         }
 
         private static byte[] GetBuffer(int count)

@@ -32,7 +32,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             {
                 nameBytes = br.ReadBytes(Length << 1);
 
-                int m = (Length * 2) % 4;
+                int m = Length * 2 % 4;
                 if (m > 0)
                     br.ReadBytes(m);
             }
@@ -54,15 +54,11 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         private string GetName()
         {
-
             var result = Encoding.GetEncoding(this.codePage).GetString(nameBytes);
 
             result = result.Trim('\0');
 
             return result;
-
         }
-
-
     }
 }

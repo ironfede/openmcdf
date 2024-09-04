@@ -4,10 +4,8 @@ namespace OpenMcdf.Extensions
 {
     public static class CFStreamExtension
     {
-
-
         /// <summary>
-        /// Return the current <see cref="T:OpenMcdf.CFStream">CFStream</see> object 
+        /// Return the current <see cref="T:OpenMcdf.CFStream">CFStream</see> object
         /// as a <see cref="T:System.IO.Stream">Stream</see> object.
         /// </summary>
         /// <param name="cfStream">Current <see cref="T:OpenMcdf.CFStream">CFStream</see> object</param>
@@ -18,7 +16,7 @@ namespace OpenMcdf.Extensions
         }
 
         ///// <summary>
-        ///// Return the current <see cref="T:OpenMcdf.CFStream">CFStream</see> object 
+        ///// Return the current <see cref="T:OpenMcdf.CFStream">CFStream</see> object
         ///// as a OLE properties Stream.
         ///// </summary>
         ///// <param name="cfStream"></param>

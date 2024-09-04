@@ -31,6 +31,7 @@ namespace OpenMcdf.PerfTest
             {
                 cf.RootStorage.AddStream("Test" + i.ToString()).SetData(Helpers.GetBuffer(300));
             }
+
             cf.Save(fileName);
             cf.Close();
         }

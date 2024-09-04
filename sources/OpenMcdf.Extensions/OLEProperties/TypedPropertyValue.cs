@@ -67,7 +67,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public abstract T ReadScalarValue(System.IO.BinaryReader br);
 
-
         public void Read(System.IO.BinaryReader br)
         {
             long currentPos = br.BaseStream.Position;
@@ -93,7 +92,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                         List<T> res = new List<T>();
 
-
                         for (int i = 0; i < nItems; i++)
                         {
                             T s = ReadScalarValue(br);
@@ -115,6 +113,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                         if (m > 0 && this.NeedsPadding)
                             br.ReadBytes(4 - m); // padding
                     }
+
                     break;
                 default:
                     break;
@@ -141,8 +140,11 @@ namespace OpenMcdf.Extensions.OLEProperties
                     m = size % 4;
 
                     if (m > 0 && this.NeedsPadding)
-                        for (int i = 0; i < 4 - m; i++)  // padding
+                    {
+                        for (int i = 0; i < 4 - m; i++) // padding
                             bw.Write((byte)0);
+                    }
+
                     break;
 
                 case PropertyDimensions.IsVector:
@@ -159,16 +161,21 @@ namespace OpenMcdf.Extensions.OLEProperties
                         m = size % 4;
 
                         if (m > 0 && this.NeedsPadding)
-                            for (int q = 0; q < 4 - m; q++)  // padding
+                        {
+                            for (int q = 0; q < 4 - m; q++) // padding
                                 bw.Write((byte)0);
+                        }
                     }
 
                     size = (int)(bw.BaseStream.Position - currentPos);
                     m = size % 4;
 
                     if (m > 0 && this.NeedsPadding)
-                        for (int i = 0; i < 4 - m; i++)  // padding
+                    {
+                        for (int i = 0; i < 4 - m; i++) // padding
                             bw.Write((byte)0);
+                    }
+
                     break;
             }
         }

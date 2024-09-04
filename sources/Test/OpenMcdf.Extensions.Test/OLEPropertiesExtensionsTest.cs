@@ -16,16 +16,14 @@ namespace OpenMcdf.Extensions.Test
     {
         public OLEPropertiesExtensionsTest()
         {
-
         }
-
 
         private TestContext testContextInstance;
 
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
+        /// Gets or sets the test context which provides
+        /// information about and functionality for the current test run.
+        /// </summary>
         public TestContext TestContext
         {
             get
@@ -50,7 +48,7 @@ namespace OpenMcdf.Extensions.Test
         // [ClassCleanup()]
         // public static void MyClassCleanup() { }
         //
-        // Use TestInitialize to run code before running each test 
+        // Use TestInitialize to run code before running each test
         // [TestInitialize()]
         // public void MyTestInitialize() { }
         //
@@ -102,7 +100,6 @@ namespace OpenMcdf.Extensions.Test
 
                 cf.Close();
             }
-
         }
 
         [TestMethod]
@@ -126,7 +123,6 @@ namespace OpenMcdf.Extensions.Test
 
                 cf.Close();
             }
-
         }
 
         // Modify some document summary information properties, save to a file, and then validate the expected results
@@ -218,7 +214,6 @@ namespace OpenMcdf.Extensions.Test
                 Debug.WriteLine(ex.Message);
                 Assert.Fail();
             }
-
         }
 
         [TestMethod]
@@ -253,7 +248,6 @@ namespace OpenMcdf.Extensions.Test
                         Debug.WriteLine(p.Value);
                     }
 
-
                     Assert.IsNotNull(co2.UserDefinedProperties.Properties);
                     foreach (OLEProperties.OLEProperty p in co2.UserDefinedProperties.Properties)
                     {
@@ -270,8 +264,8 @@ namespace OpenMcdf.Extensions.Test
                 Debug.WriteLine(ex.Message);
                 Assert.Fail();
             }
-
         }
+
         [TestMethod]
         public void Test_SUMMARY_INFO_READ_LPWSTRING()
         {
@@ -292,7 +286,6 @@ namespace OpenMcdf.Extensions.Test
 
                 cf.Close();
             }
-
         }
 
         // Test that we can modify an LPWSTR property, and the value is null terminated as required
@@ -347,7 +340,7 @@ namespace OpenMcdf.Extensions.Test
                 var co = dsiStream.AsOLEPropertiesContainer();
                 var userProps = co.UserDefinedProperties;
 
-                // CodePage should be CP_WINUNICODE (1200) 
+                // CodePage should be CP_WINUNICODE (1200)
                 Assert.AreEqual(1200, userProps.Context.CodePage);
 
                 // There should be 5 property names present, and 6 properties (the properties include the code page)
@@ -453,7 +446,6 @@ namespace OpenMcdf.Extensions.Test
             }
         }
 
-
         // Try to read a document which contains Vector/String properties
         // refs https://github.com/ironfede/openmcdf/issues/98
         [TestMethod]
@@ -484,7 +476,6 @@ namespace OpenMcdf.Extensions.Test
                 var co = cf.RootStorage.GetStream("\u0005C3teagxwOttdbfkuIaamtae3Ie").AsOLEPropertiesContainer();
                 var clsidProp = co.Properties.First(x => x.PropertyName == "DocumentID");
                 Assert.AreEqual(guid, clsidProp.Value);
-
             }
         }
 

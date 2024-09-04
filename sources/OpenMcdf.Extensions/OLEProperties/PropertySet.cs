@@ -7,7 +7,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 {
     internal sealed class PropertySet
     {
-
         public PropertyContext PropertyContext
         {
             get; set;
@@ -53,6 +52,5 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             br.BaseStream.Position = currPos;
         }
-
     }
 }

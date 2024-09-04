@@ -11,15 +11,12 @@ namespace StructuredStorageExplorer
             InitializeComponent();
         }
 
-
-
         private void btnSavePreferences_Click(object sender, EventArgs e)
         {
             Settings.Default.EnableValidation = cbEnableValidation.Checked;
             Settings.Default.Save();
             this.DialogResult = DialogResult.OK;
             this.Close();
-
         }
 
         private void btnCancelPreferences_Click(object sender, EventArgs e)

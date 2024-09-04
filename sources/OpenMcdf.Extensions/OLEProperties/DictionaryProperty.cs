@@ -13,7 +13,6 @@ namespace OpenMcdf.Extensions.OLEProperties
         {
             this.codePage = codePage;
             this.entries = new Dictionary<uint, string>();
-
         }
 
         public PropertyType PropertyType
@@ -55,7 +54,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                     br.ReadByte();
                 }
             }
-
         }
 
         /// <summary>
@@ -134,8 +132,10 @@ namespace OpenMcdf.Extensions.OLEProperties
             var m = fieldLength % 4;
 
             if (m > 0)
-                for (int i = 0; i < 4 - m; i++)  // padding
+            {
+                for (int i = 0; i < 4 - m; i++) // padding
                     bw.Write((byte)0);
+            }
         }
     }
 }

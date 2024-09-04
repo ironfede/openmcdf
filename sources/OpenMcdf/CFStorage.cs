@@ -1,16 +1,14 @@
 ﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
- * 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * The Original Code is OpenMCDF - Compound Document Format library.
- * 
+ *
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
-
 
 using RedBlackTree;
 using System;
 using System.Collections.Generic;
-
 
 namespace OpenMcdf
 {
@@ -20,7 +18,7 @@ namespace OpenMcdf
     /// <param name="item">Currently visited <see cref="T:OpenMcdf.CFItem">item</see></param>
     /// <example>
     /// <code>
-    /// 
+    ///
     /// //We assume that xls file should be a valid OLE compound file
     /// const String STORAGE_NAME = "report.xls";
     /// CompoundFile cf = new CompoundFile(STORAGE_NAME);
@@ -71,7 +69,6 @@ namespace OpenMcdf
             }
         }
 
-
         /// <summary>
         /// Create a CFStorage using an existing directory (previously loaded).
         /// </summary>
@@ -108,7 +105,7 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFException">Raised when adding a stream with null or empty name</exception>
         /// <example>
         /// <code>
-        /// 
+        ///
         ///  String filename = "A_NEW_COMPOUND_FILE_YOU_CAN_WRITE_TO.cfs";
         ///
         ///  CompoundFile cf = new CompoundFile();
@@ -119,7 +116,7 @@ namespace OpenMcdf
         ///  sm.SetData(b);
         ///
         ///  cf.Save(filename);
-        ///  
+        ///
         /// </code>
         /// </example>
         public CFStream AddStream(String streamName)
@@ -128,8 +125,6 @@ namespace OpenMcdf
 
             if (String.IsNullOrEmpty(streamName))
                 throw new CFException("Stream name cannot be null or empty");
-
-
 
             IDirectoryEntry dirEntry = DirectoryEntry.TryNew(streamName, StgType.StgStream, this.CompoundFile.GetDirectories());
 
@@ -153,7 +148,6 @@ namespace OpenMcdf
 
             return new CFStream(this.CompoundFile, dirEntry);
         }
-
 
         /// <summary>
         /// Get a named <see cref="T:OpenMcdf.CFStream">stream</see> contained in the current storage if existing.
@@ -242,7 +236,6 @@ namespace OpenMcdf
             catch (CFDisposedException)
             {
                 result = false;
-
             }
 
             return result;
@@ -292,7 +285,6 @@ namespace OpenMcdf
             }
         }
 
-
         /// <summary>
         /// Get a named storage contained in the current one if existing.
         /// </summary>
@@ -302,7 +294,7 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFItemNotFound">Raised if item to delete is not found</exception>
         /// <example>
         /// <code>
-        /// 
+        ///
         /// String FILENAME = "MultipleStorage2.cfs";
         /// CompoundFile cf = new CompoundFile(FILENAME, UpdateMode.ReadOnly, false, false);
         ///
@@ -337,7 +329,7 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFDisposedException">Raised if trying to delete item from a closed compound file</exception>
         /// <example>
         /// <code>
-        /// 
+        ///
         /// String FILENAME = "MultipleStorage2.cfs";
         /// CompoundFile cf = new CompoundFile(FILENAME, UpdateMode.ReadOnly, false, false);
         ///
@@ -373,7 +365,7 @@ namespace OpenMcdf
         /// <returns><see cref="T:System.Boolean"> true if storage found, else false</returns>
         /// <example>
         /// <code>
-        /// 
+        ///
         /// String FILENAME = "MultipleStorage2.cfs";
         /// CompoundFile cf = new CompoundFile(FILENAME, UpdateMode.ReadOnly, false, false);
         ///
@@ -381,7 +373,7 @@ namespace OpenMcdf
         ///
         /// Assert.IsNotNull(st);
         /// Assert.IsTrue(b);
-        /// 
+        ///
         /// cf.Close();
         /// </code>
         /// </example>
@@ -402,7 +394,6 @@ namespace OpenMcdf
                     cfStorage = new CFStorage(this.CompoundFile, outDe as IDirectoryEntry);
                     result = true;
                 }
-
             }
             catch (CFDisposedException)
             {
@@ -411,7 +402,6 @@ namespace OpenMcdf
 
             return result;
         }
-
 
         /// <summary>
         /// Create new child storage directory inside the current storage.
@@ -423,7 +413,7 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFException">Raised when adding a storage with null or empty name</exception>
         /// <example>
         /// <code>
-        /// 
+        ///
         ///  String filename = "A_NEW_COMPOUND_FILE_YOU_CAN_WRITE_TO.cfs";
         ///
         ///  CompoundFile cf = new CompoundFile();
@@ -434,7 +424,7 @@ namespace OpenMcdf
         ///  sm.SetData(b);
         ///
         ///  cf.Save(filename);
-        ///  
+        ///
         /// </code>
         /// </example>
         public CFStorage AddStorage(String storageName)
@@ -519,11 +509,13 @@ namespace OpenMcdf
                 this.Children.VisitTreeNodes(internalAction);
 
                 if (recursive && subStorages.Count > 0)
+                {
                     foreach (IRBNode n in subStorages)
                     {
                         IDirectoryEntry d = n as IDirectoryEntry;
-                        (new CFStorage(this.CompoundFile, d)).VisitEntries(action, recursive);
+                        new CFStorage(this.CompoundFile, d).VisitEntries(action, recursive);
                     }
+                }
             }
         }
 
@@ -562,13 +554,12 @@ namespace OpenMcdf
             if (((IDirectoryEntry)foundObj).StgType == StgType.StgRoot)
                 throw new CFException("Root storage cannot be removed");
 
-
             IRBNode altDel = null;
             switch (((IDirectoryEntry)foundObj).StgType)
             {
                 case StgType.StgStorage:
 
-                    CFStorage temp = new CFStorage(this.CompoundFile, ((IDirectoryEntry)foundObj));
+                    CFStorage temp = new CFStorage(this.CompoundFile, (IDirectoryEntry)foundObj);
 
                     // This is a storage. we have to remove children items first
                     foreach (IRBNode de in temp.Children)
@@ -576,9 +567,6 @@ namespace OpenMcdf
                         IDirectoryEntry ded = de as IDirectoryEntry;
                         temp.Delete(ded.Name);
                     }
-
-
-
 
                     // ...then we Remove storage item from children tree...
                     this.Children.Delete(foundObj, out altDel);
@@ -602,7 +590,7 @@ namespace OpenMcdf
 
                 case StgType.StgStream:
 
-                    // Free directory associated data stream. 
+                    // Free directory associated data stream.
                     CompoundFile.FreeAssociatedData((foundObj as IDirectoryEntry).SID);
 
                     // Remove item from children tree
@@ -623,8 +611,6 @@ namespace OpenMcdf
 
                     this.CompoundFile.InvalidateDirectoryEntry(((IDirectoryEntry)foundObj).SID);
 
-
-
                     break;
             }
 
@@ -634,15 +620,11 @@ namespace OpenMcdf
             //    if( ((IDirectoryEntry)target).SID>foundObj.SID )
             //    {
             //        ((IDirectoryEntry)target).SID--;
-            //    }                   
-
+            //    }
 
             //    ((IDirectoryEntry)target).LeftSibling--;
             //};
-
-
         }
-
 
         /// <summary>
         /// Rename a Stream or Storage item in the current storage

@@ -1,9 +1,9 @@
 ﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
- * 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * The Original Code is OpenMCDF - Compound Document Format library.
- * 
+ *
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
 using System;
@@ -56,7 +56,7 @@ namespace OpenMcdf
 
             if (stgType == StgType.StgStorage)
             {
-                this.creationDate = BitConverter.GetBytes((DateTime.Now.ToFileTime()));
+                this.creationDate = BitConverter.GetBytes(DateTime.Now.ToFileTime());
                 this.StartSetc = ZERO;
             }
 
@@ -79,6 +79,7 @@ namespace OpenMcdf
             {
                 return entryName;
             }
+
             //set
             //{
             //    entryName = value;
@@ -108,15 +109,11 @@ namespace OpenMcdf
                     entryName.Contains(@"\") ||
                     entryName.Contains(@"/") ||
                     entryName.Contains(@":") ||
-                    entryName.Contains(@"!")
-
-                    )
+                    entryName.Contains(@"!"))
                     throw new CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
 
                 if (entryName.Length > 31)
                     throw new CFException("Entry name MUST NOT exceed 31 characters");
-
-
 
                 byte[] newName = null;
                 byte[] temp = Encoding.Unicode.GetBytes(entryName);
@@ -155,6 +152,7 @@ namespace OpenMcdf
                 stgType = value;
             }
         }
+
         private StgColor stgColor = StgColor.Red;
 
         public StgColor StgColor
@@ -205,7 +203,6 @@ namespace OpenMcdf
             }
         }
 
-
         private Int32 stateBits;
 
         public Int32 StateBits
@@ -254,6 +251,7 @@ namespace OpenMcdf
                 startSetc = value;
             }
         }
+
         private long size;
         public long Size
         {
@@ -267,10 +265,8 @@ namespace OpenMcdf
             }
         }
 
-
         public int CompareTo(object obj)
         {
-
             IDirectoryEntry otherDir = obj as IDirectoryEntry;
 
             if (otherDir == null)
@@ -301,7 +297,6 @@ namespace OpenMcdf
                 }
 
                 return 0;
-
             }
 
             //   return String.Compare(Encoding.Unicode.GetString(this.EntryName).ToUpper(), Encoding.Unicode.GetString(other.EntryName).ToUpper());
@@ -319,7 +314,6 @@ namespace OpenMcdf
         /// <returns>(not warranted) unique hash for byte array</returns>
         private static ulong fnv_hash(byte[] buffer)
         {
-
             ulong h = 2166136261;
             int i;
 
@@ -428,7 +422,6 @@ namespace OpenMcdf
             get { return GetEntryName(); }
         }
 
-
         public RedBlackTree.IRBNode Left
         {
             get
@@ -458,12 +451,10 @@ namespace OpenMcdf
             }
             set
             {
-
                 rightSibling = value != null ? ((IDirectoryEntry)value).SID : NOSTREAM;
 
                 if (rightSibling != NOSTREAM)
                     dirRepository[rightSibling].Parent = this;
-
             }
         }
 
@@ -561,14 +552,10 @@ namespace OpenMcdf
             return de;
         }
 
-
-
-
         public override string ToString()
         {
             return this.Name + " [" + this.sid + "]" + (this.stgType == StgType.StgStream ? "Stream" : "Storage");
         }
-
 
         public void AssignValueTo(RedBlackTree.IRBNode other)
         {

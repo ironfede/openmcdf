@@ -1,11 +1,10 @@
 ﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
- * 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * The Original Code is OpenMCDF - Compound Document Format library.
- * 
+ *
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
-
 
 using System.IO;
 
@@ -56,14 +55,13 @@ namespace OpenMcdf
         }
 
         //30 2 Size of a sector in the compound document file (➜3.1) in power-of-two (ssz), real sector
-        //size is sec_size = 2ssz bytes (minimum value is 7 which means 128 bytes, most used 
+        //size is sec_size = 2ssz bytes (minimum value is 7 which means 128 bytes, most used
         //value is 9 which means 512 bytes)
         private ushort sectorShift = 9;
 
         public ushort SectorShift
         {
             get { return sectorShift; }
-
         }
 
         //32 2 Size of a short-sector in the short-stream container stream (➜6.1) in power-of-two (sssz),
@@ -178,17 +176,13 @@ namespace OpenMcdf
             get { return difat; }
         }
 
-
         public Header()
             : this(3)
         {
-
         }
-
 
         public Header(ushort version)
         {
-
             switch (version)
             {
                 case 3:
@@ -203,16 +197,12 @@ namespace OpenMcdf
 
                 default:
                     throw new CFException("Invalid Compound File Format version");
-
-
             }
 
             for (int i = 0; i < 109; i++)
             {
                 difat[i] = Sector.FREESECT;
             }
-
-
         }
 
         public void Write(Stream stream)
@@ -282,7 +272,6 @@ namespace OpenMcdf
 
             rw.Close();
         }
-
 
         private void CheckVersion()
         {
