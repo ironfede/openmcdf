@@ -132,8 +132,10 @@ namespace OpenMcdf.Extensions.OLEProperties
             var m = fieldLength % 4;
 
             if (m > 0)
+            {
                 for (int i = 0; i < 4 - m; i++) // padding
                     bw.Write((byte)0);
+            }
         }
     }
 }

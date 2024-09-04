@@ -509,11 +509,13 @@ namespace OpenMcdf
                 this.Children.VisitTreeNodes(internalAction);
 
                 if (recursive && subStorages.Count > 0)
+                {
                     foreach (IRBNode n in subStorages)
                     {
                         IDirectoryEntry d = n as IDirectoryEntry;
                         new CFStorage(this.CompoundFile, d).VisitEntries(action, recursive);
                     }
+                }
             }
         }
 
