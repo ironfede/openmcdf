@@ -24,12 +24,6 @@
     <Deterministic>False</Deterministic>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OpenMcdf, Version=2.3.0.0, Culture=neutral, PublicKeyToken=fdbb1629d7c00800, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\Debug\OpenMcdf\net40\OpenMcdf.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
@@ -45,5 +39,8 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\OpenMcdf\OpenMcdf.csproj" />
   </ItemGroup>
 </Project>
