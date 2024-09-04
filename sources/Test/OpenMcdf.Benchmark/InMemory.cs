@@ -1,11 +1,12 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
+using BenchmarkDotNet.Jobs;
 using System;
 using System.IO;
 
 namespace OpenMcdf.Benchmark
 {
-    [CoreJob]
+    [SimpleJob(RuntimeMoniker.NetCoreApp31)]
     [CsvExporter]
     [HtmlExporter]
     [MarkdownExporter]
