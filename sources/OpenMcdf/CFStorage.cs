@@ -1,9 +1,9 @@
 ﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
- * 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * The Original Code is OpenMCDF - Compound Document Format library.
- * 
+ *
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
 using RedBlackTree;
@@ -18,7 +18,7 @@ namespace OpenMcdf
     /// <param name="item">Currently visited <see cref="T:OpenMcdf.CFItem">item</see></param>
     /// <example>
     /// <code>
-    /// 
+    ///
     /// //We assume that xls file should be a valid OLE compound file
     /// const String STORAGE_NAME = "report.xls";
     /// CompoundFile cf = new CompoundFile(STORAGE_NAME);
@@ -105,7 +105,7 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFException">Raised when adding a stream with null or empty name</exception>
         /// <example>
         /// <code>
-        /// 
+        ///
         ///  String filename = "A_NEW_COMPOUND_FILE_YOU_CAN_WRITE_TO.cfs";
         ///
         ///  CompoundFile cf = new CompoundFile();
@@ -116,7 +116,7 @@ namespace OpenMcdf
         ///  sm.SetData(b);
         ///
         ///  cf.Save(filename);
-        ///  
+        ///
         /// </code>
         /// </example>
         public CFStream AddStream(String streamName)
@@ -294,7 +294,7 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFItemNotFound">Raised if item to delete is not found</exception>
         /// <example>
         /// <code>
-        /// 
+        ///
         /// String FILENAME = "MultipleStorage2.cfs";
         /// CompoundFile cf = new CompoundFile(FILENAME, UpdateMode.ReadOnly, false, false);
         ///
@@ -329,7 +329,7 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFDisposedException">Raised if trying to delete item from a closed compound file</exception>
         /// <example>
         /// <code>
-        /// 
+        ///
         /// String FILENAME = "MultipleStorage2.cfs";
         /// CompoundFile cf = new CompoundFile(FILENAME, UpdateMode.ReadOnly, false, false);
         ///
@@ -365,7 +365,7 @@ namespace OpenMcdf
         /// <returns><see cref="T:System.Boolean"> true if storage found, else false</returns>
         /// <example>
         /// <code>
-        /// 
+        ///
         /// String FILENAME = "MultipleStorage2.cfs";
         /// CompoundFile cf = new CompoundFile(FILENAME, UpdateMode.ReadOnly, false, false);
         ///
@@ -373,7 +373,7 @@ namespace OpenMcdf
         ///
         /// Assert.IsNotNull(st);
         /// Assert.IsTrue(b);
-        /// 
+        ///
         /// cf.Close();
         /// </code>
         /// </example>
@@ -413,7 +413,7 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFException">Raised when adding a storage with null or empty name</exception>
         /// <example>
         /// <code>
-        /// 
+        ///
         ///  String filename = "A_NEW_COMPOUND_FILE_YOU_CAN_WRITE_TO.cfs";
         ///
         ///  CompoundFile cf = new CompoundFile();
@@ -424,7 +424,7 @@ namespace OpenMcdf
         ///  sm.SetData(b);
         ///
         ///  cf.Save(filename);
-        ///  
+        ///
         /// </code>
         /// </example>
         public CFStorage AddStorage(String storageName)
@@ -588,7 +588,7 @@ namespace OpenMcdf
 
                 case StgType.StgStream:
 
-                    // Free directory associated data stream. 
+                    // Free directory associated data stream.
                     CompoundFile.FreeAssociatedData((foundObj as IDirectoryEntry).SID);
 
                     // Remove item from children tree
@@ -618,7 +618,7 @@ namespace OpenMcdf
             //    if( ((IDirectoryEntry)target).SID>foundObj.SID )
             //    {
             //        ((IDirectoryEntry)target).SID--;
-            //    }                   
+            //    }
 
             //    ((IDirectoryEntry)target).LeftSibling--;
             //};

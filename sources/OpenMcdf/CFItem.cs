@@ -1,10 +1,10 @@
 ﻿
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
- * 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * The Original Code is OpenMCDF - Compound Document Format library.
- * 
+ *
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
 using System;
@@ -16,7 +16,7 @@ namespace OpenMcdf
     /// </summary>
     /// <example>
     /// <code>
-    /// 
+    ///
     /// const String STORAGE_NAME = "report.xls";
     /// CompoundFile cf = new CompoundFile(STORAGE_NAME);
     ///
@@ -32,7 +32,7 @@ namespace OpenMcdf
     /// cf.RootStorage.VisitEntries(va, true);
     ///
     /// tw.Close();
-    /// 
+    ///
     /// </code>
     /// </example>
     public abstract class CFItem : IComparable<CFItem>
@@ -136,7 +136,7 @@ namespace OpenMcdf
         }
 
         /// <summary>
-        /// Size in bytes of the item. It has a valid value 
+        /// Size in bytes of the item. It has a valid value
         /// only if entity is a stream, otherwise it is set to zero.
         /// </summary>
         public long Size

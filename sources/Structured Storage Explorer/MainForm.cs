@@ -19,7 +19,7 @@ using System.Windows.Forms;
 namespace StructuredStorageExplorer
 {
     /// <summary>
-    /// Sample Structured Storage viewer to 
+    /// Sample Structured Storage viewer to
     /// demonstrate use of OpenMCDF
     /// </summary>
     public partial class MainForm : Form

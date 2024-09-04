@@ -48,7 +48,7 @@ namespace OpenMcdf.Extensions.Test
         // [ClassCleanup()]
         // public static void MyClassCleanup() { }
         //
-        // Use TestInitialize to run code before running each test 
+        // Use TestInitialize to run code before running each test
         // [TestInitialize()]
         // public void MyTestInitialize() { }
         //
@@ -340,7 +340,7 @@ namespace OpenMcdf.Extensions.Test
                 var co = dsiStream.AsOLEPropertiesContainer();
                 var userProps = co.UserDefinedProperties;
 
-                // CodePage should be CP_WINUNICODE (1200) 
+                // CodePage should be CP_WINUNICODE (1200)
                 Assert.AreEqual(1200, userProps.Context.CodePage);
 
                 // There should be 5 property names present, and 6 properties (the properties include the code page)

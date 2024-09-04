@@ -8,7 +8,7 @@ using System.Linq;
 using System.Diagnostics;
 #endif
 
-// ------------------------------------------------------------- 
+// -------------------------------------------------------------
 // This is a porting from java code, under MIT license of       |
 // the beautiful Red-Black Tree implementation you can find at  |
 // http://en.literateprograms.org/Red-black_tree_(Java)#chunk   |

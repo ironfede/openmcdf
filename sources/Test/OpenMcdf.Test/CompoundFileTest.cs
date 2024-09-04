@@ -47,7 +47,7 @@ namespace OpenMcdf.Test
         // [ClassCleanup()]
         // public static void MyClassCleanup() { }
         //
-        // Use TestInitialize to run code before running each test 
+        // Use TestInitialize to run code before running each test
         // [TestInitialize()]
         // public void MyTestInitialize() { }
         //
@@ -380,7 +380,7 @@ namespace OpenMcdf.Test
             File.Delete("8_Streams.cfs");
 
             //###########
-            // 
+            //
 #if !NETCOREAPP2_0
             Trace.Listeners.Add(new ConsoleTraceListener());
 #endif
@@ -825,7 +825,7 @@ namespace OpenMcdf.Test
         //{
         //    var f = new CompoundFile();
 
-        //    byte[] bB = Helpers.GetBuffer(5 * 1024, 0x0B); 
+        //    byte[] bB = Helpers.GetBuffer(5 * 1024, 0x0B);
         //    f.RootStorage.AddStream("Test").AppendData(bB);
         //    f.Save("Astorage.cfs");
         //}
@@ -1145,7 +1145,7 @@ namespace OpenMcdf.Test
         //{
         //    var f = new CompoundFile();
 
-        //    byte[] bB = Helpers.GetBuffer(5 * 1024, 0x0B); 
+        //    byte[] bB = Helpers.GetBuffer(5 * 1024, 0x0B);
         //    f.RootStorage.AddStream("Test").AppendData(bB);
         //    f.Save("Astorage.cfs");
         //}
@@ -1185,7 +1185,7 @@ namespace OpenMcdf.Test
                     Assert.IsTrue(root.TryGetStorage(storageName, out var storage)); // <- no problem here
                 }
 
-                // write CompundFile into MemoryStream... 
+                // write CompundFile into MemoryStream...
                 using (var memStream = new MemoryStream())
                 {
                     compoundFile.Save(memStream);

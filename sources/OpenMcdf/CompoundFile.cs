@@ -1,9 +1,9 @@
 ﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
- * 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * The Original Code is OpenMCDF - Compound Document Format library.
- * 
+ *
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
 #define FLAT_WRITE // No optimization on the number of write operations
@@ -28,7 +28,7 @@ namespace OpenMcdf
 
     /// <summary>
     /// Configuration parameters for the compound files.
-    /// They can be OR-combined to configure 
+    /// They can be OR-combined to configure
     /// <see cref="T:OpenMcdf.CompoundFile">Compound file</see> behavior.
     /// All flags are NOT set by Default.
     /// </summary>
@@ -36,14 +36,14 @@ namespace OpenMcdf
     public enum CFSConfiguration
     {
         /// <summary>
-        /// Sector Recycling turn off, 
-        /// free sectors erasing off, 
+        /// Sector Recycling turn off,
+        /// free sectors erasing off,
         /// format validation exception raised
         /// </summary>
         Default = 1,
 
         /// <summary>
-        /// Sector recycling reduces data writing performances 
+        /// Sector recycling reduces data writing performances
         /// but avoids space wasting in scenarios with frequently
         /// data manipulation of the same streams.
         /// </summary>
@@ -56,7 +56,7 @@ namespace OpenMcdf
 
         /// <summary>
         /// No exception is raised when a validation error occurs.
-        /// This can possibly lead to a security issue but gives 
+        /// This can possibly lead to a security issue but gives
         /// a chance to corrupted files to load.
         /// </summary>
         NoValidationException = 8,
@@ -92,9 +92,9 @@ namespace OpenMcdf
     {
         /// <summary>
         /// ReadOnly update mode prevents overwriting
-        /// of the opened file. 
-        /// Data changes are allowed but they have to be 
-        /// persisted on a different file when required 
+        /// of the opened file.
+        /// Data changes are allowed but they have to be
+        /// persisted on a different file when required
         /// using <see cref="M:OpenMcdf.CompoundFile.Save">method</see>
         /// </summary>
         ReadOnly,
@@ -110,7 +110,7 @@ namespace OpenMcdf
 
     /// <summary>
     /// Standard Microsoft&#169; Compound File implementation.
-    /// It is also known as OLE/COM structured storage 
+    /// It is also known as OLE/COM structured storage
     /// and contains a hierarchy of storage and stream objects providing
     /// efficient storage of multiple kinds of documents in a single file.
     /// Version 3 and 4 of specifications are supported.
@@ -205,12 +205,12 @@ namespace OpenMcdf
 
         /// <summary>
         /// Create a blank, version 3 compound file.
-        /// Sector recycle is turned off to achieve the best reading/writing 
+        /// Sector recycle is turned off to achieve the best reading/writing
         /// performance in most common scenarios.
         /// </summary>
         /// <example>
         /// <code>
-        /// 
+        ///
         ///     byte[] b = new byte[10000];
         ///     for (int i = 0; i &lt; 10000; i++)
         ///     {
@@ -224,7 +224,7 @@ namespace OpenMcdf
         ///     myStream.SetData(b);
         ///     cf.Save("MyCompoundFile.cfs");
         ///     cf.Close();
-        ///     
+        ///
         /// </code>
         /// </example>
         public CompoundFile() : this(CFSVersion.Ver_3, CFSConfiguration.Default) { }
@@ -247,7 +247,7 @@ namespace OpenMcdf
         /// <param name="configFlags">Set <see cref="T:OpenMcdf.CFSConfiguration">configuration</see> parameters for the new compound file</param>
         /// <example>
         /// <code>
-        /// 
+        ///
         ///     byte[] b = new byte[10000];
         ///     for (int i = 0; i &lt; 10000; i++)
         ///     {
@@ -261,7 +261,7 @@ namespace OpenMcdf
         ///     myStream.SetData(b);
         ///     cf.Save("MyCompoundFile.cfs");
         ///     cf.Close();
-        ///     
+        ///
         /// </code>
         /// </example>
         public CompoundFile(CFSVersion cfsVersion, CFSConfiguration configFlags)
@@ -276,7 +276,7 @@ namespace OpenMcdf
             DIFAT_SECTOR_FAT_ENTRIES_COUNT = (GetSectorSize() / 4) - 1;
             FAT_SECTOR_ENTRIES_COUNT = (GetSectorSize() / 4);
 
-            //Root -- 
+            //Root --
             IDirectoryEntry rootDir = DirectoryEntry.New("Root Entry", StgType.StgRoot, directoryEntries);
             rootDir.StgColor = StgColor.Black;
             //this.InsertNewDirectoryEntry(rootDir);
@@ -305,7 +305,7 @@ namespace OpenMcdf
         /// </example>
         /// <remarks>
         /// File will be open in read-only mode: it has to be saved
-        /// with a different filename. A wrapping implementation has to be provided 
+        /// with a different filename. A wrapping implementation has to be provided
         /// in order to remove/substitute an existing file. Version will be
         /// automatically recognized from the file. Sector recycle is turned off
         /// to achieve the best reading/writing performance in most common scenarios.
@@ -322,7 +322,7 @@ namespace OpenMcdf
         /// <example>
         /// <code>
         /// String srcFilename = "data_YOU_CAN_CHANGE.xls";
-        /// 
+        ///
         /// CompoundFile cf = new CompoundFile(srcFilename, UpdateMode.Update, true, true);
         ///
         /// Random r = new Random();
@@ -330,7 +330,7 @@ namespace OpenMcdf
         /// byte[] buffer = GetBuffer(r.Next(3, 4095), 0x0A);
         ///
         /// cf.RootStorage.AddStream("MyStream").SetData(buffer);
-        /// 
+        ///
         /// //This will persist data to the underlying media.
         /// cf.Commit();
         /// cf.Close();
@@ -357,9 +357,9 @@ namespace OpenMcdf
         /// <param name="eraseFreeSectors">If true, overwrite with zeros unallocated sectors</param>
         /// <example>
         /// <code>
-        /// 
+        ///
         /// String filename = "reportREAD.xls";
-        ///   
+        ///
         /// FileStream fs = new FileStream(filename, FileMode.Open);
         /// CompoundFile cf = new CompoundFile(fs, UpdateMode.ReadOnly, false, false);
         /// CFStream foundStream = cf.RootStorage.GetStream("Workbook");
@@ -391,9 +391,9 @@ namespace OpenMcdf
         /// <param name="stream">Streamed compound file</param>
         /// <example>
         /// <code>
-        /// 
+        ///
         /// String filename = "reportREAD.xls";
-        ///   
+        ///
         /// FileStream fs = new FileStream(filename, FileMode.Open);
         /// CompoundFile cf = new CompoundFile(fs);
         /// CFStream foundStream = cf.RootStorage.GetStream("Workbook");
@@ -416,7 +416,7 @@ namespace OpenMcdf
         /// </summary>
         /// <remarks>
         /// This method can be used
-        /// only if the supporting stream has been opened in 
+        /// only if the supporting stream has been opened in
         /// <see cref="T:OpenMcdf.UpdateMode">Update mode</see>.
         /// </remarks>
         public void Commit()
@@ -435,8 +435,8 @@ namespace OpenMcdf
         /// </summary>
         /// <param name="releaseMemory">If true, release loaded sectors to limit memory usage but reduces following read operations performance</param>
         /// <remarks>
-        /// This method can be used only if 
-        /// the supporting stream has been opened in 
+        /// This method can be used only if
+        /// the supporting stream has been opened in
         /// <see cref="T:OpenMcdf.UpdateMode">Update mode</see>.
         /// </remarks>
         public void Commit(bool releaseMemory)
@@ -727,7 +727,7 @@ namespace OpenMcdf
         }
 
         /// <summary>
-        /// Return true if this compound file has been 
+        /// Return true if this compound file has been
         /// loaded from an existing file or stream
         /// </summary>
         public bool HasSourceStream
@@ -1264,7 +1264,7 @@ namespace OpenMcdf
 
                     // Strictly speaking, the following condition is not correct from
                     // a specification point of view:
-                    // only ENDOFCHAIN should break DIFAT chain but 
+                    // only ENDOFCHAIN should break DIFAT chain but
                     // a lot of existing compound files use FREESECT as DIFAT chain termination
                     if (nextSecID == Sector.FREESECT || nextSecID == Sector.ENDOFCHAIN) break;
 
@@ -1541,13 +1541,13 @@ namespace OpenMcdf
         private CFStorage rootStorage;
 
         /// <summary>
-        /// The entry point object that represents the 
+        /// The entry point object that represents the
         /// root of the structures tree to get or set storage or
         /// stream data.
         /// </summary>
         /// <example>
         /// <code>
-        /// 
+        ///
         ///    //Create a compound file
         ///    string FILENAME = "MyFileName.cfs";
         ///    CompoundFile ncf = new CompoundFile();
@@ -1915,7 +1915,7 @@ namespace OpenMcdf
 
         /// <summary>
         /// Saves the in-memory image of Compound File to a stream.
-        /// </summary>        
+        /// </summary>
         /// <remarks>
         /// Destination Stream must be seekable. Uncommitted data will be persisted to the destination stream.
         /// </remarks>
@@ -1969,9 +1969,9 @@ namespace OpenMcdf
                     if (s == null)
                     {
                         // Load source (unmodified) sectors
-                        // Here we have to ignore "Dirty flag" of 
+                        // Here we have to ignore "Dirty flag" of
                         // sectors because we are NOT modifying the source
-                        // in a differential way but ALL sectors need to be 
+                        // in a differential way but ALL sectors need to be
                         // persisted on the destination stream
                         s = new Sector(sSize, sourceStream);
                         s.Id = i;
@@ -2553,7 +2553,7 @@ namespace OpenMcdf
         ///    try
         ///    {
         ///        byte[] temp = st.GetStream("MyStream").GetData();
-        ///        
+        ///
         ///        // The following line will fail because back-end object has been closed
         ///        Assert.Fail("Stream without media");
         ///    }
@@ -2683,7 +2683,7 @@ namespace OpenMcdf
         /// </summary>
         /// <param name="entryName">Name of entries to retrieve</param>
         /// <returns>A list of name-matching entries</returns>
-        /// <remarks>This function is aimed to speed up entity lookup in 
+        /// <remarks>This function is aimed to speed up entity lookup in
         /// flat-structure files (only one or little more known entries)
         /// without the performance penalty related to entities hierarchy constraints.
         /// There is no implied hierarchy in the returned list.
@@ -2739,9 +2739,9 @@ namespace OpenMcdf
         /// </remarks>
         /// <example>
         /// <code>
-        /// 
+        ///
         ///  //This code has been extracted from unit test
-        ///  
+        ///
         ///    String FILENAME = "MultipleStorage3.cfs";
         ///
         ///    FileInfo srcFile = new FileInfo(FILENAME);
@@ -2752,7 +2752,7 @@ namespace OpenMcdf
         ///
         ///    CFStorage st = cf.RootStorage.GetStorage("MyStorage");
         ///    st = st.GetStorage("AnotherStorage");
-        ///    
+        ///
         ///    Assert.IsNotNull(st);
         ///    st.Delete("Another2Stream"); //17Kb
         ///    cf.Commit();
@@ -2807,9 +2807,9 @@ namespace OpenMcdf
         /// </remarks>
         /// <example>
         /// <code>
-        /// 
+        ///
         ///  //This code has been extracted from unit test
-        ///  
+        ///
         ///    String FILENAME = "MultipleStorage3.cfs";
         ///
         ///    FileInfo srcFile = new FileInfo(FILENAME);
@@ -2820,7 +2820,7 @@ namespace OpenMcdf
         ///
         ///    CFStorage st = cf.RootStorage.GetStorage("MyStorage");
         ///    st = st.GetStorage("AnotherStorage");
-        ///    
+        ///
         ///    Assert.IsNotNull(st);
         ///    st.Delete("Another2Stream"); //17Kb
         ///    cf.Commit();

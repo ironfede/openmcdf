@@ -233,7 +233,7 @@ namespace OpenMcdf.MemTest
             String srcFilename = Directory.GetCurrentDirectory() + @"\testfile\report.xls";
             String dstFilename = Directory.GetCurrentDirectory() + @"\testfile\reportOverwriteMultiple.xls";
             //Console.WriteLine(Directory.GetCurrentDirectory());
-            //Console.ReadKey(); 
+            //Console.ReadKey();
             File.Copy(srcFilename, dstFilename, true);
 
             CompoundFile cf = new CompoundFile(dstFilename, CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);

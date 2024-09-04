@@ -1,9 +1,9 @@
 ﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
- * 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * The Original Code is OpenMCDF - Compound Document Format library.
- * 
+ *
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
 using System;
@@ -155,8 +155,8 @@ namespace OpenMcdf
     /// </summary>
     /// <remarks>
     /// Items are compared by name as indicated by specs.
-    /// Two items with the same name CANNOT be added within 
-    /// the same storage or sub-storage. 
+    /// Two items with the same name CANNOT be added within
+    /// the same storage or sub-storage.
     /// </remarks>
     [Serializable]
     public class CFDuplicatedItemException : CFException
@@ -183,7 +183,7 @@ namespace OpenMcdf
     }
 
     /// <summary>
-    /// Raised when trying to load a Compound File with invalid, corrupted or mismatched fields (4.1 - specifications) 
+    /// Raised when trying to load a Compound File with invalid, corrupted or mismatched fields (4.1 - specifications)
     /// </summary>
     /// <remarks>
     /// This exception is NOT raised when Compound file has been opened with NO_VALIDATION_EXCEPTION option.

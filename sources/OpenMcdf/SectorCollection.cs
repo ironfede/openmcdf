@@ -1,9 +1,9 @@
 ﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
- * 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * The Original Code is OpenMCDF - Compound Document Format library.
- * 
+ *
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
 using System;
@@ -19,8 +19,8 @@ namespace OpenMcdf
     public delegate void Ver3SizeLimitReached();
 
     /// <summary>
-    /// Ad-hoc Heap Friendly sector collection to avoid using 
-    /// large array that may create some problem to GC collection 
+    /// Ad-hoc Heap Friendly sector collection to avoid using
+    /// large array that may create some problem to GC collection
     /// (see http://www.simple-talk.com/dotnet/.net-framework/the-dangers-of-the-large-object-heap/ )
     /// </summary>
     internal sealed class SectorCollection : IList<Sector>

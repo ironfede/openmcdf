@@ -1,9 +1,9 @@
 ﻿/* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. 
- * 
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
  * The Original Code is OpenMCDF - Compound Document Format library.
- * 
+ *
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
 using System.IO;
@@ -55,7 +55,7 @@ namespace OpenMcdf
         }
 
         //30 2 Size of a sector in the compound document file (➜3.1) in power-of-two (ssz), real sector
-        //size is sec_size = 2ssz bytes (minimum value is 7 which means 128 bytes, most used 
+        //size is sec_size = 2ssz bytes (minimum value is 7 which means 128 bytes, most used
         //value is 9 which means 512 bytes)
         private ushort sectorShift = 9;
 
