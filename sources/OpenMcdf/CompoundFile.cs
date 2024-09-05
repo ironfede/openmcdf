@@ -122,13 +122,7 @@ namespace OpenMcdf
         /// <summary>
         /// Get the configuration parameters of the CompoundFile object.
         /// </summary>
-        public CFSConfiguration Configuration
-        {
-            get
-            {
-                return configuration;
-            }
-        }
+        public CFSConfiguration Configuration => configuration;
 
         /// <summary>
         /// Returns the size of standard sectors switching on CFS version (3 or 4)
@@ -171,10 +165,7 @@ namespace OpenMcdf
 
         private bool validationExceptionEnabled = true;
 
-        public bool ValidationExceptionEnabled
-        {
-            get { return validationExceptionEnabled; }
-        }
+        public bool ValidationExceptionEnabled => validationExceptionEnabled;
 
         private CFSUpdateMode updateMode = CFSUpdateMode.ReadOnly;
         private String fileName = String.Empty;
@@ -730,10 +721,7 @@ namespace OpenMcdf
         /// Return true if this compound file has been
         /// loaded from an existing file or stream
         /// </summary>
-        public bool HasSourceStream
-        {
-            get { return sourceStream != null; }
-        }
+        public bool HasSourceStream => sourceStream != null;
 
         private void PersistMiniStreamToStream(List<Sector> miniSectorChain)
         {
@@ -1561,21 +1549,9 @@ namespace OpenMcdf
         ///    ncf.Close();
         /// </code>
         /// </example>
-        public CFStorage RootStorage
-        {
-            get
-            {
-                return rootStorage;
-            }
-        }
+        public CFStorage RootStorage => rootStorage;
 
-        public CFSVersion Version
-        {
-            get
-            {
-                return (CFSVersion)this.header.MajorVersion;
-            }
-        }
+        public CFSVersion Version => (CFSVersion)this.header.MajorVersion;
 
         /// <summary>
         /// Reset a directory entry setting it to StgInvalid in the Directory.
@@ -2631,13 +2607,7 @@ namespace OpenMcdf
             }
         }
 
-        internal bool IsClosed
-        {
-            get
-            {
-                return _disposed;
-            }
-        }
+        internal bool IsClosed => _disposed;
 
         private List<IDirectoryEntry> directoryEntries
             = new List<IDirectoryEntry>();
@@ -2652,13 +2622,7 @@ namespace OpenMcdf
         //    get { return directoryEntries; }
         //}
 
-        internal IDirectoryEntry RootEntry
-        {
-            get
-            {
-                return directoryEntries[0];
-            }
-        }
+        internal IDirectoryEntry RootEntry => directoryEntries[0];
 
         private IList<IDirectoryEntry> FindDirectoryEntries(String entryName)
         {

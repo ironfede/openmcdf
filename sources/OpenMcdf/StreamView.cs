@@ -25,10 +25,7 @@ namespace OpenMcdf
         private Stream stream;
         private bool isFatStream = false;
         private List<Sector> freeSectors = new List<Sector>();
-        public IEnumerable<Sector> FreeSectors
-        {
-            get { return freeSectors; }
-        }
+        public IEnumerable<Sector> FreeSectors => freeSectors;
 
         public StreamView(List<Sector> sectorChain, int sectorSize, Stream stream)
         {
@@ -50,25 +47,13 @@ namespace OpenMcdf
             AdjustLength(length, availableSectors);
         }
 
-        public List<Sector> BaseSectorChain
-        {
-            get { return sectorChain; }
-        }
+        public List<Sector> BaseSectorChain => sectorChain;
 
-        public override bool CanRead
-        {
-            get { return true; }
-        }
+        public override bool CanRead => true;
 
-        public override bool CanSeek
-        {
-            get { return true; }
-        }
+        public override bool CanSeek => true;
 
-        public override bool CanWrite
-        {
-            get { return true; }
-        }
+        public override bool CanWrite => true;
 
         public override void Flush()
         {
@@ -76,13 +61,7 @@ namespace OpenMcdf
 
         private long length;
 
-        public override long Length
-        {
-            get
-            {
-                return length;
-            }
-        }
+        public override long Length => length;
 
         public override long Position
         {

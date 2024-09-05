@@ -12,10 +12,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             this.container = container;
         }
 
-        public string PropertyName
-        {
-            get { return DecodePropertyIdentifier(); }
-        }
+        public string PropertyName => DecodePropertyIdentifier();
 
         private string DecodePropertyIdentifier()
         {

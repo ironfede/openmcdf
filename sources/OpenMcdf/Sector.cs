@@ -38,10 +38,7 @@ namespace OpenMcdf
             set { dirtyFlag = value; }
         }
 
-        public bool IsStreamed
-        {
-            get { return (stream != null && size != MINISECTOR_SIZE) ? (this.id * size) + size < stream.Length : false; }
-        }
+        public bool IsStreamed => (stream != null && size != MINISECTOR_SIZE) ? (this.id * size) + size < stream.Length : false;
 
         private int size = 0;
         private Stream stream;
@@ -85,13 +82,7 @@ namespace OpenMcdf
             }
         }
 
-        public int Size
-        {
-            get
-            {
-                return size;
-            }
-        }
+        public int Size => size;
 
         private byte[] data;
 

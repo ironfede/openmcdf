@@ -147,18 +147,9 @@ namespace OpenMcdf
             throw new NotImplementedException();
         }
 
-        public int Count
-        {
-            get
-            {
-                return count;
-            }
-        }
+        public int Count => count;
 
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         public bool Remove(Sector item)
         {

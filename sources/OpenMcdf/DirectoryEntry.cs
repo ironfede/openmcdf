@@ -73,18 +73,7 @@ namespace OpenMcdf
 
         private byte[] entryName = new byte[64];
 
-        public byte[] EntryName
-        {
-            get
-            {
-                return entryName;
-            }
-
-            //set
-            //{
-            //    entryName = value;
-            //}
-        }
+        public byte[] EntryName => entryName;
 
         public String GetEntryName()
         {
@@ -417,10 +406,7 @@ namespace OpenMcdf
             }
         }
 
-        public string Name
-        {
-            get { return GetEntryName(); }
-        }
+        public string Name => GetEntryName();
 
         public RedBlackTree.IRBNode Left
         {

@@ -21,22 +21,13 @@ namespace OpenMcdf.Extensions
         }
 
         /// <inheritdoc/>
-        public override bool CanRead
-        {
-            get { return true; }
-        }
+        public override bool CanRead => true;
 
         /// <inheritdoc/>
-        public override bool CanSeek
-        {
-            get { return true; }
-        }
+        public override bool CanSeek => true;
 
         /// <inheritdoc/>
-        public override bool CanWrite
-        {
-            get { return true; }
-        }
+        public override bool CanWrite => true;
 
         /// <inheritdoc/>
         public override void Flush()
@@ -45,10 +36,7 @@ namespace OpenMcdf.Extensions
         }
 
         /// <inheritdoc/>
-        public override long Length
-        {
-            get { return cfStream.Size; }
-        }
+        public override long Length => cfStream.Size;
 
         /// <inheritdoc/>
         public override long Position

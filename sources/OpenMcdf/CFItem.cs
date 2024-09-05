@@ -39,10 +39,7 @@ namespace OpenMcdf
     {
         private CompoundFile compoundFile;
 
-        protected CompoundFile CompoundFile
-        {
-            get { return compoundFile; }
-        }
+        protected CompoundFile CompoundFile => compoundFile;
 
         protected void CheckDisposed()
         {
@@ -139,13 +136,7 @@ namespace OpenMcdf
         /// Size in bytes of the item. It has a valid value
         /// only if entity is a stream, otherwise it is set to zero.
         /// </summary>
-        public long Size
-        {
-            get
-            {
-                return this.dirEntry.Size;
-            }
-        }
+        public long Size => this.dirEntry.Size;
 
         /// <summary>
         /// Return true if item is Storage
@@ -154,13 +145,7 @@ namespace OpenMcdf
         /// This check doesn't use reflection or runtime type information
         /// and doesn't suffer related performance penalties.
         /// </remarks>
-        public bool IsStorage
-        {
-            get
-            {
-                return this.dirEntry.StgType == StgType.StgStorage;
-            }
-        }
+        public bool IsStorage => this.dirEntry.StgType == StgType.StgStorage;
 
         /// <summary>
         /// Return true if item is a Stream
@@ -169,13 +154,7 @@ namespace OpenMcdf
         /// This check doesn't use reflection or runtime type information
         /// and doesn't suffer related performance penalties.
         /// </remarks>
-        public bool IsStream
-        {
-            get
-            {
-                return this.dirEntry.StgType == StgType.StgStream;
-            }
-        }
+        public bool IsStream => this.dirEntry.StgType == StgType.StgStream;
 
         /// <summary>
         /// Return true if item is the Root Storage
@@ -184,13 +163,7 @@ namespace OpenMcdf
         /// This check doesn't use reflection or runtime type information
         /// and doesn't suffer related performance penalties.
         /// </remarks>
-        public bool IsRoot
-        {
-            get
-            {
-                return this.dirEntry.StgType == StgType.StgRoot;
-            }
-        }
+        public bool IsRoot => this.dirEntry.StgType == StgType.StgRoot;
 
         /// <summary>
         /// Get/Set the Creation Date of the current item

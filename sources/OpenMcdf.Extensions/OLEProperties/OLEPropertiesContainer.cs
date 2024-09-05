@@ -160,10 +160,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        public IEnumerable<OLEProperty> Properties
-        {
-            get { return properties; }
-        }
+        public IEnumerable<OLEProperty> Properties => properties;
 
         public OLEProperty NewProperty(VTPropertyType vtPropertyType, uint propertyIdentifier, string propertyName = null)
         {

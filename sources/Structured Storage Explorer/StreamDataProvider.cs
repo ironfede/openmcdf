@@ -54,10 +54,7 @@ namespace StructuredStorageExplorer
         /// <summary>
         /// Gets the byte collection.
         /// </summary>
-        public ByteCollection Bytes
-        {
-            get { return _bytes; }
-        }
+        public ByteCollection Bytes => _bytes;
 
         #region IByteProvider Members
         /// <summary>
@@ -138,13 +135,7 @@ namespace StructuredStorageExplorer
         /// <summary>
         /// Gets the length of the bytes in the byte collection.
         /// </summary>
-        public long Length
-        {
-            get
-            {
-                return _bytes.Count;
-            }
-        }
+        public long Length => _bytes.Count;
 
         /// <summary>
         /// Returns true

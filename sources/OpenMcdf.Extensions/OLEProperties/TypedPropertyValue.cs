@@ -11,18 +11,9 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         private VTPropertyType _VTType;
 
-        public PropertyType PropertyType
-        {
-            get
-            {
-                return PropertyType.TypedPropertyValue;
-            }
-        }
+        public PropertyType PropertyType => PropertyType.TypedPropertyValue;
 
-        public VTPropertyType VTType
-        {
-            get { return _VTType; }
-        }
+        public VTPropertyType VTType => _VTType;
 
         protected object propertyValue = null;
 
@@ -33,12 +24,9 @@ namespace OpenMcdf.Extensions.OLEProperties
             this.isVariant = isVariant;
         }
 
-        public PropertyDimensions PropertyDimensions { get { return dim; } }
+        public PropertyDimensions PropertyDimensions => dim;
 
-        public bool IsVariant
-        {
-            get { return isVariant; }
-        }
+        public bool IsVariant => isVariant;
 
         protected virtual bool NeedsPadding { get; set; } = true;
 
