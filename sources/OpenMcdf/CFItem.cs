@@ -118,17 +118,17 @@ namespace OpenMcdf
         /// <summary>
         /// Get entity name
         /// </summary>
-        public String Name
+        public string Name
         {
             get
             {
-                String n = this.dirEntry.GetEntryName();
+                string n = this.dirEntry.GetEntryName();
                 if (n != null && n.Length > 0)
                 {
                     return n.TrimEnd('\0');
                 }
                 else
-                    return String.Empty;
+                    return string.Empty;
             }
         }
 
@@ -233,7 +233,7 @@ namespace OpenMcdf
             if (this.dirEntry != null)
                 return "[" + this.dirEntry.LeftSibling + "," + this.dirEntry.SID + "," + this.dirEntry.RightSibling + "]" + " " + this.dirEntry.GetEntryName();
             else
-                return String.Empty;
+                return string.Empty;
         }
     }
 }

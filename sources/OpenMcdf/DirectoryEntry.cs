@@ -42,13 +42,13 @@ namespace OpenMcdf
             set { sid = value; }
         }
 
-        internal static Int32 NOSTREAM
+        internal static int NOSTREAM
             = unchecked((int)0xFFFFFFFF);
 
-        internal static Int32 ZERO
+        internal static int ZERO
             = 0;
 
-        private DirectoryEntry(String name, StgType stgType, IList<IDirectoryEntry> dirRepository)
+        private DirectoryEntry(string name, StgType stgType, IList<IDirectoryEntry> dirRepository)
         {
             this.dirRepository = dirRepository;
 
@@ -65,7 +65,7 @@ namespace OpenMcdf
                 this.StartSetc = ZERO;
             }
 
-            if (name != String.Empty)
+            if (name != string.Empty)
             {
                 this.SetEntryName(name);
             }
@@ -75,19 +75,19 @@ namespace OpenMcdf
 
         public byte[] EntryName => entryName;
 
-        public String GetEntryName()
+        public string GetEntryName()
         {
             if (entryName != null && entryName.Length > 0)
             {
                 return Encoding.Unicode.GetString(entryName).Remove((this.nameLength - 1) / 2);
             }
             else
-                return String.Empty;
+                return string.Empty;
         }
 
-        public void SetEntryName(String entryName)
+        public void SetEntryName(string entryName)
         {
-            if (entryName == String.Empty)
+            if (entryName == string.Empty)
             {
                 this.entryName = new byte[64];
                 this.nameLength = 0;
@@ -156,22 +156,22 @@ namespace OpenMcdf
             }
         }
 
-        private Int32 leftSibling = NOSTREAM;
-        public Int32 LeftSibling
+        private int leftSibling = NOSTREAM;
+        public int LeftSibling
         {
             get { return leftSibling; }
             set { leftSibling = value; }
         }
 
-        private Int32 rightSibling = NOSTREAM;
-        public Int32 RightSibling
+        private int rightSibling = NOSTREAM;
+        public int RightSibling
         {
             get { return rightSibling; }
             set { rightSibling = value; }
         }
 
-        private Int32 child = NOSTREAM;
-        public Int32 Child
+        private int child = NOSTREAM;
+        public int Child
         {
             get { return child; }
             set { child = value; }
@@ -192,9 +192,9 @@ namespace OpenMcdf
             }
         }
 
-        private Int32 stateBits;
+        private int stateBits;
 
-        public Int32 StateBits
+        public int StateBits
         {
             get { return stateBits; }
             set { stateBits = value; }
@@ -228,8 +228,8 @@ namespace OpenMcdf
             }
         }
 
-        private Int32 startSetc = Sector.ENDOFCHAIN;
-        public Int32 StartSetc
+        private int startSetc = Sector.ENDOFCHAIN;
+        public int StartSetc
         {
             get
             {
@@ -271,8 +271,8 @@ namespace OpenMcdf
             }
             else
             {
-                String thisName = Encoding.Unicode.GetString(this.EntryName, 0, this.NameLength);
-                String otherName = Encoding.Unicode.GetString(otherDir.EntryName, 0, otherDir.NameLength);
+                string thisName = Encoding.Unicode.GetString(this.EntryName, 0, this.NameLength);
+                string otherName = Encoding.Unicode.GetString(otherDir.EntryName, 0, otherDir.NameLength);
 
                 for (int z = 0; z < thisName.Length; z++)
                 {
@@ -488,7 +488,7 @@ namespace OpenMcdf
             return parent != null ? Parent.Sibling() : null;
         }
 
-        internal static IDirectoryEntry New(String name, StgType stgType, IList<IDirectoryEntry> dirRepository)
+        internal static IDirectoryEntry New(string name, StgType stgType, IList<IDirectoryEntry> dirRepository)
         {
             DirectoryEntry de = null;
             if (dirRepository != null)
@@ -504,14 +504,14 @@ namespace OpenMcdf
             return de;
         }
 
-        internal static IDirectoryEntry Mock(String name, StgType stgType)
+        internal static IDirectoryEntry Mock(string name, StgType stgType)
         {
             DirectoryEntry de = new DirectoryEntry(name, stgType, null);
 
             return de;
         }
 
-        internal static IDirectoryEntry TryNew(String name, StgType stgType, IList<IDirectoryEntry> dirRepository)
+        internal static IDirectoryEntry TryNew(string name, StgType stgType, IList<IDirectoryEntry> dirRepository)
         {
             DirectoryEntry de = new DirectoryEntry(name, stgType, dirRepository);
 

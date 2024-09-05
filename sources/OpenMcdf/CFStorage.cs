@@ -119,11 +119,11 @@ namespace OpenMcdf
         ///
         /// </code>
         /// </example>
-        public CFStream AddStream(String streamName)
+        public CFStream AddStream(string streamName)
         {
             CheckDisposed();
 
-            if (String.IsNullOrEmpty(streamName))
+            if (string.IsNullOrEmpty(streamName))
                 throw new CFException("Stream name cannot be null or empty");
 
             IDirectoryEntry dirEntry = DirectoryEntry.TryNew(streamName, StgType.StgStream, this.CompoundFile.GetDirectories());
@@ -170,7 +170,7 @@ namespace OpenMcdf
         /// cf.Close();
         /// </code>
         /// </example>
-        public CFStream GetStream(String streamName)
+        public CFStream GetStream(string streamName)
         {
             CheckDisposed();
 
@@ -213,7 +213,7 @@ namespace OpenMcdf
         /// cf.Close();
         /// </code>
         /// </example>
-        public bool TryGetStream(String streamName, out CFStream cfStream)
+        public bool TryGetStream(string streamName, out CFStream cfStream)
         {
             bool result = false;
             cfStream = null;
@@ -260,7 +260,7 @@ namespace OpenMcdf
         /// </code>
         /// </example>
         [Obsolete("Please use TryGetStream(string, out cfStream) instead.")]
-        public CFStream TryGetStream(String streamName)
+        public CFStream TryGetStream(string streamName)
         {
             CheckDisposed();
 
@@ -301,7 +301,7 @@ namespace OpenMcdf
         /// cf.Close();
         /// </code>
         /// </example>
-        public CFStorage GetStorage(String storageName)
+        public CFStorage GetStorage(string storageName)
         {
             CheckDisposed();
 
@@ -336,7 +336,7 @@ namespace OpenMcdf
         /// </code>
         /// </example>
         [Obsolete("Please use TryGetStorage(string, out cfStorage) instead.")]
-        public CFStorage TryGetStorage(String storageName)
+        public CFStorage TryGetStorage(string storageName)
         {
             CheckDisposed();
 
@@ -372,7 +372,7 @@ namespace OpenMcdf
         /// cf.Close();
         /// </code>
         /// </example>
-        public bool TryGetStorage(String storageName, out CFStorage cfStorage)
+        public bool TryGetStorage(string storageName, out CFStorage cfStorage)
         {
             bool result = false;
             cfStorage = null;
@@ -421,11 +421,11 @@ namespace OpenMcdf
         ///
         /// </code>
         /// </example>
-        public CFStorage AddStorage(String storageName)
+        public CFStorage AddStorage(string storageName)
         {
             CheckDisposed();
 
-            if (String.IsNullOrEmpty(storageName))
+            if (string.IsNullOrEmpty(storageName))
                 throw new CFException("Stream name cannot be null or empty");
 
             // Add new Storage directory entry
@@ -528,7 +528,7 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFDisposedException">Raised if trying to delete item from a closed compound file</exception>
         /// <exception cref="T:OpenMcdf.CFItemNotFound">Raised if item to delete is not found</exception>
         /// <exception cref="T:OpenMcdf.CFException">Raised if trying to delete root storage</exception>
-        public void Delete(String entryName)
+        public void Delete(string entryName)
         {
             CheckDisposed();
 

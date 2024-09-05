@@ -38,7 +38,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 {
                     case VTPropertyType.VT_LPSTR:
                     case VTPropertyType.VT_LPWSTR:
-                        if (value is string str && !String.IsNullOrEmpty(str))
+                        if (value is string str && !string.IsNullOrEmpty(str))
                             return str.Trim('\0');
                         break;
                     default:

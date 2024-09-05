@@ -69,7 +69,7 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_AS_IOSTREAM_WRITE()
         {
-            const String cmp = "Hello World of BinaryWriter !";
+            const string cmp = "Hello World of BinaryWriter !";
 
             CompoundFile cf = new CompoundFile();
             Stream s = cf.RootStorage.AddStream("ANewStream").AsIOStream();
@@ -80,7 +80,7 @@ namespace OpenMcdf.Extensions.Test
 
             cf = new CompoundFile("$ACFFile.cfs");
             BinaryReader br = new BinaryReader(cf.RootStorage.GetStream("ANewStream").AsIOStream());
-            String st = br.ReadString();
+            string st = br.ReadString();
             Assert.IsTrue(st == cmp);
             cf.Close();
         }

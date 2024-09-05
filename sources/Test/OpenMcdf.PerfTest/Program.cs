@@ -6,7 +6,7 @@ namespace OpenMcdf.PerfTest
     class Program
     {
         static int MAX_STREAM_COUNT = 5000;
-        static String fileName = "PerfLoad.cfs";
+        static string fileName = "PerfLoad.cfs";
 
         static void Main(string[] args)
         {
@@ -24,7 +24,7 @@ namespace OpenMcdf.PerfTest
             Console.Read();
         }
 
-        private static void CreateFile(String fn)
+        private static void CreateFile(string fn)
         {
             CompoundFile cf = new CompoundFile();
             for (int i = 0; i < MAX_STREAM_COUNT; i++)

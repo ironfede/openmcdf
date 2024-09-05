@@ -139,7 +139,7 @@ namespace OpenMcdf
             this.data = null;
         }
 
-        private object lockObject = new Object();
+        private object lockObject = new object();
 
         #region IDisposable Members
 
