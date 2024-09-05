@@ -12,142 +12,44 @@ namespace OpenMcdf
 {
     internal sealed class Header
     {
-        //0 8 Compound document file identifier: D0H CFH 11H E0H A1H B1H 1AH E1H
-        private byte[] headerSignature
-            = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
+        public byte[] HeaderSignature { get; private set; } = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
 
-        public byte[] HeaderSignature => headerSignature;
+        public byte[] CLSID { get; set; } = new byte[16];
 
-        //8 16 Unique identifier (UID) of this file (not of interest in the following, may be all 0)
-        private byte[] clsid = new byte[16];
+        public ushort MinorVersion { get; private set; } = 0x003E;
 
-        public byte[] CLSID
-        {
-            get { return clsid; }
-            set { clsid = value; }
-        }
+        public ushort MajorVersion { get; private set; } = 0x0003;
 
-        //24 2 Revision number of the file format (most used is 003EH)
-        private ushort minorVersion = 0x003E;
+        public ushort ByteOrder { get; private set; } = 0xFFFE;
 
-        public ushort MinorVersion => minorVersion;
+        public ushort SectorShift { get; private set; } = 9;
 
-        //26 2 Version number of the file format (most used is 0003H)
-        private ushort majorVersion = 0x0003;
+        public ushort MiniSectorShift { get; private set; } = 6;
 
-        public ushort MajorVersion => majorVersion;
+        public byte[] UnUsed { get; private set; } = new byte[6];
 
-        //28 2 Byte order identifier (➜4.2): FEH FFH = Little-Endian FFH FEH = Big-Endian
-        private ushort byteOrder = 0xFFFE;
+        public int DirectorySectorsNumber { get; set; }
 
-        public ushort ByteOrder => byteOrder;
+        public int FATSectorsNumber { get; set; }
 
-        //30 2 Size of a sector in the compound document file (➜3.1) in power-of-two (ssz), real sector
-        //size is sec_size = 2ssz bytes (minimum value is 7 which means 128 bytes, most used
-        //value is 9 which means 512 bytes)
-        private ushort sectorShift = 9;
+        public int FirstDirectorySectorID { get; set; } = Sector.ENDOFCHAIN;
 
-        public ushort SectorShift => sectorShift;
+        public uint UnUsed2 { get; private set; }
 
-        //32 2 Size of a short-sector in the short-stream container stream (➜6.1) in power-of-two (sssz),
-        //real short-sector size is short_sec_size = 2sssz bytes (maximum value is sector size
-        //ssz, see above, most used value is 6 which means 64 bytes)
-        private ushort miniSectorShift = 6;
-        public ushort MiniSectorShift => miniSectorShift;
-
-        //34 10 Not used
-        private byte[] unUsed = new byte[6];
-
-        public byte[] UnUsed => unUsed;
-
-        //44 4 Total number of sectors used Directory (➜5.2)
-        private int directorySectorsNumber;
-
-        public int DirectorySectorsNumber
-        {
-            get { return directorySectorsNumber; }
-            set { directorySectorsNumber = value; }
-        }
-
-        //44 4 Total number of sectors used for the sector allocation table (➜5.2)
-        private int fatSectorsNumber;
-
-        public int FATSectorsNumber
-        {
-            get { return fatSectorsNumber; }
-            set { fatSectorsNumber = value; }
-        }
-
-        //48 4 SecID of first sector of the directory stream (➜7)
-        private int firstDirectorySectorID = Sector.ENDOFCHAIN;
-
-        public int FirstDirectorySectorID
-        {
-            get { return firstDirectorySectorID; }
-            set { firstDirectorySectorID = value; }
-        }
-
-        //52 4 Not used
-        private uint unUsed2;
-
-        public uint UnUsed2 => unUsed2;
-
-        //56 4 Minimum size of a standard stream (in bytes, minimum allowed and most used size is 4096
-        //bytes), streams with an actual size smaller than (and not equal to) this value are stored as
-        //short-streams (➜6)
-        private uint minSizeStandardStream = 4096;
-
-        public uint MinSizeStandardStream
-        {
-            get { return minSizeStandardStream; }
-            set { minSizeStandardStream = value; }
-        }
-
-        //60 4 SecID of first sector of the short-sector allocation table (➜6.2), or –2 (End Of Chain
-        //SecID, ➜3.1) if not extant
-        private int firstMiniFATSectorID = unchecked((int)0xFFFFFFFE);
+        public uint MinSizeStandardStream { get; set; } = 4096;
 
         /// <summary>
         /// This integer field contains the starting sector number for the mini FAT
         /// </summary>
-        public int FirstMiniFATSectorID
-        {
-            get { return firstMiniFATSectorID; }
-            set { firstMiniFATSectorID = value; }
-        }
+        public int FirstMiniFATSectorID { get; set; } = unchecked((int)0xFFFFFFFE);
 
-        //64 4 Total number of sectors used for the short-sector allocation table (➜6.2)
-        private uint miniFATSectorsNumber;
+        public uint MiniFATSectorsNumber { get; set; }
 
-        public uint MiniFATSectorsNumber
-        {
-            get { return miniFATSectorsNumber; }
-            set { miniFATSectorsNumber = value; }
-        }
+        public int FirstDIFATSectorID { get; set; } = Sector.ENDOFCHAIN;
 
-        //68 4 SecID of first sector of the master sector allocation table (➜5.1), or –2 (End Of Chain
-        //SecID, ➜3.1) if no additional sectors used
-        private int firstDIFATSectorID = Sector.ENDOFCHAIN;
+        public uint DIFATSectorsNumber { get; set; }
 
-        public int FirstDIFATSectorID
-        {
-            get { return firstDIFATSectorID; }
-            set { firstDIFATSectorID = value; }
-        }
-
-        //72 4 Total number of sectors used for the master sector allocation table (➜5.1)
-        private uint difatSectorsNumber;
-
-        public uint DIFATSectorsNumber
-        {
-            get { return difatSectorsNumber; }
-            set { difatSectorsNumber = value; }
-        }
-
-        //76 436 First part of the master sector allocation table (➜5.1) containing 109 SecIDs
-        private int[] difat = new int[109];
-
-        public int[] DIFAT => difat;
+        public int[] DIFAT { get; } = new int[109];
 
         public Header()
             : this(3)
@@ -159,13 +61,13 @@ namespace OpenMcdf
             switch (version)
             {
                 case 3:
-                    this.majorVersion = 3;
-                    this.sectorShift = 0x0009;
+                    this.MajorVersion = 3;
+                    this.SectorShift = 0x0009;
                     break;
 
                 case 4:
-                    this.majorVersion = 4;
-                    this.sectorShift = 0x000C;
+                    this.MajorVersion = 4;
+                    this.SectorShift = 0x000C;
                     break;
 
                 default:
@@ -174,7 +76,7 @@ namespace OpenMcdf
 
             for (int i = 0; i < 109; i++)
             {
-                difat[i] = Sector.FREESECT;
+                DIFAT[i] = Sector.FREESECT;
             }
         }
 
@@ -182,30 +84,30 @@ namespace OpenMcdf
         {
             StreamRW rw = new StreamRW(stream);
 
-            rw.Write(headerSignature);
-            rw.Write(clsid);
-            rw.Write(minorVersion);
-            rw.Write(majorVersion);
-            rw.Write(byteOrder);
-            rw.Write(sectorShift);
-            rw.Write(miniSectorShift);
-            rw.Write(unUsed);
-            rw.Write(directorySectorsNumber);
-            rw.Write(fatSectorsNumber);
-            rw.Write(firstDirectorySectorID);
-            rw.Write(unUsed2);
-            rw.Write(minSizeStandardStream);
-            rw.Write(firstMiniFATSectorID);
-            rw.Write(miniFATSectorsNumber);
-            rw.Write(firstDIFATSectorID);
-            rw.Write(difatSectorsNumber);
+            rw.Write(HeaderSignature);
+            rw.Write(CLSID);
+            rw.Write(MinorVersion);
+            rw.Write(MajorVersion);
+            rw.Write(ByteOrder);
+            rw.Write(SectorShift);
+            rw.Write(MiniSectorShift);
+            rw.Write(UnUsed);
+            rw.Write(DirectorySectorsNumber);
+            rw.Write(FATSectorsNumber);
+            rw.Write(FirstDirectorySectorID);
+            rw.Write(UnUsed2);
+            rw.Write(MinSizeStandardStream);
+            rw.Write(FirstMiniFATSectorID);
+            rw.Write(MiniFATSectorsNumber);
+            rw.Write(FirstDIFATSectorID);
+            rw.Write(DIFATSectorsNumber);
 
-            foreach (int i in difat)
+            foreach (int i in DIFAT)
             {
                 rw.Write(i);
             }
 
-            if (majorVersion == 4)
+            if (MajorVersion == 4)
             {
                 byte[] zeroHead = new byte[3584];
                 rw.Write(zeroHead);
@@ -218,25 +120,25 @@ namespace OpenMcdf
         {
             StreamRW rw = new StreamRW(stream);
 
-            headerSignature = rw.ReadBytes(8);
+            HeaderSignature = rw.ReadBytes(8);
             CheckSignature();
-            clsid = rw.ReadBytes(16);
-            minorVersion = rw.ReadUInt16();
-            majorVersion = rw.ReadUInt16();
+            CLSID = rw.ReadBytes(16);
+            MinorVersion = rw.ReadUInt16();
+            MajorVersion = rw.ReadUInt16();
             CheckVersion();
-            byteOrder = rw.ReadUInt16();
-            sectorShift = rw.ReadUInt16();
-            miniSectorShift = rw.ReadUInt16();
-            unUsed = rw.ReadBytes(6);
-            directorySectorsNumber = rw.ReadInt32();
-            fatSectorsNumber = rw.ReadInt32();
-            firstDirectorySectorID = rw.ReadInt32();
-            unUsed2 = rw.ReadUInt32();
-            minSizeStandardStream = rw.ReadUInt32();
-            firstMiniFATSectorID = rw.ReadInt32();
-            miniFATSectorsNumber = rw.ReadUInt32();
-            firstDIFATSectorID = rw.ReadInt32();
-            difatSectorsNumber = rw.ReadUInt32();
+            ByteOrder = rw.ReadUInt16();
+            SectorShift = rw.ReadUInt16();
+            MiniSectorShift = rw.ReadUInt16();
+            UnUsed = rw.ReadBytes(6);
+            DirectorySectorsNumber = rw.ReadInt32();
+            FATSectorsNumber = rw.ReadInt32();
+            FirstDirectorySectorID = rw.ReadInt32();
+            UnUsed2 = rw.ReadUInt32();
+            MinSizeStandardStream = rw.ReadUInt32();
+            FirstMiniFATSectorID = rw.ReadInt32();
+            MiniFATSectorsNumber = rw.ReadUInt32();
+            FirstDIFATSectorID = rw.ReadInt32();
+            DIFATSectorsNumber = rw.ReadUInt32();
 
             for (int i = 0; i < 109; i++)
             {
@@ -248,7 +150,7 @@ namespace OpenMcdf
 
         private void CheckVersion()
         {
-            if (this.majorVersion != 3 && this.majorVersion != 4)
+            if (this.MajorVersion != 3 && this.MajorVersion != 4)
                 throw new CFFileFormatException("Unsupported Binary File Format version: OpenMcdf only supports Compound Files with major version equal to 3 or 4 ");
         }
 
@@ -259,9 +161,9 @@ namespace OpenMcdf
 
         private void CheckSignature()
         {
-            for (int i = 0; i < headerSignature.Length; i++)
+            for (int i = 0; i < HeaderSignature.Length; i++)
             {
-                if (headerSignature[i] != OLE_CFS_SIGNATURE[i])
+                if (HeaderSignature[i] != OLE_CFS_SIGNATURE[i])
                     throw new CFFileFormatException("Invalid OLE structured storage file");
             }
         }

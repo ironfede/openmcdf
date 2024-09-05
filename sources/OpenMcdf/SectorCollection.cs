@@ -28,8 +28,6 @@ namespace OpenMcdf
         private const int MAX_SECTOR_V4_COUNT_LOCK_RANGE = 524287; //0x7FFFFF00 for Version 4
         private const int SLICE_SIZE = 4096;
 
-        private int count = 0;
-
         public event Ver3SizeLimitReached OnVer3SizeLimitReached;
 
         private List<ArrayList> largeArraySlices = new List<ArrayList>();
@@ -41,7 +39,7 @@ namespace OpenMcdf
         private bool sizeLimitReached = false;
         private void DoCheckSizeLimitReached()
         {
-            if (OnVer3SizeLimitReached != null && !sizeLimitReached && (count - 1 > MAX_SECTOR_V4_COUNT_LOCK_RANGE))
+            if (OnVer3SizeLimitReached != null && !sizeLimitReached && (Count - 1 > MAX_SECTOR_V4_COUNT_LOCK_RANGE))
             {
                 sizeLimitReached = true;
                 OnVer3SizeLimitReached();
@@ -72,7 +70,7 @@ namespace OpenMcdf
                 int itemIndex = index / SLICE_SIZE;
                 int itemOffset = index % SLICE_SIZE;
 
-                if ((index > -1) && (index < count))
+                if ((index > -1) && (index < Count))
                 {
                     return (Sector)largeArraySlices[itemIndex][itemOffset];
                 }
@@ -85,7 +83,7 @@ namespace OpenMcdf
                 int itemIndex = index / SLICE_SIZE;
                 int itemOffset = index % SLICE_SIZE;
 
-                if (index > -1 && index < count)
+                if (index > -1 && index < Count)
                 {
                     largeArraySlices[itemIndex][itemOffset] = value;
                 }
@@ -100,22 +98,22 @@ namespace OpenMcdf
 
         private int add(Sector item)
         {
-            int itemIndex = count / SLICE_SIZE;
+            int itemIndex = Count / SLICE_SIZE;
 
             if (itemIndex < largeArraySlices.Count)
             {
                 largeArraySlices[itemIndex].Add(item);
-                count++;
+                Count++;
             }
             else
             {
                 ArrayList ar = new ArrayList(SLICE_SIZE);
                 ar.Add(item);
                 largeArraySlices.Add(ar);
-                count++;
+                Count++;
             }
 
-            return count - 1;
+            return Count - 1;
         }
 
         public void Add(Sector item)
@@ -134,7 +132,7 @@ namespace OpenMcdf
 
             largeArraySlices.Clear();
 
-            count = 0;
+            Count = 0;
         }
 
         public bool Contains(Sector item)
@@ -147,7 +145,7 @@ namespace OpenMcdf
             throw new NotImplementedException();
         }
 
-        public int Count => count;
+        public int Count { get; private set; } = 0;
 
         public bool IsReadOnly => false;
 

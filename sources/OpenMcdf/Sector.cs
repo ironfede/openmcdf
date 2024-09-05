@@ -30,59 +30,37 @@ namespace OpenMcdf
         public const int FATSECT = unchecked((int)0xFFFFFFFD);
         public const int DIFSECT = unchecked((int)0xFFFFFFFC);
 
-        private bool dirtyFlag = false;
+        public bool DirtyFlag { get; set; } = false;
 
-        public bool DirtyFlag
-        {
-            get { return dirtyFlag; }
-            set { dirtyFlag = value; }
-        }
+        public bool IsStreamed => (stream != null && Size != MINISECTOR_SIZE) ? (this.Id * Size) + Size < stream.Length : false;
 
-        public bool IsStreamed => (stream != null && size != MINISECTOR_SIZE) ? (this.id * size) + size < stream.Length : false;
-
-        private int size = 0;
         private Stream stream;
 
         public Sector(int size, Stream stream)
         {
-            this.size = size;
+            this.Size = size;
             this.stream = stream;
         }
 
         public Sector(int size, byte[] data)
         {
-            this.size = size;
+            this.Size = size;
             this.data = data;
             this.stream = null;
         }
 
         public Sector(int size)
         {
-            this.size = size;
+            this.Size = size;
             this.data = null;
             this.stream = null;
         }
 
-        private SectorType type;
+        internal SectorType Type { get; set; }
 
-        internal SectorType Type
-        {
-            get { return type; }
-            set { type = value; }
-        }
+        public int Id { get; set; } = -1;
 
-        private int id = -1;
-
-        public int Id
-        {
-            get { return id; }
-            set
-            {
-                id = value;
-            }
-        }
-
-        public int Size => size;
+        public int Size { get; private set; } = 0;
 
         private byte[] data;
 
@@ -90,12 +68,12 @@ namespace OpenMcdf
         {
             if (this.data == null)
             {
-                data = new byte[size];
+                data = new byte[Size];
 
                 if (IsStreamed)
                 {
-                    stream.Seek(size + id * (long)size, SeekOrigin.Begin);
-                    stream.Read(data, 0, size);
+                    stream.Seek(Size + Id * (long)Size, SeekOrigin.Begin);
+                    stream.Read(data, 0, Size);
                 }
             }
 
@@ -120,18 +98,18 @@ namespace OpenMcdf
 
         public void ZeroData()
         {
-            data = new byte[size];
-            dirtyFlag = true;
+            data = new byte[Size];
+            DirtyFlag = true;
         }
 
         public void InitFATData()
         {
-            data = new byte[size];
+            data = new byte[Size];
 
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < Size; i++)
                 data[i] = 0xFF;
 
-            dirtyFlag = true;
+            DirtyFlag = true;
         }
 
         internal void ReleaseData()
@@ -154,9 +132,9 @@ namespace OpenMcdf
                     lock (lockObject)
                     {
                         this.data = null;
-                        this.dirtyFlag = false;
-                        this.id = ENDOFCHAIN;
-                        this.size = 0;
+                        this.DirtyFlag = false;
+                        this.Id = ENDOFCHAIN;
+                        this.Size = 0;
                     }
                 }
             }

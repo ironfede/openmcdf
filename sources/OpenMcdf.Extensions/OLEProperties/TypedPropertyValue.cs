@@ -6,9 +6,6 @@ namespace OpenMcdf.Extensions.OLEProperties
 {
     internal abstract class TypedPropertyValue<T> : ITypedPropertyValue
     {
-        private bool isVariant = false;
-        private PropertyDimensions dim = PropertyDimensions.IsScalar;
-
         private VTPropertyType _VTType;
 
         public PropertyType PropertyType => PropertyType.TypedPropertyValue;
@@ -20,13 +17,13 @@ namespace OpenMcdf.Extensions.OLEProperties
         public TypedPropertyValue(VTPropertyType vtType, bool isVariant = false)
         {
             this._VTType = vtType;
-            dim = CheckPropertyDimensions(vtType);
-            this.isVariant = isVariant;
+            PropertyDimensions = CheckPropertyDimensions(vtType);
+            this.IsVariant = isVariant;
         }
 
-        public PropertyDimensions PropertyDimensions => dim;
+        public PropertyDimensions PropertyDimensions { get; } = PropertyDimensions.IsScalar;
 
-        public bool IsVariant => isVariant;
+        public bool IsVariant { get; } = false;
 
         protected virtual bool NeedsPadding { get; set; } = true;
 

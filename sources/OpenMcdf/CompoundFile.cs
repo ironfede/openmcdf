@@ -117,12 +117,10 @@ namespace OpenMcdf
     /// </summary>
     public class CompoundFile : IDisposable
     {
-        private CFSConfiguration configuration;
-
         /// <summary>
         /// Get the configuration parameters of the CompoundFile object.
         /// </summary>
-        public CFSConfiguration Configuration => configuration;
+        public CFSConfiguration Configuration { get; private set; }
 
         /// <summary>
         /// Returns the size of standard sectors switching on CFS version (3 or 4)
@@ -163,9 +161,7 @@ namespace OpenMcdf
         /// </summary>
         private bool eraseFreeSectors = false;
 
-        private bool validationExceptionEnabled = true;
-
-        public bool ValidationExceptionEnabled => validationExceptionEnabled;
+        public bool ValidationExceptionEnabled { get; private set; } = true;
 
         private CFSUpdateMode updateMode = CFSUpdateMode.ReadOnly;
         private string fileName = string.Empty;
@@ -272,7 +268,7 @@ namespace OpenMcdf
             rootDir.StgColor = StgColor.Black;
             //this.InsertNewDirectoryEntry(rootDir);
 
-            rootStorage = new CFStorage(this, rootDir);
+            RootStorage = new CFStorage(this, rootDir);
         }
 
         /// <summary>
@@ -432,7 +428,7 @@ namespace OpenMcdf
         /// </remarks>
         public void Commit(bool releaseMemory)
         {
-            if (_disposed)
+            if (IsClosed)
                 throw new CFDisposedException("Compound File closed: cannot commit data");
 
             if (updateMode != CFSUpdateMode.Update)
@@ -595,8 +591,8 @@ namespace OpenMcdf
         /// </summary>
         private void SetConfigurationOptions(CFSConfiguration configParameters)
         {
-            this.configuration = configParameters;
-            this.validationExceptionEnabled = !configParameters.HasFlag(CFSConfiguration.NoValidationException);
+            this.Configuration = configParameters;
+            this.ValidationExceptionEnabled = !configParameters.HasFlag(CFSConfiguration.NoValidationException);
             this.sectorRecycle = configParameters.HasFlag(CFSConfiguration.SectorRecycle);
             this.eraseFreeSectors = configParameters.HasFlag(CFSConfiguration.EraseFreeSectors);
             this.closeStream = !configParameters.HasFlag(CFSConfiguration.LeaveOpen);
@@ -617,7 +613,7 @@ namespace OpenMcdf
 
                 header.Read(stream);
 
-                if (!configuration.HasFlag(CFSConfiguration.NoValidationException))
+                if (!Configuration.HasFlag(CFSConfiguration.NoValidationException))
                 {
                     ValidateHeader(header);
                 }
@@ -636,7 +632,7 @@ namespace OpenMcdf
 
                 LoadDirectories();
 
-                this.rootStorage
+                this.RootStorage
                     = new CFStorage(this, directoryEntries[0]);
             }
             catch (Exception)
@@ -732,7 +728,7 @@ namespace OpenMcdf
                 = new StreamView(
                     miniStream,
                     GetSectorSize(),
-                    this.rootStorage.Size,
+                    this.RootStorage.Size,
                     null,
                     sourceStream);
 
@@ -775,7 +771,7 @@ namespace OpenMcdf
                 = new StreamView(
                     miniStream,
                     GetSectorSize(),
-                    this.rootStorage.Size,
+                    this.RootStorage.Size,
                     null,
                     sourceStream);
 
@@ -790,11 +786,11 @@ namespace OpenMcdf
                     // Allocate, position ministream at the end of already allocated
                     // ministream's sectors
 
-                    miniStreamView.Seek(this.rootStorage.Size + Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
+                    miniStreamView.Seek(this.RootStorage.Size + Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
                     //miniStreamView.Write(s.GetData(), 0, Sector.MINISECTOR_SIZE);
                     s.Id = (int)(miniStreamView.Position - Sector.MINISECTOR_SIZE) / Sector.MINISECTOR_SIZE;
 
-                    this.rootStorage.DirEntry.Size = miniStreamView.Length;
+                    this.RootStorage.DirEntry.Size = miniStreamView.Length;
                 }
             }
 
@@ -819,7 +815,7 @@ namespace OpenMcdf
             //Update HEADER and root storage when ministream changes
             if (miniFAT.Count > 0)
             {
-                this.rootStorage.DirEntry.StartSetc = miniStream[0].Id;
+                this.RootStorage.DirEntry.StartSetc = miniStream[0].Id;
                 header.MiniFATSectorsNumber = (uint)miniFAT.Count;
                 header.FirstMiniFATSectorID = miniFAT[0].Id;
             }
@@ -909,7 +905,7 @@ namespace OpenMcdf
                 = new StreamView(miniFAT, GetSectorSize(), header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE, null, sourceStream);
 
             StreamView miniStreamView
-                = new StreamView(miniStream, GetSectorSize(), this.rootStorage.Size, null, sourceStream);
+                = new StreamView(miniStream, GetSectorSize(), this.RootStorage.Size, null, sourceStream);
 
             // Set updated/new sectors within the ministream ----------
             if (zeroSector)
@@ -954,7 +950,7 @@ namespace OpenMcdf
             //Update HEADER and root storage when ministream changes
             if (miniFAT.Count > 0)
             {
-                this.rootStorage.DirEntry.StartSetc = miniStream[0].Id;
+                this.RootStorage.DirEntry.StartSetc = miniStream[0].Id;
                 header.MiniFATSectorsNumber = (uint)miniFAT.Count;
                 header.FirstMiniFATSectorID = miniFAT[0].Id;
             }
@@ -1260,7 +1256,7 @@ namespace OpenMcdf
                         if (this.closeStream)
                             this.Close();
 
-                        if (this.validationExceptionEnabled)
+                        if (this.ValidationExceptionEnabled)
                             throw new CFCorruptedFileException("DIFAT sectors count mismatched. Corrupted compound file");
                     }
 
@@ -1282,7 +1278,7 @@ namespace OpenMcdf
 
         private void EnsureUniqueSectorIndex(int nextSecID, HashSet<int> processedSectors)
         {
-            if (!this.validationExceptionEnabled)
+            if (!this.ValidationExceptionEnabled)
             {
                 return;
             }
@@ -1459,7 +1455,7 @@ namespace OpenMcdf
                     = new StreamView(miniFAT, GetSectorSize(), header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE, null, sourceStream);
 
                 StreamView miniStreamView =
-                    new StreamView(miniStream, GetSectorSize(), rootStorage.Size, null, sourceStream);
+                    new StreamView(miniStream, GetSectorSize(), RootStorage.Size, null, sourceStream);
 
                 BinaryReader miniFATReader = new BinaryReader(miniFATView);
 
@@ -1522,8 +1518,6 @@ namespace OpenMcdf
             }
         }
 
-        private CFStorage rootStorage;
-
         /// <summary>
         /// The entry point object that represents the
         /// root of the structures tree to get or set storage or
@@ -1549,7 +1543,7 @@ namespace OpenMcdf
         ///    ncf.Close();
         /// </code>
         /// </example>
-        public CFStorage RootStorage => rootStorage;
+        public CFStorage RootStorage { get; private set; }
 
         public CFSVersion Version => (CFSVersion)this.header.MajorVersion;
 
@@ -1703,7 +1697,7 @@ namespace OpenMcdf
                 // if this siblings id does not overflow current list
                 if (sid >= directoryEntries.Count)
                 {
-                    if (this.validationExceptionEnabled)
+                    if (this.ValidationExceptionEnabled)
                     {
                         //this.Close();
                         throw new CFCorruptedFileException("A Directory Entry references the non-existent sid number " + sid.ToString());
@@ -1715,7 +1709,7 @@ namespace OpenMcdf
                 //if this sibling is valid...
                 if (directoryEntries[sid].StgType == StgType.StgInvalid)
                 {
-                    if (this.validationExceptionEnabled)
+                    if (this.ValidationExceptionEnabled)
                     {
                         //this.Close();
                         throw new CFCorruptedFileException("A Directory Entry has a valid reference to an Invalid Storage Type directory [" + sid + "]");
@@ -1726,7 +1720,7 @@ namespace OpenMcdf
 
                 if (!Enum.IsDefined(typeof(StgType), directoryEntries[sid].StgType))
                 {
-                    if (this.validationExceptionEnabled)
+                    if (this.ValidationExceptionEnabled)
                     {
                         //this.Close();
                         throw new CFCorruptedFileException("A Directory Entry has an invalid Storage Type");
@@ -1837,7 +1831,7 @@ namespace OpenMcdf
         [Obsolete("Use SaveAs method")]
         public void Save(string fileName)
         {
-            if (_disposed)
+            if (IsClosed)
                 throw new CFException("Compound File closed: cannot save data");
 
             FileStream fs = null;
@@ -1911,7 +1905,7 @@ namespace OpenMcdf
         /// </example>
         public void Save(Stream stream)
         {
-            if (_disposed)
+            if (IsClosed)
                 throw new CFDisposedException("Compound File closed: cannot save data");
 
             if (!stream.CanSeek)
@@ -2013,7 +2007,7 @@ namespace OpenMcdf
                     = GetSectorChain(RootEntry.StartSetc, SectorType.Normal);
 
                 StreamView miniStreamView
-                    = new StreamView(miniStream, GetSectorSize(), rootStorage.Size, null, sourceStream);
+                    = new StreamView(miniStream, GetSectorSize(), RootStorage.Size, null, sourceStream);
 
                 int idx = 0;
 
@@ -2371,7 +2365,7 @@ namespace OpenMcdf
 
         internal byte[] GetData(CFStream cFStream)
         {
-            if (_disposed)
+            if (IsClosed)
                 throw new CFDisposedException("Compound File closed: cannot access data");
 
             byte[] result = null;
@@ -2405,7 +2399,7 @@ namespace OpenMcdf
 
         public byte[] GetDataBySID(int sid)
         {
-            if (_disposed)
+            if (IsClosed)
                 throw new CFDisposedException("Compound File closed: cannot access data");
             if (sid < 0)
                 return null;
@@ -2439,7 +2433,7 @@ namespace OpenMcdf
 
         public Guid getGuidBySID(int sid)
         {
-            if (_disposed)
+            if (IsClosed)
                 throw new CFDisposedException("Compound File closed: cannot access data");
             if (sid < 0)
                 throw new CFException("Invalid SID");
@@ -2449,7 +2443,7 @@ namespace OpenMcdf
 
         public Guid getGuidForStream(int sid)
         {
-            if (_disposed)
+            if (IsClosed)
                 throw new CFDisposedException("Compound File closed: cannot access data");
             if (sid < 0)
                 throw new CFException("Invalid SID");
@@ -2550,7 +2544,6 @@ namespace OpenMcdf
 
         #region IDisposable Members
 
-        private bool _disposed; //false
 
         void IDisposable.Dispose()
         {
@@ -2571,7 +2564,7 @@ namespace OpenMcdf
         {
             try
             {
-                if (!_disposed)
+                if (!IsClosed)
                 {
                     lock (lockObject)
                     {
@@ -2585,7 +2578,7 @@ namespace OpenMcdf
                                 sectors = null;
                             }
 
-                            this.rootStorage = null; // Some problem releasing resources...
+                            this.RootStorage = null; // Some problem releasing resources...
                             this.header = null;
                             this.directoryEntries.Clear();
                             this.directoryEntries = null;
@@ -2596,18 +2589,18 @@ namespace OpenMcdf
 #endif
                         }
 
-                        if (this.sourceStream != null && closeStream && !configuration.HasFlag(CFSConfiguration.LeaveOpen))
+                        if (this.sourceStream != null && closeStream && !Configuration.HasFlag(CFSConfiguration.LeaveOpen))
                             this.sourceStream.Close();
                     }
                 }
             }
             finally
             {
-                _disposed = true;
+                IsClosed = true;
             }
         }
 
-        internal bool IsClosed => _disposed;
+        internal bool IsClosed { get; private set; }
 
         private List<IDirectoryEntry> directoryEntries
             = new List<IDirectoryEntry>();
@@ -2666,14 +2659,14 @@ namespace OpenMcdf
 
         public int GetNumDirectories()
         {
-            if (_disposed)
+            if (IsClosed)
                 throw new CFDisposedException("Compound File closed: cannot access data");
             return directoryEntries.Count;
         }
 
         public string GetNameDirEntry(int id)
         {
-            if (_disposed)
+            if (IsClosed)
                 throw new CFDisposedException("Compound File closed: cannot access data");
             if (id < 0)
                 throw new CFException("Invalid Storage ID");
@@ -2682,7 +2675,7 @@ namespace OpenMcdf
 
         public StgType GetStorageType(int id)
         {
-            if (_disposed)
+            if (IsClosed)
                 throw new CFDisposedException("Compound File closed: cannot access data");
             if (id < 0)
                 throw new CFException("Invalid Storage ID");

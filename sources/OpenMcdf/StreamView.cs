@@ -20,8 +20,6 @@ namespace OpenMcdf
         private int sectorSize;
 
         private long position;
-
-        private List<Sector> sectorChain;
         private Stream stream;
         private bool isFatStream = false;
         private List<Sector> freeSectors = new List<Sector>();
@@ -35,7 +33,7 @@ namespace OpenMcdf
             if (sectorSize <= 0)
                 throw new CFException("Sector size must be greater than zero");
 
-            this.sectorChain = sectorChain;
+            this.BaseSectorChain = sectorChain;
             this.sectorSize = sectorSize;
             this.stream = stream;
         }
@@ -47,7 +45,7 @@ namespace OpenMcdf
             AdjustLength(length, availableSectors);
         }
 
-        public List<Sector> BaseSectorChain => sectorChain;
+        public List<Sector> BaseSectorChain { get; }
 
         public override bool CanRead => true;
 
@@ -101,7 +99,7 @@ namespace OpenMcdf
             long intMax = Math.Min(int.MaxValue, this.length);
             count = Math.Min((int)intMax, count);
 
-            if (sectorChain != null && sectorChain.Count > 0)
+            if (BaseSectorChain != null && BaseSectorChain.Count > 0)
             {
                 // First sector
                 int secIndex = (int)(position / sectorSize);
@@ -110,13 +108,13 @@ namespace OpenMcdf
                 // and sector border
 
                 nToRead = Math.Min(
-                    sectorChain[0].Size - ((int)position % sectorSize),
+                    BaseSectorChain[0].Size - ((int)position % sectorSize),
                     count);
 
-                if (secIndex < sectorChain.Count)
+                if (secIndex < BaseSectorChain.Count)
                 {
                     Buffer.BlockCopy(
-                        sectorChain[secIndex].GetData(),
+                        BaseSectorChain[secIndex].GetData(),
                         (int)(position % sectorSize),
                         buffer,
                         offset,
@@ -133,7 +131,7 @@ namespace OpenMcdf
                     nToRead = sectorSize;
 
                     Buffer.BlockCopy(
-                        sectorChain[secIndex].GetData(),
+                        BaseSectorChain[secIndex].GetData(),
                         0,
                         buffer,
                         offset + nRead,
@@ -148,10 +146,10 @@ namespace OpenMcdf
 
                 if (nToRead != 0)
                 {
-                    if (secIndex > sectorChain.Count) throw new CFCorruptedFileException("The file is probably corrupted.");
+                    if (secIndex > BaseSectorChain.Count) throw new CFCorruptedFileException("The file is probably corrupted.");
 
                     Buffer.BlockCopy(
-                        sectorChain[secIndex].GetData(),
+                        BaseSectorChain[secIndex].GetData(),
                         0,
                         buffer,
                         offset + nRead,
@@ -200,7 +198,7 @@ namespace OpenMcdf
         {
             this.length = value;
 
-            long delta = value - (sectorChain.Count * (long)sectorSize);
+            long delta = value - (BaseSectorChain.Count * (long)sectorSize);
 
             if (delta > 0)
             {
@@ -229,7 +227,7 @@ namespace OpenMcdf
                         t.InitFATData();
                     }
 
-                    sectorChain.Add(t);
+                    BaseSectorChain.Add(t);
                     nSec--;
                 }
 
@@ -280,7 +278,7 @@ namespace OpenMcdf
             if ((position + count) > length)
                 AdjustLength(position + count);
 
-            if (sectorChain != null)
+            if (BaseSectorChain != null)
             {
                 // First sector
                 int secOffset = (int)(position / sectorSize);
@@ -288,16 +286,16 @@ namespace OpenMcdf
 
                 roundByteWritten = Math.Min(sectorSize - (int)(position % sectorSize), count);
 
-                if (secOffset < sectorChain.Count)
+                if (secOffset < BaseSectorChain.Count)
                 {
                     Buffer.BlockCopy(
                         buffer,
                         offset,
-                        sectorChain[secOffset].GetData(),
+                        BaseSectorChain[secOffset].GetData(),
                         secShift,
                         roundByteWritten);
 
-                    sectorChain[secOffset].DirtyFlag = true;
+                    BaseSectorChain[secOffset].DirtyFlag = true;
                 }
 
                 byteWritten += roundByteWritten;
@@ -312,11 +310,11 @@ namespace OpenMcdf
                     Buffer.BlockCopy(
                         buffer,
                         offset,
-                        sectorChain[secOffset].GetData(),
+                        BaseSectorChain[secOffset].GetData(),
                         0,
                         roundByteWritten);
 
-                    sectorChain[secOffset].DirtyFlag = true;
+                    BaseSectorChain[secOffset].DirtyFlag = true;
 
                     byteWritten += roundByteWritten;
                     offset += roundByteWritten;
@@ -331,11 +329,11 @@ namespace OpenMcdf
                     Buffer.BlockCopy(
                         buffer,
                         offset,
-                        sectorChain[secOffset].GetData(),
+                        BaseSectorChain[secOffset].GetData(),
                         0,
                         roundByteWritten);
 
-                    sectorChain[secOffset].DirtyFlag = true;
+                    BaseSectorChain[secOffset].DirtyFlag = true;
 
                     offset += roundByteWritten;
                     byteWritten += roundByteWritten;
