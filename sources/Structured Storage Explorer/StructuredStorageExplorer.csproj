@@ -38,18 +38,11 @@
     <AssemblyOriginatorKeyFile></AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Be.Windows.Forms.HexBox, Version=1.4.8.26880, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Be.Windows.Forms.HexBox.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="img\disk.png" />
     <Content Include="img\folder.png" />
     <Content Include="img\page_white.png" />
     <Content Include="img\stream.png" />
     <Content Include="img\storage.png" />
-    <Content Include="lib\Be.Windows.Forms.HexBox.dll" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -69,13 +62,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\OpenMcdf.Extensions\OpenMcdf.Extensions.csproj" />
     <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="InputBox.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Be.Windows.Forms.HexBox" Version="1.6.1" />
   </ItemGroup>
 </Project>
