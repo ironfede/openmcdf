@@ -94,7 +94,7 @@ namespace OpenMcdf
             }
 
             // If one is null, but not both, return false.
-            if (((object)leftItem == null) || ((object)rightItem == null))
+            if ((leftItem is null) || (rightItem is null))
             {
                 return false;
             }
