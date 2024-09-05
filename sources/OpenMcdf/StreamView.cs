@@ -47,7 +47,7 @@ namespace OpenMcdf
             : this(sectorChain, sectorSize, stream)
         {
             this.isFatStream = isFatStream;
-            adjustLength(length, availableSectors);
+            AdjustLength(length, availableSectors);
         }
 
         public List<Sector> BaseSectorChain
@@ -207,17 +207,17 @@ namespace OpenMcdf
             }
 
             if (this.length <= position) // Don't adjust the length when position is inside the bounds of 0 and the current length.
-                adjustLength(position);
+                AdjustLength(position);
 
             return position;
         }
 
-        private void adjustLength(long value)
+        private void AdjustLength(long value)
         {
-            adjustLength(value, null);
+            AdjustLength(value, null);
         }
 
-        private void adjustLength(long value, Queue<Sector> availableSectors)
+        private void AdjustLength(long value, Queue<Sector> availableSectors)
         {
             this.length = value;
 
@@ -279,7 +279,7 @@ namespace OpenMcdf
 
         public override void SetLength(long value)
         {
-            adjustLength(value);
+            AdjustLength(value);
         }
 
         public void WriteInt32(int val)
@@ -299,7 +299,7 @@ namespace OpenMcdf
 
             // Assure length
             if ((position + count) > length)
-                adjustLength(position + count);
+                AdjustLength(position + count);
 
             if (sectorChain != null)
             {
