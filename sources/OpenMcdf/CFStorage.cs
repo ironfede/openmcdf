@@ -181,9 +181,8 @@ namespace OpenMcdf
             //    children = compoundFile.GetChildrenTree(SID);
             //}
 
-            IRBNode outDe = null;
 
-            if (Children.TryLookup(tmp, out outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
+            if (Children.TryLookup(tmp, out IRBNode outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
             {
                 return new CFStream(this.CompoundFile, (IDirectoryEntry)outDe);
             }
@@ -225,9 +224,8 @@ namespace OpenMcdf
 
                 IDirectoryEntry tmp = DirectoryEntry.Mock(streamName, StgType.StgStream);
 
-                IRBNode outDe = null;
 
-                if (Children.TryLookup(tmp, out outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
+                if (Children.TryLookup(tmp, out IRBNode outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
                 {
                     cfStream = new CFStream(this.CompoundFile, (IDirectoryEntry)outDe);
                     result = true;
@@ -273,9 +271,8 @@ namespace OpenMcdf
             //    children = compoundFile.GetChildrenTree(SID);
             //}
 
-            IRBNode outDe = null;
 
-            if (Children.TryLookup(tmp, out outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
+            if (Children.TryLookup(tmp, out IRBNode outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
             {
                 return new CFStream(this.CompoundFile, (IDirectoryEntry)outDe);
             }
@@ -309,9 +306,8 @@ namespace OpenMcdf
             CheckDisposed();
 
             IDirectoryEntry template = DirectoryEntry.Mock(storageName, StgType.StgInvalid);
-            IRBNode outDe = null;
 
-            if (Children.TryLookup(template, out outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
+            if (Children.TryLookup(template, out IRBNode outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
             {
                 return new CFStorage(this.CompoundFile, outDe as IDirectoryEntry);
             }
@@ -345,9 +341,8 @@ namespace OpenMcdf
             CheckDisposed();
 
             IDirectoryEntry template = DirectoryEntry.Mock(storageName, StgType.StgInvalid);
-            IRBNode outDe = null;
 
-            if (Children.TryLookup(template, out outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
+            if (Children.TryLookup(template, out IRBNode outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
             {
                 return new CFStorage(this.CompoundFile, outDe as IDirectoryEntry);
             }
@@ -387,9 +382,8 @@ namespace OpenMcdf
                 CheckDisposed();
 
                 IDirectoryEntry template = DirectoryEntry.Mock(storageName, StgType.StgInvalid);
-                IRBNode outDe = null;
 
-                if (Children.TryLookup(template, out outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
+                if (Children.TryLookup(template, out IRBNode outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
                 {
                     cfStorage = new CFStorage(this.CompoundFile, outDe as IDirectoryEntry);
                     result = true;
@@ -541,9 +535,8 @@ namespace OpenMcdf
             // Find entry to delete
             IDirectoryEntry tmp = DirectoryEntry.Mock(entryName, StgType.StgInvalid);
 
-            IRBNode foundObj = null;
 
-            this.Children.TryLookup(tmp, out foundObj);
+            this.Children.TryLookup(tmp, out IRBNode foundObj);
 
             if (foundObj == null)
                 throw new CFItemNotFound("Entry named [" + entryName + "] was not found");
@@ -634,8 +627,7 @@ namespace OpenMcdf
         public void RenameItem(string oldItemName, string newItemName)
         {
             IDirectoryEntry template = DirectoryEntry.Mock(oldItemName, StgType.StgInvalid);
-            IRBNode item;
-            if (Children.TryLookup(template, out item))
+            if (Children.TryLookup(template, out IRBNode item))
             {
                 ((DirectoryEntry)item).SetEntryName(newItemName);
             }

@@ -111,14 +111,12 @@ namespace OpenMcdf.Test
             String FILENAME = "MultipleStorage.cfs";
             CompoundFile cf = new CompoundFile(FILENAME);
 
-            CFStorage st = null;
-            cf.RootStorage.TryGetStorage("MyStorage", out st);
+            cf.RootStorage.TryGetStorage("MyStorage", out CFStorage st);
             Assert.IsNotNull(st);
 
             try
             {
-                CFStorage nf = null;
-                cf.RootStorage.TryGetStorage("IDONTEXIST", out nf);
+                cf.RootStorage.TryGetStorage("IDONTEXIST", out CFStorage nf);
                 Assert.IsNull(nf);
             }
             catch (Exception)
@@ -128,11 +126,9 @@ namespace OpenMcdf.Test
 
             try
             {
-                CFStream s = null;
-                st.TryGetStream("MyStream", out s);
+                st.TryGetStream("MyStream", out CFStream s);
                 Assert.IsNotNull(s);
-                CFStream ns = null;
-                st.TryGetStream("IDONTEXIST2", out ns);
+                st.TryGetStream("IDONTEXIST2", out CFStream ns);
                 Assert.IsNull(ns);
             }
             catch (Exception)
@@ -146,16 +142,14 @@ namespace OpenMcdf.Test
         {
             String FILENAME = "MultipleStorage.cfs";
             CompoundFile cf = new CompoundFile(FILENAME);
-            CFStorage st = null;
-            bool bs = cf.RootStorage.TryGetStorage("MyStorage", out st);
+            bool bs = cf.RootStorage.TryGetStorage("MyStorage", out CFStorage st);
 
             Assert.IsTrue(bs);
             Assert.IsNotNull(st);
 
             try
             {
-                CFStorage nf = null;
-                bool nb = cf.RootStorage.TryGetStorage("IDONTEXIST", out nf);
+                bool nb = cf.RootStorage.TryGetStorage("IDONTEXIST", out CFStorage nf);
                 Assert.IsFalse(nb);
                 Assert.IsNull(nf);
             }
