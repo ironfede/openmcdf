@@ -5,7 +5,7 @@ using System.IO;
 namespace OpenMcdf.Benchmark
 {
     // Simple benchmarks for reading OLE Properties with OpenMcdf.Extensions.
-    [SimpleJob(BenchmarkDotNet.Jobs.RuntimeMoniker.NetCoreApp31)]
+    [SimpleJob]
     [MemoryDiagnoser]
     public class ExtensionsRead
     {

@@ -6,7 +6,7 @@ using System.IO;
 
 namespace OpenMcdf.Benchmark
 {
-    [SimpleJob(RuntimeMoniker.NetCoreApp31)]
+    [SimpleJob]
     [CsvExporter]
     [HtmlExporter]
     [MarkdownExporter]
