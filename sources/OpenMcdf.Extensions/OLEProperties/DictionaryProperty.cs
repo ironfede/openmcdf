@@ -15,13 +15,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             this.entries = new Dictionary<uint, string>();
         }
 
-        public PropertyType PropertyType
-        {
-            get
-            {
-                return PropertyType.DictionaryProperty;
-            }
-        }
+        public PropertyType PropertyType => PropertyType.DictionaryProperty;
 
         private Dictionary<uint, string> entries;
 

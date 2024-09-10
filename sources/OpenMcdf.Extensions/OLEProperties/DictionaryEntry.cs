@@ -15,7 +15,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public uint PropertyIdentifier { get; set; }
         public int Length { get; set; }
-        public String Name { get { return GetName(); } }
+        public string Name => GetName();
 
         private byte[] nameBytes;
 

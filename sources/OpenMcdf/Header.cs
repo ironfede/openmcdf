@@ -16,10 +16,7 @@ namespace OpenMcdf
         private byte[] headerSignature
             = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
 
-        public byte[] HeaderSignature
-        {
-            get { return headerSignature; }
-        }
+        public byte[] HeaderSignature => headerSignature;
 
         //8 16 Unique identifier (UID) of this file (not of interest in the following, may be all 0)
         private byte[] clsid = new byte[16];
@@ -33,53 +30,35 @@ namespace OpenMcdf
         //24 2 Revision number of the file format (most used is 003EH)
         private ushort minorVersion = 0x003E;
 
-        public ushort MinorVersion
-        {
-            get { return minorVersion; }
-        }
+        public ushort MinorVersion => minorVersion;
 
         //26 2 Version number of the file format (most used is 0003H)
         private ushort majorVersion = 0x0003;
 
-        public ushort MajorVersion
-        {
-            get { return majorVersion; }
-        }
+        public ushort MajorVersion => majorVersion;
 
         //28 2 Byte order identifier (➜4.2): FEH FFH = Little-Endian FFH FEH = Big-Endian
         private ushort byteOrder = 0xFFFE;
 
-        public ushort ByteOrder
-        {
-            get { return byteOrder; }
-        }
+        public ushort ByteOrder => byteOrder;
 
         //30 2 Size of a sector in the compound document file (➜3.1) in power-of-two (ssz), real sector
         //size is sec_size = 2ssz bytes (minimum value is 7 which means 128 bytes, most used
         //value is 9 which means 512 bytes)
         private ushort sectorShift = 9;
 
-        public ushort SectorShift
-        {
-            get { return sectorShift; }
-        }
+        public ushort SectorShift => sectorShift;
 
         //32 2 Size of a short-sector in the short-stream container stream (➜6.1) in power-of-two (sssz),
         //real short-sector size is short_sec_size = 2sssz bytes (maximum value is sector size
         //ssz, see above, most used value is 6 which means 64 bytes)
         private ushort miniSectorShift = 6;
-        public ushort MiniSectorShift
-        {
-            get { return miniSectorShift; }
-        }
+        public ushort MiniSectorShift => miniSectorShift;
 
         //34 10 Not used
         private byte[] unUsed = new byte[6];
 
-        public byte[] UnUsed
-        {
-            get { return unUsed; }
-        }
+        public byte[] UnUsed => unUsed;
 
         //44 4 Total number of sectors used Directory (➜5.2)
         private int directorySectorsNumber;
@@ -111,10 +90,7 @@ namespace OpenMcdf
         //52 4 Not used
         private uint unUsed2;
 
-        public uint UnUsed2
-        {
-            get { return unUsed2; }
-        }
+        public uint UnUsed2 => unUsed2;
 
         //56 4 Minimum size of a standard stream (in bytes, minimum allowed and most used size is 4096
         //bytes), streams with an actual size smaller than (and not equal to) this value are stored as
@@ -171,10 +147,7 @@ namespace OpenMcdf
         //76 436 First part of the master sector allocation table (➜5.1) containing 109 SecIDs
         private int[] difat = new int[109];
 
-        public int[] DIFAT
-        {
-            get { return difat; }
-        }
+        public int[] DIFAT => difat;
 
         public Header()
             : this(3)

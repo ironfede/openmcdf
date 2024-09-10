@@ -19,7 +19,7 @@ namespace RedBlackTree
 {
     public class RBTreeException : Exception
     {
-        public RBTreeException(String msg)
+        public RBTreeException(string msg)
             : base(msg)
         {
         }
@@ -27,7 +27,7 @@ namespace RedBlackTree
 
     public class RBTreeDuplicatedItemException : RBTreeException
     {
-        public RBTreeDuplicatedItemException(String msg)
+        public RBTreeDuplicatedItemException(string msg)
             : base(msg)
         {
         }
@@ -523,25 +523,13 @@ namespace RedBlackTree
                 tree.VisitTreeNodes(item => heap.Enqueue(item));
             }
 
-            public IRBNode Current
-            {
-                get
-                {
-                    return heap.ElementAt(position);
-                }
-            }
+            public IRBNode Current => heap.ElementAt(position);
 
             public void Dispose()
             {
             }
 
-            object System.Collections.IEnumerator.Current
-            {
-                get
-                {
-                    return heap.ElementAt(position);
-                }
-            }
+            object System.Collections.IEnumerator.Current => heap.ElementAt(position);
 
             public bool MoveNext()
             {

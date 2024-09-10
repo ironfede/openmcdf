@@ -119,11 +119,11 @@ namespace OpenMcdf
         ///
         /// </code>
         /// </example>
-        public CFStream AddStream(String streamName)
+        public CFStream AddStream(string streamName)
         {
             CheckDisposed();
 
-            if (String.IsNullOrEmpty(streamName))
+            if (string.IsNullOrEmpty(streamName))
                 throw new CFException("Stream name cannot be null or empty");
 
             IDirectoryEntry dirEntry = DirectoryEntry.TryNew(streamName, StgType.StgStream, this.CompoundFile.GetDirectories());
@@ -170,7 +170,7 @@ namespace OpenMcdf
         /// cf.Close();
         /// </code>
         /// </example>
-        public CFStream GetStream(String streamName)
+        public CFStream GetStream(string streamName)
         {
             CheckDisposed();
 
@@ -181,9 +181,8 @@ namespace OpenMcdf
             //    children = compoundFile.GetChildrenTree(SID);
             //}
 
-            IRBNode outDe = null;
 
-            if (Children.TryLookup(tmp, out outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
+            if (Children.TryLookup(tmp, out IRBNode outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
             {
                 return new CFStream(this.CompoundFile, (IDirectoryEntry)outDe);
             }
@@ -214,7 +213,7 @@ namespace OpenMcdf
         /// cf.Close();
         /// </code>
         /// </example>
-        public bool TryGetStream(String streamName, out CFStream cfStream)
+        public bool TryGetStream(string streamName, out CFStream cfStream)
         {
             bool result = false;
             cfStream = null;
@@ -225,9 +224,8 @@ namespace OpenMcdf
 
                 IDirectoryEntry tmp = DirectoryEntry.Mock(streamName, StgType.StgStream);
 
-                IRBNode outDe = null;
 
-                if (Children.TryLookup(tmp, out outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
+                if (Children.TryLookup(tmp, out IRBNode outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
                 {
                     cfStream = new CFStream(this.CompoundFile, (IDirectoryEntry)outDe);
                     result = true;
@@ -262,7 +260,7 @@ namespace OpenMcdf
         /// </code>
         /// </example>
         [Obsolete("Please use TryGetStream(string, out cfStream) instead.")]
-        public CFStream TryGetStream(String streamName)
+        public CFStream TryGetStream(string streamName)
         {
             CheckDisposed();
 
@@ -273,9 +271,8 @@ namespace OpenMcdf
             //    children = compoundFile.GetChildrenTree(SID);
             //}
 
-            IRBNode outDe = null;
 
-            if (Children.TryLookup(tmp, out outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
+            if (Children.TryLookup(tmp, out IRBNode outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
             {
                 return new CFStream(this.CompoundFile, (IDirectoryEntry)outDe);
             }
@@ -304,14 +301,13 @@ namespace OpenMcdf
         /// cf.Close();
         /// </code>
         /// </example>
-        public CFStorage GetStorage(String storageName)
+        public CFStorage GetStorage(string storageName)
         {
             CheckDisposed();
 
             IDirectoryEntry template = DirectoryEntry.Mock(storageName, StgType.StgInvalid);
-            IRBNode outDe = null;
 
-            if (Children.TryLookup(template, out outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
+            if (Children.TryLookup(template, out IRBNode outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
             {
                 return new CFStorage(this.CompoundFile, outDe as IDirectoryEntry);
             }
@@ -340,14 +336,13 @@ namespace OpenMcdf
         /// </code>
         /// </example>
         [Obsolete("Please use TryGetStorage(string, out cfStorage) instead.")]
-        public CFStorage TryGetStorage(String storageName)
+        public CFStorage TryGetStorage(string storageName)
         {
             CheckDisposed();
 
             IDirectoryEntry template = DirectoryEntry.Mock(storageName, StgType.StgInvalid);
-            IRBNode outDe = null;
 
-            if (Children.TryLookup(template, out outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
+            if (Children.TryLookup(template, out IRBNode outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
             {
                 return new CFStorage(this.CompoundFile, outDe as IDirectoryEntry);
             }
@@ -377,7 +372,7 @@ namespace OpenMcdf
         /// cf.Close();
         /// </code>
         /// </example>
-        public bool TryGetStorage(String storageName, out CFStorage cfStorage)
+        public bool TryGetStorage(string storageName, out CFStorage cfStorage)
         {
             bool result = false;
             cfStorage = null;
@@ -387,9 +382,8 @@ namespace OpenMcdf
                 CheckDisposed();
 
                 IDirectoryEntry template = DirectoryEntry.Mock(storageName, StgType.StgInvalid);
-                IRBNode outDe = null;
 
-                if (Children.TryLookup(template, out outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
+                if (Children.TryLookup(template, out IRBNode outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
                 {
                     cfStorage = new CFStorage(this.CompoundFile, outDe as IDirectoryEntry);
                     result = true;
@@ -427,11 +421,11 @@ namespace OpenMcdf
         ///
         /// </code>
         /// </example>
-        public CFStorage AddStorage(String storageName)
+        public CFStorage AddStorage(string storageName)
         {
             CheckDisposed();
 
-            if (String.IsNullOrEmpty(storageName))
+            if (string.IsNullOrEmpty(storageName))
                 throw new CFException("Stream name cannot be null or empty");
 
             // Add new Storage directory entry
@@ -534,16 +528,15 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFDisposedException">Raised if trying to delete item from a closed compound file</exception>
         /// <exception cref="T:OpenMcdf.CFItemNotFound">Raised if item to delete is not found</exception>
         /// <exception cref="T:OpenMcdf.CFException">Raised if trying to delete root storage</exception>
-        public void Delete(String entryName)
+        public void Delete(string entryName)
         {
             CheckDisposed();
 
             // Find entry to delete
             IDirectoryEntry tmp = DirectoryEntry.Mock(entryName, StgType.StgInvalid);
 
-            IRBNode foundObj = null;
 
-            this.Children.TryLookup(tmp, out foundObj);
+            this.Children.TryLookup(tmp, out IRBNode foundObj);
 
             if (foundObj == null)
                 throw new CFItemNotFound("Entry named [" + entryName + "] was not found");
@@ -634,8 +627,7 @@ namespace OpenMcdf
         public void RenameItem(string oldItemName, string newItemName)
         {
             IDirectoryEntry template = DirectoryEntry.Mock(oldItemName, StgType.StgInvalid);
-            IRBNode item;
-            if (Children.TryLookup(template, out item))
+            if (Children.TryLookup(template, out IRBNode item))
             {
                 ((DirectoryEntry)item).SetEntryName(newItemName);
             }

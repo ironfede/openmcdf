@@ -347,7 +347,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             public override long ReadScalarValue(System.IO.BinaryReader br)
             {
-                Int64 temp = br.ReadInt64();
+                long temp = br.ReadInt64();
 
                 var tmp = temp /= 10000;
 
@@ -368,7 +368,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             public override DateTime ReadScalarValue(System.IO.BinaryReader br)
             {
-                Double temp = br.ReadDouble();
+                double temp = br.ReadDouble();
 
                 return DateTime.FromOADate(temp);
             }
@@ -413,7 +413,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             {
                 //bool addNullTerminator = true;
 
-                if (String.IsNullOrEmpty(pValue)) //|| String.IsNullOrEmpty(pValue.Trim(new char[] { '\0' })))
+                if (string.IsNullOrEmpty(pValue)) //|| String.IsNullOrEmpty(pValue.Trim(new char[] { '\0' })))
                 {
                     bw.Write((uint)0);
                 }
@@ -537,7 +537,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             public override DateTime ReadScalarValue(System.IO.BinaryReader br)
             {
-                Int64 tmp = br.ReadInt64();
+                long tmp = br.ReadInt64();
 
                 return DateTime.FromFileTime(tmp);
             }
@@ -548,15 +548,15 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_DECIMAL_Property : TypedPropertyValue<Decimal>
+        private class VT_DECIMAL_Property : TypedPropertyValue<decimal>
         {
             public VT_DECIMAL_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
             }
 
-            public override Decimal ReadScalarValue(System.IO.BinaryReader br)
+            public override decimal ReadScalarValue(System.IO.BinaryReader br)
             {
-                Decimal d;
+                decimal d;
 
                 br.ReadInt16(); // wReserved
                 byte scale = br.ReadByte();
@@ -574,9 +574,9 @@ namespace OpenMcdf.Extensions.OLEProperties
                 return d;
             }
 
-            public override void WriteScalarValue(BinaryWriter bw, Decimal pValue)
+            public override void WriteScalarValue(BinaryWriter bw, decimal pValue)
             {
-                int[] parts = Decimal.GetBits(pValue);
+                int[] parts = decimal.GetBits(pValue);
 
                 bool sign = (parts[3] & 0x80000000) != 0;
                 byte scale = (byte)((parts[3] >> 16) & 0x7F);

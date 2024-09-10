@@ -40,7 +40,7 @@ namespace OpenMcdf
         /// </example>
         /// <param name="data">Data bytes to write to this stream</param>
         /// <remarks>Existing associated data will be lost after method invocation</remarks>
-        public void SetData(Byte[] data)
+        public void SetData(byte[] data)
         {
             CheckDisposed();
 
@@ -100,7 +100,7 @@ namespace OpenMcdf
         /// Append data can also be invoked on streams with no data in order
         /// to simplify its use inside loops.
         /// </remarks>
-        public void Append(Byte[] data)
+        public void Append(byte[] data)
         {
             CheckDisposed();
             if (this.Size > 0)
@@ -127,7 +127,7 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFDisposedException">
         /// Raised when the owner compound file has been closed.
         /// </exception>
-        public Byte[] GetData()
+        public byte[] GetData()
         {
             CheckDisposed();
 

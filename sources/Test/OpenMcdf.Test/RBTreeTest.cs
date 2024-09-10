@@ -79,8 +79,7 @@ namespace OpenMcdf.Test
 
             for (int i = 0; i < repo.Count; i++)
             {
-                IRBNode c;
-                rbTree.TryLookup(DirectoryEntry.Mock(i.ToString(), StgType.StgInvalid), out c);
+                rbTree.TryLookup(DirectoryEntry.Mock(i.ToString(), StgType.StgInvalid), out IRBNode c);
                 Assert.IsTrue(c is IDirectoryEntry);
                 Assert.IsTrue(((IDirectoryEntry)c).Name == i.ToString());
                 //Assert.IsTrue(c.IsStream);
@@ -100,8 +99,7 @@ namespace OpenMcdf.Test
 
             try
             {
-                IRBNode n;
-                rbTree.Delete(DirectoryEntry.Mock("5", StgType.StgInvalid), out n);
+                rbTree.Delete(DirectoryEntry.Mock("5", StgType.StgInvalid), out IRBNode n);
                 rbTree.Delete(DirectoryEntry.Mock("24", StgType.StgInvalid), out n);
                 rbTree.Delete(DirectoryEntry.Mock("7", StgType.StgInvalid), out n);
             }

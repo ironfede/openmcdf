@@ -122,13 +122,7 @@ namespace OpenMcdf
         /// <summary>
         /// Get the configuration parameters of the CompoundFile object.
         /// </summary>
-        public CFSConfiguration Configuration
-        {
-            get
-            {
-                return configuration;
-            }
-        }
+        public CFSConfiguration Configuration => configuration;
 
         /// <summary>
         /// Returns the size of standard sectors switching on CFS version (3 or 4)
@@ -171,13 +165,10 @@ namespace OpenMcdf
 
         private bool validationExceptionEnabled = true;
 
-        public bool ValidationExceptionEnabled
-        {
-            get { return validationExceptionEnabled; }
-        }
+        public bool ValidationExceptionEnabled => validationExceptionEnabled;
 
         private CFSUpdateMode updateMode = CFSUpdateMode.ReadOnly;
-        private String fileName = String.Empty;
+        private string fileName = string.Empty;
 
         /// <summary>
         /// Initial capacity of the flushing queue used
@@ -310,7 +301,7 @@ namespace OpenMcdf
         /// automatically recognized from the file. Sector recycle is turned off
         /// to achieve the best reading/writing performance in most common scenarios.
         /// </remarks>
-        public CompoundFile(String fileName) : this(fileName, CFSUpdateMode.ReadOnly, CFSConfiguration.Default) { }
+        public CompoundFile(string fileName) : this(fileName, CFSUpdateMode.ReadOnly, CFSConfiguration.Default) { }
 
         /// <summary>
         /// Load an existing compound file.
@@ -337,7 +328,7 @@ namespace OpenMcdf
         ///
         /// </code>
         /// </example>
-        public CompoundFile(String fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters)
+        public CompoundFile(string fileName, CFSUpdateMode updateMode, CFSConfiguration configParameters)
         {
             SetConfigurationOptions(configParameters);
             this.updateMode = updateMode;
@@ -685,7 +676,7 @@ namespace OpenMcdf
             }
         }
 
-        private void LoadFile(String fileName)
+        private void LoadFile(string fileName)
         {
             this.fileName = fileName;
 
@@ -730,10 +721,7 @@ namespace OpenMcdf
         /// Return true if this compound file has been
         /// loaded from an existing file or stream
         /// </summary>
-        public bool HasSourceStream
-        {
-            get { return sourceStream != null; }
-        }
+        public bool HasSourceStream => sourceStream != null;
 
         private void PersistMiniStreamToStream(List<Sector> miniSectorChain)
         {
@@ -813,8 +801,8 @@ namespace OpenMcdf
             // Update miniFAT
             for (int i = 0; i < sectorChain.Count - 1; i++)
             {
-                Int32 currentId = sectorChain[i].Id;
-                Int32 nextId = sectorChain[i + 1].Id;
+                int currentId = sectorChain[i].Id;
+                int nextId = sectorChain[i + 1].Id;
 
                 miniFATView.Seek(currentId * 4, SeekOrigin.Begin);
                 miniFATView.Write(BitConverter.GetBytes(nextId), 0, 4);
@@ -888,7 +876,7 @@ namespace OpenMcdf
             // Update FAT marking unallocated sectors ----------
             for (int i = nth_sector_to_remove; i < sectorChain.Count; i++)
             {
-                Int32 currentId = sectorChain[i].Id;
+                int currentId = sectorChain[i].Id;
 
                 FATView.Seek(currentId * 4, SeekOrigin.Begin);
                 FATView.Write(BitConverter.GetBytes(Sector.FREESECT), 0, 4);
@@ -942,7 +930,7 @@ namespace OpenMcdf
             // Update miniFAT                ---------------------------------------
             for (int i = nth_sector_to_remove; i < sectorChain.Count; i++)
             {
-                Int32 currentId = sectorChain[i].Id;
+                int currentId = sectorChain[i].Id;
 
                 miniFATView.Seek(currentId * 4, SeekOrigin.Begin);
                 miniFATView.Write(BitConverter.GetBytes(Sector.FREESECT), 0, 4);
@@ -1424,10 +1412,10 @@ namespace OpenMcdf
                 if (nextSecID == Sector.ENDOFCHAIN) break;
 
                 if (nextSecID < 0)
-                    throw new CFCorruptedFileException(String.Format("Next Sector ID reference is below zero. NextID : {0}", nextSecID));
+                    throw new CFCorruptedFileException(string.Format("Next Sector ID reference is below zero. NextID : {0}", nextSecID));
 
                 if (nextSecID >= sectors.Count)
-                    throw new CFCorruptedFileException(String.Format("Next Sector ID reference an out of range sector. NextID : {0} while sector count {1}", nextSecID, sectors.Count));
+                    throw new CFCorruptedFileException(string.Format("Next Sector ID reference an out of range sector. NextID : {0} while sector count {1}", nextSecID, sectors.Count));
 
                 Sector s = sectors[nextSecID];
                 if (s == null)
@@ -1561,21 +1549,9 @@ namespace OpenMcdf
         ///    ncf.Close();
         /// </code>
         /// </example>
-        public CFStorage RootStorage
-        {
-            get
-            {
-                return rootStorage;
-            }
-        }
+        public CFStorage RootStorage => rootStorage;
 
-        public CFSVersion Version
-        {
-            get
-            {
-                return (CFSVersion)this.header.MajorVersion;
-            }
-        }
+        public CFSVersion Version => (CFSVersion)this.header.MajorVersion;
 
         /// <summary>
         /// Reset a directory entry setting it to StgInvalid in the Directory.
@@ -1583,7 +1559,7 @@ namespace OpenMcdf
         /// <param name="sid">Sid of the directory to invalidate</param>
         internal void ResetDirectoryEntry(int sid)
         {
-            directoryEntries[sid].SetEntryName(String.Empty);
+            directoryEntries[sid].SetEntryName(string.Empty);
             directoryEntries[sid].Left = null;
             directoryEntries[sid].Right = null;
             directoryEntries[sid].Parent = null;
@@ -1788,7 +1764,7 @@ namespace OpenMcdf
             while (dirReader.Position < directoryChain.Count * GetSectorSize())
             {
                 IDirectoryEntry de
-                = DirectoryEntry.New(String.Empty, StgType.StgInvalid, directoryEntries);
+                = DirectoryEntry.New(string.Empty, StgType.StgInvalid, directoryEntries);
 
                 //We are not inserting dirs. Do not use 'InsertNewDirectoryEntry'
                 de.Read(dirReader, this.Version);
@@ -1816,7 +1792,7 @@ namespace OpenMcdf
 
             while (delta % (GetSectorSize() / DIRECTORY_SIZE) != 0)
             {
-                IDirectoryEntry dummy = DirectoryEntry.New(String.Empty, StgType.StgInvalid, directoryEntries);
+                IDirectoryEntry dummy = DirectoryEntry.New(string.Empty, StgType.StgInvalid, directoryEntries);
                 dummy.Write(sv);
                 delta++;
             }
@@ -1847,7 +1823,7 @@ namespace OpenMcdf
         /// <param name="fileName">File name to write the compound file to</param>
         /// <exception cref="T:OpenMcdf.CFException">Raised if destination file is not seekable</exception>
         /// <exception cref="T:OpenMcdf.CFInvalidOperation">Raised if destination file is the current file</exception>
-        public void SaveAs(String fileName)
+        public void SaveAs(string fileName)
         {
             Save(fileName);
         }
@@ -1859,7 +1835,7 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFException">Raised if destination file is not seekable</exception>
         /// <exception cref="T:OpenMcdf.CFInvalidOperation">Raised if destination file is the current file</exception>
         [Obsolete("Use SaveAs method")]
-        public void Save(String fileName)
+        public void Save(string fileName)
         {
             if (_disposed)
                 throw new CFException("Compound File closed: cannot save data");
@@ -2074,7 +2050,7 @@ namespace OpenMcdf
         /// INTERNAL DEVELOPMENT. DO NOT CALL.
         /// <param name="directoryEntry"></param>
         /// <param name="buffer"></param>
-        internal void AppendData(CFItem cfItem, Byte[] buffer)
+        internal void AppendData(CFItem cfItem, byte[] buffer)
         {
             WriteData(cfItem, cfItem.Size, buffer);
         }
@@ -2329,7 +2305,7 @@ namespace OpenMcdf
             }
         }
 
-        internal void WriteData(CFItem cfItem, Byte[] buffer)
+        internal void WriteData(CFItem cfItem, byte[] buffer)
         {
             WriteData(cfItem, 0, buffer);
         }
@@ -2584,7 +2560,7 @@ namespace OpenMcdf
 
         #endregion
 
-        private object lockObject = new Object();
+        private object lockObject = new object();
 
         /// <summary>
         /// When called from user code, release all resources, otherwise, in the case runtime called it,
@@ -2631,13 +2607,7 @@ namespace OpenMcdf
             }
         }
 
-        internal bool IsClosed
-        {
-            get
-            {
-                return _disposed;
-            }
-        }
+        internal bool IsClosed => _disposed;
 
         private List<IDirectoryEntry> directoryEntries
             = new List<IDirectoryEntry>();
@@ -2652,15 +2622,9 @@ namespace OpenMcdf
         //    get { return directoryEntries; }
         //}
 
-        internal IDirectoryEntry RootEntry
-        {
-            get
-            {
-                return directoryEntries[0];
-            }
-        }
+        internal IDirectoryEntry RootEntry => directoryEntries[0];
 
-        private IList<IDirectoryEntry> FindDirectoryEntries(String entryName)
+        private IList<IDirectoryEntry> FindDirectoryEntries(string entryName)
         {
             List<IDirectoryEntry> result = new List<IDirectoryEntry>();
 
@@ -2683,7 +2647,7 @@ namespace OpenMcdf
         /// without the performance penalty related to entities hierarchy constraints.
         /// There is no implied hierarchy in the returned list.
         /// </remarks>
-        public IList<CFItem> GetAllNamedEntries(String entryName)
+        public IList<CFItem> GetAllNamedEntries(string entryName)
         {
             IList<IDirectoryEntry> r = FindDirectoryEntries(entryName);
             List<CFItem> result = new List<CFItem>();
@@ -2829,7 +2793,7 @@ namespace OpenMcdf
         ///
         /// </code>
         /// </example>
-        public static void ShrinkCompoundFile(String fileName)
+        public static void ShrinkCompoundFile(string fileName)
         {
             FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite);
             ShrinkCompoundFile(fs);
