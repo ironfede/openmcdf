@@ -356,7 +356,7 @@ namespace RedBlackTree
             }
 
             //assert n.left == null || n.right == null;
-            IRBNode child = (n.Right == null) ? n.Left : n.Right;
+            IRBNode child = n.Right ?? n.Left;
             if (NodeColor(n) == Color.BLACK)
             {
                 n.Color = NodeColor(child);
