@@ -38,8 +38,7 @@ namespace StructuredStorageExplorer
         {
             _hasChanges = true;
 
-            if (Changed != null)
-                Changed(this, e);
+            Changed?.Invoke(this, e);
         }
 
         /// <summary>
@@ -47,8 +46,7 @@ namespace StructuredStorageExplorer
         /// </summary>
         void OnLengthChanged(EventArgs e)
         {
-            if (LengthChanged != null)
-                LengthChanged(this, e);
+            LengthChanged?.Invoke(this, e);
         }
 
         /// <summary>

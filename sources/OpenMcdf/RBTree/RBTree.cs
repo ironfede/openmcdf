@@ -252,10 +252,7 @@ namespace RedBlackTree
 
             InsertCase1(insertedNode);
 
-            if (NodeInserted != null)
-            {
-                NodeInserted(insertedNode);
-            }
+            NodeInserted?.Invoke(insertedNode);
 
             //Trace.WriteLine(" ");
             //Print();
@@ -482,8 +479,7 @@ namespace RedBlackTree
                 DoVisitTree(action, walker.Left);
             }
 
-            if (action != null)
-                action(walker);
+            action?.Invoke(walker);
 
             if (walker.Right != null)
             {
@@ -507,8 +503,7 @@ namespace RedBlackTree
                 DoVisitTreeNodes(action, walker.Left);
             }
 
-            if (action != null)
-                action(walker);
+            action?.Invoke(walker);
 
             if (walker.Right != null)
             {
@@ -586,8 +581,7 @@ namespace RedBlackTree
 
         internal void FireNodeOperation(IRBNode node, NodeOperation operation)
         {
-            if (NodeOperation != null)
-                NodeOperation(node, operation);
+            NodeOperation?.Invoke(node, operation);
         }
 
         //internal void FireValueAssigned(RBNode<V> node, V value)
