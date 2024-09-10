@@ -110,9 +110,8 @@ namespace OpenMcdf.Extensions.OLEProperties
         public void Write(BinaryWriter bw)
         {
             long currentPos = bw.BaseStream.Position;
-            int size = 0;
-            int m = 0;
-
+            int size;
+            int m;
             switch (this.PropertyDimensions)
             {
                 case PropertyDimensions.IsScalar:

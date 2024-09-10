@@ -625,12 +625,10 @@ namespace OpenMcdf.Test
         public void Test_ADD_LARGE_NUMBER_OF_ITEMS()
         {
             int ITEM_NUMBER = 10000;
-
-            CompoundFile f = null;
             byte[] buffer = Helpers.GetBuffer(10, 0x0A);
             try
             {
-                f = new CompoundFile();
+                CompoundFile f = new CompoundFile();
 
                 for (int i = 0; i < ITEM_NUMBER; i++)
                 {

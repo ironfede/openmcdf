@@ -340,7 +340,6 @@ namespace RedBlackTree
         {
             deletedAlt = null;
             IRBNode n = LookupNode(template);
-            template = n;
             if (n == null)
                 return;  // Key not found, do nothing
             if (n.Left != null && n.Right != null)

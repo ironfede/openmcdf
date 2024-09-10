@@ -91,9 +91,6 @@ namespace OpenMcdf.Test
             Assert.AreEqual(expected, actual);
             Assert.IsNotNull(actual);
             Assert.IsTrue(actual.Id == expected.Id);
-
-            actual = null;
-
             try
             {
                 actual = target[count + 100];

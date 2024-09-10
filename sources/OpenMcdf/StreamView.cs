@@ -93,7 +93,6 @@ namespace OpenMcdf
         public override int Read(byte[] buffer, int offset, int count)
         {
             int nRead = 0;
-            int nToRead = 0;
 
             // Don't try to read more bytes than this stream contains.
             long intMax = Math.Min(int.MaxValue, this.length);
@@ -107,7 +106,7 @@ namespace OpenMcdf
                 // Bytes to read count is the min between request count
                 // and sector border
 
-                nToRead = Math.Min(
+                int nToRead = Math.Min(
                     BaseSectorChain[0].Size - ((int)position % sectorSize),
                     count);
 
@@ -208,8 +207,7 @@ namespace OpenMcdf
 
                 while (nSec > 0)
                 {
-                    Sector t = null;
-
+                    Sector t;
                     if (availableSectors == null || availableSectors.Count == 0)
                     {
                         t = new Sector(sectorSize, stream);
@@ -272,7 +270,6 @@ namespace OpenMcdf
         public override void Write(byte[] buffer, int offset, int count)
         {
             int byteWritten = 0;
-            int roundByteWritten = 0;
 
             // Assure length
             if ((position + count) > length)
@@ -284,7 +281,7 @@ namespace OpenMcdf
                 int secOffset = (int)(position / sectorSize);
                 int secShift = (int)(position % sectorSize);
 
-                roundByteWritten = Math.Min(sectorSize - (int)(position % sectorSize), count);
+                int roundByteWritten = Math.Min(sectorSize - (int)(position % sectorSize), count);
 
                 if (secOffset < BaseSectorChain.Count)
                 {
@@ -334,9 +331,6 @@ namespace OpenMcdf
                         roundByteWritten);
 
                     BaseSectorChain[secOffset].DirtyFlag = true;
-
-                    offset += roundByteWritten;
-                    byteWritten += roundByteWritten;
                 }
 
                 position += count;

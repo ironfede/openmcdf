@@ -16,8 +16,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public ITypedPropertyValue NewProperty(VTPropertyType vType, int codePage, uint propertyIdentifier, bool isVariant = false)
         {
-            ITypedPropertyValue pr = null;
-
+            ITypedPropertyValue pr;
             switch ((VTPropertyType)((ushort)vType & 0x00FF))
             {
                 case VTPropertyType.VT_I1:

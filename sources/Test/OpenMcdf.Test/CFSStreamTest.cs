@@ -759,12 +759,10 @@ namespace OpenMcdf.Test
         {
             int INITIAL_SIZE = 1024 * 1024 * 2;
             int DELTA_SIZE = 300;
-
-            CompoundFile cf = null;
             //CFStream st = null;
             byte[] b = Helpers.GetBuffer(INITIAL_SIZE); //2MB buffer
 
-            cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
             cf.RootStorage.AddStream("AStream").SetData(b);
             cf.Save("$Test_RESIZE_STREAM.cfs");
             cf.Close();
@@ -791,8 +789,6 @@ namespace OpenMcdf.Test
         public void Test_RESIZE_STREAM_TRANSITION_TO_MINI()
         {
             string FILE_NAME = "$Test_RESIZE_STREAM_TRANSITION_TO_MINI.cfs";
-            CompoundFile cf = null;
-
             byte[] b = Helpers.GetBuffer(1024 * 1024 * 2); //2MB buffer
             byte[] b100 = new byte[100];
 
@@ -801,7 +797,7 @@ namespace OpenMcdf.Test
                 b100[i] = b[i];
             }
 
-            cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
             cf.RootStorage.AddStream("AStream").SetData(b);
             cf.Save(FILE_NAME);
             cf.Close();
@@ -823,10 +819,9 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_RESIZE_STREAM_TRANSITION_TO_NORMAL()
         {
-            CompoundFile cf = null;
             byte[] b = Helpers.GetBuffer(1024 * 2, 0xAA); //2MB buffer
 
-            cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
             cf.RootStorage.AddStream("AStream").SetData(b);
             cf.Save("$Test_RESIZE_STREAM_TRANSITION_TO_NORMAL.cfs");
             cf.Save("$Test_RESIZE_STREAM_TRANSITION_TO_NORMAL2.cfs");
@@ -851,13 +846,12 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_RESIZE_MINISTREAM_NO_TRANSITION_MOD()
         {
-            CompoundFile cf = null;
             int INITIAL_SIZE = 1024 * 2;
             int SIZE_DELTA = 148;
 
             byte[] b = Helpers.GetBuffer(INITIAL_SIZE);
 
-            cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
             cf.RootStorage.AddStream("MiniStream").SetData(b);
             cf.Save("$Test_RESIZE_MINISTREAM.cfs");
             cf.Close();
@@ -886,11 +880,9 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_RESIZE_MINISTREAM_SECTOR_RECYCLE()
         {
-            CompoundFile cf = null;
-
             byte[] b = Helpers.GetBuffer(1024 * 2);
 
-            cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
             cf.RootStorage.AddStream("MiniStream").SetData(b);
             cf.Save("$Test_RESIZE_MINISTREAM_RECYCLE.cfs");
             cf.Close();
@@ -916,14 +908,11 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_DELETE_STREAM_SECTOR_REUSE()
         {
-            CompoundFile cf = null;
-            CFStream st = null;
-
             byte[] b = Helpers.GetBuffer(1024 * 1024 * 2); //2MB buffer
             byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
 
-            cf = new CompoundFile(CFSVersion.Ver_4, CFSConfiguration.Default);
-            st = cf.RootStorage.AddStream("AStream");
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, CFSConfiguration.Default);
+            CFStream st = cf.RootStorage.AddStream("AStream");
             st.Append(b);
             cf.Save("SectorRecycle.cfs");
             cf.Close();

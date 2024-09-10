@@ -442,7 +442,6 @@ namespace OpenMcdf
             catch (RBTreeDuplicatedItemException)
             {
                 CompoundFile.ResetDirectoryEntry(cfo.SID);
-                cfo = null;
                 throw new CFDuplicatedItemException("An entry with name '" + storageName + "' is already present in storage '" + this.Name + "' ");
             }
 
@@ -547,7 +546,7 @@ namespace OpenMcdf
             if (((IDirectoryEntry)foundObj).StgType == StgType.StgRoot)
                 throw new CFException("Root storage cannot be removed");
 
-            IRBNode altDel = null;
+            IRBNode altDel;
             switch (((IDirectoryEntry)foundObj).StgType)
             {
                 case StgType.StgStorage:

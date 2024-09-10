@@ -826,8 +826,7 @@ namespace OpenMcdf
             if (stream.Size == 0)
                 return;
 
-            List<Sector> sectorChain = null;
-
+            List<Sector> sectorChain;
             if (stream.Size < header.MinSizeStandardStream)
             {
                 sectorChain = GetSectorChain(stream.DirEntry.StartSetc, SectorType.Mini);
@@ -1212,20 +1211,13 @@ namespace OpenMcdf
         /// <returns>A list of DIFAT sectors</returns>
         private List<Sector> GetDifatSectorChain()
         {
-            int validationCount = 0;
-
             List<Sector> result
                 = new List<Sector>();
-
-            int nextSecID
-               = Sector.ENDOFCHAIN;
-
             HashSet<int> processedSectors = new HashSet<int>();
 
             if (header.DIFATSectorsNumber != 0)
             {
-                validationCount = (int)header.DIFATSectorsNumber;
-
+                int validationCount = (int)header.DIFATSectorsNumber;
                 Sector s = sectors[header.FirstDIFATSectorID];
 
                 if (s == null) //Lazy loading
@@ -1240,7 +1232,7 @@ namespace OpenMcdf
 
                 while (true && validationCount >= 0)
                 {
-                    nextSecID = BitConverter.ToInt32(s.GetData(), GetSectorSize() - 4);
+                    int nextSecID = BitConverter.ToInt32(s.GetData(), GetSectorSize() - 4);
                     EnsureUniqueSectorIndex(nextSecID, processedSectors);
 
                     // Strictly speaking, the following condition is not correct from
@@ -1299,14 +1291,12 @@ namespace OpenMcdf
 
             List<Sector> result
                = new List<Sector>();
-
-            int nextSecID
-               = Sector.ENDOFCHAIN;
-
             List<Sector> difatSectors = GetDifatSectorChain();
 
             int idx = 0;
 
+
+            int nextSecID;
             // Read FAT entries from the header Fat entry array (max 109 entries)
             while (idx < header.FATSectorsNumber && idx < N_HEADER_FAT_ENTRY)
             {
@@ -1446,8 +1436,6 @@ namespace OpenMcdf
 
             if (secID != Sector.ENDOFCHAIN)
             {
-                int nextSecID = secID;
-
                 List<Sector> miniFAT = GetNormalSectorChain(header.FirstMiniFATSectorID);
                 List<Sector> miniStream = GetNormalSectorChain(RootEntry.StartSetc);
 
@@ -1459,8 +1447,7 @@ namespace OpenMcdf
 
                 BinaryReader miniFATReader = new BinaryReader(miniFATView);
 
-                nextSecID = secID;
-
+                int nextSecID = secID;
                 HashSet<int> processedSectors = new HashSet<int>();
 
                 while (true)
@@ -2113,8 +2100,7 @@ namespace OpenMcdf
             }
 
             Queue<Sector> freeList = null;
-            StreamView sv = null;
-
+            StreamView sv;
             if (!transitionToMini && !transitionToNormal) //############  NO TRANSITION
             {
                 if (delta > 0) // Enlarging stream...
@@ -2321,8 +2307,7 @@ namespace OpenMcdf
 
             count = (int)Math.Min(de.Size - position, count);
 
-            StreamView sView = null;
-
+            StreamView sView;
             if (de.Size < header.MinSizeStandardStream)
             {
                 sView
@@ -2345,8 +2330,7 @@ namespace OpenMcdf
 
             count = (int)Math.Min(buffer.Length - offset, (long)count);
 
-            StreamView sView = null;
-
+            StreamView sView;
             if (de.Size < header.MinSizeStandardStream)
             {
                 sView
@@ -2367,11 +2351,10 @@ namespace OpenMcdf
         {
             if (IsClosed)
                 throw new CFDisposedException("Compound File closed: cannot access data");
-
-            byte[] result = null;
-
             IDirectoryEntry de = cFStream.DirEntry;
 
+
+            byte[] result;
             //IDirectoryEntry root = directoryEntries[0];
 
             if (de.Size < header.MinSizeStandardStream)
@@ -2403,7 +2386,7 @@ namespace OpenMcdf
                 throw new CFDisposedException("Compound File closed: cannot access data");
             if (sid < 0)
                 return null;
-            byte[] result = null;
+            byte[] result;
             try
             {
                 IDirectoryEntry de = directoryEntries[sid];

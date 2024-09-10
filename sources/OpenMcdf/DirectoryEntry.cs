@@ -96,10 +96,8 @@ namespace OpenMcdf
 
                 if (entryName.Length > 31)
                     throw new CFException("Entry name MUST NOT exceed 31 characters");
-
-                byte[] newName = null;
                 byte[] temp = Encoding.Unicode.GetBytes(entryName);
-                newName = new byte[64];
+                byte[] newName = new byte[64];
                 Buffer.BlockCopy(temp, 0, newName, 0, temp.Length);
                 newName[temp.Length] = 0x00;
                 newName[temp.Length + 1] = 0x00;
@@ -393,7 +391,7 @@ namespace OpenMcdf
 
         internal static IDirectoryEntry New(string name, StgType stgType, IList<IDirectoryEntry> dirRepository)
         {
-            DirectoryEntry de = null;
+            DirectoryEntry de;
             if (dirRepository != null)
             {
                 de = new DirectoryEntry(name, stgType, dirRepository);
