@@ -9,7 +9,7 @@ namespace StructuredStorageExplorer
         /// <summary>
         /// Modifying stream
         /// </summary>
-        CFStream _modifiedStream;
+        readonly CFStream _modifiedStream;
 
         /// <summary>
         /// Contains information about changes.

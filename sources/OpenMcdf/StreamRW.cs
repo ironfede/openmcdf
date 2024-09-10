@@ -12,8 +12,8 @@ namespace OpenMcdf
 {
     internal sealed class StreamRW
     {
-        private byte[] buffer = new byte[8];
-        private Stream stream;
+        private readonly byte[] buffer = new byte[8];
+        private readonly Stream stream;
 
         public StreamRW(Stream stream)
         {

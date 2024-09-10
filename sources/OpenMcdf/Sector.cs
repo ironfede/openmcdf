@@ -34,7 +34,7 @@ namespace OpenMcdf
 
         public bool IsStreamed => (stream != null && Size != MINISECTOR_SIZE) ? (this.Id * Size) + Size < stream.Length : false;
 
-        private Stream stream;
+        private readonly Stream stream;
 
         public Sector(int size, Stream stream)
         {
@@ -117,7 +117,7 @@ namespace OpenMcdf
             this.data = null;
         }
 
-        private object lockObject = new object();
+        private readonly object lockObject = new object();
 
         #region IDisposable Members
 

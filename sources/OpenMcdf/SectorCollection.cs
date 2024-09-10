@@ -30,7 +30,7 @@ namespace OpenMcdf
 
         public event Ver3SizeLimitReached OnVer3SizeLimitReached;
 
-        private List<ArrayList> largeArraySlices = new List<ArrayList>();
+        private readonly List<ArrayList> largeArraySlices = new List<ArrayList>();
 
         public SectorCollection()
         {

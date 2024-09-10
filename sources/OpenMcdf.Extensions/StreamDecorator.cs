@@ -8,7 +8,7 @@ namespace OpenMcdf.Extensions
     /// </summary>
     public class StreamDecorator : Stream
     {
-        private CFStream cfStream;
+        private readonly CFStream cfStream;
         private long position = 0;
 
         /// <summary>

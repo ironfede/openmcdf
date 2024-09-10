@@ -163,7 +163,7 @@ namespace OpenMcdf
 
         public bool ValidationExceptionEnabled { get; private set; } = true;
 
-        private CFSUpdateMode updateMode = CFSUpdateMode.ReadOnly;
+        private readonly CFSUpdateMode updateMode = CFSUpdateMode.ReadOnly;
         private string fileName = string.Empty;
 
         /// <summary>
@@ -1630,7 +1630,7 @@ namespace OpenMcdf
             de.Right = null;
         }
 
-        private List<int> levelSIDs = new List<int>();
+        private readonly List<int> levelSIDs = new List<int>();
 
         // Doubling methods allows iterative behavior while avoiding
         // to insert duplicate items
@@ -2536,7 +2536,7 @@ namespace OpenMcdf
 
         #endregion
 
-        private object lockObject = new object();
+        private readonly object lockObject = new object();
 
         /// <summary>
         /// When called from user code, release all resources, otherwise, in the case runtime called it,

@@ -5,7 +5,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 {
     public class OLEProperty
     {
-        private OLEPropertiesContainer container;
+        private readonly OLEPropertiesContainer container;
 
         internal OLEProperty(OLEPropertiesContainer container)
         {

@@ -513,7 +513,7 @@ namespace RedBlackTree
         public class RBTreeEnumerator : IEnumerator<IRBNode>
         {
             int position = -1;
-            private Queue<IRBNode> heap = new Queue<IRBNode>();
+            private readonly Queue<IRBNode> heap = new Queue<IRBNode>();
 
             internal RBTreeEnumerator(RBTree tree)
             {
@@ -545,7 +545,7 @@ namespace RedBlackTree
             return new RBTreeEnumerator(this);
         }
 
-        private static int INDENT_STEP = 15;
+        private static readonly int INDENT_STEP = 15;
 
         public void Print()
         {

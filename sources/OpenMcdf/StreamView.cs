@@ -17,12 +17,12 @@ namespace OpenMcdf
     /// </summary>
     internal sealed class StreamView : Stream
     {
-        private int sectorSize;
+        private readonly int sectorSize;
 
         private long position;
-        private Stream stream;
-        private bool isFatStream = false;
-        private List<Sector> freeSectors = new List<Sector>();
+        private readonly Stream stream;
+        private readonly bool isFatStream = false;
+        private readonly List<Sector> freeSectors = new List<Sector>();
         public IEnumerable<Sector> FreeSectors => freeSectors;
 
         public StreamView(List<Sector> sectorChain, int sectorSize, Stream stream)
@@ -82,7 +82,7 @@ namespace OpenMcdf
             base.Close();
         }
 
-        private byte[] buf = new byte[4];
+        private readonly byte[] buf = new byte[4];
 
         public int ReadInt32()
         {

@@ -6,7 +6,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 {
     internal abstract class TypedPropertyValue<T> : ITypedPropertyValue
     {
-        private VTPropertyType _VTType;
+        private readonly VTPropertyType _VTType;
 
         public PropertyType PropertyType => PropertyType.TypedPropertyValue;
 

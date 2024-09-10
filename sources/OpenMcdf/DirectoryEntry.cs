@@ -33,7 +33,7 @@ namespace OpenMcdf
     {
         internal const int THIS_IS_GREATER = 1;
         internal const int OTHER_IS_GREATER = -1;
-        private IList<IDirectoryEntry> dirRepository;
+        private readonly IList<IDirectoryEntry> dirRepository;
 
         public int SID { get; set; } = -1;
 
