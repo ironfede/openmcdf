@@ -260,7 +260,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             };
 
             // If we're writing an AppSpecific property set and have property names, then add a dictionary property
-            if (this.ContainerType == ContainerType.AppSpecific && this.PropertyNames.Count > 0)
+            if (this.ContainerType == ContainerType.AppSpecific && this.PropertyNames != null && this.PropertyNames.Count > 0)
             {
                 AddDictionaryPropertyToPropertySet(this.PropertyNames, ps.PropertySet0);
                 ps.PropertySet0.NumProperties += 1;

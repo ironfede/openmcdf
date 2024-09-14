@@ -531,5 +531,47 @@ namespace OpenMcdf.Extensions.Test
                 Assert.AreEqual(VTPropertyType.VT_LPSTR, propArray[1].VTType);
             }
         }
+
+        // A test for the issue described in https://github.com/ironfede/openmcdf/issues/134 where modifying an AppSpecific stream
+        // removes any already-existing Dictionary property
+        [TestMethod]
+        public void Test_Retain_Dictionary_Property_In_AppSpecific_Streams()
+        {
+            File.Delete("Issue134RoundTrip.cfs");
+
+            using (CompoundFile cf = new CompoundFile("Issue134.cfs"))
+            {
+                var testStream = cf.RootStorage.GetStream("Issue134");
+                var co = testStream.AsOLEPropertiesContainer();
+
+                // Test initial contents are as expected
+                AssertExpectedProperties(co.PropertyNames);
+
+                // Write test file
+                co.Save(testStream);
+                cf.SaveAs("Issue134RoundTrip.cfs");
+            }
+
+            // Open test file, and check that the property names are still as expected.
+            using (CompoundFile cf = new CompoundFile("Issue134RoundTrip.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.Default))
+            {
+                var co = cf.RootStorage.GetStream("Issue134").AsOLEPropertiesContainer();
+                AssertExpectedProperties(co.PropertyNames);
+            }
+
+            void AssertExpectedProperties(Dictionary<uint, string> actual)
+            {
+                Assert.IsNotNull(actual);
+
+                var expected = new Dictionary<uint, string>()
+                {
+                    [2] = "Document Number",
+                    [3] = "Revision",
+                    [4] = "Project Name"
+                };
+
+                CollectionAssert.AreEqual(expected, actual);
+            }
+        }
     }
 }
