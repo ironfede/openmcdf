@@ -104,9 +104,7 @@ namespace StructuredStorageExplorer
         private void RefreshTree()
         {
             treeView1.Nodes.Clear();
-
-            TreeNode root = null;
-            root = treeView1.Nodes.Add("Root Entry", "Root");
+            TreeNode root = treeView1.Nodes.Add("Root Entry", "Root");
             root.ImageIndex = 0;
             root.Tag = cf.RootStorage;
 
@@ -249,7 +247,6 @@ namespace StructuredStorageExplorer
                     {
                         fs.Flush();
                         fs.Close();
-                        fs = null;
                     }
                 }
             }
@@ -334,8 +331,6 @@ namespace StructuredStorageExplorer
 
         private void importDataStripMenuItem1_Click(object sender, EventArgs e)
         {
-            string fileName = string.Empty;
-
             if (openDataFileDialog.ShowDialog() == DialogResult.OK)
             {
                 CFStream s = treeView1.SelectedNode.Tag as CFStream;

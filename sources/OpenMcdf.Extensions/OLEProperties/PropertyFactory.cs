@@ -16,8 +16,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public ITypedPropertyValue NewProperty(VTPropertyType vType, int codePage, uint propertyIdentifier, bool isVariant = false)
         {
-            ITypedPropertyValue pr = null;
-
+            ITypedPropertyValue pr;
             switch ((VTPropertyType)((ushort)vType & 0x00FF))
             {
                 case VTPropertyType.VT_I1:
@@ -382,7 +381,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         protected class VT_LPSTR_Property : TypedPropertyValue<string>
         {
             private byte[] data;
-            private int codePage;
+            private readonly int codePage;
 
             public VT_LPSTR_Property(VTPropertyType vType, int codePage, bool isVariant) : base(vType, isVariant)
             {
@@ -482,7 +481,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         private class VT_LPWSTR_Property : TypedPropertyValue<string>
         {
             private byte[] data;
-            private int codePage;
+            private readonly int codePage;
 
             public VT_LPWSTR_Property(VTPropertyType vType, int codePage, bool isVariant) : base(vType, isVariant)
             {

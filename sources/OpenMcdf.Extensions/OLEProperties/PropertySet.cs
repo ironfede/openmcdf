@@ -16,27 +16,9 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public uint NumProperties { get; set; }
 
-        List<PropertyIdentifierAndOffset> propertyIdentifierAndOffsets
-            = new List<PropertyIdentifierAndOffset>();
+        public List<PropertyIdentifierAndOffset> PropertyIdentifierAndOffsets { get; set; } = new List<PropertyIdentifierAndOffset>();
 
-        public List<PropertyIdentifierAndOffset> PropertyIdentifierAndOffsets
-        {
-            get { return propertyIdentifierAndOffsets; }
-            set { propertyIdentifierAndOffsets = value; }
-        }
-
-        List<IProperty> properties = new List<IProperty>();
-        public List<IProperty> Properties
-        {
-            get
-            {
-                return properties;
-            }
-            set
-            {
-                properties = value;
-            }
-        }
+        public List<IProperty> Properties { get; set; } = new List<IProperty>();
 
         public void LoadContext(int propertySetOffset, BinaryReader br)
         {

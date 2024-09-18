@@ -10,23 +10,11 @@ namespace OpenMcdf.Test
     [TestClass()]
     public class SectorCollectionTest
     {
-        private TestContext testContextInstance;
-
         /// <summary>
         /// Gets or sets the test context which provides
         /// information about and functionality for the current test run.
         /// </summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
+        public TestContext TestContext { get; set; }
 
         #region Additional test attributes
         //
@@ -103,9 +91,6 @@ namespace OpenMcdf.Test
             Assert.AreEqual(expected, actual);
             Assert.IsNotNull(actual);
             Assert.IsTrue(actual.Id == expected.Id);
-
-            actual = null;
-
             try
             {
                 actual = target[count + 100];

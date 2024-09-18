@@ -33,8 +33,11 @@ namespace RedBlackTree
         }
     }
 
-    public enum Color { RED = 0,
-        BLACK = 1 }
+    public enum Color
+    {
+        RED = 0,
+        BLACK = 1
+    }
 
     /// <summary>
     /// Red Black Node interface
@@ -249,10 +252,7 @@ namespace RedBlackTree
 
             InsertCase1(insertedNode);
 
-            if (NodeInserted != null)
-            {
-                NodeInserted(insertedNode);
-            }
+            NodeInserted?.Invoke(insertedNode);
 
             //Trace.WriteLine(" ");
             //Print();
@@ -340,7 +340,6 @@ namespace RedBlackTree
         {
             deletedAlt = null;
             IRBNode n = LookupNode(template);
-            template = n;
             if (n == null)
                 return;  // Key not found, do nothing
             if (n.Left != null && n.Right != null)
@@ -353,7 +352,7 @@ namespace RedBlackTree
             }
 
             //assert n.left == null || n.right == null;
-            IRBNode child = (n.Right == null) ? n.Left : n.Right;
+            IRBNode child = n.Right ?? n.Left;
             if (NodeColor(n) == Color.BLACK)
             {
                 n.Color = NodeColor(child);
@@ -479,8 +478,7 @@ namespace RedBlackTree
                 DoVisitTree(action, walker.Left);
             }
 
-            if (action != null)
-                action(walker);
+            action?.Invoke(walker);
 
             if (walker.Right != null)
             {
@@ -504,8 +502,7 @@ namespace RedBlackTree
                 DoVisitTreeNodes(action, walker.Left);
             }
 
-            if (action != null)
-                action(walker);
+            action?.Invoke(walker);
 
             if (walker.Right != null)
             {
@@ -516,7 +513,7 @@ namespace RedBlackTree
         public class RBTreeEnumerator : IEnumerator<IRBNode>
         {
             int position = -1;
-            private Queue<IRBNode> heap = new Queue<IRBNode>();
+            private readonly Queue<IRBNode> heap = new Queue<IRBNode>();
 
             internal RBTreeEnumerator(RBTree tree)
             {
@@ -548,7 +545,7 @@ namespace RedBlackTree
             return new RBTreeEnumerator(this);
         }
 
-        private static int INDENT_STEP = 15;
+        private static readonly int INDENT_STEP = 15;
 
         public void Print()
         {
@@ -583,8 +580,7 @@ namespace RedBlackTree
 
         internal void FireNodeOperation(IRBNode node, NodeOperation operation)
         {
-            if (NodeOperation != null)
-                NodeOperation(node, operation);
+            NodeOperation?.Invoke(node, operation);
         }
 
         //internal void FireValueAssigned(RBNode<V> node, V value)

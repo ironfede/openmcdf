@@ -6,7 +6,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 {
     public class DictionaryEntry
     {
-        int codePage;
+        readonly int codePage;
 
         public DictionaryEntry(int codePage)
         {

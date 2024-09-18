@@ -9,7 +9,7 @@ namespace StructuredStorageExplorer
         /// <summary>
         /// Modifying stream
         /// </summary>
-        CFStream _modifiedStream;
+        readonly CFStream _modifiedStream;
 
         /// <summary>
         /// Contains information about changes.
@@ -17,17 +17,12 @@ namespace StructuredStorageExplorer
         bool _hasChanges;
 
         /// <summary>
-        /// Contains a byte collection.
-        /// </summary>
-        ByteCollection _bytes;
-
-        /// <summary>
         /// Initializes a new instance of the DynamicByteProvider class.
         /// </summary>
         /// <param name="bytes"></param>
         public StreamDataProvider(CFStream modifiedStream)
         {
-            _bytes = new ByteCollection(modifiedStream.GetData());
+            Bytes = new ByteCollection(modifiedStream.GetData());
             _modifiedStream = modifiedStream;
         }
 
@@ -38,8 +33,7 @@ namespace StructuredStorageExplorer
         {
             _hasChanges = true;
 
-            if (Changed != null)
-                Changed(this, e);
+            Changed?.Invoke(this, e);
         }
 
         /// <summary>
@@ -47,14 +41,13 @@ namespace StructuredStorageExplorer
         /// </summary>
         void OnLengthChanged(EventArgs e)
         {
-            if (LengthChanged != null)
-                LengthChanged(this, e);
+            LengthChanged?.Invoke(this, e);
         }
 
         /// <summary>
         /// Gets the byte collection.
         /// </summary>
-        public ByteCollection Bytes => _bytes;
+        public ByteCollection Bytes { get; }
 
         #region IByteProvider Members
         /// <summary>
@@ -72,7 +65,7 @@ namespace StructuredStorageExplorer
         {
             _hasChanges = false;
 
-            _modifiedStream.SetData(this._bytes.ToArray());
+            _modifiedStream.SetData(this.Bytes.ToArray());
         }
 
         /// <summary>
@@ -91,7 +84,7 @@ namespace StructuredStorageExplorer
         /// <param name="index">the index of the byte to read</param>
         /// <returns>the byte</returns>
         public byte ReadByte(long index)
-        { return _bytes[(int)index]; }
+        { return Bytes[(int)index]; }
 
         /// <summary>
         /// Write a byte into the byte collection.
@@ -100,7 +93,7 @@ namespace StructuredStorageExplorer
         /// <param name="value">the byte</param>
         public void WriteByte(long index, byte value)
         {
-            _bytes[(int)index] = value;
+            Bytes[(int)index] = value;
             OnChanged(EventArgs.Empty);
         }
 
@@ -113,7 +106,7 @@ namespace StructuredStorageExplorer
         {
             int internal_index = (int)Math.Max(0, index);
             int internal_length = (int)Math.Min((int)Length, length);
-            _bytes.RemoveRange(internal_index, internal_length);
+            Bytes.RemoveRange(internal_index, internal_length);
 
             OnLengthChanged(EventArgs.Empty);
             OnChanged(EventArgs.Empty);
@@ -126,7 +119,7 @@ namespace StructuredStorageExplorer
         /// <param name="bs">the byte array to insert</param>
         public void InsertBytes(long index, byte[] bs)
         {
-            _bytes.InsertRange((int)index, bs);
+            Bytes.InsertRange((int)index, bs);
 
             OnLengthChanged(EventArgs.Empty);
             OnChanged(EventArgs.Empty);
@@ -135,7 +128,7 @@ namespace StructuredStorageExplorer
         /// <summary>
         /// Gets the length of the bytes in the byte collection.
         /// </summary>
-        public long Length => _bytes.Count;
+        public long Length => Bytes.Count;
 
         /// <summary>
         /// Returns true
