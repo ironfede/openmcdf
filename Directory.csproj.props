@@ -1,0 +1,16 @@
+<!-- See https://docs.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props -->
+<Project>
+  <PropertyGroup>
+    <!-- C# 10 is the default for dotnet 6 -->
+    <LangVersion>10</LangVersion>
+  </PropertyGroup>
+
+  <!-- Analysis and warnings-->
+  <PropertyGroup>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+
+    <!-- Workaround for https://github.com/dotnet/roslyn/issues/41640 -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+</Project>

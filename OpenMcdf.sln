@@ -5,7 +5,13 @@ VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6C619B4F-100F-4D60-BEF1-60B770D24E5E}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		azure-pipelines.yml = azure-pipelines.yml
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+		Directory.csproj.props = Directory.csproj.props
+		Directory.csproj.targets = Directory.csproj.targets
+		exclusion.dic = exclusion.dic
 		OpenMcdf.snk = OpenMcdf.snk
 		sources\SharedAssemblyInfo.cs = sources\SharedAssemblyInfo.cs
 	EndProjectSection
@@ -45,15 +51,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf", "sources\OpenMcd
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Extensions", "sources\OpenMcdf.Extensions\OpenMcdf.Extensions.csproj", "{DB748C1D-D71C-442B-832D-2E33BE816CBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StructuredStorageExplorer", "sources\Structured Storage Explorer\StructuredStorageExplorer.csproj", "{4F6323A8-9C06-4D94-808F-EBD69B8370D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StructuredStorageExplorer", "sources\Structured Storage Explorer\StructuredStorageExplorer.csproj", "{4F6323A8-9C06-4D94-808F-EBD69B8370D7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{73814657-FC73-4066-AABD-86062F2A132E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Extensions.Test", "sources\Test\OpenMcdf.Extensions.Test\OpenMcdf.Extensions.Test.csproj", "{B9CB103F-0AA3-486D-9C9C-672924B6169C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.MemTest", "sources\Test\OpenMcdf.MemTest\OpenMcdf.MemTest.csproj", "{E2BAD82D-3040-462B-BAA2-6E608A9054F4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.MemTest", "sources\Test\OpenMcdf.MemTest\OpenMcdf.MemTest.csproj", "{E2BAD82D-3040-462B-BAA2-6E608A9054F4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.PerfTest", "sources\Test\OpenMcdf.PerfTest\OpenMcdf.PerfTest.csproj", "{7077508F-B313-4DF6-8855-4764911BE161}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.PerfTest", "sources\Test\OpenMcdf.PerfTest\OpenMcdf.PerfTest.csproj", "{7077508F-B313-4DF6-8855-4764911BE161}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Test", "sources\Test\OpenMcdf.Test\OpenMcdf.Test.csproj", "{FD339266-8842-40B4-9230-F8E84FC42AC2}"
 EndProject
