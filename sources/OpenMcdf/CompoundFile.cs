@@ -1496,23 +1496,14 @@ namespace OpenMcdf
         /// <returns>A list of Sectors as the result of their concatenation</returns>
         internal List<Sector> GetSectorChain(int secID, SectorType chainType)
         {
-            switch (chainType)
+            return chainType switch
             {
-                case SectorType.DIFAT:
-                    return GetDifatSectorChain();
-
-                case SectorType.FAT:
-                    return GetFatSectorChain();
-
-                case SectorType.Normal:
-                    return GetNormalSectorChain(secID);
-
-                case SectorType.Mini:
-                    return GetMiniSectorChain(secID);
-
-                default:
-                    throw new CFException("Unsupported chain type");
-            }
+                SectorType.DIFAT => GetDifatSectorChain(),
+                SectorType.FAT => GetFatSectorChain(),
+                SectorType.Normal => GetNormalSectorChain(secID),
+                SectorType.Mini => GetMiniSectorChain(secID),
+                _ => throw new CFException("Unsupported chain type"),
+            };
         }
 
         /// <summary>

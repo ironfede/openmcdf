@@ -86,19 +86,12 @@ namespace OpenMcdf.Extensions.OLEProperties
             this.cfStream = cfStream;
             pStream.Read(new BinaryReader(new StreamDecorator(cfStream)));
 
-            switch (pStream.FMTID0.ToString("B").ToUpperInvariant())
+            ContainerType = pStream.FMTID0.ToString("B").ToUpperInvariant() switch
             {
-                case WellKnownFMTID.FMTID_SummaryInformation:
-                    ContainerType = ContainerType.SummaryInfo;
-                    break;
-                case WellKnownFMTID.FMTID_DocSummaryInformation:
-                    ContainerType = ContainerType.DocumentSummaryInfo;
-                    break;
-                default:
-                    ContainerType = ContainerType.AppSpecific;
-                    break;
-            }
-
+                WellKnownFMTID.FMTID_SummaryInformation => ContainerType.SummaryInfo,
+                WellKnownFMTID.FMTID_DocSummaryInformation => ContainerType.DocumentSummaryInfo,
+                _ => ContainerType.AppSpecific,
+            };
             FmtID0 = pStream.FMTID0;
 
             PropertyNames = (Dictionary<uint, string>)pStream.PropertySet0.Properties

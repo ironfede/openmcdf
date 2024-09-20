@@ -16,86 +16,34 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public ITypedPropertyValue NewProperty(VTPropertyType vType, int codePage, uint propertyIdentifier, bool isVariant = false)
         {
-            ITypedPropertyValue pr;
-            switch ((VTPropertyType)((ushort)vType & 0x00FF))
+            ITypedPropertyValue pr = (VTPropertyType)((ushort)vType & 0x00FF) switch
             {
-                case VTPropertyType.VT_I1:
-                    pr = new VT_I1_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_I2:
-                    pr = new VT_I2_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_I4:
-                    pr = new VT_I4_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_R4:
-                    pr = new VT_R4_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_R8:
-                    pr = new VT_R8_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_CY:
-                    pr = new VT_CY_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_DATE:
-                    pr = new VT_DATE_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_INT:
-                    pr = new VT_INT_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_UINT:
-                    pr = new VT_UINT_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_UI1:
-                    pr = new VT_UI1_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_UI2:
-                    pr = new VT_UI2_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_UI4:
-                    pr = new VT_UI4_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_UI8:
-                    pr = new VT_UI8_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_BSTR:
-                    pr = new VT_LPSTR_Property(vType, codePage, isVariant);
-                    break;
-                case VTPropertyType.VT_LPSTR:
-                    pr = CreateLpstrProperty(vType, codePage, propertyIdentifier, isVariant);
-                    break;
-                case VTPropertyType.VT_LPWSTR:
-                    pr = new VT_LPWSTR_Property(vType, codePage, isVariant);
-                    break;
-                case VTPropertyType.VT_FILETIME:
-                    pr = new VT_FILETIME_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_DECIMAL:
-                    pr = new VT_DECIMAL_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_BOOL:
-                    pr = new VT_BOOL_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_EMPTY:
-                    pr = new VT_EMPTY_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_VARIANT_VECTOR:
-                    pr = new VT_VariantVector(vType, codePage, isVariant, this, propertyIdentifier);
-                    break;
-                case VTPropertyType.VT_CF:
-                    pr = new VT_CF_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_BLOB_OBJECT:
-                case VTPropertyType.VT_BLOB:
-                    pr = new VT_BLOB_Property(vType, isVariant);
-                    break;
-                case VTPropertyType.VT_CLSID:
-                    pr = new VT_CLSID_Property(vType, isVariant);
-                    break;
-                default:
-                    throw new Exception("Unrecognized property type");
-            }
-
+                VTPropertyType.VT_I1 => new VT_I1_Property(vType, isVariant),
+                VTPropertyType.VT_I2 => new VT_I2_Property(vType, isVariant),
+                VTPropertyType.VT_I4 => new VT_I4_Property(vType, isVariant),
+                VTPropertyType.VT_R4 => new VT_R4_Property(vType, isVariant),
+                VTPropertyType.VT_R8 => new VT_R8_Property(vType, isVariant),
+                VTPropertyType.VT_CY => new VT_CY_Property(vType, isVariant),
+                VTPropertyType.VT_DATE => new VT_DATE_Property(vType, isVariant),
+                VTPropertyType.VT_INT => new VT_INT_Property(vType, isVariant),
+                VTPropertyType.VT_UINT => new VT_UINT_Property(vType, isVariant),
+                VTPropertyType.VT_UI1 => new VT_UI1_Property(vType, isVariant),
+                VTPropertyType.VT_UI2 => new VT_UI2_Property(vType, isVariant),
+                VTPropertyType.VT_UI4 => new VT_UI4_Property(vType, isVariant),
+                VTPropertyType.VT_UI8 => new VT_UI8_Property(vType, isVariant),
+                VTPropertyType.VT_BSTR => new VT_LPSTR_Property(vType, codePage, isVariant),
+                VTPropertyType.VT_LPSTR => CreateLpstrProperty(vType, codePage, propertyIdentifier, isVariant),
+                VTPropertyType.VT_LPWSTR => new VT_LPWSTR_Property(vType, codePage, isVariant),
+                VTPropertyType.VT_FILETIME => new VT_FILETIME_Property(vType, isVariant),
+                VTPropertyType.VT_DECIMAL => new VT_DECIMAL_Property(vType, isVariant),
+                VTPropertyType.VT_BOOL => new VT_BOOL_Property(vType, isVariant),
+                VTPropertyType.VT_EMPTY => new VT_EMPTY_Property(vType, isVariant),
+                VTPropertyType.VT_VARIANT_VECTOR => new VT_VariantVector(vType, codePage, isVariant, this, propertyIdentifier),
+                VTPropertyType.VT_CF => new VT_CF_Property(vType, isVariant),
+                VTPropertyType.VT_BLOB_OBJECT or VTPropertyType.VT_BLOB => new VT_BLOB_Property(vType, isVariant),
+                VTPropertyType.VT_CLSID => new VT_CLSID_Property(vType, isVariant),
+                _ => throw new Exception("Unrecognized property type"),
+            };
             return pr;
         }
 
