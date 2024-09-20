@@ -63,7 +63,7 @@ namespace OpenMcdf.Extensions.Test
             Stream s = cf.RootStorage.AddStream("ANewStream").AsIOStream();
             BinaryWriter bw = new BinaryWriter(s);
             bw.Write(cmp);
-            cf.Save("$ACFFile.cfs");
+            cf.SaveAs("$ACFFile.cfs");
             cf.Close();
 
             cf = new CompoundFile("$ACFFile.cfs");
@@ -89,7 +89,7 @@ namespace OpenMcdf.Extensions.Test
                     using (BinaryWriter bw = new BinaryWriter(s))
                     {
                         bw.Write(data);
-                        cf.Save("$ACFFile2.cfs");
+                        cf.SaveAs("$ACFFile2.cfs");
                         cf.Close();
                     }
                 }

@@ -265,7 +265,7 @@ namespace StructuredStorageExplorer
             saveFileDialog1.FilterIndex = 2;
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                cf.Save(saveFileDialog1.FileName);
+                cf.SaveAs(saveFileDialog1.FileName);
             }
         }
 

@@ -105,7 +105,7 @@ namespace OpenMcdf.Extensions.Test
 
                     co.Save(cf2.RootStorage.GetStream("\u0005DocumentSummaryInformation"));
 
-                    cf2.Save("test1.cfs");
+                    cf2.SaveAs("test1.cfs");
                     cf2.Close();
                 }
 

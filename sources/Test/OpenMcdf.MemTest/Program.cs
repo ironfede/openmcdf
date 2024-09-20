@@ -37,7 +37,7 @@ namespace OpenMcdf.MemTest
 
             var cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.SectorRecycle);
             cf.RootStorage.AddStream("A").SetData(bA);
-            cf.Save("OneStream.cfs");
+            cf.SaveAs("OneStream.cfs");
 
             cf.Close();
 
@@ -51,7 +51,7 @@ namespace OpenMcdf.MemTest
             cf.RootStorage.AddStream("G").SetData(bG);
             cf.RootStorage.AddStream("H").SetData(bH);
 
-            cf.Save("8_Streams.cfs");
+            cf.SaveAs("8_Streams.cfs");
 
             cf.Close();
 
@@ -131,7 +131,7 @@ namespace OpenMcdf.MemTest
 
             CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, CFSConfiguration.Default);
             CFStream st = cf.RootStorage.AddStream("MySuperLargeStream");
-            cf.Save("LARGE.cfs");
+            cf.SaveAs("LARGE.cfs");
             cf.Close();
 
             //Console.WriteLine("Closed save");
