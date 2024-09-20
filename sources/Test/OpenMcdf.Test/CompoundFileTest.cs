@@ -1225,8 +1225,8 @@ namespace OpenMcdf.Test
 
             CompoundFile.ShrinkCompoundFile(filename2);
 
-            long length = new System.IO.FileInfo(filename).Length;
-            long length2 = new System.IO.FileInfo(filename2).Length;
+            long length = new FileInfo(filename).Length;
+            long length2 = new FileInfo(filename2).Length;
 
             Assert.IsTrue(length > length2);
 

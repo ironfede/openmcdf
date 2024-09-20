@@ -53,7 +53,7 @@ namespace OpenMcdf.Extensions.Test
             {
                 var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
 
-                foreach (OLEProperties.OLEProperty p in co.Properties)
+                foreach (OLEProperty p in co.Properties)
                 {
                     Debug.Write(p.PropertyName);
                     Debug.Write(" - ");
@@ -75,7 +75,7 @@ namespace OpenMcdf.Extensions.Test
             {
                 var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
 
-                foreach (OLEProperties.OLEProperty p in co.Properties)
+                foreach (OLEProperty p in co.Properties)
                 {
                     Debug.Write(p.PropertyName);
                     Debug.Write(" - ");
@@ -172,7 +172,7 @@ namespace OpenMcdf.Extensions.Test
                 {
                     var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
 
-                    foreach (OLEProperties.OLEProperty p in co.Properties)
+                    foreach (OLEProperty p in co.Properties)
                     {
                         Debug.Write(p.PropertyName);
                         Debug.Write(" - ");
@@ -185,7 +185,7 @@ namespace OpenMcdf.Extensions.Test
 
                     var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
 
-                    foreach (OLEProperties.OLEProperty p in co2.Properties)
+                    foreach (OLEProperty p in co2.Properties)
                     {
                         Debug.Write(p.PropertyName);
                         Debug.Write(" - ");
@@ -213,7 +213,7 @@ namespace OpenMcdf.Extensions.Test
                 {
                     var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
 
-                    foreach (OLEProperties.OLEProperty p in co.Properties)
+                    foreach (OLEProperty p in co.Properties)
                     {
                         Debug.Write(p.PropertyName);
                         Debug.Write(" - ");
@@ -227,7 +227,7 @@ namespace OpenMcdf.Extensions.Test
                     var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
 
                     Assert.IsNotNull(co2.Properties);
-                    foreach (OLEProperties.OLEProperty p in co2.Properties)
+                    foreach (OLEProperty p in co2.Properties)
                     {
                         Debug.Write(p.PropertyName);
                         Debug.Write(" - ");
@@ -237,7 +237,7 @@ namespace OpenMcdf.Extensions.Test
                     }
 
                     Assert.IsNotNull(co2.UserDefinedProperties.Properties);
-                    foreach (OLEProperties.OLEProperty p in co2.UserDefinedProperties.Properties)
+                    foreach (OLEProperty p in co2.UserDefinedProperties.Properties)
                     {
                         Debug.Write(p.PropertyName);
                         Debug.Write(" - ");
@@ -261,7 +261,7 @@ namespace OpenMcdf.Extensions.Test
             {
                 var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
 
-                foreach (OLEProperties.OLEProperty p in co.Properties)
+                foreach (OLEProperty p in co.Properties)
                 {
                     Debug.Write(p.PropertyName);
                     Debug.Write(" - ");

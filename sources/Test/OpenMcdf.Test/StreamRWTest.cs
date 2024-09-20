@@ -15,7 +15,7 @@ namespace OpenMcdf.Test
             long actual = 0;
             using (MemoryStream memStream = new MemoryStream(bytes))
             {
-                OpenMcdf.StreamRW reader = new OpenMcdf.StreamRW(memStream);
+                StreamRW reader = new StreamRW(memStream);
                 actual = reader.ReadInt64();
             }
 
@@ -30,7 +30,7 @@ namespace OpenMcdf.Test
             long actual = 0;
             using (MemoryStream memStream = new MemoryStream(bytes))
             {
-                OpenMcdf.StreamRW reader = new OpenMcdf.StreamRW(memStream);
+                StreamRW reader = new StreamRW(memStream);
                 actual = reader.ReadInt64();
             }
 
@@ -45,7 +45,7 @@ namespace OpenMcdf.Test
             long actual = 0;
             using (MemoryStream memStream = new MemoryStream(bytes))
             {
-                OpenMcdf.StreamRW reader = new OpenMcdf.StreamRW(memStream);
+                StreamRW reader = new StreamRW(memStream);
                 actual = reader.ReadInt64();
             }
 

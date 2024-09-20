@@ -25,7 +25,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         {
         }
 
-        public void Read(System.IO.BinaryReader br)
+        public void Read(BinaryReader br)
         {
             ByteOrder = br.ReadUInt16();
             Version = br.ReadUInt16();
@@ -108,7 +108,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        public void Write(System.IO.BinaryWriter bw)
+        public void Write(BinaryWriter bw)
         {
             var oc0 = new OffsetContainer();
             var oc1 = new OffsetContainer();

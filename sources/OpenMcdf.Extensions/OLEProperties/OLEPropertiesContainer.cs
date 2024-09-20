@@ -254,7 +254,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 {
                     NumProperties = (uint)this.Properties.Count(),
                     PropertyIdentifierAndOffsets = new List<PropertyIdentifierAndOffset>(),
-                    Properties = new List<Interfaces.IProperty>(),
+                    Properties = new List<IProperty>(),
                     PropertyContext = this.Context
                 }
             };
@@ -286,7 +286,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     // Number of user defined properties, plus 1 for the name dictionary
                     NumProperties = (uint)this.UserDefinedProperties.Properties.Count() + 1,
                     PropertyIdentifierAndOffsets = new List<PropertyIdentifierAndOffset>(),
-                    Properties = new List<Interfaces.IProperty>(),
+                    Properties = new List<IProperty>(),
                     PropertyContext = UserDefinedProperties.Context
                 };
 

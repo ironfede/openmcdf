@@ -50,9 +50,9 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        public abstract T ReadScalarValue(System.IO.BinaryReader br);
+        public abstract T ReadScalarValue(BinaryReader br);
 
-        public void Read(System.IO.BinaryReader br)
+        public void Read(BinaryReader br)
         {
             long currentPos = br.BaseStream.Position;
 
@@ -105,7 +105,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        public abstract void WriteScalarValue(System.IO.BinaryWriter bw, T pValue);
+        public abstract void WriteScalarValue(BinaryWriter bw, T pValue);
 
         public void Write(BinaryWriter bw)
         {
