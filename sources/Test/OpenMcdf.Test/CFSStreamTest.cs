@@ -596,7 +596,7 @@ namespace OpenMcdf.Test
 
         //}
 
-        private void SingleTransactedChange(int size)
+        public static void SingleTransactedChange(int size)
         {
             string filename = "INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS.cfs";
 
@@ -624,7 +624,7 @@ namespace OpenMcdf.Test
             cf2.Close();
         }
 
-        private void SingleWriteReadMatching(int size)
+        private static void SingleWriteReadMatching(int size)
         {
             string filename = "INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS.cfs";
 
@@ -652,7 +652,7 @@ namespace OpenMcdf.Test
             cf2.Close();
         }
 
-        private void SingleWriteReadMatchingSTREAMED(int size)
+        private static void SingleWriteReadMatchingSTREAMED(int size)
         {
             MemoryStream ms = new MemoryStream(size);
 

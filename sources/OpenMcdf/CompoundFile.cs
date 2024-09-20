@@ -1563,16 +1563,6 @@ namespace OpenMcdf
         //    }
         //}
 
-        internal RBTree CreateNewTree()
-        {
-            RBTree bst = new RBTree();
-            //bst.NodeInserted += OnNodeInsert;
-            //bst.NodeOperation += OnNodeOperation;
-            //bst.NodeDeleted += new Action<RBNode<CFItem>>(OnNodeDeleted);
-            //  bst.ValueAssignedAction += new Action<RBNode<CFItem>, CFItem>(OnValueAssigned);
-            return bst;
-        }
-
         //void OnValueAssigned(RBNode<CFItem> node, CFItem from)
         //{
         //    if (from.DirEntry != null && from.DirEntry.LeftSibling != DirectoryEntry.NOSTREAM)
@@ -1623,7 +1613,7 @@ namespace OpenMcdf
             }
         }
 
-        private void NullifyChildNodes(IDirectoryEntry de)
+        private static void NullifyChildNodes(IDirectoryEntry de)
         {
             de.Parent = null;
             de.Left = null;
@@ -2600,7 +2590,7 @@ namespace OpenMcdf
 
         internal IDirectoryEntry RootEntry => directoryEntries[0];
 
-        private IList<IDirectoryEntry> FindDirectoryEntries(string entryName)
+        private List<IDirectoryEntry> FindDirectoryEntries(string entryName)
         {
             List<IDirectoryEntry> result = new List<IDirectoryEntry>();
 

@@ -59,10 +59,7 @@ namespace OpenMcdf
                     children = LoadChildren(this.DirEntry.SID);
                     //}
                     //else
-                    if (children == null)
-                    {
-                        children = this.CompoundFile.CreateNewTree();
-                    }
+                    children ??= new RBTree();
                 }
 
                 return children;
@@ -635,10 +632,7 @@ namespace OpenMcdf
             children = null;
             children = LoadChildren(this.DirEntry.SID); //Rethread
 
-            if (children == null)
-            {
-                children = this.CompoundFile.CreateNewTree();
-            }
+            children ??= new RBTree();
         }
     }
 }

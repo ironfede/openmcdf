@@ -211,7 +211,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br, PropertyFactory factory)
+        private static IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br, PropertyFactory factory)
         {
             if (propertyIdentifier != 0)
             {
