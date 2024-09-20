@@ -2606,7 +2606,7 @@ namespace OpenMcdf
 
             foreach (IDirectoryEntry d in directoryEntries)
             {
-                if (d.GetEntryName() == entryName && d.StgType != StgType.StgInvalid)
+                if (d.StgType != StgType.StgInvalid && d.GetEntryName() == entryName)
                     result.Add(d);
             }
 
@@ -2630,9 +2630,9 @@ namespace OpenMcdf
 
             foreach (IDirectoryEntry id in r)
             {
-                if (id.GetEntryName() == entryName && id.StgType != StgType.StgInvalid)
+                if (id.StgType != StgType.StgInvalid && id.GetEntryName() == entryName)
                 {
-                    CFItem i = id.StgType == StgType.StgStorage ? new CFStorage(this, id) : (CFItem)new CFStream(this, id);
+                    CFItem i = id.StgType == StgType.StgStorage ? new CFStorage(this, id) : new CFStream(this, id);
                     result.Add(i);
                 }
             }
