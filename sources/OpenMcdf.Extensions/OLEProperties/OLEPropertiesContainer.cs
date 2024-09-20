@@ -144,11 +144,12 @@ namespace OpenMcdf.Extensions.OLEProperties
                     var p = (ITypedPropertyValue)pStream.PropertySet1.Properties[i];
                     var poi = pStream.PropertySet1.PropertyIdentifierAndOffsets[i];
 
-                    var op = new OLEProperty(UserDefinedProperties);
-
-                    op.VTType = p.VTType;
-                    op.PropertyIdentifier = pStream.PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier;
-                    op.Value = p.Value;
+                    var op = new OLEProperty(UserDefinedProperties)
+                    {
+                        VTType = p.VTType,
+                        PropertyIdentifier = pStream.PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier,
+                        Value = p.Value
+                    };
 
                     UserDefinedProperties.properties.Add(op);
                 }

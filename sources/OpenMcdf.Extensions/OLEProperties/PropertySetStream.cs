@@ -41,9 +41,11 @@ namespace OpenMcdf.Extensions.OLEProperties
                 Offset1 = br.ReadUInt32();
             }
 
-            PropertySet0 = new PropertySet();
-            PropertySet0.Size = br.ReadUInt32();
-            PropertySet0.NumProperties = br.ReadUInt32();
+            PropertySet0 = new PropertySet
+            {
+                Size = br.ReadUInt32(),
+                NumProperties = br.ReadUInt32()
+            };
 
             // Create appropriate property factory based on the stream type
             Guid docSummaryGuid = new Guid(WellKnownFMTID.FMTID_DocSummaryInformation);
@@ -52,9 +54,11 @@ namespace OpenMcdf.Extensions.OLEProperties
             // Read property offsets (P0)
             for (int i = 0; i < PropertySet0.NumProperties; i++)
             {
-                PropertyIdentifierAndOffset pio = new PropertyIdentifierAndOffset();
-                pio.PropertyIdentifier = br.ReadUInt32();
-                pio.Offset = br.ReadUInt32();
+                PropertyIdentifierAndOffset pio = new PropertyIdentifierAndOffset
+                {
+                    PropertyIdentifier = br.ReadUInt32(),
+                    Offset = br.ReadUInt32()
+                };
                 PropertySet0.PropertyIdentifierAndOffsets.Add(pio);
             }
 
@@ -70,16 +74,20 @@ namespace OpenMcdf.Extensions.OLEProperties
             if (NumPropertySets == 2)
             {
                 br.BaseStream.Seek(Offset1, SeekOrigin.Begin);
-                PropertySet1 = new PropertySet();
-                PropertySet1.Size = br.ReadUInt32();
-                PropertySet1.NumProperties = br.ReadUInt32();
+                PropertySet1 = new PropertySet
+                {
+                    Size = br.ReadUInt32(),
+                    NumProperties = br.ReadUInt32()
+                };
 
                 // Read property offsets
                 for (int i = 0; i < PropertySet1.NumProperties; i++)
                 {
-                    PropertyIdentifierAndOffset pio = new PropertyIdentifierAndOffset();
-                    pio.PropertyIdentifier = br.ReadUInt32();
-                    pio.Offset = br.ReadUInt32();
+                    PropertyIdentifierAndOffset pio = new PropertyIdentifierAndOffset
+                    {
+                        PropertyIdentifier = br.ReadUInt32(),
+                        Offset = br.ReadUInt32()
+                    };
                     PropertySet1.PropertyIdentifierAndOffsets.Add(pio);
                 }
 

@@ -1222,9 +1222,11 @@ namespace OpenMcdf
 
                 if (s == null) //Lazy loading
                 {
-                    s = new Sector(GetSectorSize(), sourceStream);
-                    s.Type = SectorType.DIFAT;
-                    s.Id = header.FirstDIFATSectorID;
+                    s = new Sector(GetSectorSize(), sourceStream)
+                    {
+                        Type = SectorType.DIFAT,
+                        Id = header.FirstDIFATSectorID
+                    };
                     sectors[header.FirstDIFATSectorID] = s;
                 }
 
@@ -1256,8 +1258,10 @@ namespace OpenMcdf
 
                     if (s == null)
                     {
-                        s = new Sector(GetSectorSize(), sourceStream);
-                        s.Id = nextSecID;
+                        s = new Sector(GetSectorSize(), sourceStream)
+                        {
+                            Id = nextSecID
+                        };
                         sectors[nextSecID] = s;
                     }
 
@@ -1305,9 +1309,11 @@ namespace OpenMcdf
 
                 if (s == null)
                 {
-                    s = new Sector(GetSectorSize(), sourceStream);
-                    s.Id = nextSecID;
-                    s.Type = SectorType.FAT;
+                    s = new Sector(GetSectorSize(), sourceStream)
+                    {
+                        Id = nextSecID,
+                        Type = SectorType.FAT
+                    };
                     sectors[nextSecID] = s;
                 }
 
@@ -1346,9 +1352,11 @@ namespace OpenMcdf
 
                     if (s == null)
                     {
-                        s = new Sector(GetSectorSize(), sourceStream);
-                        s.Type = SectorType.FAT;
-                        s.Id = nextSecID;
+                        s = new Sector(GetSectorSize(), sourceStream)
+                        {
+                            Type = SectorType.FAT,
+                            Id = nextSecID
+                        };
                         sectors[nextSecID] = s; //UUU
                     }
 
@@ -1406,9 +1414,11 @@ namespace OpenMcdf
                 Sector s = sectors[nextSecID];
                 if (s == null)
                 {
-                    s = new Sector(GetSectorSize(), sourceStream);
-                    s.Id = nextSecID;
-                    s.Type = SectorType.Normal;
+                    s = new Sector(GetSectorSize(), sourceStream)
+                    {
+                        Id = nextSecID,
+                        Type = SectorType.Normal
+                    };
                     sectors[nextSecID] = s;
                 }
 
@@ -1926,8 +1936,10 @@ namespace OpenMcdf
                         // sectors because we are NOT modifying the source
                         // in a differential way but ALL sectors need to be
                         // persisted on the destination stream
-                        s = new Sector(sSize, sourceStream);
-                        s.Id = i;
+                        s = new Sector(sSize, sourceStream)
+                        {
+                            Id = i
+                        };
 
                         //sectors[i] = s;
                     }
@@ -1971,8 +1983,10 @@ namespace OpenMcdf
                     {
                         if (sectors[idx] == null)
                         {
-                            Sector s = new Sector(GetSectorSize(), sourceStream);
-                            s.Id = idx;
+                            Sector s = new Sector(GetSectorSize(), sourceStream)
+                            {
+                                Id = idx
+                            };
                             sectors[idx] = s;
                         }
 
