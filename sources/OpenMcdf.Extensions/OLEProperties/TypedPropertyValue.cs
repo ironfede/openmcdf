@@ -16,9 +16,9 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public TypedPropertyValue(VTPropertyType vtType, bool isVariant = false)
         {
-            this._VTType = vtType;
+            _VTType = vtType;
             PropertyDimensions = CheckPropertyDimensions(vtType);
-            this.IsVariant = isVariant;
+            IsVariant = isVariant;
         }
 
         public PropertyDimensions PropertyDimensions { get; } = PropertyDimensions.IsScalar;
@@ -56,16 +56,16 @@ namespace OpenMcdf.Extensions.OLEProperties
         {
             long currentPos = br.BaseStream.Position;
 
-            switch (this.PropertyDimensions)
+            switch (PropertyDimensions)
             {
                 case PropertyDimensions.IsScalar:
                     {
-                        this.propertyValue = ReadScalarValue(br);
+                        propertyValue = ReadScalarValue(br);
                         int size = (int)(br.BaseStream.Position - currentPos);
 
                         int m = size % 4;
 
-                        if (m > 0 && this.NeedsPadding)
+                        if (m > 0 && NeedsPadding)
                             br.ReadBytes(4 - m); // padding
                     }
 
@@ -87,15 +87,15 @@ namespace OpenMcdf.Extensions.OLEProperties
                             int itemSize = (int)(br.BaseStream.Position - currentPos);
 
                             int pad = itemSize % 4;
-                            if (pad > 0 && this.NeedsPadding)
+                            if (pad > 0 && NeedsPadding)
                                 br.ReadBytes(4 - pad); // padding
                         }
 
-                        this.propertyValue = res;
+                        propertyValue = res;
                         int size = (int)(br.BaseStream.Position - currentPos);
 
                         int m = size % 4;
-                        if (m > 0 && this.NeedsPadding)
+                        if (m > 0 && NeedsPadding)
                             br.ReadBytes(4 - m); // padding
                     }
 
@@ -112,18 +112,18 @@ namespace OpenMcdf.Extensions.OLEProperties
             long currentPos = bw.BaseStream.Position;
             int size;
             int m;
-            switch (this.PropertyDimensions)
+            switch (PropertyDimensions)
             {
                 case PropertyDimensions.IsScalar:
 
                     bw.Write((ushort)_VTType);
                     bw.Write((ushort)0);
 
-                    WriteScalarValue(bw, (T)this.propertyValue);
+                    WriteScalarValue(bw, (T)propertyValue);
                     size = (int)(bw.BaseStream.Position - currentPos);
                     m = size % 4;
 
-                    if (m > 0 && this.NeedsPadding)
+                    if (m > 0 && NeedsPadding)
                     {
                         for (int i = 0; i < 4 - m; i++) // padding
                             bw.Write((byte)0);
@@ -135,16 +135,16 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                     bw.Write((ushort)_VTType);
                     bw.Write((ushort)0);
-                    bw.Write((uint)((List<T>)this.propertyValue).Count);
+                    bw.Write((uint)((List<T>)propertyValue).Count);
 
-                    for (int i = 0; i < ((List<T>)this.propertyValue).Count; i++)
+                    for (int i = 0; i < ((List<T>)propertyValue).Count; i++)
                     {
-                        WriteScalarValue(bw, ((List<T>)this.propertyValue)[i]);
+                        WriteScalarValue(bw, ((List<T>)propertyValue)[i]);
 
                         size = (int)(bw.BaseStream.Position - currentPos);
                         m = size % 4;
 
-                        if (m > 0 && this.NeedsPadding)
+                        if (m > 0 && NeedsPadding)
                         {
                             for (int q = 0; q < 4 - m; q++) // padding
                                 bw.Write((byte)0);
@@ -154,7 +154,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     size = (int)(bw.BaseStream.Position - currentPos);
                     m = size % 4;
 
-                    if (m > 0 && this.NeedsPadding)
+                    if (m > 0 && NeedsPadding)
                     {
                         for (int i = 0; i < 4 - m; i++) // padding
                             bw.Write((byte)0);

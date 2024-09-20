@@ -47,22 +47,22 @@ namespace OpenMcdf
         {
             this.dirRepository = dirRepository;
 
-            this.StgType = stgType;
+            StgType = stgType;
 
             if (stgType == StgType.StgStorage)
             {
-                this.CreationDate = BitConverter.GetBytes(DateTime.Now.ToFileTime());
-                this.StartSetc = ZERO;
+                CreationDate = BitConverter.GetBytes(DateTime.Now.ToFileTime());
+                StartSetc = ZERO;
             }
 
             if (stgType == StgType.StgInvalid)
             {
-                this.StartSetc = ZERO;
+                StartSetc = ZERO;
             }
 
             if (name != string.Empty)
             {
-                this.SetEntryName(name);
+                SetEntryName(name);
             }
         }
 
@@ -72,7 +72,7 @@ namespace OpenMcdf
         {
             if (EntryName != null && EntryName.Length > 0)
             {
-                return Encoding.Unicode.GetString(EntryName).Remove((this.nameLength - 1) / 2);
+                return Encoding.Unicode.GetString(EntryName).Remove((nameLength - 1) / 2);
             }
             else
                 return string.Empty;
@@ -82,8 +82,8 @@ namespace OpenMcdf
         {
             if (entryName == string.Empty)
             {
-                this.EntryName = new byte[64];
-                this.nameLength = 0;
+                EntryName = new byte[64];
+                nameLength = 0;
             }
             else
             {
@@ -102,8 +102,8 @@ namespace OpenMcdf
                 newName[temp.Length] = 0x00;
                 newName[temp.Length + 1] = 0x00;
 
-                this.EntryName = newName;
-                this.nameLength = (ushort)(temp.Length + 2);
+                EntryName = newName;
+                nameLength = (ushort)(temp.Length + 2);
             }
         }
 
@@ -141,7 +141,7 @@ namespace OpenMcdf
             }
             set
             {
-                this.storageCLSID = value;
+                storageCLSID = value;
             }
         }
 
@@ -162,17 +162,17 @@ namespace OpenMcdf
             if (otherDir == null)
                 throw new CFException("Invalid casting: compared object does not implement IDirectorEntry interface");
 
-            if (this.NameLength > otherDir.NameLength)
+            if (NameLength > otherDir.NameLength)
             {
                 return THIS_IS_GREATER;
             }
-            else if (this.NameLength < otherDir.NameLength)
+            else if (NameLength < otherDir.NameLength)
             {
                 return OTHER_IS_GREATER;
             }
             else
             {
-                string thisName = Encoding.Unicode.GetString(this.EntryName, 0, this.NameLength);
+                string thisName = Encoding.Unicode.GetString(EntryName, 0, NameLength);
                 string otherName = Encoding.Unicode.GetString(otherDir.EntryName, 0, otherDir.NameLength);
 
                 for (int z = 0; z < thisName.Length; z++)
@@ -194,7 +194,7 @@ namespace OpenMcdf
 
         public override bool Equals(object obj)
         {
-            return this.CompareTo(obj) == 0;
+            return CompareTo(obj) == 0;
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace OpenMcdf
 
         public override int GetHashCode()
         {
-            return (int)fnv_hash(this.EntryName);
+            return (int)fnv_hash(EntryName);
         }
 
         public void Write(Stream stream)
@@ -441,27 +441,27 @@ namespace OpenMcdf
 
         public override string ToString()
         {
-            return this.Name + " [" + this.SID + "]" + (this.StgType == StgType.StgStream ? "Stream" : "Storage");
+            return Name + " [" + SID + "]" + (StgType == StgType.StgStream ? "Stream" : "Storage");
         }
 
         public void AssignValueTo(RedBlackTree.IRBNode other)
         {
             DirectoryEntry d = other as DirectoryEntry;
 
-            d.SetEntryName(this.GetEntryName());
+            d.SetEntryName(GetEntryName());
 
-            d.CreationDate = new byte[this.CreationDate.Length];
-            this.CreationDate.CopyTo(d.CreationDate, 0);
+            d.CreationDate = new byte[CreationDate.Length];
+            CreationDate.CopyTo(d.CreationDate, 0);
 
-            d.ModifyDate = new byte[this.ModifyDate.Length];
-            this.ModifyDate.CopyTo(d.ModifyDate, 0);
+            d.ModifyDate = new byte[ModifyDate.Length];
+            ModifyDate.CopyTo(d.ModifyDate, 0);
 
-            d.Size = this.Size;
-            d.StartSetc = this.StartSetc;
-            d.StateBits = this.StateBits;
-            d.StgType = this.StgType;
-            d.storageCLSID = new Guid(this.storageCLSID.ToByteArray());
-            d.Child = this.Child;
+            d.Size = Size;
+            d.StartSetc = StartSetc;
+            d.StateBits = StateBits;
+            d.StgType = StgType;
+            d.storageCLSID = new Guid(storageCLSID.ToByteArray());
+            d.Child = Child;
         }
     }
 }

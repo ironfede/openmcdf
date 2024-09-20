@@ -54,7 +54,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         private string GetName()
         {
-            var result = Encoding.GetEncoding(this.codePage).GetString(nameBytes);
+            var result = Encoding.GetEncoding(codePage).GetString(nameBytes);
 
             result = result.Trim('\0');
 

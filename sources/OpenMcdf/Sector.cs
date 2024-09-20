@@ -32,28 +32,28 @@ namespace OpenMcdf
 
         public bool DirtyFlag { get; set; } = false;
 
-        public bool IsStreamed => (stream != null && Size != MINISECTOR_SIZE) ? (this.Id * Size) + Size < stream.Length : false;
+        public bool IsStreamed => (stream != null && Size != MINISECTOR_SIZE) ? (Id * Size) + Size < stream.Length : false;
 
         private readonly Stream stream;
 
         public Sector(int size, Stream stream)
         {
-            this.Size = size;
+            Size = size;
             this.stream = stream;
         }
 
         public Sector(int size, byte[] data)
         {
-            this.Size = size;
+            Size = size;
             this.data = data;
-            this.stream = null;
+            stream = null;
         }
 
         public Sector(int size)
         {
-            this.Size = size;
-            this.data = null;
-            this.stream = null;
+            Size = size;
+            data = null;
+            stream = null;
         }
 
         internal SectorType Type { get; set; }
@@ -66,7 +66,7 @@ namespace OpenMcdf
 
         public byte[] GetData()
         {
-            if (this.data == null)
+            if (data == null)
             {
                 data = new byte[Size];
 
@@ -114,7 +114,7 @@ namespace OpenMcdf
 
         internal void ReleaseData()
         {
-            this.data = null;
+            data = null;
         }
 
         private readonly object lockObject = new object();
@@ -131,10 +131,10 @@ namespace OpenMcdf
                 {
                     lock (lockObject)
                     {
-                        this.data = null;
-                        this.DirtyFlag = false;
-                        this.Id = ENDOFCHAIN;
-                        this.Size = 0;
+                        data = null;
+                        DirtyFlag = false;
+                        Id = ENDOFCHAIN;
+                        Size = 0;
                     }
                 }
             }

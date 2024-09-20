@@ -416,7 +416,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 {
                     bw.Write((uint)0);
                 }
-                else if (this.codePage == CodePages.CP_WINUNICODE)
+                else if (codePage == CodePages.CP_WINUNICODE)
                 {
                     data = Encoding.GetEncoding(codePage).GetBytes(pValue);
 
@@ -474,7 +474,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         {
             public VT_Unaligned_LPSTR_Property(VTPropertyType vType, int codePage, bool isVariant) : base(vType, codePage, isVariant)
             {
-                this.NeedsPadding = false;
+                NeedsPadding = false;
             }
         }
 
@@ -569,7 +569,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                     d = -d;
                 d /= 10 << scale;
 
-                this.propertyValue = d;
+                propertyValue = d;
                 return d;
             }
 
@@ -598,7 +598,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             public override bool ReadScalarValue(BinaryReader br)
             {
-                this.propertyValue = br.ReadUInt16() == 0xFFFF ? true : false;
+                propertyValue = br.ReadUInt16() == 0xFFFF ? true : false;
                 return (bool)propertyValue;
                 //br.ReadUInt16();//padding
             }
@@ -697,7 +697,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 this.codePage = codePage;
                 this.factory = factory;
                 this.propertyIdentifier = propertyIdentifier;
-                this.NeedsPadding = false;
+                NeedsPadding = false;
             }
 
             public override object ReadScalarValue(BinaryReader br)

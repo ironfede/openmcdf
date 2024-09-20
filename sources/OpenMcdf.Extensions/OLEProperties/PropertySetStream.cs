@@ -111,8 +111,8 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             public OffsetContainer()
             {
-                this.PropertyOffsets = new List<long>();
-                this.PropertyIdentifierOffsets = new List<long>();
+                PropertyOffsets = new List<long>();
+                PropertyIdentifierOffsets = new List<long>();
             }
         }
 

@@ -65,7 +65,7 @@ namespace StructuredStorageExplorer
         {
             _hasChanges = false;
 
-            _modifiedStream.SetData(this.Bytes.ToArray());
+            _modifiedStream.SetData(Bytes.ToArray());
         }
 
         /// <summary>
