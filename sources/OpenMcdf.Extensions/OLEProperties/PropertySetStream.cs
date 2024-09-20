@@ -225,7 +225,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
             else
             {
-                IDictionaryProperty dictionaryProperty = new DictionaryProperty(codePage);
+                DictionaryProperty dictionaryProperty = new DictionaryProperty(codePage);
                 dictionaryProperty.Read(br);
                 return dictionaryProperty;
             }

@@ -81,7 +81,7 @@ namespace OpenMcdf.Test
             CompoundFile cf = new CompoundFile(STORAGE_NAME);
 
             FileStream output = new FileStream("LogEntries.txt", FileMode.Create);
-            TextWriter tw = new StreamWriter(output);
+            StreamWriter tw = new StreamWriter(output);
 
             Action<CFItem> va = delegate (CFItem item)
             {
@@ -179,7 +179,7 @@ namespace OpenMcdf.Test
             {
                 output = new FileStream("LogEntriesCorrupted_1.txt", FileMode.Create);
 
-                using (TextWriter tw = new StreamWriter(output))
+                using (StreamWriter tw = new StreamWriter(output))
                 {
                     Action<CFItem> va = delegate (CFItem item)
                        {
@@ -223,7 +223,7 @@ namespace OpenMcdf.Test
             {
                 output = new FileStream("LogEntriesCorrupted_2.txt", FileMode.Create);
 
-                using (TextWriter tw = new StreamWriter(output))
+                using (StreamWriter tw = new StreamWriter(output))
                 {
                     Action<CFItem> va = delegate (CFItem item)
                     {
@@ -275,7 +275,7 @@ namespace OpenMcdf.Test
             CompoundFile cf = new CompoundFile(FILENAME);
 
             FileStream output = new FileStream("reportVisit.txt", FileMode.Create);
-            TextWriter sw = new StreamWriter(output);
+            StreamWriter sw = new StreamWriter(output);
 
             Console.SetOut(sw);
 
