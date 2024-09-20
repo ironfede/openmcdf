@@ -1827,18 +1827,18 @@ namespace OpenMcdf
             {
                 bool raiseSaveFileEx = false;
 
-                if (this.HasSourceStream && this.sourceStream != null && this.sourceStream is FileStream)
+                if (this.HasSourceStream && this.sourceStream != null && this.sourceStream is FileStream stream)
                 {
                     if (Path.IsPathRooted(fileName))
                     {
-                        if (((FileStream)this.sourceStream).Name == fileName)
+                        if (stream.Name == fileName)
                         {
                             raiseSaveFileEx = true;
                         }
                     }
                     else
                     {
-                        if (((FileStream)this.sourceStream).Name == (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + fileName))
+                        if (stream.Name == (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + fileName))
                         {
                             raiseSaveFileEx = true;
                         }
@@ -1903,9 +1903,9 @@ namespace OpenMcdf
 
             try
             {
-                if (this.HasSourceStream && this.sourceStream != null && this.sourceStream is FileStream && stream is FileStream)
+                if (this.HasSourceStream && this.sourceStream != null && this.sourceStream is FileStream && stream is FileStream otherStream)
                 {
-                    if (((FileStream)this.sourceStream).Name == ((FileStream)stream).Name)
+                    if (((FileStream)this.sourceStream).Name == otherStream.Name)
                     {
                         throw new CFInvalidOperation("Cannot overwrite current backing file. Compound File should be opened in UpdateMode and Commit() method should be called to persist changes");
                     }
