@@ -223,14 +223,12 @@ namespace OpenMcdf
             rw.Write(LeftSibling);
             rw.Write(RightSibling);
             rw.Write(Child);
-            rw.Write(storageCLSID.ToByteArray());
+            rw.Write(storageCLSID);
             rw.Write(StateBits);
             rw.Write(CreationDate);
             rw.Write(ModifyDate);
             rw.Write(StartSetc);
             rw.Write(Size);
-
-            rw.Close();
         }
 
         //public Byte[] ToByteArray()
@@ -264,7 +262,7 @@ namespace OpenMcdf
         {
             StreamRW rw = new StreamRW(stream);
 
-            EntryName = rw.ReadBytes(64);
+            rw.ReadBytes(EntryName);
             nameLength = rw.ReadUInt16();
             StgType = (StgType)rw.ReadByte();
             //rw.ReadByte();//Ignore color, only black tree
@@ -281,10 +279,10 @@ namespace OpenMcdf
                 Child = NOSTREAM;
             }
 
-            storageCLSID = new Guid(rw.ReadBytes(16));
+            storageCLSID = rw.ReadGuid();
             StateBits = rw.ReadInt32();
-            CreationDate = rw.ReadBytes(8);
-            ModifyDate = rw.ReadBytes(8);
+            rw.ReadBytes(CreationDate);
+            rw.ReadBytes(ModifyDate);
             StartSetc = rw.ReadInt32();
 
             if (ver == CFSVersion.Ver_3)
@@ -293,7 +291,7 @@ namespace OpenMcdf
                 // where most significant bits are not initialized to zero
 
                 Size = rw.ReadInt32();
-                rw.ReadBytes(4); //discard most significant 4 (possibly) dirty bytes
+                rw.Seek(4, SeekOrigin.Current); // discard most significant 4 (possibly) dirty bytes
             }
             else
             {

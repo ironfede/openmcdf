@@ -6,13 +6,14 @@
  *
  * The Initial Developer of the Original Code is Federico Blaseotto.*/
 
+using System;
 using System.IO;
 
 namespace OpenMcdf
 {
     internal sealed class StreamRW
     {
-        private readonly byte[] buffer = new byte[8];
+        private readonly byte[] buffer = new byte[16];
         private readonly Stream stream;
 
         public StreamRW(Stream stream)
@@ -20,9 +21,9 @@ namespace OpenMcdf
             this.stream = stream;
         }
 
-        public long Seek(long offset)
+        public long Seek(long count, SeekOrigin origin)
         {
-            return stream.Seek(offset, SeekOrigin.Begin);
+            return stream.Seek(count, origin);
         }
 
         public byte ReadByte()
@@ -63,18 +64,16 @@ namespace OpenMcdf
             return (ulong)(buffer[0] | (buffer[1] << 8) | (buffer[2] << 16) | (buffer[3] << 24) | (buffer[4] << 32) | (buffer[5] << 40) | (buffer[6] << 48) | (buffer[7] << 56));
         }
 
-        public byte[] ReadBytes(int count)
+        public void ReadBytes(byte[] result)
         {
-            byte[] result = new byte[count];
-            stream.Read(result, 0, count);
-            return result;
+            // TODO: Check if the expected number of bytes were read
+            stream.Read(result, 0, result.Length);
         }
 
-        public byte[] ReadBytes(int count, out int r_count)
+        public Guid ReadGuid()
         {
-            byte[] result = new byte[count];
-            r_count = stream.Read(result, 0, count);
-            return result;
+            stream.Read(buffer, 0, 16);
+            return new Guid(buffer);
         }
 
         public void Write(byte b)
@@ -130,9 +129,10 @@ namespace OpenMcdf
             stream.Write(value, 0, value.Length);
         }
 
-        public void Close()
+        public void Write(Guid value)
         {
-            //Nothing to do ;-)
+            var data = value.ToByteArray();
+            Write(data);
         }
     }
 }
