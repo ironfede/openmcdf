@@ -33,15 +33,12 @@ namespace OpenMcdf
     {
         internal const int THIS_IS_GREATER = 1;
         internal const int OTHER_IS_GREATER = -1;
+        internal const int NOSTREAM = unchecked((int)0xFFFFFFFF);
+        internal const int ZERO = 0;
+
         private readonly IList<IDirectoryEntry> dirRepository;
 
         public int SID { get; set; } = -1;
-
-        internal static int NOSTREAM
-            = unchecked((int)0xFFFFFFFF);
-
-        internal static int ZERO
-            = 0;
 
         private DirectoryEntry(string name, StgType stgType, IList<IDirectoryEntry> dirRepository)
         {

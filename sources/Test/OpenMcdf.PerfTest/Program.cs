@@ -5,8 +5,8 @@ namespace OpenMcdf.PerfTest
 {
     class Program
     {
-        static readonly int MAX_STREAM_COUNT = 5000;
-        static readonly string fileName = "PerfLoad.cfs";
+        const int MAX_STREAM_COUNT = 5000;
+        const string fileName = "PerfLoad.cfs";
 
         static void Main(string[] args)
         {

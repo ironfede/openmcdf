@@ -157,7 +157,7 @@ namespace OpenMcdf
         /// <summary>
         /// Structured Storage signature
         /// </summary>
-        private readonly byte[] OLE_CFS_SIGNATURE = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
+        private static readonly byte[] OLE_CFS_SIGNATURE = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
 
         private void CheckSignature()
         {
