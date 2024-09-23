@@ -61,13 +61,13 @@ namespace OpenMcdf
             switch (version)
             {
                 case 3:
-                    this.MajorVersion = 3;
-                    this.SectorShift = 0x0009;
+                    MajorVersion = 3;
+                    SectorShift = 0x0009;
                     break;
 
                 case 4:
-                    this.MajorVersion = 4;
-                    this.SectorShift = 0x000C;
+                    MajorVersion = 4;
+                    SectorShift = 0x000C;
                     break;
 
                 default:
@@ -142,7 +142,7 @@ namespace OpenMcdf
 
             for (int i = 0; i < 109; i++)
             {
-                this.DIFAT[i] = rw.ReadInt32();
+                DIFAT[i] = rw.ReadInt32();
             }
 
             rw.Close();
@@ -150,7 +150,7 @@ namespace OpenMcdf
 
         private void CheckVersion()
         {
-            if (this.MajorVersion != 3 && this.MajorVersion != 4)
+            if (MajorVersion != 3 && MajorVersion != 4)
                 throw new CFFileFormatException("Unsupported Binary File Format version: OpenMcdf only supports Compound Files with major version equal to 3 or 4 ");
         }
 

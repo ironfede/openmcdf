@@ -173,7 +173,7 @@ namespace OpenMcdf
 
         #region IEnumerable Members
 
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator()
         {
             for (int i = 0; i < largeArraySlices.Count; i++)
             {

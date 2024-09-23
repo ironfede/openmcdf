@@ -17,7 +17,7 @@ namespace OpenMcdf.Extensions
         /// <param name="cfstream">The <see cref="CFStream"/> being wrapped.</param>
         public StreamDecorator(CFStream cfstream)
         {
-            this.cfStream = cfstream;
+            cfStream = cfstream;
         }
 
         /// <inheritdoc/>
@@ -66,7 +66,7 @@ namespace OpenMcdf.Extensions
             if (position >= cfStream.Size)
                 return 0;
 
-            count = this.cfStream.Read(buffer, position, offset, count);
+            count = cfStream.Read(buffer, position, offset, count);
             position += count;
             return count;
         }
@@ -95,13 +95,13 @@ namespace OpenMcdf.Extensions
         /// <inheritdoc/>
         public override void SetLength(long value)
         {
-            this.cfStream.Resize(value);
+            cfStream.Resize(value);
         }
 
         /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)
         {
-            this.cfStream.Write(buffer, position, offset, count);
+            cfStream.Write(buffer, position, offset, count);
             position += count;
         }
 

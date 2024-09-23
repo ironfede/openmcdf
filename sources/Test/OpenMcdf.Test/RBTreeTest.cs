@@ -58,7 +58,7 @@ namespace OpenMcdf.Test
         public void Test_RBTREE_INSERT()
         {
             RBTree rbTree = new RBTree();
-            System.Collections.Generic.IList<IDirectoryEntry> repo = GetDirectoryRepository(1000000);
+            IList<IDirectoryEntry> repo = GetDirectoryRepository(1000000);
 
             foreach (var item in repo)
             {
@@ -78,7 +78,7 @@ namespace OpenMcdf.Test
         public void Test_RBTREE_DELETE()
         {
             RBTree rbTree = new RBTree();
-            System.Collections.Generic.IList<IDirectoryEntry> repo = GetDirectoryRepository(25);
+            IList<IDirectoryEntry> repo = GetDirectoryRepository(25);
 
             foreach (var item in repo)
             {
@@ -189,7 +189,7 @@ namespace OpenMcdf.Test
         public void Test_RBTREE_ENUMERATE()
         {
             RBTree rbTree = new RBTree();
-            System.Collections.Generic.IList<IDirectoryEntry> repo = GetDirectoryRepository(10000);
+            IList<IDirectoryEntry> repo = GetDirectoryRepository(10000);
 
             foreach (var item in repo)
             {

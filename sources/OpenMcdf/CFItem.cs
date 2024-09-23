@@ -51,7 +51,7 @@ namespace OpenMcdf
 
         protected CFItem(CompoundFile compoundFile)
         {
-            this.CompoundFile = compoundFile;
+            CompoundFile = compoundFile;
         }
 
         #region IDirectoryEntry Members
@@ -61,7 +61,7 @@ namespace OpenMcdf
 
         internal int CompareTo(CFItem other)
         {
-            return this.DirEntry.CompareTo(other.DirEntry);
+            return DirEntry.CompareTo(other.DirEntry);
         }
 
         #endregion
@@ -70,7 +70,7 @@ namespace OpenMcdf
 
         public int CompareTo(object obj)
         {
-            return this.DirEntry.CompareTo(((CFItem)obj).DirEntry);
+            return DirEntry.CompareTo(((CFItem)obj).DirEntry);
         }
 
         #endregion
@@ -100,12 +100,12 @@ namespace OpenMcdf
 
         public override bool Equals(object obj)
         {
-            return this.CompareTo(obj) == 0;
+            return CompareTo(obj) == 0;
         }
 
         public override int GetHashCode()
         {
-            return this.DirEntry.GetEntryName().GetHashCode();
+            return DirEntry.GetEntryName().GetHashCode();
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace OpenMcdf
         {
             get
             {
-                string n = this.DirEntry.GetEntryName();
+                string n = DirEntry.GetEntryName();
                 if (n != null && n.Length > 0)
                 {
                     return n.TrimEnd('\0');
@@ -129,7 +129,7 @@ namespace OpenMcdf
         /// Size in bytes of the item. It has a valid value
         /// only if entity is a stream, otherwise it is set to zero.
         /// </summary>
-        public long Size => this.DirEntry.Size;
+        public long Size => DirEntry.Size;
 
         /// <summary>
         /// Return true if item is Storage
@@ -138,7 +138,7 @@ namespace OpenMcdf
         /// This check doesn't use reflection or runtime type information
         /// and doesn't suffer related performance penalties.
         /// </remarks>
-        public bool IsStorage => this.DirEntry.StgType == StgType.StgStorage;
+        public bool IsStorage => DirEntry.StgType == StgType.StgStorage;
 
         /// <summary>
         /// Return true if item is a Stream
@@ -147,7 +147,7 @@ namespace OpenMcdf
         /// This check doesn't use reflection or runtime type information
         /// and doesn't suffer related performance penalties.
         /// </remarks>
-        public bool IsStream => this.DirEntry.StgType == StgType.StgStream;
+        public bool IsStream => DirEntry.StgType == StgType.StgStream;
 
         /// <summary>
         /// Return true if item is the Root Storage
@@ -156,7 +156,7 @@ namespace OpenMcdf
         /// This check doesn't use reflection or runtime type information
         /// and doesn't suffer related performance penalties.
         /// </remarks>
-        public bool IsRoot => this.DirEntry.StgType == StgType.StgRoot;
+        public bool IsRoot => DirEntry.StgType == StgType.StgRoot;
 
         /// <summary>
         /// Get/Set the Creation Date of the current item
@@ -165,13 +165,13 @@ namespace OpenMcdf
         {
             get
             {
-                return DateTime.FromFileTime(BitConverter.ToInt64(this.DirEntry.CreationDate, 0));
+                return DateTime.FromFileTime(BitConverter.ToInt64(DirEntry.CreationDate, 0));
             }
 
             set
             {
-                if (this.DirEntry.StgType != StgType.StgStream && this.DirEntry.StgType != StgType.StgRoot)
-                    this.DirEntry.CreationDate = BitConverter.GetBytes(value.ToFileTime());
+                if (DirEntry.StgType != StgType.StgStream && DirEntry.StgType != StgType.StgRoot)
+                    DirEntry.CreationDate = BitConverter.GetBytes(value.ToFileTime());
                 else
                     throw new CFException("Creation Date can only be set on storage entries");
             }
@@ -184,13 +184,13 @@ namespace OpenMcdf
         {
             get
             {
-                return DateTime.FromFileTime(BitConverter.ToInt64(this.DirEntry.ModifyDate, 0));
+                return DateTime.FromFileTime(BitConverter.ToInt64(DirEntry.ModifyDate, 0));
             }
 
             set
             {
-                if (this.DirEntry.StgType != StgType.StgStream && this.DirEntry.StgType != StgType.StgRoot)
-                    this.DirEntry.ModifyDate = BitConverter.GetBytes(value.ToFileTime());
+                if (DirEntry.StgType != StgType.StgStream && DirEntry.StgType != StgType.StgRoot)
+                    DirEntry.ModifyDate = BitConverter.GetBytes(value.ToFileTime());
                 else
                     throw new CFException("Modify Date can only be set on storage entries");
             }
@@ -203,13 +203,13 @@ namespace OpenMcdf
         {
             get
             {
-                return this.DirEntry.StorageCLSID;
+                return DirEntry.StorageCLSID;
             }
             set
             {
-                if (this.DirEntry.StgType != StgType.StgStream)
+                if (DirEntry.StgType != StgType.StgStream)
                 {
-                    this.DirEntry.StorageCLSID = value;
+                    DirEntry.StorageCLSID = value;
                 }
                 else
                     throw new CFException("Object class GUID can only be set on Root and Storage entries");
@@ -218,13 +218,13 @@ namespace OpenMcdf
 
         int IComparable<CFItem>.CompareTo(CFItem other)
         {
-            return this.DirEntry.CompareTo(other.DirEntry);
+            return DirEntry.CompareTo(other.DirEntry);
         }
 
         public override string ToString()
         {
-            if (this.DirEntry != null)
-                return "[" + this.DirEntry.LeftSibling + "," + this.DirEntry.SID + "," + this.DirEntry.RightSibling + "]" + " " + this.DirEntry.GetEntryName();
+            if (DirEntry != null)
+                return "[" + DirEntry.LeftSibling + "," + DirEntry.SID + "," + DirEntry.RightSibling + "]" + " " + DirEntry.GetEntryName();
             else
                 return string.Empty;
         }

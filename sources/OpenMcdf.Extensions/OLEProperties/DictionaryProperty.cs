@@ -12,7 +12,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         public DictionaryProperty(int codePage)
         {
             this.codePage = codePage;
-            this.entries = new Dictionary<uint, string>();
+            entries = new Dictionary<uint, string>();
         }
 
         public PropertyType PropertyType => PropertyType.DictionaryProperty;
@@ -36,7 +36,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 DictionaryEntry de = new DictionaryEntry(codePage);
 
                 de.Read(br);
-                this.entries.Add(de.PropertyIdentifier, de.Name);
+                entries.Add(de.PropertyIdentifier, de.Name);
             }
 
             int m = (int)(br.BaseStream.Position - curPos) % 4;
@@ -79,7 +79,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             bw.Write(propertyIdentifier);
 
             // Encode string data with the current codepage
-            var nameBytes = Encoding.GetEncoding(this.codePage).GetBytes(name);
+            var nameBytes = Encoding.GetEncoding(codePage).GetBytes(name);
             uint byteLength = (uint)nameBytes.Length;
 
             // If the code page is WINUNICODE, write the length as the number of characters and pad the length to a multiple of 4 bytes

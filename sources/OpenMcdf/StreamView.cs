@@ -33,7 +33,7 @@ namespace OpenMcdf
             if (sectorSize <= 0)
                 throw new CFException("Sector size must be greater than zero");
 
-            this.BaseSectorChain = sectorChain;
+            BaseSectorChain = sectorChain;
             this.sectorSize = sectorSize;
             this.stream = stream;
         }
@@ -86,8 +86,8 @@ namespace OpenMcdf
 
         public int ReadInt32()
         {
-            this.Read(buf, 0, 4);
-            return this.buf[0] | (this.buf[1] << 8) | (this.buf[2] << 16) | (this.buf[3] << 24);
+            Read(buf, 0, 4);
+            return buf[0] | (buf[1] << 8) | (buf[2] << 16) | (buf[3] << 24);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -95,7 +95,7 @@ namespace OpenMcdf
             int nRead = 0;
 
             // Don't try to read more bytes than this stream contains.
-            long intMax = Math.Min(int.MaxValue, this.length);
+            long intMax = Math.Min(int.MaxValue, length);
             count = Math.Min((int)intMax, count);
 
             if (BaseSectorChain != null && BaseSectorChain.Count > 0)
@@ -182,7 +182,7 @@ namespace OpenMcdf
                     break;
             }
 
-            if (this.length <= position) // Don't adjust the length when position is inside the bounds of 0 and the current length.
+            if (length <= position) // Don't adjust the length when position is inside the bounds of 0 and the current length.
                 AdjustLength(position);
 
             return position;
@@ -195,7 +195,7 @@ namespace OpenMcdf
 
         private void AdjustLength(long value, Queue<Sector> availableSectors)
         {
-            this.length = value;
+            length = value;
 
             long delta = value - (BaseSectorChain.Count * (long)sectorSize);
 

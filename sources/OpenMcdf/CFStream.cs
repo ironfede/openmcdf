@@ -24,7 +24,7 @@ namespace OpenMcdf
             if (dirEntry == null || dirEntry.SID < 0)
                 throw new CFException("Attempting to add a CFStream using an uninitialized directory");
 
-            this.DirEntry = dirEntry;
+            DirEntry = dirEntry;
         }
 
         /// <summary>
@@ -44,8 +44,8 @@ namespace OpenMcdf
         {
             CheckDisposed();
 
-            this.CompoundFile.FreeData(this);
-            this.CompoundFile.WriteData(this, data);
+            CompoundFile.FreeData(this);
+            CompoundFile.WriteData(this, data);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace OpenMcdf
         /// its current size</remarks>
         public void Write(byte[] data, long position)
         {
-            this.Write(data, position, 0, data.Length);
+            Write(data, position, 0, data.Length);
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace OpenMcdf
         internal void Write(byte[] data, long position, int offset, int count)
         {
             CheckDisposed();
-            this.CompoundFile.WriteData(this, data, position, offset, count);
+            CompoundFile.WriteData(this, data, position, offset, count);
         }
 
         /// <summary>
@@ -103,13 +103,13 @@ namespace OpenMcdf
         public void Append(byte[] data)
         {
             CheckDisposed();
-            if (this.Size > 0)
+            if (Size > 0)
             {
-                this.CompoundFile.AppendData(this, data);
+                CompoundFile.AppendData(this, data);
             }
             else
             {
-                this.CompoundFile.WriteData(this, data);
+                CompoundFile.WriteData(this, data);
             }
         }
 
@@ -131,7 +131,7 @@ namespace OpenMcdf
         {
             CheckDisposed();
 
-            return this.CompoundFile.GetData(this);
+            return CompoundFile.GetData(this);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace OpenMcdf
         public int Read(byte[] buffer, long position, int count)
         {
             CheckDisposed();
-            return this.CompoundFile.ReadData(this, position, buffer, 0, count);
+            return CompoundFile.ReadData(this, position, buffer, 0, count);
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace OpenMcdf
         internal int Read(byte[] buffer, long position, int offset, int count)
         {
             CheckDisposed();
-            return this.CompoundFile.ReadData(this, position, buffer, offset, count);
+            return CompoundFile.ReadData(this, position, buffer, offset, count);
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace OpenMcdf
             }
 
             input.Read(buffer, 0, (int)input.Length);
-            this.SetData(buffer);
+            SetData(buffer);
         }
 
         /// <summary>
@@ -230,7 +230,7 @@ namespace OpenMcdf
         /// <param name="length">New length to assign to this stream</param>
         public void Resize(long length)
         {
-            this.CompoundFile.SetStreamLength(this, length);
+            CompoundFile.SetStreamLength(this, length);
         }
     }
 }

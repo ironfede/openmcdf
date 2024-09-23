@@ -15,15 +15,15 @@ namespace StructuredStorageExplorer
         {
             Settings.Default.EnableValidation = cbEnableValidation.Checked;
             Settings.Default.Save();
-            this.DialogResult = DialogResult.OK;
-            this.Close();
+            DialogResult = DialogResult.OK;
+            Close();
         }
 
         private void btnCancelPreferences_Click(object sender, EventArgs e)
         {
             cbEnableValidation.Checked = Settings.Default.EnableValidation;
-            this.DialogResult = DialogResult.Cancel;
-            this.Close();
+            DialogResult = DialogResult.Cancel;
+            Close();
         }
 
         private void PreferencesForm_Load(object sender, EventArgs e)

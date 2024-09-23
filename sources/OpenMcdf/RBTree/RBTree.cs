@@ -103,7 +103,7 @@ namespace RedBlackTree
 
         public RBTree(IRBNode root)
         {
-            this.Root = root;
+            Root = root;
         }
 
         private IRBNode LookupNode(IRBNode template)

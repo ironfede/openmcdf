@@ -16,7 +16,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         private string DecodePropertyIdentifier()
         {
-            return PropertyIdentifier.GetDescription(this.container.ContainerType, this.container.PropertyNames);
+            return PropertyIdentifier.GetDescription(container.ContainerType, container.PropertyNames);
         }
 
         //public string Description { get { return description; }
@@ -42,10 +42,10 @@ namespace OpenMcdf.Extensions.OLEProperties
                             return str.Trim('\0');
                         break;
                     default:
-                        return this.value;
+                        return value;
                 }
 
-                return this.value;
+                return value;
             }
             set
             {
@@ -58,12 +58,12 @@ namespace OpenMcdf.Extensions.OLEProperties
             var other = obj as OLEProperty;
             if (other == null) return false;
 
-            return other.PropertyIdentifier == this.PropertyIdentifier;
+            return other.PropertyIdentifier == PropertyIdentifier;
         }
 
         public override int GetHashCode()
         {
-            return (int)this.PropertyIdentifier;
+            return (int)PropertyIdentifier;
         }
     }
 }

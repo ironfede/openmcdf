@@ -16,7 +16,7 @@ namespace OpenMcdf.Benchmark
         public ExtensionsRead()
         {
             string testFile = Path.Combine("TestFiles", "winUnicodeDictionary.doc");
-            this.udTestFile = new CompoundFile(testFile);
+            udTestFile = new CompoundFile(testFile);
         }
 
         [GlobalCleanup]
@@ -28,13 +28,13 @@ namespace OpenMcdf.Benchmark
         [Benchmark]
         public void TestReadSummaryInformation()
         {
-            this.udTestFile.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
+            udTestFile.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
         }
 
         [Benchmark]
         public void TestReadDocumentSummaryInformation()
         {
-            this.udTestFile.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
+            udTestFile.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
         }
     }
 }

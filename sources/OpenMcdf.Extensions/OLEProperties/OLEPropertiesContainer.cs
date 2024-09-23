@@ -76,7 +76,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 Behavior = Behavior.CaseInsensitive
             };
 
-            this.ContainerType = containerType;
+            ContainerType = containerType;
         }
 
         internal OLEPropertiesContainer(CFStream cfStream)
@@ -86,25 +86,18 @@ namespace OpenMcdf.Extensions.OLEProperties
             this.cfStream = cfStream;
             pStream.Read(new BinaryReader(new StreamDecorator(cfStream)));
 
-            switch (pStream.FMTID0.ToString("B").ToUpperInvariant())
+            ContainerType = pStream.FMTID0.ToString("B").ToUpperInvariant() switch
             {
-                case WellKnownFMTID.FMTID_SummaryInformation:
-                    this.ContainerType = ContainerType.SummaryInfo;
-                    break;
-                case WellKnownFMTID.FMTID_DocSummaryInformation:
-                    this.ContainerType = ContainerType.DocumentSummaryInfo;
-                    break;
-                default:
-                    this.ContainerType = ContainerType.AppSpecific;
-                    break;
-            }
+                WellKnownFMTID.FMTID_SummaryInformation => ContainerType.SummaryInfo,
+                WellKnownFMTID.FMTID_DocSummaryInformation => ContainerType.DocumentSummaryInfo,
+                _ => ContainerType.AppSpecific,
+            };
+            FmtID0 = pStream.FMTID0;
 
-            this.FmtID0 = pStream.FMTID0;
-
-            this.PropertyNames = (Dictionary<uint, string>)pStream.PropertySet0.Properties
+            PropertyNames = (Dictionary<uint, string>)pStream.PropertySet0.Properties
                 .Where(p => p.PropertyType == PropertyType.DictionaryProperty).FirstOrDefault()?.Value;
 
-            this.Context = new PropertyContext()
+            Context = new PropertyContext()
             {
                 CodePage = pStream.PropertySet0.PropertyContext.CodePage
             };
@@ -131,7 +124,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             if (pStream.NumPropertySets == 2)
             {
                 UserDefinedProperties = new OLEPropertiesContainer(pStream.PropertySet1.PropertyContext.CodePage, ContainerType.UserDefinedProperties);
-                this.HasUserDefinedProperties = true;
+                HasUserDefinedProperties = true;
 
                 UserDefinedProperties.ContainerType = ContainerType.UserDefinedProperties;
 
@@ -144,11 +137,12 @@ namespace OpenMcdf.Extensions.OLEProperties
                     var p = (ITypedPropertyValue)pStream.PropertySet1.Properties[i];
                     var poi = pStream.PropertySet1.PropertyIdentifierAndOffsets[i];
 
-                    var op = new OLEProperty(UserDefinedProperties);
-
-                    op.VTType = p.VTType;
-                    op.PropertyIdentifier = pStream.PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier;
-                    op.Value = p.Value;
+                    var op = new OLEProperty(UserDefinedProperties)
+                    {
+                        VTType = p.VTType,
+                        PropertyIdentifier = pStream.PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier,
+                        Value = p.Value
+                    };
 
                     UserDefinedProperties.properties.Add(op);
                 }
@@ -201,9 +195,9 @@ namespace OpenMcdf.Extensions.OLEProperties
         public OLEPropertiesContainer CreateUserDefinedProperties(int codePage)
         {
             // Only the DocumentSummaryInfo stream can contain a UserDefinedProperties
-            if (this.ContainerType != ContainerType.DocumentSummaryInfo)
+            if (ContainerType != ContainerType.DocumentSummaryInfo)
             {
-                throw new CFInvalidOperation($"Only a DocumentSummaryInfo can contain user defined properties. Current container type is {this.ContainerType}");
+                throw new CFInvalidOperation($"Only a DocumentSummaryInfo can contain user defined properties. Current container type is {ContainerType}");
             }
 
             // Create the container, and add the codepage to the initial set of properties
@@ -220,7 +214,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             };
 
             UserDefinedProperties.properties.Add(op);
-            this.HasUserDefinedProperties = true;
+            HasUserDefinedProperties = true;
 
             return UserDefinedProperties;
         }
@@ -233,7 +227,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             Stream s = new StreamDecorator(cfStream);
             BinaryWriter bw = new BinaryWriter(s);
 
-            Guid fmtId0 = this.FmtID0 ?? (this.ContainerType == ContainerType.SummaryInfo ? new Guid(WellKnownFMTID.FMTID_SummaryInformation) : new Guid(WellKnownFMTID.FMTID_DocSummaryInformation));
+            Guid fmtId0 = FmtID0 ?? (ContainerType == ContainerType.SummaryInfo ? new Guid(WellKnownFMTID.FMTID_SummaryInformation) : new Guid(WellKnownFMTID.FMTID_DocSummaryInformation));
 
             PropertySetStream ps = new PropertySetStream
             {
@@ -252,26 +246,26 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                 PropertySet0 = new PropertySet
                 {
-                    NumProperties = (uint)this.Properties.Count(),
+                    NumProperties = (uint)Properties.Count(),
                     PropertyIdentifierAndOffsets = new List<PropertyIdentifierAndOffset>(),
-                    Properties = new List<Interfaces.IProperty>(),
-                    PropertyContext = this.Context
+                    Properties = new List<IProperty>(),
+                    PropertyContext = Context
                 }
             };
 
             // If we're writing an AppSpecific property set and have property names, then add a dictionary property
-            if (this.ContainerType == ContainerType.AppSpecific && this.PropertyNames != null && this.PropertyNames.Count > 0)
+            if (ContainerType == ContainerType.AppSpecific && PropertyNames != null && PropertyNames.Count > 0)
             {
-                AddDictionaryPropertyToPropertySet(this.PropertyNames, ps.PropertySet0);
+                AddDictionaryPropertyToPropertySet(PropertyNames, ps.PropertySet0);
                 ps.PropertySet0.NumProperties += 1;
             }
 
             PropertyFactory factory =
-                this.ContainerType == ContainerType.DocumentSummaryInfo ? DocumentSummaryInfoPropertyFactory.Instance : DefaultPropertyFactory.Instance;
+                ContainerType == ContainerType.DocumentSummaryInfo ? DocumentSummaryInfoPropertyFactory.Instance : DefaultPropertyFactory.Instance;
 
-            foreach (var op in this.Properties)
+            foreach (var op in Properties)
             {
-                ITypedPropertyValue p = factory.NewProperty(op.VTType, this.Context.CodePage, op.PropertyIdentifier);
+                ITypedPropertyValue p = factory.NewProperty(op.VTType, Context.CodePage, op.PropertyIdentifier);
                 p.Value = op.Value;
                 ps.PropertySet0.Properties.Add(p);
                 ps.PropertySet0.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = op.PropertyIdentifier, Offset = 0 });
@@ -284,9 +278,9 @@ namespace OpenMcdf.Extensions.OLEProperties
                 ps.PropertySet1 = new PropertySet
                 {
                     // Number of user defined properties, plus 1 for the name dictionary
-                    NumProperties = (uint)this.UserDefinedProperties.Properties.Count() + 1,
+                    NumProperties = (uint)UserDefinedProperties.Properties.Count() + 1,
                     PropertyIdentifierAndOffsets = new List<PropertyIdentifierAndOffset>(),
-                    Properties = new List<Interfaces.IProperty>(),
+                    Properties = new List<IProperty>(),
                     PropertyContext = UserDefinedProperties.Context
                 };
 
@@ -294,10 +288,10 @@ namespace OpenMcdf.Extensions.OLEProperties
                 ps.Offset1 = 0;
 
                 // Add the dictionary containing the property names
-                AddDictionaryPropertyToPropertySet(this.UserDefinedProperties.PropertyNames, ps.PropertySet1);
+                AddDictionaryPropertyToPropertySet(UserDefinedProperties.PropertyNames, ps.PropertySet1);
 
                 // Add the properties themselves
-                foreach (var op in this.UserDefinedProperties.Properties)
+                foreach (var op in UserDefinedProperties.Properties)
                 {
                     ITypedPropertyValue p = DefaultPropertyFactory.Instance.NewProperty(op.VTType, ps.PropertySet1.PropertyContext.CodePage, op.PropertyIdentifier);
                     p.Value = op.Value;
