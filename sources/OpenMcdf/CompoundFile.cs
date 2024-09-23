@@ -1768,18 +1768,6 @@ namespace OpenMcdf
         /// <exception cref="T:OpenMcdf.CFInvalidOperation">Raised if destination file is the current file</exception>
         public void SaveAs(string fileName)
         {
-            Save(fileName);
-        }
-
-        /// <summary>
-        /// Saves the in-memory image of Compound File to a file.
-        /// </summary>
-        /// <param name="fileName">File name to write the compound file to</param>
-        /// <exception cref="T:OpenMcdf.CFException">Raised if destination file is not seekable</exception>
-        /// <exception cref="T:OpenMcdf.CFInvalidOperation">Raised if destination file is the current file</exception>
-        [Obsolete("Use SaveAs method")]
-        public void Save(string fileName)
-        {
             if (IsClosed)
                 throw new CFException("Compound File closed: cannot save data");
 
@@ -1826,6 +1814,18 @@ namespace OpenMcdf
                 fs?.Flush();
                 fs?.Close();
             }
+        }
+
+        /// <summary>
+        /// Saves the in-memory image of Compound File to a file.
+        /// </summary>
+        /// <param name="fileName">File name to write the compound file to</param>
+        /// <exception cref="T:OpenMcdf.CFException">Raised if destination file is not seekable</exception>
+        /// <exception cref="T:OpenMcdf.CFInvalidOperation">Raised if destination file is the current file</exception>
+        [Obsolete("Use SaveAs method")]
+        public void Save(string fileName)
+        {
+            SaveAs(fileName);
         }
 
         /// <summary>
@@ -2473,15 +2473,14 @@ namespace OpenMcdf
         ///    }
         /// </code>
         /// </example>
-        public void Close()
-        {
-            this.Close(true);
-        }
+        public void Close() => CloseCore(true);
 
         private bool closeStream = true;
 
         [Obsolete("Use flag LeaveOpen in CompoundFile constructor")]
-        public void Close(bool closeStream)
+        public void Close(bool closeStream) => CloseCore(closeStream);
+
+        private void CloseCore(bool closeStream)
         {
             this.closeStream = closeStream;
             ((IDisposable)this).Dispose();
@@ -2665,7 +2664,7 @@ namespace OpenMcdf
         /// </example>
         public static void ShrinkCompoundFile(Stream s)
         {
-            CompoundFile cf = new CompoundFile(s);
+            CompoundFile cf = new CompoundFile(s, CFSUpdateMode.ReadOnly, CFSConfiguration.LeaveOpen);
 
             if (cf.header.MajorVersion != (ushort)CFSVersion.Ver_3)
                 throw new CFException("Current implementation of free space compression does not support version 4 of Compound File Format");
@@ -2692,7 +2691,7 @@ namespace OpenMcdf
                 s.SetLength(tmpMS.Length);
 
                 tmpMS.Close();
-                cf.Close(false);
+                cf.Close();
             }
         }
 

@@ -70,7 +70,7 @@ namespace OpenMcdf.Test
             Assert.IsNotNull(st);
             Assert.AreEqual(STORAGE_NAME, st.Name, false);
 
-            cf.Save("ProvaData.cfs");
+            cf.SaveAs("ProvaData.cfs");
             cf.Close();
         }
 
@@ -267,7 +267,7 @@ namespace OpenMcdf.Test
             l2.AddStream("l2ns1");
             l2.AddStream("l2ns2");
 
-            ncf.Save(FILENAME);
+            ncf.SaveAs(FILENAME);
             ncf.Close();
 
             // Read...
@@ -302,7 +302,7 @@ namespace OpenMcdf.Test
 
             st.Delete("AnotherStorage");
 
-            cf.Save("MultipleStorage_Delete.cfs");
+            cf.SaveAs("MultipleStorage_Delete.cfs");
 
             cf.Close();
         }
@@ -321,7 +321,7 @@ namespace OpenMcdf.Test
 
             found.Delete("AnotherStream");
 
-            cf.Save("MultipleDeleteMiniStream");
+            cf.SaveAs("MultipleDeleteMiniStream");
             cf.Close();
         }
 
@@ -344,7 +344,7 @@ namespace OpenMcdf.Test
 
             found.Delete("Another2Stream");
 
-            cf.Save("MultipleDeleteStream");
+            cf.SaveAs("MultipleDeleteStream");
             cf.Close();
         }
 
@@ -377,7 +377,7 @@ namespace OpenMcdf.Test
                 .AddStream("Level2Stream")
                 .SetData(Helpers.GetBuffer(100));
 
-            cf.Save("$Hel1");
+            cf.SaveAs("$Hel1");
 
             cf.Close();
 
@@ -386,7 +386,7 @@ namespace OpenMcdf.Test
             Assert.IsNotNull(i[0]);
             Assert.IsTrue(i[0] is CFStream);
             Assert.IsTrue((i[0] as CFStream).GetData().Length == 100);
-            cf.Save("$Hel2");
+            cf.SaveAs("$Hel2");
             cf.Close();
 
             if (File.Exists("$Hel1"))
@@ -409,7 +409,7 @@ namespace OpenMcdf.Test
                 .AddStream("Level2Stream")
                 .SetData(Helpers.GetBuffer(100));
 
-            cf.Save("$Hel3");
+            cf.SaveAs("$Hel3");
 
             cf.Close();
 

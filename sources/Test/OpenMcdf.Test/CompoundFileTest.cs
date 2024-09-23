@@ -118,7 +118,7 @@ namespace OpenMcdf.Test
                 Assert.IsTrue(ex is CFException);
             }
 
-            cf.Save("EntryNameLength");
+            cf.SaveAs("EntryNameLength");
             cf.Close();
         }
 
@@ -139,7 +139,7 @@ namespace OpenMcdf.Test
             st.Delete("Another2Stream"); //17Kb
 
             //cf.CompressFreeSpace();
-            cf.Save("MultipleStorage_Deleted_Compress.cfs");
+            cf.SaveAs("MultipleStorage_Deleted_Compress.cfs");
 
             cf.Close();
             FileInfo dstFile = new FileInfo("MultipleStorage_Deleted_Compress.cfs");
@@ -159,7 +159,7 @@ namespace OpenMcdf.Test
             byte[] b = new byte[220];
             sm.SetData(b);
 
-            cf.Save(filename);
+            cf.SaveAs(filename);
             cf.Close();
 
             CompoundFile cf2 = new CompoundFile(filename);
@@ -184,7 +184,7 @@ namespace OpenMcdf.Test
             byte[] b = Helpers.GetBuffer(227);
             sm.SetData(b);
 
-            cf.Save(filename);
+            cf.SaveAs(filename);
             cf.Close();
 
             CompoundFile cf2 = new CompoundFile(filename);
@@ -219,7 +219,7 @@ namespace OpenMcdf.Test
         {
             var file = new CompoundFile();
 
-            file.Save("test.mdf");
+            file.SaveAs("test.mdf");
 
             var meta = file.
                 RootStorage.
@@ -228,7 +228,7 @@ namespace OpenMcdf.Test
             meta.Append(BitConverter.GetBytes(DateTime.Now.ToBinary()));
             meta.Append(BitConverter.GetBytes(DateTime.Now.ToBinary()));
 
-            file.Save("test.mdf");
+            file.SaveAs("test.mdf");
         }
 
         [TestMethod]
@@ -294,7 +294,7 @@ namespace OpenMcdf.Test
             // Phase 1
             var cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.SectorRecycle);
             cf.RootStorage.AddStream("A").SetData(bA);
-            cf.Save("OneStream.cfs");
+            cf.SaveAs("OneStream.cfs");
             cf.Close();
 
             // Test Phase 1
@@ -320,7 +320,7 @@ namespace OpenMcdf.Test
             cf.RootStorage.AddStream("G").SetData(bG);
             cf.RootStorage.AddStream("H").SetData(bH);
 
-            cf.Save("8_Streams.cfs");
+            cf.SaveAs("8_Streams.cfs");
             cf.Close();
 
             // Test Phase 2
@@ -599,7 +599,7 @@ namespace OpenMcdf.Test
                 byte[] b1 = Helpers.GetBuffer(3, 0x0B);
                 st.Append(b1);                                      //Forcing creation of two DIFAT sectors
 
-                f.Save("$OpenMcdf$LargeFile.cfs");
+                f.SaveAs("$OpenMcdf$LargeFile.cfs");
 
                 f.Close();
 
@@ -639,7 +639,7 @@ namespace OpenMcdf.Test
                 if (File.Exists("$ItemsLargeNumber.cfs"))
                     File.Delete("$ItemsLargeNumber.cfs");
 
-                f.Save("$ItemsLargeNumber.cfs");
+                f.SaveAs("$ItemsLargeNumber.cfs");
                 f.Close();
 
                 f = new CompoundFile("$ItemsLargeNumber.cfs");
@@ -675,7 +675,7 @@ namespace OpenMcdf.Test
 
             dirStream.SetData(currentData);
 
-            cf.Save(FILE_PATH + ".edited");
+            cf.SaveAs(FILE_PATH + ".edited");
             cf.Close();
         }
 
@@ -757,7 +757,7 @@ namespace OpenMcdf.Test
                 var s = cf.RootStorage.AddStream("miniToNormal");
                 s.Append(Helpers.GetBuffer(4090, 0xAA));
 
-                cf.Save("TEST_ISSUE_2");
+                cf.SaveAs("TEST_ISSUE_2");
                 cf.Close();
                 var cf2 = new CompoundFile("TEST_ISSUE_2", CFSUpdateMode.Update, CFSConfiguration.Default);
                 cf2.RootStorage.GetStream("miniToNormal").Append(Helpers.GetBuffer(6, 0xBB));
@@ -826,7 +826,7 @@ namespace OpenMcdf.Test
 
             Copy(cfSrc.RootStorage, cfDst.RootStorage);
 
-            cfDst.Save("MultipleStorage4Copy.cfs");
+            cfDst.SaveAs("MultipleStorage4Copy.cfs");
 
             cfDst.Close();
             cfSrc.Close();
@@ -871,7 +871,7 @@ namespace OpenMcdf.Test
             int streamCount = 3;
 
             CompoundFile compoundFileInit = new CompoundFile(CFSVersion.Ver_4, CFSConfiguration.Default);
-            compoundFileInit.Save(filename);
+            compoundFileInit.SaveAs(filename);
             compoundFileInit.Close();
 
             CompoundFile compoundFile = new CompoundFile(filename, CFSUpdateMode.Update, CFSConfiguration.Default);
@@ -933,7 +933,7 @@ namespace OpenMcdf.Test
                 }
             }
 
-            compoundFile.Save(filename);
+            compoundFile.SaveAs(filename);
             compoundFile.Close();
 
             byte[] readBuffer = new byte[15];
@@ -1037,7 +1037,7 @@ namespace OpenMcdf.Test
                         cfStream.CopyFrom(fs);
                     }
 
-                    f.Save("BigFile.cfs");
+                    f.SaveAs("BigFile.cfs");
                     f.Close();
                 }
             }
@@ -1255,7 +1255,7 @@ namespace OpenMcdf.Test
                 CompoundFile compoundFile = new CompoundFile(filename2);
                 var s = compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName);
                 s.Write(new byte[] { 0x0A, 0x0A }, 0);
-                compoundFile.Save(filename2);
+                compoundFile.SaveAs(filename2);
                 compoundFile.Close();
             }
             catch (Exception ex)
@@ -1269,7 +1269,7 @@ namespace OpenMcdf.Test
                 CompoundFile compoundFile = new CompoundFile(rootedPath);
                 var s = compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName);
                 s.Write(new byte[] { 0x0A, 0x0A }, 0);
-                compoundFile.Save(rootedPath);
+                compoundFile.SaveAs(rootedPath);
                 compoundFile.Close();
             }
             catch (Exception ex)
