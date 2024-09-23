@@ -165,13 +165,13 @@ namespace OpenMcdf
         {
             get
             {
-                return DateTime.FromFileTime(BitConverter.ToInt64(DirEntry.CreationDate, 0));
+                return DateTime.FromFileTimeUtc(BitConverter.ToInt64(DirEntry.CreationDate, 0));
             }
 
             set
             {
                 if (DirEntry.StgType != StgType.StgStream && DirEntry.StgType != StgType.StgRoot)
-                    DirEntry.CreationDate = BitConverter.GetBytes(value.ToFileTime());
+                    DirEntry.CreationDate = BitConverter.GetBytes(value.ToFileTimeUtc());
                 else
                     throw new CFException("Creation Date can only be set on storage entries");
             }
@@ -184,13 +184,13 @@ namespace OpenMcdf
         {
             get
             {
-                return DateTime.FromFileTime(BitConverter.ToInt64(DirEntry.ModifyDate, 0));
+                return DateTime.FromFileTimeUtc(BitConverter.ToInt64(DirEntry.ModifyDate, 0));
             }
 
             set
             {
                 if (DirEntry.StgType != StgType.StgStream && DirEntry.StgType != StgType.StgRoot)
-                    DirEntry.ModifyDate = BitConverter.GetBytes(value.ToFileTime());
+                    DirEntry.ModifyDate = BitConverter.GetBytes(value.ToFileTimeUtc());
                 else
                     throw new CFException("Modify Date can only be set on storage entries");
             }
