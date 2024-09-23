@@ -167,5 +167,32 @@ namespace OpenMcdf
                     throw new CFFileFormatException("Invalid OLE structured storage file");
             }
         }
+
+        /// <summary>
+        /// Validate header values specified in [MS-CFB] document
+        /// </summary>
+        /// <exception cref="CFCorruptedFileException">If one of the validation checks fails a <see cref="T:OpenMcdf.CFCorruptedFileException">CFCorruptedFileException</see> exception will be thrown</exception>
+        internal void ThrowIfInvalid()
+        {
+            if (MiniSectorShift != 6)
+            {
+                throw new CFCorruptedFileException("Mini sector Shift MUST be 0x06");
+            }
+
+            if ((MajorVersion == 0x0003 && SectorShift != 9) || (MajorVersion == 0x0004 && SectorShift != 0x000c))
+            {
+                throw new CFCorruptedFileException("Sector Shift MUST be 0x0009 for Major Version 3 and 0x000c for Major Version 4");
+            }
+
+            if (MinSizeStandardStream != 4096)
+            {
+                throw new CFCorruptedFileException("Mini Stream Cut off size MUST be 4096 byte");
+            }
+
+            if (ByteOrder != 0xFFFE)
+            {
+                throw new CFCorruptedFileException("Byte order MUST be little endian (0xFFFE)");
+            }
+        }
     }
 }

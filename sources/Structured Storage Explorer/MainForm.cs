@@ -162,7 +162,7 @@ namespace StructuredStorageExplorer
         /// </summary>
         /// <param name="node">Current TreeNode</param>
         /// <param name="cfs">Current storage associated with node</param>
-        private void AddNodes(TreeNode node, CFStorage cfs)
+        private static void AddNodes(TreeNode node, CFStorage cfs)
         {
             Action<CFItem> va = delegate (CFItem target)
             {

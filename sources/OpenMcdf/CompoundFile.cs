@@ -615,7 +615,7 @@ namespace OpenMcdf
 
                 if (!Configuration.HasFlag(CFSConfiguration.NoValidationException))
                 {
-                    ValidateHeader(header);
+                    header.ThrowIfInvalid();
                 }
 
                 int n_sector = Ceiling((stream.Length - GetSectorSize()) / (double)GetSectorSize());
@@ -641,34 +641,6 @@ namespace OpenMcdf
                     stream.Close();
 
                 throw;
-            }
-        }
-
-        /// <summary>
-        /// Validate header values specified in [MS-CFB] document
-        /// </summary>
-        /// <param name="header">The Header sector of file to validate</param>
-        /// <exception cref="CFCorruptedFileException">If one of the validation checks fails a <see cref="T:OpenMcdf.CFCorruptedFileException">CFCorruptedFileException</see> exception will be thrown</exception>
-        private void ValidateHeader(Header header)
-        {
-            if (header.MiniSectorShift != 6)
-            {
-                throw new CFCorruptedFileException("Mini sector Shift MUST be 0x06");
-            }
-
-            if ((header.MajorVersion == 0x0003 && header.SectorShift != 9) || (header.MajorVersion == 0x0004 && header.SectorShift != 0x000c))
-            {
-                throw new CFCorruptedFileException("Sector Shift MUST be 0x0009 for Major Version 3 and 0x000c for Major Version 4");
-            }
-
-            if (header.MinSizeStandardStream != 4096)
-            {
-                throw new CFCorruptedFileException("Mini Stream Cut off size MUST be 4096 byte");
-            }
-
-            if (header.ByteOrder != 0xFFFE)
-            {
-                throw new CFCorruptedFileException("Byte order MUST be little endian (0xFFFE)");
             }
         }
 
@@ -1563,16 +1535,6 @@ namespace OpenMcdf
         //    }
         //}
 
-        internal RBTree CreateNewTree()
-        {
-            RBTree bst = new RBTree();
-            //bst.NodeInserted += OnNodeInsert;
-            //bst.NodeOperation += OnNodeOperation;
-            //bst.NodeDeleted += new Action<RBNode<CFItem>>(OnNodeDeleted);
-            //  bst.ValueAssignedAction += new Action<RBNode<CFItem>, CFItem>(OnValueAssigned);
-            return bst;
-        }
-
         //void OnValueAssigned(RBNode<CFItem> node, CFItem from)
         //{
         //    if (from.DirEntry != null && from.DirEntry.LeftSibling != DirectoryEntry.NOSTREAM)
@@ -1623,7 +1585,7 @@ namespace OpenMcdf
             }
         }
 
-        private void NullifyChildNodes(IDirectoryEntry de)
+        private static void NullifyChildNodes(IDirectoryEntry de)
         {
             de.Parent = null;
             de.Left = null;
@@ -1827,18 +1789,18 @@ namespace OpenMcdf
             {
                 bool raiseSaveFileEx = false;
 
-                if (this.HasSourceStream && this.sourceStream != null && this.sourceStream is FileStream)
+                if (this.HasSourceStream && this.sourceStream != null && this.sourceStream is FileStream stream)
                 {
                     if (Path.IsPathRooted(fileName))
                     {
-                        if (((FileStream)this.sourceStream).Name == fileName)
+                        if (stream.Name == fileName)
                         {
                             raiseSaveFileEx = true;
                         }
                     }
                     else
                     {
-                        if (((FileStream)this.sourceStream).Name == (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + fileName))
+                        if (stream.Name == (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + fileName))
                         {
                             raiseSaveFileEx = true;
                         }
@@ -1903,9 +1865,9 @@ namespace OpenMcdf
 
             try
             {
-                if (this.HasSourceStream && this.sourceStream != null && this.sourceStream is FileStream && stream is FileStream)
+                if (this.HasSourceStream && this.sourceStream != null && this.sourceStream is FileStream && stream is FileStream otherStream)
                 {
-                    if (((FileStream)this.sourceStream).Name == ((FileStream)stream).Name)
+                    if (((FileStream)this.sourceStream).Name == otherStream.Name)
                     {
                         throw new CFInvalidOperation("Cannot overwrite current backing file. Compound File should be opened in UpdateMode and Commit() method should be called to persist changes");
                     }
@@ -2600,13 +2562,13 @@ namespace OpenMcdf
 
         internal IDirectoryEntry RootEntry => directoryEntries[0];
 
-        private IList<IDirectoryEntry> FindDirectoryEntries(string entryName)
+        private List<IDirectoryEntry> FindDirectoryEntries(string entryName)
         {
             List<IDirectoryEntry> result = new List<IDirectoryEntry>();
 
             foreach (IDirectoryEntry d in directoryEntries)
             {
-                if (d.GetEntryName() == entryName && d.StgType != StgType.StgInvalid)
+                if (d.StgType != StgType.StgInvalid && d.GetEntryName() == entryName)
                     result.Add(d);
             }
 
@@ -2630,9 +2592,9 @@ namespace OpenMcdf
 
             foreach (IDirectoryEntry id in r)
             {
-                if (id.GetEntryName() == entryName && id.StgType != StgType.StgInvalid)
+                if (id.StgType != StgType.StgInvalid && id.GetEntryName() == entryName)
                 {
-                    CFItem i = id.StgType == StgType.StgStorage ? new CFStorage(this, id) : (CFItem)new CFStream(this, id);
+                    CFItem i = id.StgType == StgType.StgStorage ? new CFStorage(this, id) : new CFStream(this, id);
                     result.Add(i);
                 }
             }

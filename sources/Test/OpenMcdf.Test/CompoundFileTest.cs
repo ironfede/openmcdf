@@ -959,7 +959,7 @@ namespace OpenMcdf.Test
                 var st = f.RootStorage.GetStorage("MyStorage").GetStorage("AnotherStorage").GetStream("MyStream");
                 st.Write(Helpers.GetBuffer(100, 0x02), 100);
                 f.Commit(true);
-                Assert.IsTrue(st.GetData().Count() == 31220);
+                Assert.AreEqual(31220, st.GetData().Length);
                 f.Close();
             }
             catch (Exception)

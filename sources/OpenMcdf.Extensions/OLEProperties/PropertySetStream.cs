@@ -211,7 +211,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br, PropertyFactory factory)
+        private static IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br, PropertyFactory factory)
         {
             if (propertyIdentifier != 0)
             {
@@ -225,7 +225,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
             else
             {
-                IDictionaryProperty dictionaryProperty = new DictionaryProperty(codePage);
+                DictionaryProperty dictionaryProperty = new DictionaryProperty(codePage);
                 dictionaryProperty.Read(br);
                 return dictionaryProperty;
             }
