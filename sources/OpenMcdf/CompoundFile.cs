@@ -1593,19 +1593,16 @@ namespace OpenMcdf
             de.Right = null;
         }
 
-        private readonly List<int> levelSIDs = new List<int>();
-
         // Doubling methods allows iterative behavior while avoiding
         // to insert duplicate items
         private void LoadSiblings(RBTree bst, IDirectoryEntry de)
         {
-            levelSIDs.Clear();
+            List<int> levelSIDs = new List<int>();
 
             if (de.LeftSibling != DirectoryEntry.NOSTREAM)
             {
                 // If there are more left siblings load them...
-                DoLoadSiblings(bst, directoryEntries[de.LeftSibling]);
-                //NullifyChildNodes(directoryEntries[de.LeftSibling]);
+                DoLoadSiblings(bst, directoryEntries[de.LeftSibling], levelSIDs);
             }
 
             if (de.RightSibling != DirectoryEntry.NOSTREAM)
@@ -1613,34 +1610,33 @@ namespace OpenMcdf
                 levelSIDs.Add(de.RightSibling);
 
                 // If there are more right siblings load them...
-                DoLoadSiblings(bst, directoryEntries[de.RightSibling]);
-                //NullifyChildNodes(directoryEntries[de.RightSibling]);
+                DoLoadSiblings(bst, directoryEntries[de.RightSibling], levelSIDs);
             }
         }
 
-        private void DoLoadSiblings(RBTree bst, IDirectoryEntry de)
+        private void DoLoadSiblings(RBTree bst, IDirectoryEntry de, List<int> levelSIDs)
         {
-            if (ValidateSibling(de.LeftSibling))
+            if (ValidateSibling(de.LeftSibling, levelSIDs))
             {
                 levelSIDs.Add(de.LeftSibling);
 
                 // If there are more left siblings load them...
-                DoLoadSiblings(bst, directoryEntries[de.LeftSibling]);
+                DoLoadSiblings(bst, directoryEntries[de.LeftSibling], levelSIDs);
             }
 
-            if (ValidateSibling(de.RightSibling))
+            if (ValidateSibling(de.RightSibling, levelSIDs))
             {
                 levelSIDs.Add(de.RightSibling);
 
                 // If there are more right siblings load them...
-                DoLoadSiblings(bst, directoryEntries[de.RightSibling]);
+                DoLoadSiblings(bst, directoryEntries[de.RightSibling], levelSIDs);
             }
 
             NullifyChildNodes(de);
             bst.Insert(de);
         }
 
-        private bool ValidateSibling(int sid)
+        private bool ValidateSibling(int sid, List<int> levelSIDs)
         {
             if (sid != DirectoryEntry.NOSTREAM)
             {
