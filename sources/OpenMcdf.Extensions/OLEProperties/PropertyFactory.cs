@@ -573,8 +573,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             public override void WriteScalarValue(BinaryWriter bw, object pValue)
             {
-                byte[] r = pValue as byte[];
-                if (r is null)
+                if (pValue is not byte[] r)
                 {
                     bw.Write(0u);
                 }
@@ -601,8 +600,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             public override void WriteScalarValue(BinaryWriter bw, object pValue)
             {
-                byte[] r = pValue as byte[];
-                if (r is null)
+                if (pValue is not byte[] r)
                 {
                     bw.Write(0u);
                 }
@@ -628,8 +626,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             public override void WriteScalarValue(BinaryWriter bw, object pValue)
             {
-                byte[] r = pValue as byte[];
-                if (r != null)
+                if (pValue is byte[] r)
                     bw.Write(r);
             }
         }

@@ -55,8 +55,8 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public override bool Equals(object obj)
         {
-            var other = obj as OLEProperty;
-            if (other == null) return false;
+            if (obj is not OLEProperty other) 
+                return false;
 
             return other.PropertyIdentifier == PropertyIdentifier;
         }

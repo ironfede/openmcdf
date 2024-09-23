@@ -151,9 +151,7 @@ namespace OpenMcdf
 
         public int CompareTo(object obj)
         {
-            IDirectoryEntry otherDir = obj as IDirectoryEntry;
-
-            if (otherDir == null)
+            if (obj is not IDirectoryEntry otherDir)
                 throw new CFException("Invalid casting: compared object does not implement IDirectorEntry interface");
 
             if (NameLength > otherDir.NameLength)
