@@ -67,8 +67,7 @@ namespace OpenMcdf
         {
             get
             {
-                int itemIndex = index / SLICE_SIZE;
-                int itemOffset = index % SLICE_SIZE;
+                int itemIndex = Math.DivRem(index, SLICE_SIZE, out int itemOffset);
 
                 if ((index > -1) && (index < Count))
                 {
@@ -80,8 +79,7 @@ namespace OpenMcdf
 
             set
             {
-                int itemIndex = index / SLICE_SIZE;
-                int itemOffset = index % SLICE_SIZE;
+                int itemIndex = Math.DivRem(index, SLICE_SIZE, out int itemOffset);
 
                 if (index > -1 && index < Count)
                 {
