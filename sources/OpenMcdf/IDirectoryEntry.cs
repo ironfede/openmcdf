@@ -26,7 +26,7 @@ namespace OpenMcdf
         void SetEntryName(string entryName);
         int SID { get; set; }
         long Size { get; set; }
-        int StartSetc { get; set; }
+        int StartSect { get; set; }
         int StateBits { get; set; }
         StgColor StgColor { get; set; }
         StgType StgType { get; set; }
