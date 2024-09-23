@@ -392,7 +392,7 @@ namespace OpenMcdf
                 de.SID = dirRepository.Count - 1;
             }
             else
-                throw new ArgumentNullException("dirRepository", "Directory repository cannot be null in New() method");
+                throw new ArgumentNullException(nameof(dirRepository), "Directory repository cannot be null in New() method");
 
             return de;
         }

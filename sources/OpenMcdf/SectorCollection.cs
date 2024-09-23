@@ -74,7 +74,7 @@ namespace OpenMcdf
                     return (Sector)largeArraySlices[itemIndex][itemOffset];
                 }
                 else
-                    throw new CFException("Argument Out of Range, possibly corrupted file", new ArgumentOutOfRangeException("index", index, "Argument out of range"));
+                    throw new CFException("Argument Out of Range, possibly corrupted file", new ArgumentOutOfRangeException(nameof(index), index, "Argument out of range"));
             }
 
             set
@@ -86,7 +86,7 @@ namespace OpenMcdf
                     largeArraySlices[itemIndex][itemOffset] = value;
                 }
                 else
-                    throw new ArgumentOutOfRangeException("index", index, "Argument out of range");
+                    throw new ArgumentOutOfRangeException(nameof(index), index, "Argument out of range");
             }
         }
 
