@@ -240,7 +240,7 @@ namespace OpenMcdf.MemTest
 
             Random r = new Random();
 
-            DateTime start = DateTime.Now;
+            var stopwatch = Stopwatch.StartNew();
 
             for (int i = 0; i < 1000; i++)
             {
@@ -265,8 +265,7 @@ namespace OpenMcdf.MemTest
 
             cf.Close();
 
-            TimeSpan sp = DateTime.Now - start;
-            Console.WriteLine(sp.TotalMilliseconds);
+            Console.WriteLine($"Elapsed: {stopwatch.Elapsed}");
         }
 
         private static byte[] GetBuffer(int count)

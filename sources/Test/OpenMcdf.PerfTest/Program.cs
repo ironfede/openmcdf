@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace OpenMcdf.PerfTest
@@ -17,10 +18,9 @@ namespace OpenMcdf.PerfTest
             }
 
             CompoundFile cf = new CompoundFile(fileName);
-            DateTime dt = DateTime.Now;
+            var stopwatch = Stopwatch.StartNew();
             CFStream s = cf.RootStorage.GetStream("Test1");
-            TimeSpan ts = DateTime.Now.Subtract(dt);
-            Console.WriteLine(ts.TotalMilliseconds.ToString());
+            Console.WriteLine($"Elapsed: {stopwatch.Elapsed}");
             Console.Read();
         }
 
