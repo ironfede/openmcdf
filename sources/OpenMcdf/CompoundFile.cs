@@ -2547,10 +2547,7 @@ namespace OpenMcdf
         private List<IDirectoryEntry> directoryEntries
             = new List<IDirectoryEntry>();
 
-        internal IList<IDirectoryEntry> GetDirectories()
-        {
-            return directoryEntries;
-        }
+        internal IList<IDirectoryEntry> Directories => directoryEntries;
 
         //internal List<IDirectoryEntry> DirectoryEntries
         //{

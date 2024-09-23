@@ -123,7 +123,7 @@ namespace OpenMcdf
             if (string.IsNullOrEmpty(streamName))
                 throw new CFException("Stream name cannot be null or empty");
 
-            IDirectoryEntry dirEntry = DirectoryEntry.TryNew(streamName, StgType.StgStream, CompoundFile.GetDirectories());
+            IDirectoryEntry dirEntry = DirectoryEntry.TryNew(streamName, StgType.StgStream, CompoundFile.Directories);
 
             // Add new Stream directory entry
             //cfo = new CFStream(this.CompoundFile, streamName);
@@ -427,7 +427,7 @@ namespace OpenMcdf
 
             // Add new Storage directory entry
             IDirectoryEntry cfo
-                = DirectoryEntry.New(storageName, StgType.StgStorage, CompoundFile.GetDirectories());
+                = DirectoryEntry.New(storageName, StgType.StgStorage, CompoundFile.Directories);
 
             //this.CompoundFile.InsertNewDirectoryEntry(cfo);
 
