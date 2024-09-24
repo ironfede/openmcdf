@@ -87,7 +87,6 @@ namespace OpenMcdf.Test
             actual = target[index];
 
             Assert.AreEqual(expected, actual);
-            Assert.IsNotNull(actual);
             Assert.AreEqual(expected.Id, actual.Id);
             try
             {

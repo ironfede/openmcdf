@@ -634,7 +634,7 @@ namespace OpenMcdf.Test
                 f = new CompoundFile("$ItemsLargeNumber.cfs");
                 CFStream cfs = f.RootStorage.GetStream("Stream" + (ITEM_NUMBER / 2).ToString());
 
-                Assert.IsTrue(cfs != null, "Item is null");
+                Assert.IsNotNull(cfs, "Item is null");
                 CollectionAssert.AreEqual(buffer, cfs.GetData());
                 f.Close();
             }

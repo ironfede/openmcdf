@@ -777,7 +777,7 @@ namespace OpenMcdf.Test
 
             cf = new CompoundFile("$Test_RESIZE_STREAM.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
             item = cf.RootStorage.GetStream("AStream");
-            Assert.IsTrue(item != null);
+            Assert.IsNotNull(item);
             Assert.AreEqual(INITIAL_SIZE - DELTA_SIZE, item.Size);
 
             byte[] buffer = new byte[INITIAL_SIZE - DELTA_SIZE];
@@ -836,7 +836,7 @@ namespace OpenMcdf.Test
 
             cf = new CompoundFile("$Test_RESIZE_STREAM_TRANSITION_TO_NORMAL.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
             item = cf.RootStorage.GetStream("AStream");
-            Assert.IsTrue(item != null);
+            Assert.IsNotNull(item);
             Assert.AreEqual(5000, item.Size);
 
             byte[] buffer = new byte[2048];
