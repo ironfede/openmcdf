@@ -69,7 +69,7 @@ namespace OpenMcdf.Extensions.Test
             cf = new CompoundFile("$ACFFile.cfs");
             BinaryReader br = new BinaryReader(cf.RootStorage.GetStream("ANewStream").AsIOStream());
             string st = br.ReadString();
-            Assert.IsTrue(st == cmp);
+            Assert.AreEqual(cmp, st);
             cf.Close();
         }
 
@@ -102,7 +102,7 @@ namespace OpenMcdf.Extensions.Test
                 {
                     byte[] readData = new byte[data.Length];
                     int readCount = br.Read(readData, 0, readData.Length);
-                    Assert.IsTrue(readCount == readData.Length);
+                    Assert.AreEqual(readData.Length, readCount);
                     CollectionAssert.AreEqual(data, readData);
                     cf.Close();
                 }

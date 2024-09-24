@@ -73,11 +73,11 @@ namespace OpenMcdf.Test
             CFStream myStream = cf.RootStorage.AddStream("MyStream");
 
             Assert.IsNotNull(myStream);
-            Assert.IsTrue(myStream.Size == 0);
+            Assert.AreEqual(0, myStream.Size);
 
             myStream.SetData(b);
 
-            Assert.IsTrue(myStream.Size == BUFFER_LENGTH, "Stream size differs from buffer size");
+            Assert.AreEqual(BUFFER_LENGTH, myStream.Size, "Stream size differs from buffer size");
 
             cf.Close();
         }
@@ -93,11 +93,11 @@ namespace OpenMcdf.Test
             CFStream myStream = cf.RootStorage.AddStream("MyMiniStream");
 
             Assert.IsNotNull(myStream);
-            Assert.IsTrue(myStream.Size == 0);
+            Assert.AreEqual(0, myStream.Size);
 
             myStream.SetData(b);
 
-            Assert.IsTrue(myStream.Size == BUFFER_LENGTH, "Mini Stream size differs from buffer size");
+            Assert.AreEqual(BUFFER_LENGTH, myStream.Size, "Mini Stream size differs from buffer size");
 
             cf.Close();
         }
@@ -157,7 +157,7 @@ namespace OpenMcdf.Test
             CFStream oStream = cfo.RootStorage.GetStream("MyStream");
 
             Assert.IsNotNull(oStream);
-            Assert.IsTrue(oStream.Size == 0);
+            Assert.AreEqual(0, oStream.Size);
 
             try
             {
@@ -199,7 +199,7 @@ namespace OpenMcdf.Test
             CFStream st = cf2.RootStorage.GetStream("MyStream");
 
             Assert.IsNotNull(cf2);
-            Assert.IsTrue(st.Size == SIZE);
+            Assert.AreEqual(SIZE, st.Size);
 
             CollectionAssert.AreEqual(b, st.GetData());
 
@@ -230,31 +230,31 @@ namespace OpenMcdf.Test
             Assert.IsNotNull(myStream);
 
             myStream.SetData(ba1);
-            Assert.IsTrue(myStream.Size == BIGGER_SIZE);
+            Assert.AreEqual(BIGGER_SIZE, myStream.Size);
 
             CFStream myStream2 = cfa.RootStorage.AddStream("MySecondStream");
             Assert.IsNotNull(myStream2);
 
             myStream2.SetData(ba2);
-            Assert.IsTrue(myStream2.Size == BIGGER_SIZE);
+            Assert.AreEqual(BIGGER_SIZE, myStream2.Size);
 
             CFStream myStream3 = cfa.RootStorage.AddStream("MyThirdStream");
             Assert.IsNotNull(myStream3);
 
             myStream3.SetData(ba3);
-            Assert.IsTrue(myStream3.Size == BIGGER_SIZE);
+            Assert.AreEqual(BIGGER_SIZE, myStream3.Size);
 
             CFStream myStream4 = cfa.RootStorage.AddStream("MyFourthStream");
             Assert.IsNotNull(myStream4);
 
             myStream4.SetData(ba4);
-            Assert.IsTrue(myStream4.Size == BIGGER_SIZE);
+            Assert.AreEqual(BIGGER_SIZE, myStream4.Size);
 
             CFStream myStream5 = cfa.RootStorage.AddStream("MyFifthStream");
             Assert.IsNotNull(myStream5);
 
             myStream5.SetData(ba5);
-            Assert.IsTrue(myStream5.Size == BIGGER_SIZE);
+            Assert.AreEqual(BIGGER_SIZE, myStream5.Size);
 
             cfa.SaveAs("WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs");
 
@@ -266,7 +266,7 @@ namespace OpenMcdf.Test
             CFStream myStreamB = cfb.RootStorage.GetStream("MySecondStream");
             Assert.IsNotNull(myStreamB);
             myStreamB.SetData(bb);
-            Assert.IsTrue(myStreamB.Size == MEGA_SIZE);
+            Assert.AreEqual(MEGA_SIZE, myStreamB.Size);
 
             byte[] bufferB = myStreamB.GetData();
             cfb.SaveAs("WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
@@ -274,7 +274,7 @@ namespace OpenMcdf.Test
 
             CompoundFile cfc = new CompoundFile("WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
             CFStream myStreamC = cfc.RootStorage.GetStream("MySecondStream");
-            Assert.IsTrue(myStreamC.Size == MEGA_SIZE, "DATA SIZE FAILED");
+            Assert.AreEqual(MEGA_SIZE, myStreamC.Size, "DATA SIZE FAILED");
 
             byte[] bufferC = myStreamC.GetData();
             CollectionAssert.AreEqual(bb, bufferB);
@@ -306,7 +306,7 @@ namespace OpenMcdf.Test
 
             cf = new CompoundFile("reportRW_SMALL.xls");
             byte[] c = cf.RootStorage.GetStream("Workbook").GetData();
-            Assert.IsTrue(c.Length == BUFFER_LENGTH);
+            Assert.AreEqual(BUFFER_LENGTH, c.Length);
             cf.Close();
 
             if (File.Exists("reportRW_SMALL.xls"))
@@ -510,7 +510,7 @@ namespace OpenMcdf.Test
             cf2.Close();
 
             Assert.IsNotNull(sm2);
-            Assert.IsTrue(sm2.Size == 220);
+            Assert.AreEqual(220, sm2.Size);
 
             if (File.Exists(filename))
                 File.Delete(filename);
@@ -619,7 +619,7 @@ namespace OpenMcdf.Test
             CFStream sm2 = st2.GetStream("MyStream");
 
             Assert.IsNotNull(sm2);
-            Assert.IsTrue(sm2.Size == size);
+            Assert.AreEqual(size, sm2.Size);
             CollectionAssert.AreEqual(b, sm2.GetData());
 
             cf2.Close();
@@ -647,7 +647,7 @@ namespace OpenMcdf.Test
             CFStream sm2 = st2.GetStream("MyStream");
 
             Assert.IsNotNull(sm2);
-            Assert.IsTrue(sm2.Size == size);
+            Assert.AreEqual(size, sm2.Size);
             CollectionAssert.AreEqual(b, sm2.GetData());
 
             cf2.Close();
@@ -778,7 +778,7 @@ namespace OpenMcdf.Test
             cf = new CompoundFile("$Test_RESIZE_STREAM.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
             item = cf.RootStorage.GetStream("AStream");
             Assert.IsTrue(item != null);
-            Assert.IsTrue(item.Size == INITIAL_SIZE - DELTA_SIZE);
+            Assert.AreEqual(INITIAL_SIZE - DELTA_SIZE, item.Size);
 
             byte[] buffer = new byte[INITIAL_SIZE - DELTA_SIZE];
             item.Read(buffer, 0, buffer.Length);
@@ -837,7 +837,7 @@ namespace OpenMcdf.Test
             cf = new CompoundFile("$Test_RESIZE_STREAM_TRANSITION_TO_NORMAL.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
             item = cf.RootStorage.GetStream("AStream");
             Assert.IsTrue(item != null);
-            Assert.IsTrue(item.Size == 5000);
+            Assert.AreEqual(5000, item.Size);
 
             byte[] buffer = new byte[2048];
             item.Read(buffer, 0, 2048);
@@ -868,7 +868,7 @@ namespace OpenMcdf.Test
             CFStream st = cf.RootStorage.GetStream("MiniStream");
 
             Assert.IsNotNull(st);
-            Assert.IsTrue(st.Size == (INITIAL_SIZE - SIZE_DELTA));
+            Assert.AreEqual(INITIAL_SIZE - SIZE_DELTA, st.Size);
 
             byte[] buffer = new byte[INITIAL_SIZE - SIZE_DELTA];
             st.Read(buffer, 0, buffer.Length);
@@ -900,9 +900,9 @@ namespace OpenMcdf.Test
             cf.SaveAs("$Test_RESIZE_MINISTREAM_RECYCLE2.cfs");
             cf.Close();
 
-            Assert.IsTrue(
-                new FileInfo("$Test_RESIZE_MINISTREAM_RECYCLE.cfs").Length
-                == new FileInfo("$Test_RESIZE_MINISTREAM_RECYCLE2.cfs").Length);
+            Assert.AreEqual(
+                new FileInfo("$Test_RESIZE_MINISTREAM_RECYCLE.cfs").Length,
+                new FileInfo("$Test_RESIZE_MINISTREAM_RECYCLE2.cfs").Length);
         }
 
         [TestMethod]
@@ -954,7 +954,7 @@ namespace OpenMcdf.Test
             BinaryReader br = new BinaryReader(sv);
             int t = br.ReadInt32();
 
-            Assert.IsTrue(t == 1);
+            Assert.AreEqual(1, t);
         }
 
         [TestMethod]
@@ -969,7 +969,7 @@ namespace OpenMcdf.Test
             BinaryReader br = new BinaryReader(sv);
             int t = br.ReadInt32();
 
-            Assert.IsTrue(t == 1);
+            Assert.AreEqual(1, t);
         }
 
         /// <summary>
@@ -994,7 +994,7 @@ namespace OpenMcdf.Test
 
             for (int i = 0; i < 200; i++)
             {
-                Assert.IsTrue(i == br.ReadInt32(), "Failed with " + i.ToString());
+                Assert.AreEqual(i, br.ReadInt32(), "Failed with " + i.ToString());
             }
         }
 
@@ -1020,7 +1020,7 @@ namespace OpenMcdf.Test
 
             for (int i = 0; i < 200; i++)
             {
-                Assert.IsTrue(i == br.ReadInt32(), "Failed with " + i.ToString());
+                Assert.AreEqual(i, br.ReadInt32(), "Failed with " + i.ToString());
             }
         }
 

@@ -86,13 +86,13 @@ namespace OpenMcdf.Test
             Assert.IsNotNull(cf.RootStorage.AddStorage(maxCharactersStorageName));
             CFStorage strg = cf.RootStorage.GetStorage(maxCharactersStorageName);
             Assert.IsNotNull(strg);
-            Assert.IsTrue(strg.Name == maxCharactersStorageName);
+            Assert.AreEqual(maxCharactersStorageName, strg.Name);
 
             // Try Stream entry name with max characters.
             Assert.IsNotNull(cf.RootStorage.AddStream(maxCharactersStreamName));
             CFStream strm = cf.RootStorage.GetStream(maxCharactersStreamName);
             Assert.IsNotNull(strm);
-            Assert.IsTrue(strm.Name == maxCharactersStreamName);
+            Assert.AreEqual(maxCharactersStreamName, strm.Name);
 
             string tooManyCharactersEntryName = "12345678901234567890123456789012"; // 32 chars
 
@@ -167,7 +167,7 @@ namespace OpenMcdf.Test
             CFStream sm2 = st2.GetStream("MyStream");
 
             Assert.IsNotNull(sm2);
-            Assert.IsTrue(sm2.Size == 220);
+            Assert.AreEqual(220, sm2.Size);
 
             cf2.Close();
         }
@@ -192,7 +192,7 @@ namespace OpenMcdf.Test
             CFStream sm2 = st2.GetStream("MyStream");
 
             Assert.IsNotNull(sm2);
-            Assert.IsTrue(sm2.Size == b.Length);
+            Assert.AreEqual(b.Length, sm2.Size);
 
             cf2.Close();
         }
@@ -237,7 +237,7 @@ namespace OpenMcdf.Test
             var f = new CompoundFile("testbad.ole");
             CFStream cfs = f.RootStorage.GetStream("\x01Ole10Native");
             byte[] data = cfs.GetData();
-            Assert.IsTrue(data.Length == 18140);
+            Assert.AreEqual(18140, data.Length);
         }
 
         [TestMethod]
@@ -251,7 +251,7 @@ namespace OpenMcdf.Test
 
             f = new CompoundFile("report_name_fix.xls", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle | CFSConfiguration.EraseFreeSectors);
             cfs = f.RootStorage.GetStream("Workbook");
-            Assert.IsTrue(cfs.Name == "Workbook");
+            Assert.AreEqual("Workbook", cfs.Name);
             f.RootStorage.Delete("PoorBook");
             f.Commit();
             f.Close();
@@ -261,10 +261,7 @@ namespace OpenMcdf.Test
         public void Test_GET_COMPOUND_VERSION()
         {
             var f = new CompoundFile("report_name_fix.xls");
-            CFSVersion ver = f.Version;
-
-            Assert.IsTrue(ver == CFSVersion.Ver_3);
-
+            Assert.AreEqual(CFSVersion.Ver_3, f.Version);
             f.Close();
         }
 
@@ -428,7 +425,7 @@ namespace OpenMcdf.Test
                     byte[] d = ia.GetData();
                     Assert.IsNotNull(d);
                     Assert.IsTrue(d.Length > 0);
-                    Assert.IsTrue(d.Length == ia.Size);
+                    Assert.AreEqual(ia.Size, d.Length);
                 }
             };
 
@@ -489,19 +486,19 @@ namespace OpenMcdf.Test
 
             cfTest = new CompoundFile("6_Streams_Shrinked.cfs");
             byte[] d2 = cfTest.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").GetData();
-            Assert.IsTrue(d2.Length == (bE.Length + bMini.Length));
+            Assert.AreEqual(bE.Length + bMini.Length, d2.Length);
 
             int cnt = 1;
             byte[] buf = new byte[cnt];
             cnt = cfTest.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").Read(buf, bMini.Length, cnt);
 
-            Assert.IsTrue(cnt == 1);
-            Assert.IsTrue(buf[0] == 0x1A);
+            Assert.AreEqual(1, cnt);
+            Assert.AreEqual(0x1A, buf[0]);
 
             cnt = 1;
             cnt = cfTest.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").Read(buf, bMini.Length - 1, cnt);
-            Assert.IsTrue(cnt == 1);
-            Assert.IsTrue(buf[0] == 0xEE);
+            Assert.AreEqual(1, cnt);
+            Assert.AreEqual(0xEE, buf[0]);
 
             try
             {
@@ -529,7 +526,7 @@ namespace OpenMcdf.Test
             cf = new CompoundFile("6_Streams_Shrinked.cfs", CFSUpdateMode.Update, CFSConfiguration.SectorRecycle);
             d2 = cf.RootStorage.GetStorage("MiniStorage").GetStream("miniSt2").GetData();
             Assert.IsNotNull(d2);
-            Assert.IsTrue(d2.Length == bA.Length);
+            Assert.AreEqual(bA.Length, d2.Length);
 
             cf.Close();
 
@@ -557,7 +554,7 @@ namespace OpenMcdf.Test
             var f = new CompoundFile("MultipleStorage4.cfs");
             IList<CFItem> result = f.GetAllNamedEntries("MyStream");
 
-            Assert.IsTrue(result.Count == 3);
+            Assert.AreEqual(3, result.Count);
         }
 
         [TestMethod]
