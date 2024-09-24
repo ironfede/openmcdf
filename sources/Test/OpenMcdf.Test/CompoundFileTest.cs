@@ -96,27 +96,9 @@ namespace OpenMcdf.Test
 
             string tooManyCharactersEntryName = "12345678901234567890123456789012"; // 32 chars
 
-            try
-            {
-                // Try Storage entry name with too many characters.
-                cf.RootStorage.AddStorage(tooManyCharactersEntryName);
-                Assert.Fail();
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex is CFException);
-            }
+            Assert.ThrowsException<CFException>(() => cf.RootStorage.AddStorage(tooManyCharactersEntryName));
 
-            try
-            {
-                // Try Stream entry name with too many characters.
-                cf.RootStorage.AddStream(tooManyCharactersEntryName);
-                Assert.Fail();
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex is CFException);
-            }
+            Assert.ThrowsException<CFException>(() => cf.RootStorage.AddStream(tooManyCharactersEntryName));
 
             cf.SaveAs("EntryNameLength");
             cf.Close();
@@ -372,34 +354,8 @@ namespace OpenMcdf.Test
             //Test Phase 3
 
             cfTest = new CompoundFile("6_Streams.cfs");
-
-            bool catched = false;
-
-            try
-            {
-                testSt = cfTest.RootStorage.GetStream("D");
-            }
-            catch (Exception ex)
-            {
-                if (ex is CFItemNotFound)
-                    catched = true;
-            }
-
-            Assert.IsTrue(catched);
-
-            catched = false;
-
-            try
-            {
-                testSt = cfTest.RootStorage.GetStream("G");
-            }
-            catch (Exception ex)
-            {
-                if (ex is CFItemNotFound)
-                    catched = true;
-            }
-
-            Assert.IsTrue(catched);
+            Assert.ThrowsException<CFItemNotFound>(() => cfTest.RootStorage.GetStream("D"));
+            Assert.ThrowsException<CFItemNotFound>(() => cfTest.RootStorage.GetStream("G"));
 
             cfTest.Close();
 
@@ -500,14 +456,7 @@ namespace OpenMcdf.Test
             Assert.AreEqual(1, cnt);
             Assert.AreEqual(0xEE, buf[0]);
 
-            try
-            {
-                cfTest.RootStorage.GetStorage("MiniStorage").GetStream("miniSt");
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex is CFItemNotFound);
-            }
+            Assert.ThrowsException<CFItemNotFound>(() => cfTest.RootStorage.GetStorage("MiniStorage").GetStream("miniSt"));
 
             cfTest.Close();
 
@@ -560,20 +509,10 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_CORRUPTED_CYCLIC_FAT_CHECK()
         {
-            CompoundFile f = null;
-            try
+            Assert.ThrowsException<CFCorruptedFileException>(() =>
             {
-                f = new CompoundFile("CyclicFAT.cfs");
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex is CFCorruptedFileException);
-            }
-            finally
-            {
-                if (f != null)
-                    f.Close();
-            }
+                using CompoundFile cf = new("CyclicFAT.cfs");
+            });
         }
 
         [TestMethod]
@@ -996,14 +935,10 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_FIX_GH_50()
         {
-            try
+            Assert.ThrowsException<CFFileFormatException>(() =>
             {
-                var f = new CompoundFile("64-67.numberOfMiniFATSectors.docx", CFSUpdateMode.Update, CFSConfiguration.Default);
-            }
-            catch (Exception e)
-            {
-                Assert.IsTrue(e is CFFileFormatException);
-            }
+                using CompoundFile f = new("64-67.numberOfMiniFATSectors.docx", CFSUpdateMode.Update, CFSConfiguration.Default);
+            });
         }
 
         [TestMethod]
@@ -1239,51 +1174,31 @@ namespace OpenMcdf.Test
                 File.Copy(filename, filename2);
             }
 
-            try
+            Assert.ThrowsException<CFException>(() =>
             {
-                CompoundFile compoundFile = new CompoundFile(filename2);
+                using CompoundFile compoundFile = new(filename2);
                 var s = compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName);
                 s.Write(new byte[] { 0x0A, 0x0A }, 0);
                 compoundFile.SaveAs(filename2);
-                compoundFile.Close();
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex is CFException, "Exception is " + ex.GetType());
-            }
+            });
 
-            try
+            Assert.ThrowsException<CFException>(() =>
             {
                 string rootedPath = Path.GetFullPath(filename2);
-                CompoundFile compoundFile = new CompoundFile(rootedPath);
+                using CompoundFile compoundFile = new(rootedPath);
                 var s = compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName);
                 s.Write(new byte[] { 0x0A, 0x0A }, 0);
                 compoundFile.SaveAs(rootedPath);
-                compoundFile.Close();
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex is CFException, "Exception is " + ex.GetType());
-            }
+            });
 
-            FileStream fs = null;
-
-            try
+            Assert.ThrowsException<CFException>(() =>
             {
-                CompoundFile compoundFile = new CompoundFile(filename2);
-                fs = new FileStream(filename2, FileMode.Open);
+                using CompoundFile compoundFile = new CompoundFile(filename2);
+                using FileStream fs = new(filename2, FileMode.Open);
                 var s = compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName);
                 s.Write(new byte[] { 0x0A, 0x0A }, 0);
                 compoundFile.Save(fs);
-                compoundFile.Close();
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex is CFException, "Exception is " + ex.GetType());
-            }
-
-            fs?.Close();
-            fs?.Dispose();
+            });
 
             if (File.Exists(filename2))
                 File.Delete(filename2);

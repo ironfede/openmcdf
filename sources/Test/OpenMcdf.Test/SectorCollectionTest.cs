@@ -88,23 +88,8 @@ namespace OpenMcdf.Test
 
             Assert.AreEqual(expected, actual);
             Assert.AreEqual(expected.Id, actual.Id);
-            try
-            {
-                actual = target[count + 100];
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex is CFException);
-            }
-
-            try
-            {
-                actual = target[-1];
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex is CFException);
-            }
+            Assert.ThrowsException<CFException>(() => target[count + 100]);
+            Assert.ThrowsException<CFException>(() => target[-1]);
         }
 
         /// <summary>
