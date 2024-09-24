@@ -155,7 +155,7 @@ namespace OpenMcdf
         ///
         ///  byte[] buffer = new byte[2048];
         ///  item.Read(buffer, 0, 2048);
-        ///  Assert.IsTrue(Helpers.CompareBuffer(b, buffer));
+        ///  CollectionAssert.AreEqual(b, buffer));
         /// </code>
         /// </example>
         /// <exception cref="T:OpenMcdf.CFDisposedException">
@@ -189,7 +189,7 @@ namespace OpenMcdf
         ///
         ///  byte[] buffer = new byte[2048];
         ///  item.Read(buffer, 0, 2048);
-        ///  Assert.IsTrue(Helpers.CompareBuffer(b, buffer));
+        ///  CollectionAssert.AreEqual(b, buffer);
         /// </code>
         /// </example>
         /// <exception cref="T:OpenMcdf.CFDisposedException">

@@ -302,8 +302,7 @@ namespace OpenMcdf.Test
             CFStream testSt = cfTest.RootStorage.GetStream("A");
 
             Assert.IsNotNull(testSt);
-            Assert.IsTrue(testSt.Size == bA.Length);
-            Assert.IsTrue(Helpers.CompareBuffer(bA, testSt.GetData()));
+            CollectionAssert.AreEqual(bA, testSt.GetData());
 
             cfTest.Close();
 
@@ -329,38 +328,31 @@ namespace OpenMcdf.Test
 
             testSt = cfTest.RootStorage.GetStream("B");
             Assert.IsNotNull(testSt);
-            Assert.IsTrue(testSt.Size == bB.Length);
-            Assert.IsTrue(Helpers.CompareBuffer(bB, testSt.GetData()));
+            CollectionAssert.AreEqual(bB, testSt.GetData());
 
             testSt = cfTest.RootStorage.GetStream("C");
             Assert.IsNotNull(testSt);
-            Assert.IsTrue(testSt.Size == bC.Length);
-            Assert.IsTrue(Helpers.CompareBuffer(bC, testSt.GetData()));
+            CollectionAssert.AreEqual(bC, testSt.GetData());
 
             testSt = cfTest.RootStorage.GetStream("D");
             Assert.IsNotNull(testSt);
-            Assert.IsTrue(testSt.Size == bD.Length);
-            Assert.IsTrue(Helpers.CompareBuffer(bD, testSt.GetData()));
+            CollectionAssert.AreEqual(bD, testSt.GetData());
 
             testSt = cfTest.RootStorage.GetStream("E");
             Assert.IsNotNull(testSt);
-            Assert.IsTrue(testSt.Size == bE.Length);
-            Assert.IsTrue(Helpers.CompareBuffer(bE, testSt.GetData()));
+            CollectionAssert.AreEqual(bE, testSt.GetData());
 
             testSt = cfTest.RootStorage.GetStream("F");
             Assert.IsNotNull(testSt);
-            Assert.IsTrue(testSt.Size == bF.Length);
-            Assert.IsTrue(Helpers.CompareBuffer(bF, testSt.GetData()));
+            CollectionAssert.AreEqual(bF, testSt.GetData());
 
             testSt = cfTest.RootStorage.GetStream("G");
             Assert.IsNotNull(testSt);
-            Assert.IsTrue(testSt.Size == bG.Length);
-            Assert.IsTrue(Helpers.CompareBuffer(bG, testSt.GetData()));
+            CollectionAssert.AreEqual(bG, testSt.GetData());
 
             testSt = cfTest.RootStorage.GetStream("H");
             Assert.IsNotNull(testSt);
-            Assert.IsTrue(testSt.Size == bH.Length);
-            Assert.IsTrue(Helpers.CompareBuffer(bH, testSt.GetData()));
+            CollectionAssert.AreEqual(bH, testSt.GetData());
 
             cfTest.Close();
 
@@ -609,7 +601,7 @@ namespace OpenMcdf.Test
                 byte[] b2 = new byte[cnt];
                 cnt = f.RootStorage.GetStream("LargeStream").Read(b2, 20000000, cnt);
                 f.Close();
-                Assert.IsTrue(Helpers.CompareBuffer(b1, b2));
+                CollectionAssert.AreEqual(b1, b2);
             }
             finally
             {
@@ -646,7 +638,7 @@ namespace OpenMcdf.Test
                 CFStream cfs = f.RootStorage.GetStream("Stream" + (ITEM_NUMBER / 2).ToString());
 
                 Assert.IsTrue(cfs != null, "Item is null");
-                Assert.IsTrue(Helpers.CompareBuffer(cfs.GetData(), buffer), "Items are different");
+                CollectionAssert.AreEqual(buffer, cfs.GetData());
                 f.Close();
             }
             catch (Exception ex)

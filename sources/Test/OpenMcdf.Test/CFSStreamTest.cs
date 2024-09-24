@@ -201,7 +201,7 @@ namespace OpenMcdf.Test
             Assert.IsNotNull(cf2);
             Assert.IsTrue(st.Size == SIZE);
 
-            Assert.IsTrue(Helpers.CompareBuffer(b, st.GetData()));
+            CollectionAssert.AreEqual(b, st.GetData());
 
             cf2.Close();
 
@@ -277,7 +277,8 @@ namespace OpenMcdf.Test
             Assert.IsTrue(myStreamC.Size == MEGA_SIZE, "DATA SIZE FAILED");
 
             byte[] bufferC = myStreamC.GetData();
-            Assert.IsTrue(Helpers.CompareBuffer(bufferB, bufferC), "DATA INTEGRITY FAILED");
+            CollectionAssert.AreEqual(bb, bufferB);
+            CollectionAssert.AreEqual(bb, bufferC);
 
             cfc.Close();
 
@@ -328,8 +329,7 @@ namespace OpenMcdf.Test
 
             cf = new CompoundFile("RE_WRITE_SMALLER_MINI_STREAM.xls");
             byte[] c = cf.RootStorage.GetStream("\x05SummaryInformation").GetData();
-            Assert.IsTrue(c.Length == TEST_LENGTH);
-            Assert.IsTrue(Helpers.CompareBuffer(c, b));
+            CollectionAssert.AreEqual(c, b);
             cf.Close();
 
             if (File.Exists("RE_WRITE_SMALLER_MINI_STREAM.xls"))
@@ -389,7 +389,7 @@ namespace OpenMcdf.Test
                 Assert.IsNotNull(addedStream, "Stream not found");
                 addedStream.SetData(buffer);
 
-                Assert.IsTrue(Helpers.CompareBuffer(addedStream.GetData(), buffer), "Data buffer corrupted");
+                CollectionAssert.AreEqual(addedStream.GetData(), buffer);
 
                 // Random commit, not on single addition
                 //if (r.Next(0, 100) > 50)
@@ -620,7 +620,7 @@ namespace OpenMcdf.Test
 
             Assert.IsNotNull(sm2);
             Assert.IsTrue(sm2.Size == size);
-            Assert.IsTrue(Helpers.CompareBuffer(sm2.GetData(), b));
+            CollectionAssert.AreEqual(b, sm2.GetData());
 
             cf2.Close();
         }
@@ -648,7 +648,7 @@ namespace OpenMcdf.Test
 
             Assert.IsNotNull(sm2);
             Assert.IsTrue(sm2.Size == size);
-            Assert.IsTrue(Helpers.CompareBuffer(sm2.GetData(), b));
+            CollectionAssert.AreEqual(b, sm2.GetData());
 
             cf2.Close();
         }
@@ -672,8 +672,7 @@ namespace OpenMcdf.Test
             CFStream sm2 = st2.GetStream("MyStream");
 
             Assert.IsNotNull(sm2);
-            Assert.IsTrue(sm2.Size == size);
-            Assert.IsTrue(Helpers.CompareBuffer(sm2.GetData(), b));
+            CollectionAssert.AreEqual(b, sm2.GetData());
 
             cf2.Close();
         }
@@ -697,7 +696,7 @@ namespace OpenMcdf.Test
             byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
             cf = new CompoundFile(ms);
             byte[] data = cf.RootStorage.GetStream("MyMiniStream").GetData();
-            Assert.IsTrue(Helpers.CompareBuffer(cmp, data));
+            CollectionAssert.AreEqual(cmp, data);
         }
 
         [TestMethod]
@@ -716,7 +715,7 @@ namespace OpenMcdf.Test
             cf = new CompoundFile("COPY_FROM_STREAM.cfs");
             byte[] data = cf.RootStorage.GetStream("MyImportedStream").GetData();
 
-            Assert.IsTrue(Helpers.CompareBuffer(b, data));
+            CollectionAssert.AreEqual(b, data);
         }
 
 #if LARGETEST
@@ -750,11 +749,12 @@ namespace OpenMcdf.Test
             cf = new CompoundFile("MEGALARGESSIMUSFILE.cfs");
             int count = 8;
             byte[] data = cf.RootStorage.GetStream("MySuperLargeStream").GetData((long)b.Length * 42L, ref count);
-            Assert.IsTrue(Helpers.CompareBuffer(cmp, data));
+            CollectionAssert.AreEqual(cmp, data);
             cf.Close();
 
         }
 #endif
+
         [TestMethod]
         public void Test_RESIZE_STREAM_NO_TRANSITION()
         {
@@ -781,8 +781,8 @@ namespace OpenMcdf.Test
             Assert.IsTrue(item.Size == INITIAL_SIZE - DELTA_SIZE);
 
             byte[] buffer = new byte[INITIAL_SIZE - DELTA_SIZE];
-            item.Read(buffer, 0, INITIAL_SIZE - DELTA_SIZE);
-            Assert.IsTrue(Helpers.CompareBuffer(b, buffer, INITIAL_SIZE - DELTA_SIZE));
+            item.Read(buffer, 0, buffer.Length);
+            CollectionAssert.AreEqual(b.Take(buffer.Length).ToList(), buffer);
             cf.Close();
         }
 
@@ -810,7 +810,7 @@ namespace OpenMcdf.Test
             cf.Close();
 
             cf = new CompoundFile(FILE_NAME, CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
-            Assert.IsTrue(Helpers.CompareBuffer(cf.RootStorage.GetStream("AStream").GetData(), b100));
+            CollectionAssert.AreEqual(b100, cf.RootStorage.GetStream("AStream").GetData());
             cf.Close();
 
             if (File.Exists(FILE_NAME))
@@ -841,7 +841,7 @@ namespace OpenMcdf.Test
 
             byte[] buffer = new byte[2048];
             item.Read(buffer, 0, 2048);
-            Assert.IsTrue(Helpers.CompareBuffer(b, buffer));
+            CollectionAssert.AreEqual(b, buffer);
         }
 
         [TestMethod]
@@ -871,9 +871,8 @@ namespace OpenMcdf.Test
             Assert.IsTrue(st.Size == (INITIAL_SIZE - SIZE_DELTA));
 
             byte[] buffer = new byte[INITIAL_SIZE - SIZE_DELTA];
-            st.Read(buffer, 0, INITIAL_SIZE - SIZE_DELTA);
-
-            Assert.IsTrue(Helpers.CompareBuffer(b, buffer, INITIAL_SIZE - SIZE_DELTA));
+            st.Read(buffer, 0, buffer.Length);
+            CollectionAssert.AreEqual(b.Take(buffer.Length).ToList(), buffer);
 
             cf.Close();
         }
