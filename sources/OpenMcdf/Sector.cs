@@ -23,7 +23,7 @@ namespace OpenMcdf
 
     internal sealed class Sector : IDisposable
     {
-        public static int MINISECTOR_SIZE = 64;
+        public const int MINISECTOR_SIZE = 64;
 
         public const int FREESECT = unchecked((int)0xFFFFFFFF);
         public const int ENDOFCHAIN = unchecked((int)0xFFFFFFFE);

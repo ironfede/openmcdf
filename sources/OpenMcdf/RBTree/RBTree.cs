@@ -545,7 +545,7 @@ namespace RedBlackTree
             return new RBTreeEnumerator(this);
         }
 
-        private static readonly int INDENT_STEP = 15;
+        private const int INDENT_STEP = 15;
 
         public void Print()
         {

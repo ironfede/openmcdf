@@ -33,15 +33,13 @@ namespace OpenMcdf
     {
         internal const int THIS_IS_GREATER = 1;
         internal const int OTHER_IS_GREATER = -1;
+        internal const int NOSTREAM = unchecked((int)0xFFFFFFFF);
+        internal const int ZERO = 0;
+        internal const int EntryNameLength = 64;
+
         private readonly IList<IDirectoryEntry> dirRepository;
 
         public int SID { get; set; } = -1;
-
-        internal static int NOSTREAM
-            = unchecked((int)0xFFFFFFFF);
-
-        internal static int ZERO
-            = 0;
 
         private DirectoryEntry(string name, StgType stgType, IList<IDirectoryEntry> dirRepository)
         {
@@ -66,7 +64,7 @@ namespace OpenMcdf
             }
         }
 
-        public byte[] EntryName { get; private set; } = new byte[64];
+        public byte[] EntryName { get; private set; } = new byte[EntryNameLength];
 
         public string GetEntryName()
         {
@@ -82,7 +80,7 @@ namespace OpenMcdf
         {
             if (entryName == string.Empty)
             {
-                EntryName = new byte[64];
+                Array.Clear(EntryName, 0, EntryName.Length);
                 nameLength = 0;
             }
             else
@@ -94,16 +92,12 @@ namespace OpenMcdf
                     entryName.Contains(@"!"))
                     throw new CFException("Invalid character in entry: the characters '\\', '/', ':','!' cannot be used in entry name");
 
-                if (entryName.Length > 31)
-                    throw new CFException("Entry name MUST NOT exceed 31 characters");
-                byte[] temp = Encoding.Unicode.GetBytes(entryName);
-                byte[] newName = new byte[64];
-                Buffer.BlockCopy(temp, 0, newName, 0, temp.Length);
-                newName[temp.Length] = 0x00;
-                newName[temp.Length + 1] = 0x00;
+                if (Encoding.Unicode.GetByteCount(entryName) + 2 > EntryNameLength)
+                    throw new CFException($"Encoded entry name exceeds maximum length of ({EntryNameLength} bytes)");
 
-                EntryName = newName;
-                nameLength = (ushort)(temp.Length + 2);
+                Array.Clear(EntryName, 0, EntryName.Length);
+                int localNameLength = Encoding.Unicode.GetBytes(entryName, 0, entryName.Length, EntryName, 0);
+                nameLength = (ushort)(localNameLength + 2);
             }
         }
 
@@ -229,14 +223,12 @@ namespace OpenMcdf
             rw.Write(LeftSibling);
             rw.Write(RightSibling);
             rw.Write(Child);
-            rw.Write(storageCLSID.ToByteArray());
+            rw.Write(storageCLSID);
             rw.Write(StateBits);
             rw.Write(CreationDate);
             rw.Write(ModifyDate);
             rw.Write(StartSetc);
             rw.Write(Size);
-
-            rw.Close();
         }
 
         //public Byte[] ToByteArray()
@@ -270,7 +262,7 @@ namespace OpenMcdf
         {
             StreamRW rw = new StreamRW(stream);
 
-            EntryName = rw.ReadBytes(64);
+            rw.ReadBytes(EntryName);
             nameLength = rw.ReadUInt16();
             StgType = (StgType)rw.ReadByte();
             //rw.ReadByte();//Ignore color, only black tree
@@ -287,10 +279,10 @@ namespace OpenMcdf
                 Child = NOSTREAM;
             }
 
-            storageCLSID = new Guid(rw.ReadBytes(16));
+            storageCLSID = rw.ReadGuid();
             StateBits = rw.ReadInt32();
-            CreationDate = rw.ReadBytes(8);
-            ModifyDate = rw.ReadBytes(8);
+            rw.ReadBytes(CreationDate);
+            rw.ReadBytes(ModifyDate);
             StartSetc = rw.ReadInt32();
 
             if (ver == CFSVersion.Ver_3)
@@ -299,7 +291,7 @@ namespace OpenMcdf
                 // where most significant bits are not initialized to zero
 
                 Size = rw.ReadInt32();
-                rw.ReadBytes(4); //discard most significant 4 (possibly) dirty bytes
+                rw.Seek(4, SeekOrigin.Current); // discard most significant 4 (possibly) dirty bytes
             }
             else
             {

@@ -12,9 +12,11 @@ namespace OpenMcdf
 {
     internal sealed class Header
     {
+        static readonly byte[] ZeroHead = new byte[3584];
+
         public byte[] HeaderSignature { get; private set; } = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
 
-        public byte[] CLSID { get; set; } = new byte[16];
+        public byte[] CLSID { get; private set; } = new byte[16];
 
         public ushort MinorVersion { get; private set; } = 0x003E;
 
@@ -109,27 +111,24 @@ namespace OpenMcdf
 
             if (MajorVersion == 4)
             {
-                byte[] zeroHead = new byte[3584];
-                rw.Write(zeroHead);
+                rw.Write(ZeroHead);
             }
-
-            rw.Close();
         }
 
         public void Read(Stream stream)
         {
             StreamRW rw = new StreamRW(stream);
 
-            HeaderSignature = rw.ReadBytes(8);
+            rw.ReadBytes(HeaderSignature);
             CheckSignature();
-            CLSID = rw.ReadBytes(16);
+            rw.ReadBytes(CLSID);
             MinorVersion = rw.ReadUInt16();
             MajorVersion = rw.ReadUInt16();
             CheckVersion();
             ByteOrder = rw.ReadUInt16();
             SectorShift = rw.ReadUInt16();
             MiniSectorShift = rw.ReadUInt16();
-            UnUsed = rw.ReadBytes(6);
+            rw.ReadBytes(UnUsed);
             DirectorySectorsNumber = rw.ReadInt32();
             FATSectorsNumber = rw.ReadInt32();
             FirstDirectorySectorID = rw.ReadInt32();
@@ -140,12 +139,10 @@ namespace OpenMcdf
             FirstDIFATSectorID = rw.ReadInt32();
             DIFATSectorsNumber = rw.ReadUInt32();
 
-            for (int i = 0; i < 109; i++)
+            for (int i = 0; i < DIFAT.Length; i++)
             {
                 DIFAT[i] = rw.ReadInt32();
             }
-
-            rw.Close();
         }
 
         private void CheckVersion()
@@ -157,7 +154,7 @@ namespace OpenMcdf
         /// <summary>
         /// Structured Storage signature
         /// </summary>
-        private readonly byte[] OLE_CFS_SIGNATURE = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
+        private static readonly byte[] OLE_CFS_SIGNATURE = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
 
         private void CheckSignature()
         {
