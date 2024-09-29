@@ -802,24 +802,24 @@ namespace OpenMcdf
             if (stream.Size < header.MinSizeStandardStream)
             {
                 sectorChain = GetSectorChain(stream.DirEntry.StartSetc, SectorType.Mini);
-                FreeMiniChain(sectorChain, eraseFreeSectors);
+                FreeMiniChain(sectorChain);
             }
             else
             {
                 sectorChain = GetSectorChain(stream.DirEntry.StartSetc, SectorType.Normal);
-                FreeChain(sectorChain, eraseFreeSectors);
+                FreeChain(sectorChain);
             }
 
             stream.DirEntry.StartSetc = Sector.ENDOFCHAIN;
             stream.DirEntry.Size = 0;
         }
 
-        private void FreeChain(List<Sector> sectorChain, bool zeroSector)
+        private void FreeChain(List<Sector> sectorChain)
         {
-            FreeChain(sectorChain, 0, zeroSector);
+            FreeChain(sectorChain, 0);
         }
 
-        private void FreeChain(List<Sector> sectorChain, int nth_sector_to_remove, bool zeroSector)
+        private void FreeChain(List<Sector> sectorChain, int nth_sector_to_remove)
         {
             // Dummy zero buffer
             byte[] ZEROED_SECTOR = new byte[GetSectorSize()];
@@ -831,7 +831,7 @@ namespace OpenMcdf
                 = new StreamView(FAT, GetSectorSize(), FAT.Count * GetSectorSize(), null, sourceStream);
 
             // Zeroes out sector data (if required)-------------
-            if (zeroSector)
+            if (eraseFreeSectors)
             {
                 for (int i = nth_sector_to_remove; i < sectorChain.Count; i++)
                 {
@@ -857,12 +857,12 @@ namespace OpenMcdf
             }
         }
 
-        private void FreeMiniChain(List<Sector> sectorChain, bool zeroSector)
+        private void FreeMiniChain(List<Sector> sectorChain)
         {
-            FreeMiniChain(sectorChain, 0, zeroSector);
+            FreeMiniChain(sectorChain, 0);
         }
 
-        private void FreeMiniChain(List<Sector> sectorChain, int nth_sector_to_remove, bool zeroSector)
+        private void FreeMiniChain(List<Sector> sectorChain, int nth_sector_to_remove)
         {
             byte[] ZEROED_MINI_SECTOR = new byte[Sector.MINISECTOR_SIZE];
 
@@ -879,7 +879,7 @@ namespace OpenMcdf
                 = new StreamView(miniStream, GetSectorSize(), RootStorage.Size, null, sourceStream);
 
             // Set updated/new sectors within the ministream ----------
-            if (zeroSector)
+            if (eraseFreeSectors)
             {
                 for (int i = nth_sector_to_remove; i < sectorChain.Count; i++)
                 {
@@ -2083,9 +2083,9 @@ namespace OpenMcdf
                     int startFreeSector = sectorChain.Count - nSec; // start sector to free
 
                     if (newSectorSize == Sector.MINISECTOR_SIZE)
-                        FreeMiniChain(sectorChain, startFreeSector, eraseFreeSectors);
+                        FreeMiniChain(sectorChain, startFreeSector);
                     else
-                        FreeChain(sectorChain, startFreeSector, eraseFreeSectors);
+                        FreeChain(sectorChain, startFreeSector);
                 }
 
                 if (sectorChain.Count > 0)
@@ -2135,7 +2135,7 @@ namespace OpenMcdf
                 destSv.Write(buf, 0, (int)toRead);
 
                 //Free old chain
-                FreeChain(oldChain, eraseFreeSectors);
+                FreeChain(oldChain);
 
                 //Set up destination chain
                 AllocateMiniSectorChain(destSv.BaseSectorChain);
@@ -2185,7 +2185,7 @@ namespace OpenMcdf
 
                 //Free old mini chain
                 int oldChainCount = oldChain.Count;
-                FreeMiniChain(oldChain, eraseFreeSectors);
+                FreeMiniChain(oldChain);
 
                 //Set up normal destination chain
                 AllocateSectorChain(destSv.BaseSectorChain);
@@ -2433,13 +2433,13 @@ namespace OpenMcdf
                 {
                     List<Sector> miniChain
                         = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Mini);
-                    FreeMiniChain(miniChain, eraseFreeSectors);
+                    FreeMiniChain(miniChain);
                 }
                 else
                 {
                     List<Sector> chain
                         = GetSectorChain(directoryEntries[sid].StartSetc, SectorType.Normal);
-                    FreeChain(chain, eraseFreeSectors);
+                    FreeChain(chain);
                 }
             }
         }
