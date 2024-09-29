@@ -30,7 +30,7 @@ namespace OpenMcdf
 
         public event Ver3SizeLimitReached OnVer3SizeLimitReached;
 
-        private readonly List<ArrayList> largeArraySlices = new List<ArrayList>();
+        private readonly List<List<Sector>> largeArraySlices = new();
 
         public SectorCollection()
         {
@@ -71,7 +71,7 @@ namespace OpenMcdf
 
                 if ((index > -1) && (index < Count))
                 {
-                    return (Sector)largeArraySlices[itemIndex][itemOffset];
+                    return largeArraySlices[itemIndex][itemOffset];
                 }
                 else
                     throw new CFException("Argument Out of Range, possibly corrupted file", new ArgumentOutOfRangeException(nameof(index), index, "Argument out of range"));
@@ -105,8 +105,10 @@ namespace OpenMcdf
             }
             else
             {
-                ArrayList ar = new ArrayList(SLICE_SIZE);
-                ar.Add(item);
+                List<Sector> ar = new(SLICE_SIZE)
+                {
+                    item
+                };
                 largeArraySlices.Add(ar);
                 Count++;
             }
@@ -123,7 +125,7 @@ namespace OpenMcdf
 
         public void Clear()
         {
-            foreach (ArrayList slice in largeArraySlices)
+            foreach (List<Sector> slice in largeArraySlices)
             {
                 slice.Clear();
             }
@@ -162,7 +164,7 @@ namespace OpenMcdf
             {
                 for (int j = 0; j < largeArraySlices[i].Count; j++)
                 {
-                    yield return (Sector)largeArraySlices[i][j];
+                    yield return largeArraySlices[i][j];
                 }
             }
         }
