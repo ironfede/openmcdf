@@ -10,11 +10,12 @@ namespace OpenMcdf.Test
     /// Summary description for UnitTest1
     /// </summary>
     [TestClass]
-    public class CFSStreamTest
+    public class CFStreamTest
+
     {
         //const String TestContext.TestDir = "C:\\TestOutputFiles\\";
 
-        public CFSStreamTest()
+        public CFStreamTest()
         {
         }
 
