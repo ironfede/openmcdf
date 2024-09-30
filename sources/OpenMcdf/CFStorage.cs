@@ -146,6 +146,23 @@ namespace OpenMcdf
             return new CFStream(CompoundFile, dirEntry);
         }
 
+        bool Contains(string name, StgType type, out IDirectoryEntry directoryEntry)
+        {
+            IDirectoryEntry tmp = DirectoryEntry.Mock(name, type);
+            if (!Children.TryLookup(tmp, out IRBNode node) || node is not IDirectoryEntry de || de.StgType != type)
+            {
+                directoryEntry = null;
+                return false;
+            }
+
+            directoryEntry = de;
+            return true;
+        }
+
+        public bool ContainsStream(string streamName) => Contains(streamName, StgType.StgStream, out _);
+
+        public bool ContainsStorage(string storageName) => Contains(storageName, StgType.StgStorage, out _);
+
         /// <summary>
         /// Get a named <see cref="T:OpenMcdf.CFStream">stream</see> contained in the current storage if existing.
         /// </summary>
@@ -171,22 +188,10 @@ namespace OpenMcdf
         {
             CheckDisposed();
 
-            IDirectoryEntry tmp = DirectoryEntry.Mock(streamName, StgType.StgStream);
+            if (!Contains(streamName, StgType.StgStream, out IDirectoryEntry outDe))
+                throw new CFItemNotFound($"Cannot find item [{streamName}] within the current storage");
 
-            //if (children == null)
-            //{
-            //    children = compoundFile.GetChildrenTree(SID);
-            //}
-
-
-            if (Children.TryLookup(tmp, out IRBNode outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
-            {
-                return new CFStream(CompoundFile, (IDirectoryEntry)outDe);
-            }
-            else
-            {
-                throw new CFItemNotFound("Cannot find item [" + streamName + "] within the current storage");
-            }
+            return new CFStream(CompoundFile, outDe);
         }
 
         /// <summary>
@@ -212,28 +217,14 @@ namespace OpenMcdf
         /// </example>
         public bool TryGetStream(string streamName, out CFStream cfStream)
         {
-            bool result = false;
-            cfStream = null;
-
-            try
+            if (CompoundFile.IsClosed || !Contains(streamName, StgType.StgStream, out IDirectoryEntry directoryEntry))
             {
-                CheckDisposed();
-
-                IDirectoryEntry tmp = DirectoryEntry.Mock(streamName, StgType.StgStream);
-
-
-                if (Children.TryLookup(tmp, out IRBNode outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
-                {
-                    cfStream = new CFStream(CompoundFile, (IDirectoryEntry)outDe);
-                    result = true;
-                }
-            }
-            catch (CFDisposedException)
-            {
-                result = false;
+                cfStream = null;
+                return false;
             }
 
-            return result;
+            cfStream = new CFStream(CompoundFile, directoryEntry);
+            return true;
         }
 
         /// <summary>
@@ -259,24 +250,8 @@ namespace OpenMcdf
         [Obsolete("Please use TryGetStream(string, out cfStream) instead.")]
         public CFStream TryGetStream(string streamName)
         {
-            CheckDisposed();
-
-            IDirectoryEntry tmp = DirectoryEntry.Mock(streamName, StgType.StgStream);
-
-            //if (children == null)
-            //{
-            //    children = compoundFile.GetChildrenTree(SID);
-            //}
-
-
-            if (Children.TryLookup(tmp, out IRBNode outDe) && (((IDirectoryEntry)outDe).StgType == StgType.StgStream))
-            {
-                return new CFStream(CompoundFile, (IDirectoryEntry)outDe);
-            }
-            else
-            {
-                return null;
-            }
+            TryGetStream(streamName, out CFStream cfStream);
+            return cfStream;
         }
 
         /// <summary>
@@ -302,16 +277,10 @@ namespace OpenMcdf
         {
             CheckDisposed();
 
-            IDirectoryEntry template = DirectoryEntry.Mock(storageName, StgType.StgInvalid);
+            if (!Contains(storageName, StgType.StgStorage, out IDirectoryEntry outDe))
+                throw new CFItemNotFound($"Cannot find item [{storageName}] within the current storage");
 
-            if (Children.TryLookup(template, out IRBNode outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
-            {
-                return new CFStorage(CompoundFile, outDe as IDirectoryEntry);
-            }
-            else
-            {
-                throw new CFItemNotFound("Cannot find item [" + storageName + "] within the current storage");
-            }
+            return new CFStorage(CompoundFile, outDe);
         }
 
         /// <summary>
@@ -335,18 +304,8 @@ namespace OpenMcdf
         [Obsolete("Please use TryGetStorage(string, out cfStorage) instead.")]
         public CFStorage TryGetStorage(string storageName)
         {
-            CheckDisposed();
-
-            IDirectoryEntry template = DirectoryEntry.Mock(storageName, StgType.StgInvalid);
-
-            if (Children.TryLookup(template, out IRBNode outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
-            {
-                return new CFStorage(CompoundFile, outDe as IDirectoryEntry);
-            }
-            else
-            {
-                return null;
-            }
+            TryGetStorage(storageName, out CFStorage cfStorage);
+            return cfStorage;
         }
 
         /// <summary>
@@ -371,27 +330,14 @@ namespace OpenMcdf
         /// </example>
         public bool TryGetStorage(string storageName, out CFStorage cfStorage)
         {
-            bool result = false;
-            cfStorage = null;
-
-            try
+            if (CompoundFile.IsClosed || !Contains(storageName, StgType.StgStorage, out IDirectoryEntry directoryEntry))
             {
-                CheckDisposed();
-
-                IDirectoryEntry template = DirectoryEntry.Mock(storageName, StgType.StgInvalid);
-
-                if (Children.TryLookup(template, out IRBNode outDe) && ((IDirectoryEntry)outDe).StgType == StgType.StgStorage)
-                {
-                    cfStorage = new CFStorage(CompoundFile, outDe as IDirectoryEntry);
-                    result = true;
-                }
-            }
-            catch (CFDisposedException)
-            {
-                result = false;
+                cfStorage = null;
+                return false;
             }
 
-            return result;
+            cfStorage = new CFStorage(CompoundFile, directoryEntry);
+            return true;
         }
 
         /// <summary>
