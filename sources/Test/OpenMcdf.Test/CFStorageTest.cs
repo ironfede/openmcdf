@@ -6,14 +6,14 @@ using System.IO;
 namespace OpenMcdf.Test
 {
     /// <summary>
-    /// Summary description for CFTorageTest
+    /// Summary description for CFStorageTest
     /// </summary>
     [TestClass]
-    public class CFSTorageTest
+    public class CFStorageTest
     {
         //const String OUTPUT_DIR = "C:\\TestOutputFiles\\";
 
-        public CFSTorageTest()
+        public CFStorageTest()
         {
         }
 
