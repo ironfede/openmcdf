@@ -1,6 +1,7 @@
 ﻿#define ASSERT
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -88,7 +89,7 @@ namespace RedBlackTree
         void AssignValueTo(IRBNode other);
     }
 
-    public class RBTree
+    public class RBTree : IEnumerable<IRBNode>
     {
         public IRBNode Root { get; set; }
 
@@ -513,25 +514,25 @@ namespace RedBlackTree
         public class RBTreeEnumerator : IEnumerator<IRBNode>
         {
             int position = -1;
-            private readonly Queue<IRBNode> heap = new Queue<IRBNode>();
+            private readonly List<IRBNode> list = new();
 
             internal RBTreeEnumerator(RBTree tree)
             {
-                tree.VisitTreeNodes(item => heap.Enqueue(item));
+                tree.VisitTreeNodes(item => list.Add(item));
             }
-
-            public IRBNode Current => heap.ElementAt(position);
 
             public void Dispose()
             {
             }
 
-            object System.Collections.IEnumerator.Current => heap.ElementAt(position);
+            public IRBNode Current => list[position];
+
+            object IEnumerator.Current => list[position];
 
             public bool MoveNext()
             {
                 position++;
-                return position < heap.Count;
+                return position < list.Count;
             }
 
             public void Reset()
@@ -540,10 +541,9 @@ namespace RedBlackTree
             }
         }
 
-        public RBTreeEnumerator GetEnumerator()
-        {
-            return new RBTreeEnumerator(this);
-        }
+        public IEnumerator<IRBNode> GetEnumerator() => new RBTreeEnumerator(this);
+
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         private const int INDENT_STEP = 15;
 
