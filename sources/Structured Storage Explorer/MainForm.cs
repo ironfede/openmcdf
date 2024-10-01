@@ -372,8 +372,9 @@ namespace StructuredStorageExplorer
                 {
                     OpenFile();
                 }
-                catch
+                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is CFException)
                 {
+                    MessageBox.Show($"Cannot open file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
