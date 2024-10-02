@@ -571,15 +571,7 @@ namespace OpenMcdf.Test
 
             CFStream zeroStream2 = null;
 
-            try
-            {
-                zeroStream2 = cf2.RootStorage.GetStream(zeroLengthName);
-            }
-            catch (Exception ex)
-            {
-                Assert.IsNull(zeroStream2);
-                Assert.IsInstanceOfType(ex, typeof(CFItemNotFound));
-            }
+            Assert.ThrowsException<CFItemNotFound>(() => zeroStream2 = cf2.RootStorage.GetStream(zeroLengthName));
 
             cf2.SaveAs("MultipleDeleteMiniStream.cfs");
             cf2.Close();

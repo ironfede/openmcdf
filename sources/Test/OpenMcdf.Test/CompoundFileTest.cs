@@ -881,55 +881,27 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_PR_GH_18()
         {
-            try
-            {
-                var f = new CompoundFile("MultipleStorage4.cfs", CFSUpdateMode.Update, CFSConfiguration.Default);
-                var st = f.RootStorage.GetStorage("MyStorage").GetStorage("AnotherStorage").GetStream("MyStream");
-                st.Write(Helpers.GetBuffer(100, 0x02), 100);
-                f.Commit(true);
-                Assert.AreEqual(31220, st.GetData().Length);
-                f.Close();
-            }
-            catch (Exception)
-            {
-                Assert.Fail("Release Memory flag caused error");
-            }
+            var f = new CompoundFile("MultipleStorage4.cfs", CFSUpdateMode.Update, CFSConfiguration.Default);
+            var st = f.RootStorage.GetStorage("MyStorage").GetStorage("AnotherStorage").GetStream("MyStream");
+            st.Write(Helpers.GetBuffer(100, 0x02), 100);
+            f.Commit(true);
+            Assert.AreEqual(31220, st.GetData().Length);
+            f.Close();
         }
 
         [TestMethod]
         public void Test_FIX_GH_38()
         {
-            CompoundFile f = null;
-            try
+            Assert.ThrowsException<CFCorruptedFileException>(() =>
             {
-                f = new CompoundFile("empty_directory_chain.doc", CFSUpdateMode.Update, CFSConfiguration.Default);
-
-                f.Close();
-            }
-            catch (Exception ex)
-            {
-                Assert.IsInstanceOfType(ex, typeof(CFCorruptedFileException));
-                if (f != null)
-                    f.Close();
-            }
+                using CompoundFile f = new("empty_directory_chain.doc", CFSUpdateMode.Update, CFSConfiguration.Default);
+            });
         }
 
         [TestMethod]
         public void Test_FIX_GH_38_B()
         {
-            CompoundFile f = null;
-            try
-            {
-                f = new CompoundFile("no_sectors.doc", CFSUpdateMode.Update, CFSConfiguration.Default);
-
-                f.Close();
-            }
-            catch (Exception ex)
-            {
-                Assert.IsInstanceOfType(ex, typeof(CFException));
-                if (f != null)
-                    f.Close();
-            }
+            Assert.ThrowsException<CFCorruptedFileException>(() => new CompoundFile("no_sectors.doc", CFSUpdateMode.Update, CFSConfiguration.Default));
         }
 
         [TestMethod]
@@ -1116,16 +1088,12 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_FIX_BUG_75_ForeverLoop()
         {
-            try
+            Assert.ThrowsException<CFCorruptedFileException>(() =>
             {
                 var cf = new CompoundFile("mediationform.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.Default & ~CFSConfiguration.NoValidationException);
                 var s = cf.RootStorage.GetStream("\u0001CompObj");
                 byte[] data = s.GetData();
-            }
-            catch (Exception ex)
-            {
-                Assert.IsInstanceOfType(ex, typeof(CFCorruptedFileException));
-            }
+            });
         }
 
         [TestMethod]
