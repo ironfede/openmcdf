@@ -466,7 +466,7 @@ namespace OpenMcdf
             Right = null;
             Parent = null;
             StgType = StgType.StgInvalid;
-            StartSetc = ZERO;
+            StartSect = ZERO;
             StorageCLSID = Guid.Empty;
             Size = 0;
             StateBits = 0;
