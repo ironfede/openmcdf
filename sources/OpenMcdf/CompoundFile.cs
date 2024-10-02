@@ -1504,26 +1504,6 @@ namespace OpenMcdf
 
         public CFSVersion Version => (CFSVersion)header.MajorVersion;
 
-        /// <summary>
-        /// Reset a directory entry setting it to StgInvalid in the Directory.
-        /// </summary>
-        /// <param name="sid">Sid of the directory to invalidate</param>
-        internal void ResetDirectoryEntry(int sid)
-        {
-            directoryEntries[sid].SetEntryName(string.Empty);
-            directoryEntries[sid].Left = null;
-            directoryEntries[sid].Right = null;
-            directoryEntries[sid].Parent = null;
-            directoryEntries[sid].StgType = StgType.StgInvalid;
-            directoryEntries[sid].StartSect = DirectoryEntry.ZERO;
-            directoryEntries[sid].StorageCLSID = Guid.Empty;
-            directoryEntries[sid].Size = 0;
-            directoryEntries[sid].StateBits = 0;
-            directoryEntries[sid].StgColor = StgColor.Red;
-            directoryEntries[sid].CreationDate = new byte[8];
-            directoryEntries[sid].ModifyDate = new byte[8];
-        }
-
         //internal class NodeFactory : IRBTreeDeserializer<CFItem>
         //{
 
@@ -2413,13 +2393,6 @@ namespace OpenMcdf
             return i > 0 ? i : 0;
         }
 
-        internal void InvalidateDirectoryEntry(int sid)
-        {
-            if (sid >= directoryEntries.Count)
-                throw new CFException("Invalid SID of the directory entry to remove");
-
-            ResetDirectoryEntry(sid);
-        }
 
         internal void FreeAssociatedData(int sid)
         {
@@ -2486,8 +2459,7 @@ namespace OpenMcdf
 
         #region IDisposable Members
 
-
-        void IDisposable.Dispose()
+        public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);

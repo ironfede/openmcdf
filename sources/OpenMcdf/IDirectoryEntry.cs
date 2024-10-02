@@ -32,5 +32,6 @@ namespace OpenMcdf
         StgType StgType { get; set; }
         Guid StorageCLSID { get; set; }
         void Write(System.IO.Stream stream);
+        void Reset();
     }
 }

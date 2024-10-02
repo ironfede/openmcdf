@@ -453,5 +453,26 @@ namespace OpenMcdf
             d.storageCLSID = new Guid(storageCLSID.ToByteArray());
             d.Child = Child;
         }
+
+        /// <summary>
+        /// Reset a directory entry setting it to StgInvalid in the Directory.
+        /// </summary>
+        public void Reset()
+        {
+            // TODO: Delete IDirectoryEntry interface and use as DirectoryEntry
+            // member instead for improved performance from devirtualization
+            SetEntryName(string.Empty);
+            Left = null;
+            Right = null;
+            Parent = null;
+            StgType = StgType.StgInvalid;
+            StartSetc = ZERO;
+            StorageCLSID = Guid.Empty;
+            Size = 0;
+            StateBits = 0;
+            StgColor = StgColor.Red;
+            Array.Clear(CreationDate, 0, CreationDate.Length);
+            Array.Clear(ModifyDate, 0, ModifyDate.Length);
+        }
     }
 }
