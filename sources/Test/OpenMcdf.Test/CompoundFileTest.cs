@@ -1180,6 +1180,7 @@ namespace OpenMcdf.Test
                 var s = compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName);
                 s.Write(new byte[] { 0x0A, 0x0A }, 0);
                 compoundFile.SaveAs(filename2);
+                compoundFile.Close();
             });
 
             Assert.ThrowsException<CFException>(() =>
@@ -1189,6 +1190,7 @@ namespace OpenMcdf.Test
                 var s = compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName);
                 s.Write(new byte[] { 0x0A, 0x0A }, 0);
                 compoundFile.SaveAs(rootedPath);
+                compoundFile.Close();
             });
 
             Assert.ThrowsException<CFException>(() =>
@@ -1198,6 +1200,7 @@ namespace OpenMcdf.Test
                 var s = compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName);
                 s.Write(new byte[] { 0x0A, 0x0A }, 0);
                 compoundFile.Save(fs);
+                compoundFile.Close();
             });
 
             if (File.Exists(filename2))
