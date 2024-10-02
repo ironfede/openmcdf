@@ -166,91 +166,75 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_SUMMARY_INFO_READ_UTF8_ISSUE_33()
         {
-            try
+            using (CompoundFile cf = new CompoundFile("wstr_presets.doc"))
             {
-                using (CompoundFile cf = new CompoundFile("wstr_presets.doc"))
+                var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
+
+                foreach (OLEProperty p in co.Properties)
                 {
-                    var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
-
-                    foreach (OLEProperty p in co.Properties)
-                    {
-                        Debug.Write(p.PropertyName);
-                        Debug.Write(" - ");
-                        Debug.Write(p.VTType);
-                        Debug.Write(" - ");
-                        Debug.WriteLine(p.Value);
-                    }
-
-                    Assert.IsNotNull(co.Properties);
-
-                    var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
-
-                    foreach (OLEProperty p in co2.Properties)
-                    {
-                        Debug.Write(p.PropertyName);
-                        Debug.Write(" - ");
-                        Debug.Write(p.VTType);
-                        Debug.Write(" - ");
-                        Debug.WriteLine(p.Value);
-                    }
-
-                    Assert.IsNotNull(co2.Properties);
+                    Debug.Write(p.PropertyName);
+                    Debug.Write(" - ");
+                    Debug.Write(p.VTType);
+                    Debug.Write(" - ");
+                    Debug.WriteLine(p.Value);
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                Assert.Fail();
+
+                Assert.IsNotNull(co.Properties);
+
+                var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
+
+                foreach (OLEProperty p in co2.Properties)
+                {
+                    Debug.Write(p.PropertyName);
+                    Debug.Write(" - ");
+                    Debug.Write(p.VTType);
+                    Debug.Write(" - ");
+                    Debug.WriteLine(p.Value);
+                }
+
+                Assert.IsNotNull(co2.Properties);
             }
         }
 
         [TestMethod]
         public void Test_SUMMARY_INFO_READ_UTF8_ISSUE_34()
         {
-            try
+            using (CompoundFile cf = new CompoundFile("2custom.doc"))
             {
-                using (CompoundFile cf = new CompoundFile("2custom.doc"))
+                var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
+
+                foreach (OLEProperty p in co.Properties)
                 {
-                    var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
-
-                    foreach (OLEProperty p in co.Properties)
-                    {
-                        Debug.Write(p.PropertyName);
-                        Debug.Write(" - ");
-                        Debug.Write(p.VTType);
-                        Debug.Write(" - ");
-                        Debug.WriteLine(p.Value);
-                    }
-
-                    Assert.IsNotNull(co.Properties);
-
-                    var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
-
-                    Assert.IsNotNull(co2.Properties);
-                    foreach (OLEProperty p in co2.Properties)
-                    {
-                        Debug.Write(p.PropertyName);
-                        Debug.Write(" - ");
-                        Debug.Write(p.VTType);
-                        Debug.Write(" - ");
-                        Debug.WriteLine(p.Value);
-                    }
-
-                    Assert.IsNotNull(co2.UserDefinedProperties.Properties);
-                    foreach (OLEProperty p in co2.UserDefinedProperties.Properties)
-                    {
-                        Debug.Write(p.PropertyName);
-                        Debug.Write(" - ");
-                        Debug.Write(p.VTType);
-                        Debug.Write(" - ");
-                        Debug.WriteLine(p.Value);
-                    }
+                    Debug.Write(p.PropertyName);
+                    Debug.Write(" - ");
+                    Debug.Write(p.VTType);
+                    Debug.Write(" - ");
+                    Debug.WriteLine(p.Value);
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                Assert.Fail();
+
+                Assert.IsNotNull(co.Properties);
+
+                var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
+
+                Assert.IsNotNull(co2.Properties);
+                foreach (OLEProperty p in co2.Properties)
+                {
+                    Debug.Write(p.PropertyName);
+                    Debug.Write(" - ");
+                    Debug.Write(p.VTType);
+                    Debug.Write(" - ");
+                    Debug.WriteLine(p.Value);
+                }
+
+                Assert.IsNotNull(co2.UserDefinedProperties.Properties);
+                foreach (OLEProperty p in co2.UserDefinedProperties.Properties)
+                {
+                    Debug.Write(p.PropertyName);
+                    Debug.Write(" - ");
+                    Debug.Write(p.VTType);
+                    Debug.Write(" - ");
+                    Debug.WriteLine(p.Value);
+                }
             }
         }
 

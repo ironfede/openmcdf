@@ -577,14 +577,9 @@ namespace OpenMcdf.Test
                 CollectionAssert.AreEqual(buffer, cfs.GetData());
                 f.Close();
             }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
             finally
             {
-                //if (File.Exists("$ItemsLargeNumber.cfs"))
-                //    File.Delete("$ItemsLargeNumber.cfs");
+                File.Delete("$ItemsLargeNumber.cfs");
             }
         }
 
@@ -673,29 +668,21 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_ISSUE_2_WRONG_CUTOFF_SIZE()
         {
-            FileStream fs = null;
-            try
+            if (File.Exists("TEST_ISSUE_2"))
             {
-                if (File.Exists("TEST_ISSUE_2"))
-                {
-                    File.Delete("TEST_ISSUE_2");
-                }
-
-                CompoundFile cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
-                var s = cf.RootStorage.AddStream("miniToNormal");
-                s.Append(Helpers.GetBuffer(4090, 0xAA));
-
-                cf.SaveAs("TEST_ISSUE_2");
-                cf.Close();
-                var cf2 = new CompoundFile("TEST_ISSUE_2", CFSUpdateMode.Update, CFSConfiguration.Default);
-                cf2.RootStorage.GetStream("miniToNormal").Append(Helpers.GetBuffer(6, 0xBB));
-                cf2.Commit();
-                cf2.Close();
+                File.Delete("TEST_ISSUE_2");
             }
-            catch (Exception)
-            {
-                Assert.IsTrue(fs.CanRead && fs.CanSeek && fs.CanWrite);
-            }
+
+            CompoundFile cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
+            var s = cf.RootStorage.AddStream("miniToNormal");
+            s.Append(Helpers.GetBuffer(4090, 0xAA));
+
+            cf.SaveAs("TEST_ISSUE_2");
+            cf.Close();
+            var cf2 = new CompoundFile("TEST_ISSUE_2", CFSUpdateMode.Update, CFSConfiguration.Default);
+            cf2.RootStorage.GetStream("miniToNormal").Append(Helpers.GetBuffer(6, 0xBB));
+            cf2.Commit();
+            cf2.Close();
         }
 
         [TestMethod]
@@ -936,10 +923,6 @@ namespace OpenMcdf.Test
                     f.SaveAs("BigFile.cfs");
                     f.Close();
                 }
-            }
-            catch (Exception)
-            {
-                Assert.Fail();
             }
             finally
             {

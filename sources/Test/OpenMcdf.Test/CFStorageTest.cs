@@ -102,27 +102,14 @@ namespace OpenMcdf.Test
             cf.RootStorage.TryGetStorage("MyStorage", out CFStorage st);
             Assert.IsNotNull(st);
 
-            try
-            {
-                cf.RootStorage.TryGetStorage("IDONTEXIST", out CFStorage nf);
-                Assert.IsNull(nf);
-            }
-            catch (Exception)
-            {
-                Assert.Fail("Exception raised for try_get method");
-            }
+            cf.RootStorage.TryGetStorage("IDONTEXIST", out CFStorage nf);
+            Assert.IsNull(nf);
 
-            try
-            {
-                st.TryGetStream("MyStream", out CFStream s);
-                Assert.IsNotNull(s);
-                st.TryGetStream("IDONTEXIST2", out CFStream ns);
-                Assert.IsNull(ns);
-            }
-            catch (Exception)
-            {
-                Assert.Fail("Exception raised for try_get method");
-            }
+            st.TryGetStream("MyStream", out CFStream s);
+            Assert.IsNotNull(s);
+            st.TryGetStream("IDONTEXIST2", out CFStream ns);
+            Assert.IsNull(ns);
+
         }
 
         [TestMethod]
@@ -135,44 +122,20 @@ namespace OpenMcdf.Test
             Assert.IsTrue(bs);
             Assert.IsNotNull(st);
 
-            try
-            {
-                bool nb = cf.RootStorage.TryGetStorage("IDONTEXIST", out CFStorage nf);
-                Assert.IsFalse(nb);
-                Assert.IsNull(nf);
-            }
-            catch (Exception)
-            {
-                Assert.Fail("Exception raised for TryGetStorage method");
-            }
+            bool nb = cf.RootStorage.TryGetStorage("IDONTEXIST", out CFStorage nf);
+            Assert.IsFalse(nb);
+            Assert.IsNull(nf);
 
-            try
-            {
-                var b = st.TryGetStream("MyStream", out CFStream s);
-                Assert.IsNotNull(s);
-                b = st.TryGetStream("IDONTEXIST2", out CFStream ns);
-                Assert.IsFalse(b);
-            }
-            catch (Exception)
-            {
-                Assert.Fail("Exception raised for try_get method");
-            }
+            var b = st.TryGetStream("MyStream", out CFStream s);
+            Assert.IsNotNull(s);
+            b = st.TryGetStream("IDONTEXIST2", out CFStream ns);
+            Assert.IsFalse(b);
         }
 
         [TestMethod]
         public void Test_VISIT_ENTRIES_CORRUPTED_FILE_VALIDATION_ON()
         {
-            CompoundFile f;
-
-            try
-            {
-                f = new CompoundFile("CorruptedDoc_bug3547815.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
-            }
-            catch
-            {
-                Assert.Fail("No exception has to be fired on creation due to lazy loading");
-                return;
-            }
+            CompoundFile f = new CompoundFile("CorruptedDoc_bug3547815.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
 
             Assert.ThrowsException<CFCorruptedFileException>(() =>
             {
@@ -184,28 +147,11 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_VISIT_ENTRIES_CORRUPTED_FILE_VALIDATION_OFF_BUT_CAN_LOAD()
         {
-            CompoundFile f = null;
+            CompoundFile f = new CompoundFile("CorruptedDoc_bug3547815_B.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.NoValidationException);
 
-            try
-            {
-                // Corrupted file has invalid children item sid reference
-                f = new CompoundFile("CorruptedDoc_bug3547815_B.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.NoValidationException);
-            }
-            catch
-            {
-                Assert.Fail("No exception has to be fired on creation due to lazy loading");
-            }
-
-            try
-            {
-                using StreamWriter tw = new StreamWriter("LogEntriesCorrupted_2.txt");
-                f.RootStorage.VisitEntries(item => tw.WriteLine(item.Name), true);
-                tw.Flush();
-            }
-            catch
-            {
-                Assert.Fail("Fail is corrupted but it has to be loaded anyway by test design");
-            }
+            using StreamWriter tw = new StreamWriter("LogEntriesCorrupted_2.txt");
+            f.RootStorage.VisitEntries(item => tw.WriteLine(item.Name), true);
+            tw.Flush();
         }
 
         [TestMethod]
@@ -381,7 +327,6 @@ namespace OpenMcdf.Test
         {
             CompoundFile cf = new CompoundFile();
             cf.RootStorage.AddStorage("AStorage")
-
                 .AddStream("AStream")
                 .SetData(Helpers.GetBuffer(100));
 
@@ -391,27 +336,13 @@ namespace OpenMcdf.Test
 
             CompoundFile cf1 = new CompoundFile("Hello$File", CFSUpdateMode.Update, CFSConfiguration.Default);
 
-            try
-            {
-                cf1.RootStorage.RenameItem("AStorage", "NewStorage");
-                cf1.Commit();
-                cf1.Close();
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
+            cf1.RootStorage.RenameItem("AStorage", "NewStorage");
+            cf1.Commit();
+            cf1.Close();
 
-            try
-            {
-                CompoundFile cf2 = new CompoundFile("Hello$File");
-                var st2 = cf2.RootStorage.GetStorage("NewStorage");
-                Assert.IsNotNull(st2);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail($"{ex.Message}");
-            }
+            CompoundFile cf2 = new CompoundFile("Hello$File");
+            var st2 = cf2.RootStorage.GetStorage("NewStorage");
+            Assert.IsNotNull(st2);
         }
 
         [TestMethod]

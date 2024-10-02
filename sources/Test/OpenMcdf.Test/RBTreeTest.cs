@@ -85,16 +85,9 @@ namespace OpenMcdf.Test
                 rbTree.Insert(item);
             }
 
-            try
-            {
-                rbTree.Delete(DirectoryEntry.Mock("5", StgType.StgInvalid), out IRBNode n);
-                rbTree.Delete(DirectoryEntry.Mock("24", StgType.StgInvalid), out n);
-                rbTree.Delete(DirectoryEntry.Mock("7", StgType.StgInvalid), out n);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail("Item removal failed: " + ex.Message);
-            }
+            rbTree.Delete(DirectoryEntry.Mock("5", StgType.StgInvalid), out IRBNode n);
+            rbTree.Delete(DirectoryEntry.Mock("24", StgType.StgInvalid), out n);
+            rbTree.Delete(DirectoryEntry.Mock("7", StgType.StgInvalid), out n);
 
             //    CFItem c;
             //    bool s = rbTree.TryLookup(new CFMock("7", StgType.StgStream), out c);

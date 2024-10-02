@@ -118,10 +118,6 @@ namespace OpenMcdf.Test
                 myStream.SetData(b);
                 cf.SaveAs("ZERO_LENGTH_STREAM.cfs");
             }
-            catch
-            {
-                Assert.Fail("Failed setting zero length stream");
-            }
             finally
             {
                 if (cf != null)
@@ -142,14 +138,7 @@ namespace OpenMcdf.Test
 
             Assert.IsNotNull(myStream);
 
-            try
-            {
-                myStream.SetData(b);
-            }
-            catch
-            {
-                Assert.Fail("Failed setting zero length stream");
-            }
+            myStream.SetData(b);
 
             cf.SaveAs("ZERO_LENGTH_STREAM_RE.cfs");
             cf.Close();
@@ -164,10 +153,6 @@ namespace OpenMcdf.Test
             {
                 oStream.SetData(Helpers.GetBuffer(30));
                 cfo.SaveAs("ZERO_LENGTH_STREAM_RE2.cfs");
-            }
-            catch
-            {
-                Assert.Fail("Failed re-writing zero length stream");
             }
             finally
             {
@@ -551,14 +536,7 @@ namespace OpenMcdf.Test
 
             Assert.IsNotNull(myStream);
 
-            try
-            {
-                myStream.SetData(b);
-            }
-            catch
-            {
-                Assert.Fail("Failed setting zero length stream");
-            }
+            myStream.SetData(b);
 
             string filename = "DeleteZeroLengthStream.cfs";
             cf.SaveAs(filename);
@@ -1024,33 +1002,26 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_CHANGE_STREAM_NAME_FIX_54()
         {
-            try
-            {
-                CompoundFile cf = new CompoundFile("report.xls", CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
-                cf.RootStorage.RenameItem("Workbook", "Workbuk");
+            CompoundFile cf = new CompoundFile("report.xls", CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
+            cf.RootStorage.RenameItem("Workbook", "Workbuk");
 
-                cf.SaveAs("report_n.xls");
-                cf.Close();
+            cf.SaveAs("report_n.xls");
+            cf.Close();
 
-                CompoundFile cf2 = new CompoundFile("report_n.xls", CFSUpdateMode.Update, CFSConfiguration.Default);
-                cf2.RootStorage.RenameItem("Workbuk", "Workbook");
-                cf2.Commit();
-                cf2.Close();
+            CompoundFile cf2 = new CompoundFile("report_n.xls", CFSUpdateMode.Update, CFSConfiguration.Default);
+            cf2.RootStorage.RenameItem("Workbuk", "Workbook");
+            cf2.Commit();
+            cf2.Close();
 
-                CompoundFile cf3 = new CompoundFile("MultipleStorage.cfs", CFSUpdateMode.Update, CFSConfiguration.Default);
-                cf3.RootStorage.RenameItem("MyStorage", "MyNewStorage");
-                cf3.Commit();
-                cf3.Close();
+            CompoundFile cf3 = new CompoundFile("MultipleStorage.cfs", CFSUpdateMode.Update, CFSConfiguration.Default);
+            cf3.RootStorage.RenameItem("MyStorage", "MyNewStorage");
+            cf3.Commit();
+            cf3.Close();
 
-                CompoundFile cf4 = new CompoundFile("MultipleStorage.cfs", CFSUpdateMode.Update, CFSConfiguration.Default);
-                cf4.RootStorage.RenameItem("MyNewStorage", "MyStorage");
-                cf4.Commit();
-                cf4.Close();
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail("Unexpected exception raised: " + ex.Message);
-            }
+            CompoundFile cf4 = new CompoundFile("MultipleStorage.cfs", CFSUpdateMode.Update, CFSConfiguration.Default);
+            cf4.RootStorage.RenameItem("MyNewStorage", "MyStorage");
+            cf4.Commit();
+            cf4.Close();
         }
 
         /// <summary>
