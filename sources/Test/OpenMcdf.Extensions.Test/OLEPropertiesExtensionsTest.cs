@@ -365,7 +365,7 @@ namespace OpenMcdf.Extensions.Test
                 File.Delete("test_add_user_defined_property.doc");
 
             // Test value for a VT_FILETIME property
-            DateTime testNow = DateTime.Now;
+            DateTime testNow = DateTime.UtcNow;
 
             // english.presets.doc has a user defined property section, but no properties other than the codepage
             using (CompoundFile cf = new CompoundFile("english.presets.doc"))

@@ -486,12 +486,12 @@ namespace OpenMcdf.Extensions.OLEProperties
             {
                 long tmp = br.ReadInt64();
 
-                return DateTime.FromFileTime(tmp);
+                return DateTime.FromFileTimeUtc(tmp);
             }
 
             public override void WriteScalarValue(BinaryWriter bw, DateTime pValue)
             {
-                bw.Write(pValue.ToFileTime());
+                bw.Write(pValue.ToFileTimeUtc());
             }
         }
 

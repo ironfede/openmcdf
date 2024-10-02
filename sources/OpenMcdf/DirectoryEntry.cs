@@ -49,7 +49,7 @@ namespace OpenMcdf
 
             if (stgType == StgType.StgStorage)
             {
-                CreationDate = BitConverter.GetBytes(DateTime.Now.ToFileTime());
+                CreationDate = BitConverter.GetBytes(DateTime.Now.ToFileTimeUtc());
                 StartSect = ZERO;
             }
 
