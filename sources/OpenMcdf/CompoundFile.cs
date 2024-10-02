@@ -1757,7 +1757,7 @@ namespace OpenMcdf
                     if (Path.IsPathRooted(fileName))
                     {
                         Debug.WriteLine("Path is rooted. Filename:"+ fileName);
-
+                        Debug.WriteLine("Stream name:"+ stream.Name);
                         if (stream.Name == fileName)
                         {
                             Debug.WriteLine("Filename equals stream name:"+ stream.Name);
@@ -1768,10 +1768,11 @@ namespace OpenMcdf
                     else
                     {
                         Debug.WriteLine("Path is NOT rooted. Filename:"+ fileName);
-
+                        Debug.WriteLine("Directory name:"+ Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+                        Debug.WriteLine("Path is NOT rooted. Stream name:"+ stream.Name);
+                        
                         if (stream.Name == (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + fileName))
                         {
-                            Debug.WriteLine("Directory name:"+ Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
                             Debug.WriteLine("Filename equals stream name:"+ stream.Name);
 
                             raiseSaveFileEx = true;
