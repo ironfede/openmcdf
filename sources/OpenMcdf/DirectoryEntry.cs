@@ -50,12 +50,12 @@ namespace OpenMcdf
             if (stgType == StgType.StgStorage)
             {
                 CreationDate = BitConverter.GetBytes(DateTime.Now.ToFileTime());
-                StartSetc = ZERO;
+                StartSect = ZERO;
             }
 
             if (stgType == StgType.StgInvalid)
             {
-                StartSetc = ZERO;
+                StartSect = ZERO;
             }
 
             if (name != string.Empty)
@@ -145,15 +145,13 @@ namespace OpenMcdf
 
         public byte[] ModifyDate { get; set; } = new byte[8] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
-        public int StartSetc { get; set; } = Sector.ENDOFCHAIN;
+        public int StartSect { get; set; } = Sector.ENDOFCHAIN;
 
         public long Size { get; set; }
 
         public int CompareTo(object obj)
         {
-            IDirectoryEntry otherDir = obj as IDirectoryEntry;
-
-            if (otherDir == null)
+            if (obj is not IDirectoryEntry otherDir)
                 throw new CFException("Invalid casting: compared object does not implement IDirectorEntry interface");
 
             if (NameLength > otherDir.NameLength)
@@ -227,7 +225,7 @@ namespace OpenMcdf
             rw.Write(StateBits);
             rw.Write(CreationDate);
             rw.Write(ModifyDate);
-            rw.Write(StartSetc);
+            rw.Write(StartSect);
             rw.Write(Size);
         }
 
@@ -283,7 +281,7 @@ namespace OpenMcdf
             StateBits = rw.ReadInt32();
             rw.ReadBytes(CreationDate);
             rw.ReadBytes(ModifyDate);
-            StartSetc = rw.ReadInt32();
+            StartSect = rw.ReadInt32();
 
             if (ver == CFSVersion.Ver_3)
             {
@@ -392,7 +390,7 @@ namespace OpenMcdf
                 de.SID = dirRepository.Count - 1;
             }
             else
-                throw new ArgumentNullException("dirRepository", "Directory repository cannot be null in New() method");
+                throw new ArgumentNullException(nameof(dirRepository), "Directory repository cannot be null in New() method");
 
             return de;
         }
@@ -449,7 +447,7 @@ namespace OpenMcdf
             ModifyDate.CopyTo(d.ModifyDate, 0);
 
             d.Size = Size;
-            d.StartSetc = StartSetc;
+            d.StartSect = StartSect;
             d.StateBits = StateBits;
             d.StgType = StgType;
             d.storageCLSID = new Guid(storageCLSID.ToByteArray());

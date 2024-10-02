@@ -28,7 +28,7 @@ namespace OpenMcdf
 
         public ushort MiniSectorShift { get; private set; } = 6;
 
-        public byte[] UnUsed { get; private set; } = new byte[6];
+        public byte[] Unused { get; private set; } = new byte[6];
 
         public int DirectorySectorsNumber { get; set; }
 
@@ -36,7 +36,7 @@ namespace OpenMcdf
 
         public int FirstDirectorySectorID { get; set; } = Sector.ENDOFCHAIN;
 
-        public uint UnUsed2 { get; private set; }
+        public uint Unused2 { get; private set; }
 
         public uint MinSizeStandardStream { get; set; } = 4096;
 
@@ -93,11 +93,11 @@ namespace OpenMcdf
             rw.Write(ByteOrder);
             rw.Write(SectorShift);
             rw.Write(MiniSectorShift);
-            rw.Write(UnUsed);
+            rw.Write(Unused);
             rw.Write(DirectorySectorsNumber);
             rw.Write(FATSectorsNumber);
             rw.Write(FirstDirectorySectorID);
-            rw.Write(UnUsed2);
+            rw.Write(Unused2);
             rw.Write(MinSizeStandardStream);
             rw.Write(FirstMiniFATSectorID);
             rw.Write(MiniFATSectorsNumber);
@@ -128,11 +128,11 @@ namespace OpenMcdf
             ByteOrder = rw.ReadUInt16();
             SectorShift = rw.ReadUInt16();
             MiniSectorShift = rw.ReadUInt16();
-            rw.ReadBytes(UnUsed);
+            rw.ReadBytes(Unused);
             DirectorySectorsNumber = rw.ReadInt32();
             FATSectorsNumber = rw.ReadInt32();
             FirstDirectorySectorID = rw.ReadInt32();
-            UnUsed2 = rw.ReadUInt32();
+            Unused2 = rw.ReadUInt32();
             MinSizeStandardStream = rw.ReadUInt32();
             FirstMiniFATSectorID = rw.ReadInt32();
             MiniFATSectorsNumber = rw.ReadUInt32();

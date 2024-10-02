@@ -72,7 +72,7 @@ namespace OpenMcdf
             set
             {
                 if (position > length - 1)
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
 
                 position = value;
             }
