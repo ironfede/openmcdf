@@ -1182,7 +1182,7 @@ namespace OpenMcdf.Test
                 compoundFile.SaveAs(filename2);
             });
 
-            Assert.ThrowsException<CFException>(() =>
+            Assert.ThrowsException<CFFileFormatException>(() =>
             {
                 string rootedPath = Path.GetFullPath(filename2);
                 using CompoundFile compoundFile = new(rootedPath);
