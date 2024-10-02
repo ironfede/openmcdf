@@ -1,5 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OpenMcdf.Test
 {
@@ -52,22 +54,18 @@ namespace OpenMcdf.Test
         [TestMethod()]
         public void CountTest()
         {
-            int count = 0;
-
             SectorCollection target = new SectorCollection(); // TODO: Initialize to an appropriate value
-            int actual;
-            actual = target.Count;
 
-            Assert.IsTrue(actual == count);
+            Assert.AreEqual(0, target.Count);
             Sector s = new Sector(4096);
 
             target.Add(s);
-            Assert.IsTrue(target.Count == actual + 1);
+            Assert.AreEqual(1, target.Count);
 
             for (int i = 0; i < 5000; i++)
                 target.Add(s);
 
-            Assert.IsTrue(target.Count == actual + 1 + 5000);
+            Assert.AreEqual(5001, target.Count);
         }
 
         /// <summary>
@@ -89,25 +87,9 @@ namespace OpenMcdf.Test
             actual = target[index];
 
             Assert.AreEqual(expected, actual);
-            Assert.IsNotNull(actual);
-            Assert.IsTrue(actual.Id == expected.Id);
-            try
-            {
-                actual = target[count + 100];
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex is CFException);
-            }
-
-            try
-            {
-                actual = target[-1];
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex is CFException);
-            }
+            Assert.AreEqual(expected.Id, actual.Id);
+            Assert.ThrowsException<CFException>(() => target[count + 100]);
+            Assert.ThrowsException<CFException>(() => target[-1]);
         }
 
         /// <summary>
@@ -119,11 +101,11 @@ namespace OpenMcdf.Test
             SectorCollection target = new SectorCollection();
 
             Assert.IsNotNull(target);
-            Assert.IsTrue(target.Count == 0);
+            Assert.AreEqual(0, target.Count);
 
             Sector s = new Sector(4096);
             target.Add(s);
-            Assert.IsTrue(target.Count == 1);
+            Assert.AreEqual(1, target.Count);
         }
 
         /// <summary>
@@ -140,7 +122,7 @@ namespace OpenMcdf.Test
 
             Sector item = new Sector(4096);
             target.Add(item);
-            Assert.IsTrue(target.Count == 580);
+            Assert.AreEqual(580, target.Count);
         }
 
         /// <summary>
@@ -157,15 +139,15 @@ namespace OpenMcdf.Test
 
             Sector item = new Sector(4096);
             target.Add(item);
-            Assert.IsTrue(target.Count == 580);
+            Assert.AreEqual(580, target.Count);
 
-            int cnt = 0;
-            foreach (Sector s in target)
+            int count = 0;
+            using IEnumerator<Sector> enumerator = target.GetEnumerator();
+            while (enumerator.MoveNext())
             {
-                cnt++;
+                count++;
             }
-
-            Assert.IsTrue(cnt == target.Count);
+            Assert.AreEqual(580, count);
         }
     }
 }

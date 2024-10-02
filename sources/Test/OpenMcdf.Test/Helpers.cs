@@ -32,31 +32,5 @@ namespace OpenMcdf.Test
             FillBuffer(b, c);
             return b;
         }
-
-        public static bool CompareBuffer(byte[] b, byte[] p)
-        {
-            bool res = CompareBuffer(b, p, b.Length);
-            return res && (b.Length == p.Length);
-        }
-
-        public static bool CompareBuffer(byte[] b, byte[] p, int count)
-        {
-            if (b == null && p == null)
-                throw new Exception("Null buffers");
-
-            if (b == null && p != null)
-                return false;
-
-            if (b != null && p == null)
-                return false;
-
-            for (int i = 0; i < count; i++)
-            {
-                if (b[i] != p[i])
-                    return false;
-            }
-
-            return true;
-        }
     }
 }

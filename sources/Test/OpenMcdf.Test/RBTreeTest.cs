@@ -69,7 +69,7 @@ namespace OpenMcdf.Test
             {
                 rbTree.TryLookup(DirectoryEntry.Mock(i.ToString(), StgType.StgInvalid), out IRBNode c);
                 Assert.IsTrue(c is IDirectoryEntry);
-                Assert.IsTrue(((IDirectoryEntry)c).Name == i.ToString());
+                Assert.AreEqual(i.ToString(), ((IDirectoryEntry)c).Name);
                 //Assert.IsTrue(c.IsStream);
             }
         }
@@ -136,16 +136,16 @@ namespace OpenMcdf.Test
 
         private static void VerifyProperty2(IRBNode root)
         {
-            Assert.IsTrue(NodeColor(root) == Color.BLACK);
+            Assert.AreEqual(Color.BLACK, NodeColor(root));
         }
 
         private static void VerifyProperty4(IRBNode n)
         {
             if (NodeColor(n) == Color.RED)
             {
-                Assert.IsTrue(NodeColor(n.Left) == Color.BLACK);
-                Assert.IsTrue(NodeColor(n.Right) == Color.BLACK);
-                Assert.IsTrue(NodeColor(n.Parent) == Color.BLACK);
+                Assert.AreEqual(Color.BLACK, NodeColor(n.Left));
+                Assert.AreEqual(Color.BLACK, NodeColor(n.Right));
+                Assert.AreEqual(Color.BLACK, NodeColor(n.Parent));
             }
 
             if (n == null) return;
@@ -173,7 +173,7 @@ namespace OpenMcdf.Test
                 }
                 else
                 {
-                    Assert.IsTrue(blackCount == pathBlackCount);
+                    Assert.AreEqual(blackCount, pathBlackCount);
                 }
 
                 return pathBlackCount;
