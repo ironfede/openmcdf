@@ -1756,24 +1756,30 @@ namespace OpenMcdf
                 {
                     if (Path.IsPathRooted(fileName))
                     {
-                        Debug.WriteLine("Path is rooted. Filename:"+ fileName);
+                        Debug.WriteLine("Path is rooted");
+                        Debug.WriteLine("Filename:"+ fileName);
                         Debug.WriteLine("Stream name:"+ stream.Name);
+                        Debug.WriteLine("Stream name equals filename? :" + (stream.Name == fileName));
+
                         if (stream.Name == fileName)
                         {
-                            Debug.WriteLine("Filename equals stream name:"+ stream.Name);
+                            Debug.WriteLine("-> Filename equals stream name");
 
                             raiseSaveFileEx = true;
                         }
                     }
                     else
                     {
-                        Debug.WriteLine("Path is NOT rooted. Filename:"+ fileName);
+                        Debug.WriteLine("Path is NOT rooted");
+                        Debug.WriteLine("Filename:"+ fileName);
+                        Debug.WriteLine("Filename modified:"+ (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + fileName));
                         Debug.WriteLine("Directory name:"+ Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
-                        Debug.WriteLine("Path is NOT rooted. Stream name:"+ stream.Name);
-                        
+                        Debug.WriteLine("Stream name:"+ stream.Name);
+                        Debug.WriteLine("Stream name equals filename? :" + (stream.Name ==  (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + fileName)));
+
                         if (stream.Name == (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + fileName))
                         {
-                            Debug.WriteLine("Filename equals stream name:"+ stream.Name);
+                            Debug.WriteLine("-> Filename equals stream name:");
 
                             raiseSaveFileEx = true;
                         }
