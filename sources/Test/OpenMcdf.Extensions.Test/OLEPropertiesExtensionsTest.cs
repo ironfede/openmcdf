@@ -93,8 +93,7 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_DOCUMENT_SUMMARY_INFO_ROUND_TRIP()
         {
-            if (File.Exists("test1.cfs"))
-                File.Delete("test1.cfs");
+            File.Delete("test1.cfs");
 
             using (CompoundFile cf = new CompoundFile("_Test.ppt"))
             {
@@ -117,8 +116,7 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_DOCUMENT_SUMMARY_INFO_MODIFY()
         {
-            if (File.Exists("test_modify_summary.ppt"))
-                File.Delete("test_modify_summary.ppt");
+            File.Delete("test_modify_summary.ppt");
 
             // Verify initial properties, and then create a modified document
             using (CompoundFile cf = new CompoundFile("_Test.ppt"))
@@ -264,8 +262,7 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_SUMMARY_INFO_MODIFY_LPWSTRING()
         {
-            if (File.Exists("test_write_lpwstr.doc"))
-                File.Delete("test_write_lpwstr.doc");
+            File.Delete("test_write_lpwstr.doc");
 
             // Modify some LPWSTR properties, and save to a new file
             using (CompoundFile cf = new CompoundFile("wstr_presets.doc"))
@@ -345,8 +342,7 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_DOCUMENT_SUMMARY_INFO_ADD_CUSTOM()
         {
-            if (File.Exists("test_add_user_defined_property.doc"))
-                File.Delete("test_add_user_defined_property.doc");
+            File.Delete("test_add_user_defined_property.doc");
 
             // Test value for a VT_FILETIME property
             DateTime testNow = DateTime.UtcNow;
@@ -456,8 +452,7 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_ADD_USER_DEFINED_PROPERTIES_SECTION()
         {
-            if (File.Exists("test_add_user_defined_properties.xls"))
-                File.Delete("test_add_user_defined_properties.xls");
+            File.Delete("test_add_user_defined_properties.xls");
 
             using (CompoundFile cf = new CompoundFile("report.xls"))
             {

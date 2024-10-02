@@ -124,8 +124,7 @@ namespace OpenMcdf.Test
                     cf.Close();
             }
 
-            if (File.Exists("ZERO_LENGTH_STREAM.cfs"))
-                File.Delete("ZERO_LENGTH_STREAM.cfs");
+            File.Delete("ZERO_LENGTH_STREAM.cfs");
         }
 
         [TestMethod]
@@ -159,11 +158,9 @@ namespace OpenMcdf.Test
                 cfo.Close();
             }
 
-            if (File.Exists("ZERO_LENGTH_STREAM_RE.cfs"))
-                File.Delete("ZERO_LENGTH_STREAM_RE.cfs");
+            File.Delete("ZERO_LENGTH_STREAM_RE.cfs");
 
-            if (File.Exists("ZERO_LENGTH_STREAM_RE2.cfs"))
-                File.Delete("ZERO_LENGTH_STREAM_RE2.cfs");
+            File.Delete("ZERO_LENGTH_STREAM_RE2.cfs");
         }
 
         [TestMethod]
@@ -191,8 +188,7 @@ namespace OpenMcdf.Test
 
             cf2.Close();
 
-            if (File.Exists("WRITE_STREAM_WITH_DIFAT.cfs"))
-                File.Delete("WRITE_STREAM_WITH_DIFAT.cfs");
+            File.Delete("WRITE_STREAM_WITH_DIFAT.cfs");
         }
 
         [TestMethod]
@@ -268,11 +264,9 @@ namespace OpenMcdf.Test
 
             cfc.Close();
 
-            if (File.Exists("WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs"))
-                File.Delete("WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs");
+            File.Delete("WRITE_MINISTREAM_READ_REWRITE_STREAM.cfs");
 
-            if (File.Exists("WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs"))
-                File.Delete("WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
+            File.Delete("WRITE_MINISTREAM_READ_REWRITE_STREAM_2ND.cfs");
         }
 
         [TestMethod]
@@ -295,8 +289,7 @@ namespace OpenMcdf.Test
             Assert.AreEqual(BUFFER_LENGTH, c.Length);
             cf.Close();
 
-            if (File.Exists("reportRW_SMALL.xls"))
-                File.Delete("reportRW_SMALL.xls");
+            File.Delete("reportRW_SMALL.xls");
         }
 
         [TestMethod]
@@ -318,8 +311,7 @@ namespace OpenMcdf.Test
             CollectionAssert.AreEqual(c, b);
             cf.Close();
 
-            if (File.Exists("RE_WRITE_SMALLER_MINI_STREAM.xls"))
-                File.Delete("RE_WRITE_SMALLER_MINI_STREAM.xls");
+            File.Delete("RE_WRITE_SMALLER_MINI_STREAM.xls");
         }
 
         [TestMethod]
@@ -340,8 +332,7 @@ namespace OpenMcdf.Test
             cf.Commit();
             cf.Close();
 
-            if (File.Exists("reportOverwrite.xls"))
-                File.Delete("reportOverwrite.xls");
+            File.Delete("reportOverwrite.xls");
         }
 
         [TestMethod]
@@ -385,11 +376,9 @@ namespace OpenMcdf.Test
             cf.SaveAs(dstFilename + "PP");
             cf.Close();
 
-            if (File.Exists("reportOverwriteMultiple.xls"))
-                File.Delete("reportOverwriteMultiple.xls");
+            File.Delete("reportOverwriteMultiple.xls");
 
-            if (File.Exists("reportOverwriteMultiple.xlsPP"))
-                File.Delete("reportOverwriteMultiple.xlsPP");
+            File.Delete("reportOverwriteMultiple.xlsPP");
         }
 
         [TestMethod]
@@ -419,8 +408,7 @@ namespace OpenMcdf.Test
             larger.Close();
             smaller.Close();
 
-            if (File.Exists("reportOverwriteMultiple.xlsPP"))
-                File.Delete("reportOverwriteMultiple.xlsPP");
+            File.Delete("reportOverwriteMultiple.xlsPP");
         }
 
         [TestMethod]
@@ -443,8 +431,7 @@ namespace OpenMcdf.Test
             cf.Commit();
             cf.Close();
 
-            if (File.Exists("reportOverwrite2.xlsPP"))
-                File.Delete("reportOverwrite2.xlsPP");
+            File.Delete("reportOverwrite2.xlsPP");
         }
 
         [TestMethod]
@@ -498,8 +485,7 @@ namespace OpenMcdf.Test
             Assert.IsNotNull(sm2);
             Assert.AreEqual(220, sm2.Size);
 
-            if (File.Exists(filename))
-                File.Delete(filename);
+            File.Delete(filename);
         }
 
         [TestMethod]
@@ -572,8 +558,7 @@ namespace OpenMcdf.Test
         {
             string filename = "INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS.cfs";
 
-            if (File.Exists(filename))
-                File.Delete(filename);
+            File.Delete(filename);
 
             CompoundFile cf = new CompoundFile();
             CFStorage st = cf.RootStorage.AddStorage("MyStorage");
@@ -600,8 +585,7 @@ namespace OpenMcdf.Test
         {
             string filename = "INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS.cfs";
 
-            if (File.Exists(filename))
-                File.Delete(filename);
+            File.Delete(filename);
 
             CompoundFile cf = new CompoundFile();
             CFStorage st = cf.RootStorage.AddStorage("MyStorage");
@@ -784,8 +768,7 @@ namespace OpenMcdf.Test
             CollectionAssert.AreEqual(b100, cf.RootStorage.GetStream("AStream").GetData());
             cf.Close();
 
-            if (File.Exists(FILE_NAME))
-                File.Delete(FILE_NAME);
+            File.Delete(FILE_NAME);
         }
 
         [TestMethod]

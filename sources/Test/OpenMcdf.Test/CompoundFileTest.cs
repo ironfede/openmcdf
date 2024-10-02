@@ -544,8 +544,7 @@ namespace OpenMcdf.Test
                 if (f != null)
                     f.Close();
 
-                if (File.Exists("$OpenMcdf$LargeFile.cfs"))
-                    File.Delete("$OpenMcdf$LargeFile.cfs");
+                File.Delete("$OpenMcdf$LargeFile.cfs");
             }
         }
 
@@ -668,10 +667,7 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_ISSUE_2_WRONG_CUTOFF_SIZE()
         {
-            if (File.Exists("TEST_ISSUE_2"))
-            {
-                File.Delete("TEST_ISSUE_2");
-            }
+            File.Delete("TEST_ISSUE_2");
 
             CompoundFile cf = new CompoundFile(CFSVersion.Ver_3, CFSConfiguration.Default);
             var s = cf.RootStorage.AddStream("miniToNormal");
@@ -926,11 +922,8 @@ namespace OpenMcdf.Test
             }
             finally
             {
-                if (File.Exists("BigFile.data"))
-                    File.Delete("BigFile.data");
-
-                if (File.Exists("BigFile.cfs"))
-                    File.Delete("BigFile.cfs");
+                File.Delete("BigFile.data");
+                File.Delete("BigFile.cfs");
             }
         }
 
@@ -1085,13 +1078,7 @@ namespace OpenMcdf.Test
             string filename = "_Test.ppt";
             string filename2 = "MyFile4.dat";
 
-            if (File.Exists(filename2))
-                File.Delete(filename2);
-
-            if (File.Exists(filename))
-            {
-                File.Copy(filename, filename2);
-            }
+            File.Copy(filename, filename2, true);
 
             var cf = new CompoundFile(filename2, CFSUpdateMode.Update, CFSConfiguration.EraseFreeSectors);
             cf.RootStorage.Delete("PowerPoint Document");
@@ -1105,8 +1092,7 @@ namespace OpenMcdf.Test
 
             Assert.IsTrue(length > length2);
 
-            if (File.Exists(filename2))
-                File.Delete(filename2);
+            File.Delete(filename2);
         }
 
         [TestMethod]
@@ -1117,13 +1103,7 @@ namespace OpenMcdf.Test
             string storageName = "MyStorage";
             string streamName = "MyStream";
 
-            if (File.Exists(filename2))
-                File.Delete(filename2);
-
-            if (File.Exists(filename))
-            {
-                File.Copy(filename, filename2);
-            }
+            File.Copy(filename, filename2, true);
 
             Assert.ThrowsException<CFException>(() =>
             {
@@ -1154,9 +1134,7 @@ namespace OpenMcdf.Test
                 compoundFile.Close();
             });
 
-
-            if (File.Exists(filename2))
-                File.Delete(filename2);
+            File.Delete(filename2);
         }
     }
 }

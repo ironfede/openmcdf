@@ -160,8 +160,7 @@ namespace OpenMcdf.Test
             string FILENAME = "testVisiting.xls";
 
             // Remove...
-            if (File.Exists(FILENAME))
-                File.Delete(FILENAME);
+            File.Delete(FILENAME);
 
             //Create...
 
@@ -290,15 +289,8 @@ namespace OpenMcdf.Test
             cf.SaveAs("$Hel2");
             cf.Close();
 
-            if (File.Exists("$Hel1"))
-            {
-                File.Delete("$Hel1");
-            }
-
-            if (File.Exists("$Hel2"))
-            {
-                File.Delete("$Hel2");
-            }
+            File.Delete("$Hel1");
+            File.Delete("$Hel2");
         }
 
         [TestMethod]
