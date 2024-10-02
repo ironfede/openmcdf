@@ -1203,6 +1203,7 @@ namespace OpenMcdf.Test
                 compoundFile.Close();
             });
 
+
             if (File.Exists(filename2))
                 File.Delete(filename2);
         }

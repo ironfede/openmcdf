@@ -11,6 +11,7 @@
 using RedBlackTree;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 namespace OpenMcdf
@@ -1755,15 +1756,24 @@ namespace OpenMcdf
                 {
                     if (Path.IsPathRooted(fileName))
                     {
+                        Debug.WriteLine("Path is rooted. Filename:"+ fileName);
+
                         if (stream.Name == fileName)
                         {
+                            Debug.WriteLine("Filename equals stream name:"+ stream.Name);
+
                             raiseSaveFileEx = true;
                         }
                     }
                     else
                     {
+                        Debug.WriteLine("Path is NOT rooted. Filename:"+ fileName);
+
                         if (stream.Name == (Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\" + fileName))
                         {
+                            Debug.WriteLine("Directory name:"+ Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+                            Debug.WriteLine("Filename equals stream name:"+ stream.Name);
+
                             raiseSaveFileEx = true;
                         }
                     }
