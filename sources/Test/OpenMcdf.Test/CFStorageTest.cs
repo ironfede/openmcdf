@@ -6,14 +6,14 @@ using System.IO;
 namespace OpenMcdf.Test
 {
     /// <summary>
-    /// Summary description for CFTorageTest
+    /// Summary description for CFStorageTest
     /// </summary>
     [TestClass]
-    public class CFSTorageTest
+    public class CFStorageTest
     {
         //const String OUTPUT_DIR = "C:\\TestOutputFiles\\";
 
-        public CFSTorageTest()
+        public CFStorageTest()
         {
         }
 
@@ -162,44 +162,23 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_VISIT_ENTRIES_CORRUPTED_FILE_VALIDATION_ON()
         {
-            CompoundFile f = null;
+            CompoundFile f;
 
             try
             {
-                f = new CompoundFile("CorruptedDoc_bug3547815.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.NoValidationException);
+                f = new CompoundFile("CorruptedDoc_bug3547815.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.Default);
             }
             catch
             {
                 Assert.Fail("No exception has to be fired on creation due to lazy loading");
+                return;
             }
 
-            FileStream output = null;
-
-            try
+            Assert.ThrowsException<CFCorruptedFileException>(() =>
             {
-                output = new FileStream("LogEntriesCorrupted_1.txt", FileMode.Create);
-
-                using (StreamWriter tw = new StreamWriter(output))
-                {
-                    Action<CFItem> va = delegate (CFItem item)
-                       {
-                           tw.WriteLine(item.Name);
-                       };
-
-                    f.RootStorage.VisitEntries(va, true);
-                    tw.Flush();
-                }
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex is CFCorruptedFileException);
-                Assert.IsTrue(f != null && f.IsClosed);
-            }
-            finally
-            {
-                if (output != null)
-                    output.Close();
-            }
+                using StreamWriter tw = new StreamWriter("LogEntriesCorrupted_1.txt");
+                f.RootStorage.VisitEntries(item => tw.WriteLine(item.Name), true);
+            });
         }
 
         [TestMethod]
@@ -209,7 +188,7 @@ namespace OpenMcdf.Test
 
             try
             {
-                //Corrupted file has invalid children item sid reference
+                // Corrupted file has invalid children item sid reference
                 f = new CompoundFile("CorruptedDoc_bug3547815_B.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.NoValidationException);
             }
             catch
@@ -217,31 +196,15 @@ namespace OpenMcdf.Test
                 Assert.Fail("No exception has to be fired on creation due to lazy loading");
             }
 
-            FileStream output = null;
-
             try
             {
-                output = new FileStream("LogEntriesCorrupted_2.txt", FileMode.Create);
-
-                using (StreamWriter tw = new StreamWriter(output))
-                {
-                    Action<CFItem> va = delegate (CFItem item)
-                    {
-                        tw.WriteLine(item.Name);
-                    };
-
-                    f.RootStorage.VisitEntries(va, true);
-                    tw.Flush();
-                }
+                using StreamWriter tw = new StreamWriter("LogEntriesCorrupted_2.txt");
+                f.RootStorage.VisitEntries(item => tw.WriteLine(item.Name), true);
+                tw.Flush();
             }
             catch
             {
                 Assert.Fail("Fail is corrupted but it has to be loaded anyway by test design");
-            }
-            finally
-            {
-                if (output != null)
-                    output.Close();
             }
         }
 
@@ -357,15 +320,7 @@ namespace OpenMcdf.Test
             CFStorage st = cf.RootStorage.GetStorage("MyStorage");
             cf.Close();
 
-            try
-            {
-                byte[] temp = st.GetStream("MyStream").GetData();
-                Assert.Fail("Stream without media");
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex is CFDisposedException);
-            }
+            Assert.ThrowsException<CFDisposedException>(() => st.GetStream("MyStream").GetData());
         }
 
         [TestMethod]
@@ -385,7 +340,7 @@ namespace OpenMcdf.Test
             IList<CFItem> i = cf.GetAllNamedEntries("Level2Stream");
             Assert.IsNotNull(i[0]);
             Assert.IsTrue(i[0] is CFStream);
-            Assert.IsTrue((i[0] as CFStream).GetData().Length == 100);
+            Assert.AreEqual(100, (i[0] as CFStream).GetData().Length);
             cf.SaveAs("$Hel2");
             cf.Close();
 
@@ -414,14 +369,11 @@ namespace OpenMcdf.Test
             cf.Close();
 
             CompoundFile cf1 = new CompoundFile("$Hel3");
-            try
+
+            Assert.ThrowsException<CFDuplicatedItemException>(() =>
             {
                 CFStream cs = cf1.RootStorage.GetStorage("Level_1").AddStream("Level2Stream");
-            }
-            catch (Exception ex)
-            {
-                Assert.IsTrue(ex.GetType() == typeof(CFDuplicatedItemException));
-            }
+            });
         }
 
         [TestMethod]
