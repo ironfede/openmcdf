@@ -341,10 +341,8 @@ namespace OpenMcdf.Test
         [ExpectedException(typeof(CFCorruptedFileException))]
         public void Test_CORRUPTEDDOC_BUG36_SHOULD_THROW_CORRUPTED_FILE_EXCEPTION()
         {
-            using (CompoundFile file = new CompoundFile("CorruptedDoc_bug36.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.NoValidationException))
-            {
-                //Many thanks to theseus for bug reporting
-            }
+            using CompoundFile file = new CompoundFile("CorruptedDoc_bug36.doc", CFSUpdateMode.ReadOnly, CFSConfiguration.NoValidationException);
+            //Many thanks to theseus for bug reporting
         }
     }
 }

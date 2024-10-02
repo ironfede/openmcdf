@@ -184,16 +184,12 @@ namespace OpenMcdf.Test
         {
             const string filename = "reportREAD.xls";
 
-            using (var fs = new FileStream(filename, FileMode.Open))
-            {
-                using (var cf = new CompoundFile(fs))
-                {
-                    var foundStream = cf.RootStorage.GetStream("Workbook");
-                    var temp = foundStream.GetData();
-                    Assert.IsNotNull(temp);
-                    cf.Close();
-                }
-            }
+            using var fs = new FileStream(filename, FileMode.Open);
+            using var cf = new CompoundFile(fs);
+            var foundStream = cf.RootStorage.GetStream("Workbook");
+            var temp = foundStream.GetData();
+            Assert.IsNotNull(temp);
+            cf.Close();
         }
 
         [TestMethod]
@@ -606,11 +602,9 @@ namespace OpenMcdf.Test
         {
             const string FILE_PATH = @"2_MB-W.ppt";
 
-            using (CompoundFile file = new CompoundFile(FILE_PATH))
-            {
-                //CFStorage dataSpaceInfo = file.RootStorage.GetStorage("\u0006DataSpaces").GetStorage("DataSpaceInfo");
-                CFItem dsiItem = file.GetAllNamedEntries("DataSpaceInfo").FirstOrDefault();
-            }
+            using CompoundFile file = new CompoundFile(FILE_PATH);
+            //CFStorage dataSpaceInfo = file.RootStorage.GetStorage("\u0006DataSpaces").GetStorage("DataSpaceInfo");
+            CFItem dsiItem = file.GetAllNamedEntries("DataSpaceInfo").FirstOrDefault();
         }
 
         [TestMethod]
@@ -618,10 +612,8 @@ namespace OpenMcdf.Test
         {
             try
             {
-                using (var cf = new CompoundFile("_thumbs_bug_24.db"))
-                {
-                    cf.RootStorage.VisitEntries(item => Console.WriteLine(item.Name), recursive: false);
-                }
+                using var cf = new CompoundFile("_thumbs_bug_24.db");
+                cf.RootStorage.VisitEntries(item => Console.WriteLine(item.Name), recursive: false);
             }
             catch (Exception exc)
             {
@@ -637,16 +629,14 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_FIX_BUG_28_CompoundFile_Delete_ChildElementMaintainsFiles()
         {
-            using (var compoundFile = new CompoundFile())
-            {
-                var storage1 = compoundFile.RootStorage.AddStorage("A");
-                var storage2 = compoundFile.RootStorage.AddStorage("B");
-                var storage3 = compoundFile.RootStorage.AddStorage("C");
-                storage1.AddStream("A.1");
-                compoundFile.RootStorage.Delete("B");
-                storage1 = compoundFile.RootStorage.GetStorage("A");
-                storage1.GetStream("A.1");
-            }
+            using var compoundFile = new CompoundFile();
+            var storage1 = compoundFile.RootStorage.AddStorage("A");
+            var storage2 = compoundFile.RootStorage.AddStorage("B");
+            var storage3 = compoundFile.RootStorage.AddStorage("C");
+            storage1.AddStream("A.1");
+            compoundFile.RootStorage.Delete("B");
+            storage1 = compoundFile.RootStorage.GetStorage("A");
+            storage1.GetStream("A.1");
         }
 
         [TestMethod]
@@ -903,22 +893,20 @@ namespace OpenMcdf.Test
             {
                 byte[] bigDataBuffer = Helpers.GetBuffer(1024 * 1024 * 260);
 
-                using (FileStream fTest = new FileStream("BigFile.data", FileMode.Create))
+                using FileStream fTest = new FileStream("BigFile.data", FileMode.Create);
+                fTest.Write(bigDataBuffer, 0, 1024 * 1024 * 260);
+                fTest.Flush();
+                fTest.Close();
+
+                var f = new CompoundFile();
+                var cfStream = f.RootStorage.AddStream("NewStream");
+                using (FileStream fs = new FileStream("BigFile.data", FileMode.Open))
                 {
-                    fTest.Write(bigDataBuffer, 0, 1024 * 1024 * 260);
-                    fTest.Flush();
-                    fTest.Close();
-
-                    var f = new CompoundFile();
-                    var cfStream = f.RootStorage.AddStream("NewStream");
-                    using (FileStream fs = new FileStream("BigFile.data", FileMode.Open))
-                    {
-                        cfStream.CopyFrom(fs);
-                    }
-
-                    f.SaveAs("BigFile.cfs");
-                    f.Close();
+                    cfStream.CopyFrom(fs);
                 }
+
+                f.SaveAs("BigFile.cfs");
+                f.Close();
             }
             finally
             {
@@ -1011,53 +999,47 @@ namespace OpenMcdf.Test
         [TestMethod]
         public void Test_FIX_BUG_90_CompoundFile_Delete_Storages()
         {
-            using (var compoundFile = new CompoundFile())
+            using var compoundFile = new CompoundFile();
+            var root = compoundFile.RootStorage;
+            var storageNames = new HashSet<string>();
+
+            // add 99 storages to root
+            for (int i = 1; i <= 99; i++)
             {
-                var root = compoundFile.RootStorage;
-                var storageNames = new HashSet<string>();
+                var name = "Storage " + i;
+                root.AddStorage(name);
+                storageNames.Add(name);
+            }
 
-                // add 99 storages to root
-                for (int i = 1; i <= 99; i++)
-                {
-                    var name = "Storage " + i;
-                    root.AddStorage(name);
-                    storageNames.Add(name);
-                }
+            // remove storages until tree becomes unbalanced and its Root changes
+            var rootChild = root.DirEntry.Child;
+            var newChild = rootChild;
+            var j = 1;
+            while (newChild == rootChild && j <= 99)
+            {
+                var name = "Storage " + j;
+                root.Delete(name);
+                storageNames.Remove(name);
+                newChild = ((DirectoryEntry)root.Children.Root).SID; // stop as soon as root.Children has a new Root
+                j++;
+            }
 
-                // remove storages until tree becomes unbalanced and its Root changes
-                var rootChild = root.DirEntry.Child;
-                var newChild = rootChild;
-                var j = 1;
-                while (newChild == rootChild && j <= 99)
-                {
-                    var name = "Storage " + j;
-                    root.Delete(name);
-                    storageNames.Remove(name);
-                    newChild = ((DirectoryEntry)root.Children.Root).SID; // stop as soon as root.Children has a new Root
-                    j++;
-                }
+            // check if all remaining storages are still there
+            foreach (var storageName in storageNames)
+            {
+                Assert.IsTrue(root.TryGetStorage(storageName, out var storage)); // <- no problem here
+            }
 
-                // check if all remaining storages are still there
-                foreach (var storageName in storageNames)
-                {
-                    Assert.IsTrue(root.TryGetStorage(storageName, out var storage)); // <- no problem here
-                }
+            // write CompundFile into MemoryStream...
+            using var memStream = new MemoryStream();
+            compoundFile.Save(memStream);
 
-                // write CompundFile into MemoryStream...
-                using (var memStream = new MemoryStream())
-                {
-                    compoundFile.Save(memStream);
-
-                    // ....and read new CompundFile from that stream
-                    using (var newCf = new CompoundFile(memStream))
-                    {
-                        // check if all storages can be found in to copied CompundFile
-                        foreach (var storageName in storageNames)
-                        {
-                            Assert.IsTrue(newCf.RootStorage.TryGetStorage(storageName, out var storage)); //<- we will see some missing storages here
-                        }
-                    }
-                }
+            // ....and read new CompundFile from that stream
+            using var newCf = new CompoundFile(memStream);
+            // check if all storages can be found in to copied CompundFile
+            foreach (var storageName in storageNames)
+            {
+                Assert.IsTrue(newCf.RootStorage.TryGetStorage(storageName, out var storage)); //<- we will see some missing storages here
             }
         }
 
