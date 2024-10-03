@@ -1114,20 +1114,16 @@ namespace OpenMcdf
                 // Write chaining information at the end of DIFAT Sectors
                 for (int i = 0; i < difatStream.BaseSectorChain.Count - 1; i++)
                 {
-                    Buffer.BlockCopy(
-                        BitConverter.GetBytes(difatStream.BaseSectorChain[i + 1].Id),
-                        0,
+                    BinaryPrimitives.WriteInt32LittleEndian(
                         difatStream.BaseSectorChain[i].GetData(),
                         SectorSize - sizeof(int),
-                        4);
+                        difatStream.BaseSectorChain[i + 1].Id);
                 }
 
-                Buffer.BlockCopy(
-                    BitConverter.GetBytes(Sector.ENDOFCHAIN),
-                    0,
+                BinaryPrimitives.WriteInt32LittleEndian(
                     difatStream.BaseSectorChain[difatStream.BaseSectorChain.Count - 1].GetData(),
                     SectorSize - sizeof(int),
-                    sizeof(int));
+                    Sector.ENDOFCHAIN);
             }
             else
                 header.FirstDIFATSectorID = Sector.ENDOFCHAIN;
