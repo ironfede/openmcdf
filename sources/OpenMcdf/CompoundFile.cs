@@ -1418,7 +1418,6 @@ namespace OpenMcdf
                         break;
 
                     Sector ms = new Sector(Sector.MINISECTOR_SIZE, sourceStream);
-                    byte[] temp = new byte[Sector.MINISECTOR_SIZE];
 
                     ms.Id = nextSecID;
                     ms.Type = SectorType.Mini;
@@ -2630,7 +2629,7 @@ namespace OpenMcdf
                     {
                         CFStorage itemAsStorage = item as CFStorage;
                         CFStorage strg = currDstStorage.AddStorage(itemAsStorage.Name);
-                        strg.CLSID = new Guid(itemAsStorage.CLSID.ToByteArray());
+                        strg.CLSID = itemAsStorage.CLSID;
                         DoCompression(itemAsStorage, strg); // recursion, one level deeper
                     }
                 };
