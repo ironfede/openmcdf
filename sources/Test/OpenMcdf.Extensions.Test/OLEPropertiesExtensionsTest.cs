@@ -93,8 +93,7 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_DOCUMENT_SUMMARY_INFO_ROUND_TRIP()
         {
-            if (File.Exists("test1.cfs"))
-                File.Delete("test1.cfs");
+            File.Delete("test1.cfs");
 
             using (CompoundFile cf = new CompoundFile("_Test.ppt"))
             {
@@ -117,8 +116,7 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_DOCUMENT_SUMMARY_INFO_MODIFY()
         {
-            if (File.Exists("test_modify_summary.ppt"))
-                File.Delete("test_modify_summary.ppt");
+            File.Delete("test_modify_summary.ppt");
 
             // Verify initial properties, and then create a modified document
             using (CompoundFile cf = new CompoundFile("_Test.ppt"))
@@ -166,91 +164,75 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_SUMMARY_INFO_READ_UTF8_ISSUE_33()
         {
-            try
+            using (CompoundFile cf = new CompoundFile("wstr_presets.doc"))
             {
-                using (CompoundFile cf = new CompoundFile("wstr_presets.doc"))
+                var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
+
+                foreach (OLEProperty p in co.Properties)
                 {
-                    var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
-
-                    foreach (OLEProperty p in co.Properties)
-                    {
-                        Debug.Write(p.PropertyName);
-                        Debug.Write(" - ");
-                        Debug.Write(p.VTType);
-                        Debug.Write(" - ");
-                        Debug.WriteLine(p.Value);
-                    }
-
-                    Assert.IsNotNull(co.Properties);
-
-                    var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
-
-                    foreach (OLEProperty p in co2.Properties)
-                    {
-                        Debug.Write(p.PropertyName);
-                        Debug.Write(" - ");
-                        Debug.Write(p.VTType);
-                        Debug.Write(" - ");
-                        Debug.WriteLine(p.Value);
-                    }
-
-                    Assert.IsNotNull(co2.Properties);
+                    Debug.Write(p.PropertyName);
+                    Debug.Write(" - ");
+                    Debug.Write(p.VTType);
+                    Debug.Write(" - ");
+                    Debug.WriteLine(p.Value);
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                Assert.Fail();
+
+                Assert.IsNotNull(co.Properties);
+
+                var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
+
+                foreach (OLEProperty p in co2.Properties)
+                {
+                    Debug.Write(p.PropertyName);
+                    Debug.Write(" - ");
+                    Debug.Write(p.VTType);
+                    Debug.Write(" - ");
+                    Debug.WriteLine(p.Value);
+                }
+
+                Assert.IsNotNull(co2.Properties);
             }
         }
 
         [TestMethod]
         public void Test_SUMMARY_INFO_READ_UTF8_ISSUE_34()
         {
-            try
+            using (CompoundFile cf = new CompoundFile("2custom.doc"))
             {
-                using (CompoundFile cf = new CompoundFile("2custom.doc"))
+                var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
+
+                foreach (OLEProperty p in co.Properties)
                 {
-                    var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
-
-                    foreach (OLEProperty p in co.Properties)
-                    {
-                        Debug.Write(p.PropertyName);
-                        Debug.Write(" - ");
-                        Debug.Write(p.VTType);
-                        Debug.Write(" - ");
-                        Debug.WriteLine(p.Value);
-                    }
-
-                    Assert.IsNotNull(co.Properties);
-
-                    var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
-
-                    Assert.IsNotNull(co2.Properties);
-                    foreach (OLEProperty p in co2.Properties)
-                    {
-                        Debug.Write(p.PropertyName);
-                        Debug.Write(" - ");
-                        Debug.Write(p.VTType);
-                        Debug.Write(" - ");
-                        Debug.WriteLine(p.Value);
-                    }
-
-                    Assert.IsNotNull(co2.UserDefinedProperties.Properties);
-                    foreach (OLEProperty p in co2.UserDefinedProperties.Properties)
-                    {
-                        Debug.Write(p.PropertyName);
-                        Debug.Write(" - ");
-                        Debug.Write(p.VTType);
-                        Debug.Write(" - ");
-                        Debug.WriteLine(p.Value);
-                    }
+                    Debug.Write(p.PropertyName);
+                    Debug.Write(" - ");
+                    Debug.Write(p.VTType);
+                    Debug.Write(" - ");
+                    Debug.WriteLine(p.Value);
                 }
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-                Assert.Fail();
+
+                Assert.IsNotNull(co.Properties);
+
+                var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
+
+                Assert.IsNotNull(co2.Properties);
+                foreach (OLEProperty p in co2.Properties)
+                {
+                    Debug.Write(p.PropertyName);
+                    Debug.Write(" - ");
+                    Debug.Write(p.VTType);
+                    Debug.Write(" - ");
+                    Debug.WriteLine(p.Value);
+                }
+
+                Assert.IsNotNull(co2.UserDefinedProperties.Properties);
+                foreach (OLEProperty p in co2.UserDefinedProperties.Properties)
+                {
+                    Debug.Write(p.PropertyName);
+                    Debug.Write(" - ");
+                    Debug.Write(p.VTType);
+                    Debug.Write(" - ");
+                    Debug.WriteLine(p.Value);
+                }
             }
         }
 
@@ -280,8 +262,7 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_SUMMARY_INFO_MODIFY_LPWSTRING()
         {
-            if (File.Exists("test_write_lpwstr.doc"))
-                File.Delete("test_write_lpwstr.doc");
+            File.Delete("test_write_lpwstr.doc");
 
             // Modify some LPWSTR properties, and save to a new file
             using (CompoundFile cf = new CompoundFile("wstr_presets.doc"))
@@ -361,8 +342,7 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_DOCUMENT_SUMMARY_INFO_ADD_CUSTOM()
         {
-            if (File.Exists("test_add_user_defined_property.doc"))
-                File.Delete("test_add_user_defined_property.doc");
+            File.Delete("test_add_user_defined_property.doc");
 
             // Test value for a VT_FILETIME property
             DateTime testNow = DateTime.UtcNow;
@@ -472,8 +452,7 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_ADD_USER_DEFINED_PROPERTIES_SECTION()
         {
-            if (File.Exists("test_add_user_defined_properties.xls"))
-                File.Delete("test_add_user_defined_properties.xls");
+            File.Delete("test_add_user_defined_properties.xls");
 
             using (CompoundFile cf = new CompoundFile("report.xls"))
             {
