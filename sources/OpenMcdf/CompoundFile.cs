@@ -2741,7 +2741,7 @@ namespace OpenMcdf
                     {
                         CFStorage itemAsStorage = item as CFStorage;
                         CFStorage strg = currDstStorage.AddStorage(itemAsStorage.Name);
-                        strg.CLSID = new Guid(itemAsStorage.CLSID.ToByteArray());
+                        strg.CLSID = itemAsStorage.CLSID;
                         DoCompression(itemAsStorage, strg); // recursion, one level deeper
                     }
                 };

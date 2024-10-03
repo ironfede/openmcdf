@@ -98,14 +98,16 @@ namespace OpenMcdf
 
         public void ZeroData()
         {
-            data = new byte[Size];
+            if (data is null)
+                data = new byte[Size];
+            else
+                Array.Clear(data, 0, data.Length);
             DirtyFlag = true;
         }
 
         public void InitFATData()
         {
-            data = new byte[Size];
-
+            data ??= new byte[Size];
             for (int i = 0; i < Size; i++)
                 data[i] = 0xFF;
 

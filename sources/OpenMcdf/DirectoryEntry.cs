@@ -437,20 +437,14 @@ namespace OpenMcdf
         public void AssignValueTo(RedBlackTree.IRBNode other)
         {
             DirectoryEntry d = other as DirectoryEntry;
-
             d.SetEntryName(GetEntryName());
-
-            d.CreationDate = new byte[CreationDate.Length];
             CreationDate.CopyTo(d.CreationDate, 0);
-
-            d.ModifyDate = new byte[ModifyDate.Length];
             ModifyDate.CopyTo(d.ModifyDate, 0);
-
             d.Size = Size;
             d.StartSect = StartSect;
             d.StateBits = StateBits;
             d.StgType = StgType;
-            d.storageCLSID = new Guid(storageCLSID.ToByteArray());
+            d.storageCLSID = storageCLSID;
             d.Child = Child;
         }
 
