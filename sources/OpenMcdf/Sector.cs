@@ -42,13 +42,6 @@ namespace OpenMcdf
             this.stream = stream;
         }
 
-        public Sector(int size, byte[] data)
-        {
-            Size = size;
-            this.data = data;
-            stream = null;
-        }
-
         public Sector(int size)
         {
             Size = size;
