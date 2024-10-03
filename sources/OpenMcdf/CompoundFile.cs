@@ -1436,7 +1436,6 @@ namespace OpenMcdf
                         break;
 
                     Sector ms = new Sector(Sector.MINISECTOR_SIZE, sourceStream);
-                    byte[] temp = new byte[Sector.MINISECTOR_SIZE];
 
                     ms.Id = nextSecID;
                     ms.Type = SectorType.Mini;
