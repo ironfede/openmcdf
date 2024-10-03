@@ -21,7 +21,7 @@ namespace OpenMcdf
         Directory
     }
 
-    internal sealed class Sector : IDisposable
+    internal sealed class Sector
     {
         public const int MINISECTOR_SIZE = 64;
 
@@ -116,34 +116,5 @@ namespace OpenMcdf
         {
             data = null;
         }
-
-        private readonly object lockObject = new object();
-
-        #region IDisposable Members
-
-        private bool _disposed; //false
-
-        void IDisposable.Dispose()
-        {
-            try
-            {
-                if (!_disposed)
-                {
-                    lock (lockObject)
-                    {
-                        data = null;
-                        DirtyFlag = false;
-                        Id = ENDOFCHAIN;
-                        Size = 0;
-                    }
-                }
-            }
-            finally
-            {
-                _disposed = true;
-            }
-        }
-
-        #endregion
     }
 }

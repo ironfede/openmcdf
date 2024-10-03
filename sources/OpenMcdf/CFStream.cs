@@ -131,7 +131,7 @@ namespace OpenMcdf
         {
             CheckDisposed();
 
-            return CompoundFile.GetData(this);
+            return CompoundFile.GetData(DirEntry);
         }
 
         /// <summary>
@@ -164,7 +164,7 @@ namespace OpenMcdf
         public int Read(byte[] buffer, long position, int count)
         {
             CheckDisposed();
-            return CompoundFile.ReadData(this, position, buffer, 0, count);
+            return CompoundFile.ReadData(DirEntry, position, buffer, 0, count);
         }
 
         /// <summary>
@@ -198,7 +198,7 @@ namespace OpenMcdf
         internal int Read(byte[] buffer, long position, int offset, int count)
         {
             CheckDisposed();
-            return CompoundFile.ReadData(this, position, buffer, offset, count);
+            return CompoundFile.ReadData(DirEntry, position, buffer, offset, count);
         }
 
         /// <summary>
