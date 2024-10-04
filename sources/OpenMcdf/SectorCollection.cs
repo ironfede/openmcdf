@@ -25,24 +25,24 @@ namespace OpenMcdf
     /// </summary>
     internal sealed class SectorCollection : IList<Sector>
     {
-        private const int MAX_SECTOR_V4_COUNT_LOCK_RANGE = 524287; //0x7FFFFF00 for Version 4
+        private const int MAX_SECTOR_V4_COUNT_LOCK_RANGE = 0x7FFFFF00;
         private const int SLICE_SIZE = 4096;
 
         public event Ver3SizeLimitReached OnVer3SizeLimitReached;
 
-        private readonly List<ArrayList> largeArraySlices = new List<ArrayList>();
+        private readonly List<List<Sector>> largeArraySlices = new();
+        private bool sizeLimitReached = false;
 
         public SectorCollection()
         {
         }
 
-        private bool sizeLimitReached = false;
         private void DoCheckSizeLimitReached()
         {
-            if (OnVer3SizeLimitReached != null && !sizeLimitReached && (Count - 1 > MAX_SECTOR_V4_COUNT_LOCK_RANGE))
+            if (!sizeLimitReached && (Count - 1 > MAX_SECTOR_V4_COUNT_LOCK_RANGE))
             {
                 sizeLimitReached = true;
-                OnVer3SizeLimitReached();
+                OnVer3SizeLimitReached?.Invoke();
             }
         }
 
@@ -67,26 +67,20 @@ namespace OpenMcdf
         {
             get
             {
-                int itemIndex = Math.DivRem(index, SLICE_SIZE, out int itemOffset);
-
-                if ((index > -1) && (index < Count))
-                {
-                    return (Sector)largeArraySlices[itemIndex][itemOffset];
-                }
-                else
+                if (index <= -1 || index >= Count)
                     throw new CFException("Argument Out of Range, possibly corrupted file", new ArgumentOutOfRangeException(nameof(index), index, "Argument out of range"));
+
+                int itemIndex = Math.DivRem(index, SLICE_SIZE, out int itemOffset);
+                return largeArraySlices[itemIndex][itemOffset];
             }
 
             set
             {
-                int itemIndex = Math.DivRem(index, SLICE_SIZE, out int itemOffset);
-
-                if (index > -1 && index < Count)
-                {
-                    largeArraySlices[itemIndex][itemOffset] = value;
-                }
-                else
+                if (index <= -1 || index >= Count)
                     throw new ArgumentOutOfRangeException(nameof(index), index, "Argument out of range");
+
+                int itemIndex = Math.DivRem(index, SLICE_SIZE, out int itemOffset);
+                largeArraySlices[itemIndex][itemOffset] = value;
             }
         }
 
@@ -94,42 +88,30 @@ namespace OpenMcdf
 
         #region ICollection<T> Members
 
-        private int add(Sector item)
-        {
-            int itemIndex = Count / SLICE_SIZE;
-
-            if (itemIndex < largeArraySlices.Count)
-            {
-                largeArraySlices[itemIndex].Add(item);
-                Count++;
-            }
-            else
-            {
-                ArrayList ar = new ArrayList(SLICE_SIZE);
-                ar.Add(item);
-                largeArraySlices.Add(ar);
-                Count++;
-            }
-
-            return Count - 1;
-        }
-
         public void Add(Sector item)
         {
             DoCheckSizeLimitReached();
 
-            add(item);
+            int itemIndex = Count / SLICE_SIZE;
+            if (itemIndex < largeArraySlices.Count)
+            {
+                largeArraySlices[itemIndex].Add(item);
+            }
+            else
+            {
+                List<Sector> ar = new(SLICE_SIZE)
+                {
+                    item
+                };
+                largeArraySlices.Add(ar);
+            }
+
+            Count++;
         }
 
         public void Clear()
         {
-            foreach (ArrayList slice in largeArraySlices)
-            {
-                slice.Clear();
-            }
-
             largeArraySlices.Clear();
-
             Count = 0;
         }
 
@@ -160,9 +142,10 @@ namespace OpenMcdf
         {
             for (int i = 0; i < largeArraySlices.Count; i++)
             {
-                for (int j = 0; j < largeArraySlices[i].Count; j++)
+                List<Sector> slice = largeArraySlices[i];
+                for (int j = 0; j < slice.Count; j++)
                 {
-                    yield return (Sector)largeArraySlices[i][j];
+                    yield return slice[j];
                 }
             }
         }
@@ -171,16 +154,7 @@ namespace OpenMcdf
 
         #region IEnumerable Members
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            for (int i = 0; i < largeArraySlices.Count; i++)
-            {
-                for (int j = 0; j < largeArraySlices[i].Count; j++)
-                {
-                    yield return largeArraySlices[i][j];
-                }
-            }
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         #endregion
     }
