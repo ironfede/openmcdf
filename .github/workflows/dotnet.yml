@@ -1,0 +1,39 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: OpenMcdf pipeline .NET
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  buildConfiguration: 'Release'
+  libFramework: 'netstandard2.0'
+  appFramework: 'net6.0'
+  # pay attention to slashes
+  testsProject:  'sources/Test/OpenMcdf.Test/OpenMcdf.Test.csproj'
+  extensionTestsProject: 'sources/Test/OpenMcdf.Extensions.Test/OpenMcdf.Extensions.Test.csproj'
+  buildProject: 'sources/OpenMcdf/OpenMcdf.csproj'
+  # without filter it will timeout in azure AFTER 60+ min
+  testFilter: 'Name!=Test_FIX_BUG_GH_14&Name!=Test_FIX_BUG_GH_15'
+  
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore --configuration $(buildConfiguration) -f $(libFramework) $(buildProject)
+    - name: Test
+      run: dotnet test -f $(appFramework)  $(testsProject) --filter="$(testFilter)" 
