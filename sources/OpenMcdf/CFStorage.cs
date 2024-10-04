@@ -443,7 +443,7 @@ namespace OpenMcdf
                         return;
                     };
 
-                Children.VisitTreeNodes(internalAction);
+                Children.VisitTree(internalAction);
 
                 if (recursive && subStorages.Count > 0)
                 {
