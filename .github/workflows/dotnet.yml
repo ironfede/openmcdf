@@ -10,15 +10,15 @@ on:
     branches: [ "master" ]
 
 env:
-  buildConfiguration: 'Release'
-  libFramework: 'netstandard2.0'
-  appFramework: 'net6.0'
+  buildConfiguration: Release
+  libFramework: netstandard2.0
+  appFramework: net6.0
   # pay attention to slashes
-  testsProject:  'sources/Test/OpenMcdf.Test/OpenMcdf.Test.csproj'
-  extensionTestsProject: 'sources/Test/OpenMcdf.Extensions.Test/OpenMcdf.Extensions.Test.csproj'
-  buildProject: 'sources/OpenMcdf/OpenMcdf.csproj'
+  testsProject:  sources/Test/OpenMcdf.Test/OpenMcdf.Test.csproj
+  extensionTestsProject: sources/Test/OpenMcdf.Extensions.Test/OpenMcdf.Extensions.Test.csproj
+  buildProject: sources/OpenMcdf/OpenMcdf.csproj
   # without filter it will timeout in azure AFTER 60+ min
-  testFilter: 'Name!=Test_FIX_BUG_GH_14&Name!=Test_FIX_BUG_GH_15'
+  testFilter: Name!=Test_FIX_BUG_GH_14&Name!=Test_FIX_BUG_GH_15
   
 jobs:
   build:
