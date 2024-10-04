@@ -34,6 +34,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore --configuration $(buildConfiguration) -f $(libFramework) $(buildProject)
+      run: dotnet build --no-restore --configuration "$(buildConfiguration)" -f "$(libFramework)" "$(buildProject)"
     - name: Test
-      run: dotnet test -f $(appFramework)  $(testsProject) --filter="$(testFilter)" 
+      run: dotnet test -f "$(appFramework)"  "$(testsProject)" --filter="$(testFilter)" 
