@@ -37,3 +37,7 @@ jobs:
       run: dotnet build --no-restore --configuration ${{env.buildConfiguration}} -f ${{env.libFramework}} ${{env.buildProject}}
     - name: Test
       run: dotnet test -f ${{env.appFramework}}  ${{env.testsProject}} --filter="${{env.testFilter}}"
+    - name: Test Extensions  
+      run: dotnet test -f ${{env.appFramework}}  ${{env.extensionTestsProject}}
+      
+      
