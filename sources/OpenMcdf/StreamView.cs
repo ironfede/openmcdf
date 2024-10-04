@@ -21,7 +21,6 @@ namespace OpenMcdf
 
         private long position;
         private readonly Stream stream;
-        private readonly byte[] buf = new byte[4];
         private readonly bool isFatStream = false;
         private readonly List<Sector> freeSectors = new List<Sector>();
         public IEnumerable<Sector> FreeSectors => freeSectors;
@@ -76,17 +75,6 @@ namespace OpenMcdf
 
                 position = value;
             }
-        }
-
-        public override void Close()
-        {
-            base.Close();
-        }
-
-        public int ReadInt32()
-        {
-            Read(buf, 0, 4);
-            return buf[0] | (buf[1] << 8) | (buf[2] << 16) | (buf[3] << 24);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -254,16 +242,6 @@ namespace OpenMcdf
         public override void SetLength(long value)
         {
             AdjustLength(value);
-        }
-
-        public void WriteInt32(int val)
-        {
-            // TODO: Remove in v3 in favor of BinaryReader/BinaryWriter
-            buf[0] = (byte)val;
-            buf[1] = (byte)(val << 8);
-            buf[2] = (byte)(val << 16);
-            buf[3] = (byte)(val << 24);
-            Write(buf, 0, 4);
         }
 
         public override void Write(byte[] buffer, int offset, int count)
