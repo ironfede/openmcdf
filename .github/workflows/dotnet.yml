@@ -34,6 +34,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-restore --configuration ${{env.buildConfiguration}} -f ${{{env.libFramework}} ${{{env.buildProject}}
+      run: dotnet build --no-restore --configuration ${{env.buildConfiguration}} -f ${{env.libFramework}} ${{env.buildProject}}
     - name: Test
-      run: dotnet test -f ${{{env.appFramework}}  ${{{env.testsProject}} --filter=${{{env.testFilter}}
+      run: dotnet test -f ${{env.appFramework}}  ${{env.testsProject}} --filter=${{env.testFilter}}
