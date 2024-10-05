@@ -36,8 +36,9 @@ jobs:
     - name: Build
       run: dotnet build --no-restore --configuration ${{env.buildConfiguration}} -f ${{env.libFramework}} ${{env.buildProject}}
     - name: Test
-      run: dotnet test -f ${{env.appFramework}}  ${{env.testsProject}} --filter="${{env.testFilter}}"
+      run: dotnet test -f ${{env.appFramework}}  ${{env.testsProject}} --filter="${{env.testFilter}}" --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
     - name: Test Extensions  
-      run: dotnet test -f ${{env.appFramework}}  ${{env.extensionTestsProject}}
-      
+      run: dotnet test -f ${{env.appFramework}}  ${{env.extensionTestsProject}} --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
+
+
       
