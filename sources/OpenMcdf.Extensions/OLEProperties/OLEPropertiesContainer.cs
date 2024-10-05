@@ -14,10 +14,10 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public bool HasUserDefinedProperties { get; private set; }
 
-        public ContainerType ContainerType { get; internal set; }
+        public ContainerType ContainerType { get; }
         private Guid? FmtID0 { get; }
 
-        public PropertyContext Context { get; private set; }
+        public PropertyContext Context { get; }
 
         private readonly List<OLEProperty> properties = new List<OLEProperty>();
         internal CFStream cfStream;
@@ -125,8 +125,6 @@ namespace OpenMcdf.Extensions.OLEProperties
             {
                 UserDefinedProperties = new OLEPropertiesContainer(pStream.PropertySet1.PropertyContext.CodePage, ContainerType.UserDefinedProperties);
                 HasUserDefinedProperties = true;
-
-                UserDefinedProperties.ContainerType = ContainerType.UserDefinedProperties;
 
                 for (int i = 0; i < pStream.PropertySet1.Properties.Count; i++)
                 {
