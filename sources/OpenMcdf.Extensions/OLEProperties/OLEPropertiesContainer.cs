@@ -14,8 +14,15 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public bool HasUserDefinedProperties { get; private set; }
 
-        public ContainerType ContainerType { get; internal set; }
-        private Guid? FmtID0 { get; }
+        /// <summary>
+        /// Gets the type of the container.
+        /// </summary>
+        public ContainerType ContainerType { get; }
+
+        /// <summary>
+        /// Gets the FMTID of the properties container.
+        /// </summary>
+        public Guid FMTID0 { get; }
 
         public PropertyContext Context { get; private set; }
 
@@ -68,6 +75,11 @@ namespace OpenMcdf.Extensions.OLEProperties
             return null;
         }
 
+        /// <summary>
+        /// Create a new instance of <see cref="OLEPropertiesContainer"/> with the specified code page and container type.
+        /// </summary>
+        /// <param name="codePage">The code page to use for the new container.</param>
+        /// <param name="containerType">The type of the new container.</param>
         public OLEPropertiesContainer(int codePage, ContainerType containerType)
         {
             Context = new PropertyContext
@@ -77,6 +89,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             };
 
             ContainerType = containerType;
+            FMTID0 = FmtIdFromContainerType(containerType);
         }
 
         internal OLEPropertiesContainer(CFStream cfStream)
@@ -86,13 +99,8 @@ namespace OpenMcdf.Extensions.OLEProperties
             this.cfStream = cfStream;
             pStream.Read(new BinaryReader(new StreamDecorator(cfStream)));
 
-            ContainerType = pStream.FMTID0.ToString("B").ToUpperInvariant() switch
-            {
-                WellKnownFMTID.FMTID_SummaryInformation => ContainerType.SummaryInfo,
-                WellKnownFMTID.FMTID_DocSummaryInformation => ContainerType.DocumentSummaryInfo,
-                _ => ContainerType.AppSpecific,
-            };
-            FmtID0 = pStream.FMTID0;
+            FMTID0 = pStream.FMTID0;
+            ContainerType = ContainerTypeFromFmtId(pStream.FMTID0);
 
             PropertyNames = (Dictionary<uint, string>)pStream.PropertySet0.Properties
                 .Where(p => p.PropertyType == PropertyType.DictionaryProperty).FirstOrDefault()?.Value;
@@ -125,8 +133,6 @@ namespace OpenMcdf.Extensions.OLEProperties
             {
                 UserDefinedProperties = new OLEPropertiesContainer(pStream.PropertySet1.PropertyContext.CodePage, ContainerType.UserDefinedProperties);
                 HasUserDefinedProperties = true;
-
-                UserDefinedProperties.ContainerType = ContainerType.UserDefinedProperties;
 
                 for (int i = 0; i < pStream.PropertySet1.Properties.Count; i++)
                 {
@@ -227,8 +233,6 @@ namespace OpenMcdf.Extensions.OLEProperties
             Stream s = new StreamDecorator(cfStream);
             BinaryWriter bw = new BinaryWriter(s);
 
-            Guid fmtId0 = FmtID0 ?? (ContainerType == ContainerType.SummaryInfo ? new Guid(WellKnownFMTID.FMTID_SummaryInformation) : new Guid(WellKnownFMTID.FMTID_DocSummaryInformation));
-
             PropertySetStream ps = new PropertySetStream
             {
                 ByteOrder = 0xFFFE,
@@ -238,7 +242,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                 NumPropertySets = 1,
 
-                FMTID0 = fmtId0,
+                FMTID0 = this.FMTID0,
                 Offset0 = 0,
 
                 FMTID1 = Guid.Empty,
@@ -311,6 +315,42 @@ namespace OpenMcdf.Extensions.OLEProperties
             };
             propertySet.Properties.Add(dictionaryProperty);
             propertySet.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = 0, Offset = 0 });
+        }
+
+        // Determine the type of the container from the FMTID0 property.
+        private static ContainerType ContainerTypeFromFmtId(Guid fmtId0)
+        {
+            if (fmtId0 == Guid.Parse(WellKnownFMTID.FMTID_SummaryInformation))
+                return ContainerType.SummaryInfo;
+            else if (fmtId0 == Guid.Parse(WellKnownFMTID.FMTID_DocSummaryInformation))
+                return ContainerType.DocumentSummaryInfo;
+            else if (fmtId0 == Guid.Parse(WellKnownFMTID.FMTID_GlobalInfo))
+                return ContainerType.GlobalInfo;
+            else if (fmtId0 == Guid.Parse(WellKnownFMTID.FMTID_ImageInfo))
+                return ContainerType.ImageInfo;
+            else if (fmtId0 == Guid.Parse(WellKnownFMTID.FMTID_ImageContents))
+                return ContainerType.ImageContents;
+
+            return ContainerType.AppSpecific;
+        }
+
+        // Determine the FMTID property from the container type.
+        // Note: Uses FMTID_DocSummaryInformation by default to match the previous behavior.
+        private static Guid FmtIdFromContainerType(ContainerType containerType)
+        {
+            switch (containerType)
+            {
+                case ContainerType.SummaryInfo:
+                    return Guid.Parse(WellKnownFMTID.FMTID_SummaryInformation);
+                case ContainerType.GlobalInfo:
+                    return Guid.Parse(WellKnownFMTID.FMTID_GlobalInfo);
+                case ContainerType.ImageContents:
+                    return Guid.Parse(WellKnownFMTID.FMTID_ImageContents);
+                case ContainerType.ImageInfo:
+                    return Guid.Parse(WellKnownFMTID.FMTID_ImageInfo);
+                default:
+                    return Guid.Parse(WellKnownFMTID.FMTID_DocSummaryInformation);
+            }
         }
     }
 }
