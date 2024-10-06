@@ -1500,12 +1500,12 @@ namespace OpenMcdf
         //        node.Value.DirEntry.RightSibling = from.DirEntry.RightSibling;
         //}
 
-        internal RBTree GetChildrenTree(int sid)
+        internal RBTree GetChildrenTree(IDirectoryEntry entry)
         {
             RBTree bst = new RBTree();
 
             // Load children from their original tree.
-            DoLoadChildren(bst, directoryEntries[sid]);
+            LoadChildren(bst, entry);
             //bst = DoLoadChildrenTrusted(directoryEntries[sid]);
 
             //bst.Print();
@@ -1527,15 +1527,16 @@ namespace OpenMcdf
             return bst;
         }
 
-        private void DoLoadChildren(RBTree bst, IDirectoryEntry de)
+        private void LoadChildren(RBTree bst, IDirectoryEntry de)
         {
             if (de.Child != DirectoryEntry.NOSTREAM)
             {
-                if (directoryEntries[de.Child].StgType == StgType.StgInvalid) return;
-
-                LoadSiblings(bst, directoryEntries[de.Child]);
-                NullifyChildNodes(directoryEntries[de.Child]);
-                bst.Insert(directoryEntries[de.Child]);
+                IDirectoryEntry child = directoryEntries[de.Child];
+                if (child.StgType != StgType.StgInvalid)
+                {
+                    List<int> levelSIDs = new List<int>();
+                    LoadChildren(bst, child, levelSIDs);
+                }
             }
         }
 
@@ -1546,95 +1547,48 @@ namespace OpenMcdf
             de.Right = null;
         }
 
-        // Doubling methods allows iterative behavior while avoiding
-        // to insert duplicate items
-        private void LoadSiblings(RBTree bst, IDirectoryEntry de)
+        private void LoadChildren(RBTree bst, IDirectoryEntry de, List<int> levelSIDs)
         {
-            List<int> levelSIDs = new List<int>();
+            levelSIDs.Add(de.SID);
 
-            if (de.LeftSibling != DirectoryEntry.NOSTREAM)
+            if (de.StgType == StgType.StgInvalid)
             {
-                // If there are more left siblings load them...
-                DoLoadSiblings(bst, directoryEntries[de.LeftSibling], levelSIDs);
+                if (ValidationExceptionEnabled)
+                    throw new CFCorruptedFileException($"A Directory Entry has a valid reference to an Invalid Storage Type directory [{de.SID}]");
+                return;
             }
 
-            if (de.RightSibling != DirectoryEntry.NOSTREAM)
+            if (!Enum.IsDefined(typeof(StgType), de.StgType))
             {
-                levelSIDs.Add(de.RightSibling);
-
-                // If there are more right siblings load them...
-                DoLoadSiblings(bst, directoryEntries[de.RightSibling], levelSIDs);
-            }
-        }
-
-        private void DoLoadSiblings(RBTree bst, IDirectoryEntry de, List<int> levelSIDs)
-        {
-            if (ValidateSibling(de.LeftSibling, levelSIDs))
-            {
-                levelSIDs.Add(de.LeftSibling);
-
-                // If there are more left siblings load them...
-                DoLoadSiblings(bst, directoryEntries[de.LeftSibling], levelSIDs);
+                if (ValidationExceptionEnabled)
+                    throw new CFCorruptedFileException("A Directory Entry has an invalid Storage Type");
+                return;
             }
 
-            if (ValidateSibling(de.RightSibling, levelSIDs))
-            {
-                levelSIDs.Add(de.RightSibling);
-
-                // If there are more right siblings load them...
-                DoLoadSiblings(bst, directoryEntries[de.RightSibling], levelSIDs);
-            }
-
+            LoadChildren(bst, de.LeftSibling, levelSIDs);
+            LoadChildren(bst, de.RightSibling, levelSIDs);
             NullifyChildNodes(de);
             bst.Insert(de);
         }
 
-        private bool ValidateSibling(int sid, List<int> levelSIDs)
+        private void LoadChildren(RBTree bst, int sid, List<int> levelSIDs)
         {
-            if (sid != DirectoryEntry.NOSTREAM)
+            if (sid == DirectoryEntry.NOSTREAM)
+                return;
+
+            // if this siblings id does not overflow current list
+            if (sid >= directoryEntries.Count)
             {
-                // if this siblings id does not overflow current list
-                if (sid >= directoryEntries.Count)
-                {
-                    if (ValidationExceptionEnabled)
-                    {
-                        //this.Close();
-                        throw new CFCorruptedFileException("A Directory Entry references the non-existent sid number " + sid.ToString());
-                    }
-                    else
-                        return false;
-                }
-
-                //if this sibling is valid...
-                if (directoryEntries[sid].StgType == StgType.StgInvalid)
-                {
-                    if (ValidationExceptionEnabled)
-                    {
-                        //this.Close();
-                        throw new CFCorruptedFileException("A Directory Entry has a valid reference to an Invalid Storage Type directory [" + sid + "]");
-                    }
-                    else
-                        return false;
-                }
-
-                if (!Enum.IsDefined(typeof(StgType), directoryEntries[sid].StgType))
-                {
-                    if (ValidationExceptionEnabled)
-                    {
-                        //this.Close();
-                        throw new CFCorruptedFileException("A Directory Entry has an invalid Storage Type");
-                    }
-                    else
-                        return false;
-                }
-
-                if (levelSIDs.Contains(sid))
-                    throw new CFCorruptedFileException("Cyclic reference of directory item");
-
-                return true; //No fault condition encountered for sid being validated
+                if (ValidationExceptionEnabled)
+                    throw new CFCorruptedFileException($"A Directory Entry references the non-existent sid number {sid}");
+                return;
             }
 
-            return false;
+            if (levelSIDs.Contains(sid))
+                throw new CFCorruptedFileException("Cyclic reference of directory item");
+
+            IDirectoryEntry de = directoryEntries[sid];
+            LoadChildren(bst, de, levelSIDs);
         }
 
         /// <summary>
