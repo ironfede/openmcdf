@@ -656,11 +656,11 @@ namespace OpenMcdf.Test
         {
             using CompoundFile cf = new("report.xls");
             Guid g = cf.getGuidBySID(0);
-            Assert.IsNotNull(g);
+            Assert.AreNotEqual(Guid.Empty, g);
             g = cf.getGuidForStream(3);
-            Assert.IsNotNull(g);
+            Assert.AreEqual(Guid.Empty, g);
+            Assert.AreNotEqual(0, cf.GetNumDirectories());
             Assert.IsTrue(!string.IsNullOrEmpty(cf.GetNameDirEntry(2)));
-            Assert.IsTrue(cf.GetNumDirectories() > 0);
         }
 
         //[TestMethod]
