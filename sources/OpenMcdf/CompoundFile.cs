@@ -1502,42 +1502,10 @@ namespace OpenMcdf
 
         internal RBTree GetChildrenTree(IDirectoryEntry entry)
         {
-            RBTree bst = new RBTree();
-
-            // Load children from their original tree.
-            LoadChildren(bst, entry);
-            //bst = DoLoadChildrenTrusted(directoryEntries[sid]);
-
-            //bst.Print();
-            //bst.Print();
-            //Trace.WriteLine("#### After rethreading");
-
+            RBTree bst = new();
+            List<int> levelSIDs = new List<int>();
+            LoadChildren(bst, entry.Child, levelSIDs);
             return bst;
-        }
-
-        private RBTree DoLoadChildrenTrusted(IDirectoryEntry de)
-        {
-            RBTree bst = null;
-
-            if (de.Child != DirectoryEntry.NOSTREAM)
-            {
-                bst = new RBTree(directoryEntries[de.Child]);
-            }
-
-            return bst;
-        }
-
-        private void LoadChildren(RBTree bst, IDirectoryEntry de)
-        {
-            if (de.Child != DirectoryEntry.NOSTREAM)
-            {
-                IDirectoryEntry child = directoryEntries[de.Child];
-                if (child.StgType != StgType.StgInvalid)
-                {
-                    List<int> levelSIDs = new List<int>();
-                    LoadChildren(bst, child, levelSIDs);
-                }
-            }
         }
 
         private static void NullifyChildNodes(IDirectoryEntry de)
