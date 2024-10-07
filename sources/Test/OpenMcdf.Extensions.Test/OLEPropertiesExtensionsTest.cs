@@ -52,18 +52,12 @@ namespace OpenMcdf.Extensions.Test
             using CompoundFile cf = new CompoundFile("_Test.ppt");
             var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
 
-            foreach (OLEProperty p in co.Properties)
-            {
-                Debug.Write(p.PropertyName);
-                Debug.Write(" - ");
-                Debug.Write(p.VTType);
-                Debug.Write(" - ");
-                Debug.WriteLine(p.Value);
-            }
-
             Assert.IsNotNull(co.Properties);
 
-            cf.Close();
+            foreach (OLEProperty p in co.Properties)
+            {
+                Debug.WriteLine(p);
+            }
         }
 
         [TestMethod]
@@ -72,18 +66,12 @@ namespace OpenMcdf.Extensions.Test
             using CompoundFile cf = new CompoundFile("_Test.ppt");
             var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
 
-            foreach (OLEProperty p in co.Properties)
-            {
-                Debug.Write(p.PropertyName);
-                Debug.Write(" - ");
-                Debug.Write(p.VTType);
-                Debug.Write(" - ");
-                Debug.WriteLine(p.Value);
-            }
-
             Assert.IsNotNull(co.Properties);
 
-            cf.Close();
+            foreach (OLEProperty p in co.Properties)
+            {
+                Debug.WriteLine(p);
+            }
         }
 
         [TestMethod]
@@ -93,17 +81,13 @@ namespace OpenMcdf.Extensions.Test
 
             using CompoundFile cf = new CompoundFile("_Test.ppt");
             var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
-            using (CompoundFile cf2 = new CompoundFile())
-            {
-                cf2.RootStorage.AddStream("\u0005DocumentSummaryInformation");
 
-                co.Save(cf2.RootStorage.GetStream("\u0005DocumentSummaryInformation"));
+            using CompoundFile cf2 = new CompoundFile();
+            cf2.RootStorage.AddStream("\u0005DocumentSummaryInformation");
 
-                cf2.SaveAs("test1.cfs");
-                cf2.Close();
-            }
+            co.Save(cf2.RootStorage.GetStream("\u0005DocumentSummaryInformation"));
 
-            cf.Close();
+            cf2.SaveAs("test1.cfs");
         }
 
         // Modify some document summary information properties, save to a file, and then validate the expected results
@@ -137,7 +121,6 @@ namespace OpenMcdf.Extensions.Test
 
                 co.Save(dsiStream);
                 cf.SaveAs(@"test_modify_summary.ppt");
-                cf.Close();
             }
 
             using (CompoundFile cf = new CompoundFile("test_modify_summary.ppt"))
@@ -161,29 +144,21 @@ namespace OpenMcdf.Extensions.Test
             using CompoundFile cf = new CompoundFile("wstr_presets.doc");
             var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
 
+            Assert.IsNotNull(co.Properties);
+
             foreach (OLEProperty p in co.Properties)
             {
-                Debug.Write(p.PropertyName);
-                Debug.Write(" - ");
-                Debug.Write(p.VTType);
-                Debug.Write(" - ");
-                Debug.WriteLine(p.Value);
+                Debug.WriteLine(p);
             }
-
-            Assert.IsNotNull(co.Properties);
 
             var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
 
+            Assert.IsNotNull(co2.Properties);
+
             foreach (OLEProperty p in co2.Properties)
             {
-                Debug.Write(p.PropertyName);
-                Debug.Write(" - ");
-                Debug.Write(p.VTType);
-                Debug.Write(" - ");
-                Debug.WriteLine(p.Value);
+                Debug.WriteLine(p);
             }
-
-            Assert.IsNotNull(co2.Properties);
         }
 
         [TestMethod]
@@ -192,37 +167,24 @@ namespace OpenMcdf.Extensions.Test
             using CompoundFile cf = new CompoundFile("2custom.doc");
             var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
 
+            Assert.IsNotNull(co.Properties);
             foreach (OLEProperty p in co.Properties)
             {
-                Debug.Write(p.PropertyName);
-                Debug.Write(" - ");
-                Debug.Write(p.VTType);
-                Debug.Write(" - ");
-                Debug.WriteLine(p.Value);
+                Debug.WriteLine(p);
             }
-
-            Assert.IsNotNull(co.Properties);
 
             var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
 
             Assert.IsNotNull(co2.Properties);
             foreach (OLEProperty p in co2.Properties)
             {
-                Debug.Write(p.PropertyName);
-                Debug.Write(" - ");
-                Debug.Write(p.VTType);
-                Debug.Write(" - ");
-                Debug.WriteLine(p.Value);
+                Debug.WriteLine(p);
             }
 
             Assert.IsNotNull(co2.UserDefinedProperties.Properties);
             foreach (OLEProperty p in co2.UserDefinedProperties.Properties)
             {
-                Debug.Write(p.PropertyName);
-                Debug.Write(" - ");
-                Debug.Write(p.VTType);
-                Debug.Write(" - ");
-                Debug.WriteLine(p.Value);
+                Debug.WriteLine(p);
             }
         }
 
@@ -232,16 +194,12 @@ namespace OpenMcdf.Extensions.Test
             using CompoundFile cf = new CompoundFile("english.presets.doc");
             var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
 
+            Assert.IsNotNull(co.Properties);
+
             foreach (OLEProperty p in co.Properties)
             {
-                Debug.Write(p.PropertyName);
-                Debug.Write(" - ");
-                Debug.Write(p.VTType);
-                Debug.Write(" - ");
-                Debug.WriteLine(p.Value);
+                Debug.WriteLine(p);
             }
-
-            Assert.IsNotNull(co.Properties);
 
             cf.Close();
         }
@@ -374,7 +332,7 @@ namespace OpenMcdf.Extensions.Test
             {
                 var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
                 var propArray = co.UserDefinedProperties.Properties.ToArray();
-                Assert.AreEqual(propArray.Length, 6);
+                Assert.AreEqual(6, propArray.Length);
 
                 // CodePage prop
                 Assert.AreEqual(1u, propArray[0].PropertyIdentifier);
@@ -488,13 +446,19 @@ namespace OpenMcdf.Extensions.Test
         {
             File.Delete("Issue134RoundTrip.cfs");
 
+            var expectedPropertyNames = new Dictionary<uint, string>()
+            {
+                [2] = "Document Number",
+                [3] = "Revision",
+                [4] = "Project Name"
+            };
+
             using (CompoundFile cf = new CompoundFile("Issue134.cfs"))
             {
                 var testStream = cf.RootStorage.GetStream("Issue134");
                 var co = testStream.AsOLEPropertiesContainer();
 
-                // Test initial contents are as expected
-                AssertExpectedProperties(co.PropertyNames);
+                CollectionAssert.AreEqual(expectedPropertyNames, co.PropertyNames);
 
                 // Write test file
                 co.Save(testStream);
@@ -505,21 +469,7 @@ namespace OpenMcdf.Extensions.Test
             using (CompoundFile cf = new CompoundFile("Issue134RoundTrip.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.Default))
             {
                 var co = cf.RootStorage.GetStream("Issue134").AsOLEPropertiesContainer();
-                AssertExpectedProperties(co.PropertyNames);
-            }
-
-            void AssertExpectedProperties(Dictionary<uint, string> actual)
-            {
-                Assert.IsNotNull(actual);
-
-                var expected = new Dictionary<uint, string>()
-                {
-                    [2] = "Document Number",
-                    [3] = "Revision",
-                    [4] = "Project Name"
-                };
-
-                CollectionAssert.AreEqual(expected, actual);
+                CollectionAssert.AreEqual(expectedPropertyNames, co.PropertyNames);
             }
         }
     }
