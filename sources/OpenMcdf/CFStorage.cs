@@ -409,34 +409,23 @@ namespace OpenMcdf
         {
             CheckDisposed();
 
-            if (action != null)
+            if (action is null)
+                return; // TODO: Reorder and throw ArgumentNullException in v3
+
+            Stack<CFItem> stack = new();
+            stack.Push(this);
+
+            while (stack.Count > 0)
             {
-                List<IRBNode> subStorages
-                    = new List<IRBNode>();
-
-                Action<IRBNode> internalAction =
-                    delegate (IRBNode targetNode)
-                    {
-                        IDirectoryEntry d = targetNode as IDirectoryEntry;
-                        if (d.StgType == StgType.StgStream)
-                            action(new CFStream(CompoundFile, d));
-                        else
-                            action(new CFStorage(CompoundFile, d));
-
-                        if (d.Child != DirectoryEntry.NOSTREAM)
-                            subStorages.Add(targetNode);
-
-                        return;
-                    };
-
-                Children.VisitTree(internalAction);
-
-                if (recursive && subStorages.Count > 0)
+                CFItem current = stack.Pop();
+                if (current is CFStorage storage)
                 {
-                    foreach (IRBNode n in subStorages)
+                    foreach (IDirectoryEntry de in storage.Children.Cast<IDirectoryEntry>())
                     {
-                        IDirectoryEntry d = n as IDirectoryEntry;
-                        new CFStorage(CompoundFile, d).VisitEntries(action, recursive);
+                        CFItem item = de.StgType == StgType.StgStream ? new CFStream(CompoundFile, de) : new CFStorage(CompoundFile, de);
+                        action(item);
+                        if (recursive)
+                            stack.Push(item);
                     }
                 }
             }

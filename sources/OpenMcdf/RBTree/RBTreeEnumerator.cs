@@ -8,31 +8,47 @@ namespace RedBlackTree
         // TODO: Make internal in v3 (can seal in v2 since constructor is internal)
         public sealed class RBTreeEnumerator : IEnumerator<IRBNode>
         {
-            private readonly List<IRBNode> list = new();
-            int position = -1;
+            private readonly IRBNode root;
+            private readonly Stack<IRBNode> stack = new();
 
             internal RBTreeEnumerator(RBTree tree)
             {
-                tree.VisitTree(item => list.Add(item));
+                root = tree.Root;
+                PushLeft(root);
             }
 
             public void Dispose()
             {
             }
 
-            public IRBNode Current => list[position];
+            public IRBNode Current { get; private set; }
 
-            object IEnumerator.Current => list[position];
+            object IEnumerator.Current => Current;
 
             public bool MoveNext()
             {
-                position++;
-                return position < list.Count;
+                if (stack.Count == 0)
+                    return false;
+
+                Current = stack.Pop();
+                PushLeft(Current.Right);
+                return true;
             }
 
             public void Reset()
             {
-                position = -1;
+                Current = null;
+                stack.Clear();
+                PushLeft(root);
+            }
+
+            private void PushLeft(IRBNode node)
+            {
+                while (node is not null)
+                {
+                    stack.Push(node);
+                    node = node.Left;
+                }
             }
         }
     }
