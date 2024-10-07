@@ -53,16 +53,7 @@ namespace OpenMcdf
             get
             {
                 // Lazy loading of children tree.
-                if (children == null)
-                {
-                    //if (this.CompoundFile.HasSourceStream)
-                    //{
-                    children = LoadChildren(DirEntry.SID);
-                    //}
-                    //else
-                    children ??= new RBTree();
-                }
-
+                children ??= LoadChildren(DirEntry);
                 return children;
             }
         }
@@ -81,15 +72,10 @@ namespace OpenMcdf
             DirEntry = dirEntry;
         }
 
-        private RBTree LoadChildren(int SID)
+        private RBTree LoadChildren(IDirectoryEntry directoryEntry)
         {
-            RBTree childrenTree = CompoundFile.GetChildrenTree(SID);
-
-            if (childrenTree.Root != null)
-                DirEntry.Child = (childrenTree.Root as IDirectoryEntry).SID;
-            else
-                DirEntry.Child = DirectoryEntry.NOSTREAM;
-
+            RBTree childrenTree = CompoundFile.GetChildrenTree(directoryEntry);
+            DirEntry.Child = childrenTree.Root == null ? DirectoryEntry.NOSTREAM : ((IDirectoryEntry)childrenTree.Root).SID;
             return childrenTree;
         }
 
@@ -566,9 +552,7 @@ namespace OpenMcdf
             else throw new CFItemNotFound("Item " + oldItemName + " not found in Storage");
 
             children = null;
-            children = LoadChildren(DirEntry.SID); //Rethread
-
-            children ??= new RBTree();
+            children = LoadChildren(DirEntry); // Rethread
         }
     }
 }
