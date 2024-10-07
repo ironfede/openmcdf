@@ -166,14 +166,20 @@ namespace OpenMcdf
             switch (origin)
             {
                 case SeekOrigin.Begin:
+                    if (offset < 0)
+                        throw new IOException("Seek before origin");
                     position = offset;
                     break;
 
                 case SeekOrigin.Current:
+                    if (position + offset < 0)
+                        throw new IOException("Seek before origin");
                     position += offset;
                     break;
 
                 case SeekOrigin.End:
+                    if (Length - offset < 0)
+                        throw new IOException("Seek before origin");
                     position = Length - offset;
                     break;
             }
