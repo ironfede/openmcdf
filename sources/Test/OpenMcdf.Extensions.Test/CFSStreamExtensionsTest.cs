@@ -92,7 +92,6 @@ namespace OpenMcdf.Extensions.Test
                 cf.SaveAs("$ACFFile2.cfs");
             }
 
-            // Works
             using (CompoundFile cf = new("$ACFFile2.cfs"))
             {
                 using Stream s = cf.RootStorage.GetStream("ANewStream").AsIOStream();
@@ -102,15 +101,42 @@ namespace OpenMcdf.Extensions.Test
                 Assert.AreEqual(readData.Length, readCount);
                 CollectionAssert.AreEqual(data, readData);
             }
+        }
 
-            // Won't work until #88 is fixed.
-            using (CompoundFile cf = new("$ACFFile2.cfs"))
-            {
-                using Stream readStream = cf.RootStorage.GetStream("ANewStream").AsIOStream();
-                using MemoryStream ms = new();
-                readStream.CopyTo(ms);
-                CollectionAssert.AreEqual(data, ms.ToArray());
-            }
+        [TestMethod]
+        [DataRow(CFSVersion.Ver_3, 0)]
+        [DataRow(CFSVersion.Ver_3, 63)]
+        [DataRow(CFSVersion.Ver_3, 64)]
+        [DataRow(CFSVersion.Ver_3, 65)]
+        [DataRow(CFSVersion.Ver_3, 511)]
+        [DataRow(CFSVersion.Ver_3, 512)]
+        [DataRow(CFSVersion.Ver_3, 513)]
+        [DataRow(CFSVersion.Ver_3, 4095)]
+        [DataRow(CFSVersion.Ver_3, 4096)]
+        [DataRow(CFSVersion.Ver_3, 409)]
+        [DataRow(CFSVersion.Ver_4, 0)]
+        [DataRow(CFSVersion.Ver_4, 63)]
+        [DataRow(CFSVersion.Ver_4, 64)]
+        [DataRow(CFSVersion.Ver_4, 65)]
+        [DataRow(CFSVersion.Ver_4, 511)]
+        [DataRow(CFSVersion.Ver_4, 512)]
+        [DataRow(CFSVersion.Ver_4, 513)]
+        [DataRow(CFSVersion.Ver_4, 4095)]
+        [DataRow(CFSVersion.Ver_4, 4096)]
+        [DataRow(CFSVersion.Ver_4, 4097)]
+        public void Test_STREAMDECORATOR_COPY(CFSVersion version, int length)
+        {
+            using CompoundFile cf = new(version, CFSConfiguration.Default);
+            CFStream cfStream = cf.RootStorage.AddStream("MyStream");
+            using StreamDecorator stream = new(cfStream);
+            var buffer = Helpers.GetBuffer(length);
+            stream.Write(buffer, 0, buffer.Length);
+            stream.Position = 0;
+            Assert.AreEqual(length, cfStream.Size);
+
+            using MemoryStream memoryStream = new();
+            stream.CopyTo(memoryStream);
+            CollectionAssert.AreEqual(buffer, memoryStream.ToArray());
         }
     }
 }
