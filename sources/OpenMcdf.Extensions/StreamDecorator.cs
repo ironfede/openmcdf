@@ -54,14 +54,14 @@ namespace OpenMcdf.Extensions
         /// <inheritdoc/>
         public override int Read(byte[] buffer, int offset, int count)
         {
-            if (count > buffer.Length)
-                throw new ArgumentException("Count parameter exceeds buffer size");
-
             if (buffer == null)
-                throw new ArgumentNullException("Buffer cannot be null");
+                throw new ArgumentNullException(nameof(buffer));
 
-            if (offset < 0 || count < 0)
-                throw new ArgumentOutOfRangeException("Offset and Count parameters must be non-negative numbers");
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException(nameof(offset), "Offset must be a non-negative number");
+
+            if ((uint)count > buffer.Length - offset)
+                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection");
 
             if (position >= cfStream.Size)
                 return 0;
