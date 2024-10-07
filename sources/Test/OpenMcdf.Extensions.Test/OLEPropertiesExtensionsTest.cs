@@ -49,44 +49,28 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_SUMMARY_INFO_READ()
         {
-            using (CompoundFile cf = new CompoundFile("_Test.ppt"))
+            using CompoundFile cf = new CompoundFile("_Test.ppt");
+            var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
+
+            Assert.IsNotNull(co.Properties);
+
+            foreach (OLEProperty p in co.Properties)
             {
-                var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
-
-                foreach (OLEProperty p in co.Properties)
-                {
-                    Debug.Write(p.PropertyName);
-                    Debug.Write(" - ");
-                    Debug.Write(p.VTType);
-                    Debug.Write(" - ");
-                    Debug.WriteLine(p.Value);
-                }
-
-                Assert.IsNotNull(co.Properties);
-
-                cf.Close();
+                Debug.WriteLine(p);
             }
         }
 
         [TestMethod]
         public void Test_DOCUMENT_SUMMARY_INFO_READ()
         {
-            using (CompoundFile cf = new CompoundFile("_Test.ppt"))
+            using CompoundFile cf = new CompoundFile("_Test.ppt");
+            var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
+
+            Assert.IsNotNull(co.Properties);
+
+            foreach (OLEProperty p in co.Properties)
             {
-                var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
-
-                foreach (OLEProperty p in co.Properties)
-                {
-                    Debug.Write(p.PropertyName);
-                    Debug.Write(" - ");
-                    Debug.Write(p.VTType);
-                    Debug.Write(" - ");
-                    Debug.WriteLine(p.Value);
-                }
-
-                Assert.IsNotNull(co.Properties);
-
-                cf.Close();
+                Debug.WriteLine(p);
             }
         }
 
@@ -95,21 +79,15 @@ namespace OpenMcdf.Extensions.Test
         {
             File.Delete("test1.cfs");
 
-            using (CompoundFile cf = new CompoundFile("_Test.ppt"))
-            {
-                var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
-                using (CompoundFile cf2 = new CompoundFile())
-                {
-                    cf2.RootStorage.AddStream("\u0005DocumentSummaryInformation");
+            using CompoundFile cf = new CompoundFile("_Test.ppt");
+            var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
 
-                    co.Save(cf2.RootStorage.GetStream("\u0005DocumentSummaryInformation"));
+            using CompoundFile cf2 = new CompoundFile();
+            cf2.RootStorage.AddStream("\u0005DocumentSummaryInformation");
 
-                    cf2.SaveAs("test1.cfs");
-                    cf2.Close();
-                }
+            co.Save(cf2.RootStorage.GetStream("\u0005DocumentSummaryInformation"));
 
-                cf.Close();
-            }
+            cf2.SaveAs("test1.cfs");
         }
 
         // Modify some document summary information properties, save to a file, and then validate the expected results
@@ -143,7 +121,6 @@ namespace OpenMcdf.Extensions.Test
 
                 co.Save(dsiStream);
                 cf.SaveAs(@"test_modify_summary.ppt");
-                cf.Close();
             }
 
             using (CompoundFile cf = new CompoundFile("test_modify_summary.ppt"))
@@ -164,98 +141,67 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_SUMMARY_INFO_READ_UTF8_ISSUE_33()
         {
-            using (CompoundFile cf = new CompoundFile("wstr_presets.doc"))
+            using CompoundFile cf = new CompoundFile("wstr_presets.doc");
+            var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
+
+            Assert.IsNotNull(co.Properties);
+
+            foreach (OLEProperty p in co.Properties)
             {
-                var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
+                Debug.WriteLine(p);
+            }
 
-                foreach (OLEProperty p in co.Properties)
-                {
-                    Debug.Write(p.PropertyName);
-                    Debug.Write(" - ");
-                    Debug.Write(p.VTType);
-                    Debug.Write(" - ");
-                    Debug.WriteLine(p.Value);
-                }
+            var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
 
-                Assert.IsNotNull(co.Properties);
+            Assert.IsNotNull(co2.Properties);
 
-                var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
-
-                foreach (OLEProperty p in co2.Properties)
-                {
-                    Debug.Write(p.PropertyName);
-                    Debug.Write(" - ");
-                    Debug.Write(p.VTType);
-                    Debug.Write(" - ");
-                    Debug.WriteLine(p.Value);
-                }
-
-                Assert.IsNotNull(co2.Properties);
+            foreach (OLEProperty p in co2.Properties)
+            {
+                Debug.WriteLine(p);
             }
         }
 
         [TestMethod]
         public void Test_SUMMARY_INFO_READ_UTF8_ISSUE_34()
         {
-            using (CompoundFile cf = new CompoundFile("2custom.doc"))
+            using CompoundFile cf = new CompoundFile("2custom.doc");
+            var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
+
+            Assert.IsNotNull(co.Properties);
+            foreach (OLEProperty p in co.Properties)
             {
-                var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
+                Debug.WriteLine(p);
+            }
 
-                foreach (OLEProperty p in co.Properties)
-                {
-                    Debug.Write(p.PropertyName);
-                    Debug.Write(" - ");
-                    Debug.Write(p.VTType);
-                    Debug.Write(" - ");
-                    Debug.WriteLine(p.Value);
-                }
+            var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
 
-                Assert.IsNotNull(co.Properties);
+            Assert.IsNotNull(co2.Properties);
+            foreach (OLEProperty p in co2.Properties)
+            {
+                Debug.WriteLine(p);
+            }
 
-                var co2 = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
-
-                Assert.IsNotNull(co2.Properties);
-                foreach (OLEProperty p in co2.Properties)
-                {
-                    Debug.Write(p.PropertyName);
-                    Debug.Write(" - ");
-                    Debug.Write(p.VTType);
-                    Debug.Write(" - ");
-                    Debug.WriteLine(p.Value);
-                }
-
-                Assert.IsNotNull(co2.UserDefinedProperties.Properties);
-                foreach (OLEProperty p in co2.UserDefinedProperties.Properties)
-                {
-                    Debug.Write(p.PropertyName);
-                    Debug.Write(" - ");
-                    Debug.Write(p.VTType);
-                    Debug.Write(" - ");
-                    Debug.WriteLine(p.Value);
-                }
+            Assert.IsNotNull(co2.UserDefinedProperties.Properties);
+            foreach (OLEProperty p in co2.UserDefinedProperties.Properties)
+            {
+                Debug.WriteLine(p);
             }
         }
 
         [TestMethod]
         public void Test_SUMMARY_INFO_READ_LPWSTRING()
         {
-            using (CompoundFile cf = new CompoundFile("english.presets.doc"))
+            using CompoundFile cf = new CompoundFile("english.presets.doc");
+            var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
+
+            Assert.IsNotNull(co.Properties);
+
+            foreach (OLEProperty p in co.Properties)
             {
-                var co = cf.RootStorage.GetStream("\u0005SummaryInformation").AsOLEPropertiesContainer();
-
-                foreach (OLEProperty p in co.Properties)
-                {
-                    Debug.Write(p.PropertyName);
-                    Debug.Write(" - ");
-                    Debug.Write(p.VTType);
-                    Debug.Write(" - ");
-                    Debug.WriteLine(p.Value);
-                }
-
-                Assert.IsNotNull(co.Properties);
-
-                cf.Close();
+                Debug.WriteLine(p);
             }
+
+            cf.Close();
         }
 
         // Test that we can modify an LPWSTR property, and the value is null terminated as required
@@ -303,39 +249,37 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_Read_Unicode_User_Properties_Dictionary()
         {
-            using (CompoundFile cf = new CompoundFile("winUnicodeDictionary.doc"))
-            {
-                var dsiStream = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation");
-                var co = dsiStream.AsOLEPropertiesContainer();
-                var userProps = co.UserDefinedProperties;
+            using CompoundFile cf = new CompoundFile("winUnicodeDictionary.doc");
+            var dsiStream = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation");
+            var co = dsiStream.AsOLEPropertiesContainer();
+            var userProps = co.UserDefinedProperties;
 
-                // CodePage should be CP_WINUNICODE (1200)
-                Assert.AreEqual(1200, userProps.Context.CodePage);
+            // CodePage should be CP_WINUNICODE (1200)
+            Assert.AreEqual(1200, userProps.Context.CodePage);
 
-                // There should be 5 property names present, and 6 properties (the properties include the code page)
-                Assert.AreEqual(5, userProps.PropertyNames.Count);
-                Assert.AreEqual(6, userProps.Properties.Count());
+            // There should be 5 property names present, and 6 properties (the properties include the code page)
+            Assert.AreEqual(5, userProps.PropertyNames.Count);
+            Assert.AreEqual(6, userProps.Properties.Count());
 
-                // Check for expected names and values
-                var propArray = userProps.Properties.ToArray();
+            // Check for expected names and values
+            var propArray = userProps.Properties.ToArray();
 
-                // CodePage prop
-                Assert.AreEqual(1u, propArray[0].PropertyIdentifier);
-                Assert.AreEqual("0x00000001", propArray[0].PropertyName);
-                Assert.AreEqual((short)1200, propArray[0].Value);
+            // CodePage prop
+            Assert.AreEqual(1u, propArray[0].PropertyIdentifier);
+            Assert.AreEqual("0x00000001", propArray[0].PropertyName);
+            Assert.AreEqual((short)1200, propArray[0].Value);
 
-                // String properties
-                Assert.AreEqual("A", propArray[1].PropertyName);
-                Assert.AreEqual("", propArray[1].Value);
-                Assert.AreEqual("AB", propArray[2].PropertyName);
-                Assert.AreEqual("X", propArray[2].Value);
-                Assert.AreEqual("ABC", propArray[3].PropertyName);
-                Assert.AreEqual("XY", propArray[3].Value);
-                Assert.AreEqual("ABCD", propArray[4].PropertyName);
-                Assert.AreEqual("XYZ", propArray[4].Value);
-                Assert.AreEqual("ABCDE", propArray[5].PropertyName);
-                Assert.AreEqual("XYZ!", propArray[5].Value);
-            }
+            // String properties
+            Assert.AreEqual("A", propArray[1].PropertyName);
+            Assert.AreEqual("", propArray[1].Value);
+            Assert.AreEqual("AB", propArray[2].PropertyName);
+            Assert.AreEqual("X", propArray[2].Value);
+            Assert.AreEqual("ABC", propArray[3].PropertyName);
+            Assert.AreEqual("XY", propArray[3].Value);
+            Assert.AreEqual("ABCD", propArray[4].PropertyName);
+            Assert.AreEqual("XYZ", propArray[4].Value);
+            Assert.AreEqual("ABCDE", propArray[5].PropertyName);
+            Assert.AreEqual("XYZ!", propArray[5].Value);
         }
 
         // Test that we can add user properties of various types and then read them back
@@ -388,7 +332,7 @@ namespace OpenMcdf.Extensions.Test
             {
                 var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
                 var propArray = co.UserDefinedProperties.Properties.ToArray();
-                Assert.AreEqual(propArray.Length, 6);
+                Assert.AreEqual(6, propArray.Length);
 
                 // CodePage prop
                 Assert.AreEqual(1u, propArray[0].PropertyIdentifier);
@@ -419,32 +363,28 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_SUMMARY_INFO_READ_LPWSTRING_VECTOR()
         {
-            using (CompoundFile cf = new CompoundFile("SampleWorkBook_bug98.xls"))
-            {
-                var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
+            using CompoundFile cf = new CompoundFile("SampleWorkBook_bug98.xls");
+            var co = cf.RootStorage.GetStream("\u0005DocumentSummaryInformation").AsOLEPropertiesContainer();
 
-                var docPartsProperty = co.Properties.FirstOrDefault(property => property.PropertyIdentifier == 13); //13 == PIDDSI_DOCPARTS
+            var docPartsProperty = co.Properties.FirstOrDefault(property => property.PropertyIdentifier == 13); //13 == PIDDSI_DOCPARTS
 
-                Assert.IsNotNull(docPartsProperty);
+            Assert.IsNotNull(docPartsProperty);
 
-                var docPartsValues = docPartsProperty.Value as IList<string>;
-                Assert.AreEqual(3, docPartsValues.Count);
-                Assert.AreEqual("Sheet1", docPartsValues[0]);
-                Assert.AreEqual("Sheet2", docPartsValues[1]);
-                Assert.AreEqual("Sheet3", docPartsValues[2]);
-            }
+            var docPartsValues = docPartsProperty.Value as IList<string>;
+            Assert.AreEqual(3, docPartsValues.Count);
+            Assert.AreEqual("Sheet1", docPartsValues[0]);
+            Assert.AreEqual("Sheet2", docPartsValues[1]);
+            Assert.AreEqual("Sheet3", docPartsValues[2]);
         }
 
         [TestMethod]
         public void Test_CLSID_PROPERTY()
         {
             var guid = new Guid("15891a95-bf6e-4409-b7d0-3a31c391fa31");
-            using (CompoundFile cf = new CompoundFile("CLSIDPropertyTest.file"))
-            {
-                var co = cf.RootStorage.GetStream("\u0005C3teagxwOttdbfkuIaamtae3Ie").AsOLEPropertiesContainer();
-                var clsidProp = co.Properties.First(x => x.PropertyName == "DocumentID");
-                Assert.AreEqual(guid, clsidProp.Value);
-            }
+            using CompoundFile cf = new CompoundFile("CLSIDPropertyTest.file");
+            var co = cf.RootStorage.GetStream("\u0005C3teagxwOttdbfkuIaamtae3Ie").AsOLEPropertiesContainer();
+            var clsidProp = co.Properties.First(x => x.PropertyName == "DocumentID");
+            Assert.AreEqual(guid, clsidProp.Value);
         }
 
         // The test file 'report.xls' contains a DocumentSummaryInfo section, but no user defined properties.
@@ -506,13 +446,19 @@ namespace OpenMcdf.Extensions.Test
         {
             File.Delete("Issue134RoundTrip.cfs");
 
+            var expectedPropertyNames = new Dictionary<uint, string>()
+            {
+                [2] = "Document Number",
+                [3] = "Revision",
+                [4] = "Project Name"
+            };
+
             using (CompoundFile cf = new CompoundFile("Issue134.cfs"))
             {
                 var testStream = cf.RootStorage.GetStream("Issue134");
                 var co = testStream.AsOLEPropertiesContainer();
 
-                // Test initial contents are as expected
-                AssertExpectedProperties(co.PropertyNames);
+                CollectionAssert.AreEqual(expectedPropertyNames, co.PropertyNames);
 
                 // Write test file
                 co.Save(testStream);
@@ -523,21 +469,7 @@ namespace OpenMcdf.Extensions.Test
             using (CompoundFile cf = new CompoundFile("Issue134RoundTrip.cfs", CFSUpdateMode.ReadOnly, CFSConfiguration.Default))
             {
                 var co = cf.RootStorage.GetStream("Issue134").AsOLEPropertiesContainer();
-                AssertExpectedProperties(co.PropertyNames);
-            }
-
-            void AssertExpectedProperties(Dictionary<uint, string> actual)
-            {
-                Assert.IsNotNull(actual);
-
-                var expected = new Dictionary<uint, string>()
-                {
-                    [2] = "Document Number",
-                    [3] = "Revision",
-                    [4] = "Project Name"
-                };
-
-                CollectionAssert.AreEqual(expected, actual);
+                CollectionAssert.AreEqual(expectedPropertyNames, co.PropertyNames);
             }
         }
     }

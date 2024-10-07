@@ -22,28 +22,5 @@ namespace OpenMcdf.Extensions.Test
 
             return b;
         }
-
-        public static bool CompareBuffer(byte[] b, byte[] p)
-        {
-            if (b == null && p == null)
-                throw new Exception("Null buffers");
-
-            if (b == null && p != null)
-                return false;
-
-            if (b != null && p == null)
-                return false;
-
-            if (b.Length != p.Length)
-                return false;
-
-            for (int i = 0; i < b.Length; i++)
-            {
-                if (b[i] != p[i])
-                    return false;
-            }
-
-            return true;
-        }
     }
 }

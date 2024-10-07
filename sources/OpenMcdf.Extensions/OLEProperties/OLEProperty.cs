@@ -55,7 +55,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public override bool Equals(object obj)
         {
-            if (obj is not OLEProperty other) 
+            if (obj is not OLEProperty other)
                 return false;
 
             return other.PropertyIdentifier == PropertyIdentifier;
@@ -65,5 +65,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         {
             return (int)PropertyIdentifier;
         }
+
+        public override string ToString() => $"{PropertyName} - {VTType} - {Value}";
     }
 }

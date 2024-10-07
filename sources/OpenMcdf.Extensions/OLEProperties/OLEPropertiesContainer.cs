@@ -84,7 +84,10 @@ namespace OpenMcdf.Extensions.OLEProperties
             PropertySetStream pStream = new PropertySetStream();
 
             this.cfStream = cfStream;
-            pStream.Read(new BinaryReader(new StreamDecorator(cfStream)));
+
+            using StreamDecorator stream = new(cfStream);
+            using BinaryReader reader = new(stream);
+            pStream.Read(reader);
 
             ContainerType = pStream.FMTID0.ToString("B").ToUpperInvariant() switch
             {
@@ -222,8 +225,8 @@ namespace OpenMcdf.Extensions.OLEProperties
             //throw new NotImplementedException("API Unstable - Work in progress - Milestone 2.3.0.0");
             //properties.Sort((a, b) => a.PropertyIdentifier.CompareTo(b.PropertyIdentifier));
 
-            Stream s = new StreamDecorator(cfStream);
-            BinaryWriter bw = new BinaryWriter(s);
+            using StreamDecorator s = new(cfStream);
+            using BinaryWriter bw = new BinaryWriter(s);
 
             Guid fmtId0 = FmtID0 ?? (ContainerType == ContainerType.SummaryInfo ? new Guid(WellKnownFMTID.FMTID_SummaryInformation) : new Guid(WellKnownFMTID.FMTID_DocSummaryInformation));
 
