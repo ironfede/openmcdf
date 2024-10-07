@@ -84,45 +84,37 @@ namespace OpenMcdf.Extensions.Test
 
             using (CompoundFile cf = new CompoundFile())
             {
-                using (Stream s = cf.RootStorage.AddStream("ANewStream").AsIOStream())
-                {
-                    using (BinaryWriter bw = new BinaryWriter(s))
-                    {
-                        bw.Write(data);
-                        cf.SaveAs("$ACFFile2.cfs");
-                        cf.Close();
-                    }
-                }
+                using Stream s = cf.RootStorage.AddStream("ANewStream").AsIOStream();
+                using BinaryWriter bw = new BinaryWriter(s);
+                bw.Write(data);
+                cf.SaveAs("$ACFFile2.cfs");
+                cf.Close();
             }
 
             // Works
             using (CompoundFile cf = new CompoundFile("$ACFFile2.cfs"))
             {
-                using (BinaryReader br = new BinaryReader(cf.RootStorage.GetStream("ANewStream").AsIOStream()))
-                {
-                    byte[] readData = new byte[data.Length];
-                    int readCount = br.Read(readData, 0, readData.Length);
-                    Assert.AreEqual(readData.Length, readCount);
-                    CollectionAssert.AreEqual(data, readData);
-                    cf.Close();
-                }
+                using BinaryReader br = new BinaryReader(cf.RootStorage.GetStream("ANewStream").AsIOStream());
+                byte[] readData = new byte[data.Length];
+                int readCount = br.Read(readData, 0, readData.Length);
+                Assert.AreEqual(readData.Length, readCount);
+                CollectionAssert.AreEqual(data, readData);
+                cf.Close();
             }
 
             // Won't work until #88 is fixed.
             using (CompoundFile cf = new CompoundFile("$ACFFile2.cfs"))
             {
-                using (Stream readStream = cf.RootStorage.GetStream("ANewStream").AsIOStream())
+                using Stream readStream = cf.RootStorage.GetStream("ANewStream").AsIOStream();
+                byte[] readData;
+                using (MemoryStream ms = new MemoryStream())
                 {
-                    byte[] readData;
-                    using (MemoryStream ms = new MemoryStream())
-                    {
-                        readStream.CopyTo(ms);
-                        readData = ms.ToArray();
-                    }
-
-                    CollectionAssert.AreEqual(data, readData);
-                    cf.Close();
+                    readStream.CopyTo(ms);
+                    readData = ms.ToArray();
                 }
+
+                CollectionAssert.AreEqual(data, readData);
+                cf.Close();
             }
         }
     }
