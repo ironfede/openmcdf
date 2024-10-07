@@ -46,10 +46,9 @@ namespace OpenMcdf.Extensions.Test
         [TestMethod]
         public void Test_AS_IOSTREAM_READ()
         {
-            CompoundFile cf = new CompoundFile("MultipleStorage.cfs");
-
-            Stream s = cf.RootStorage.GetStorage("MyStorage").GetStream("MyStream").AsIOStream();
-            BinaryReader br = new BinaryReader(s);
+            using CompoundFile cf = new("MultipleStorage.cfs");
+            using Stream s = cf.RootStorage.GetStorage("MyStorage").GetStream("MyStream").AsIOStream();
+            using BinaryReader br = new(s);
             byte[] result = br.ReadBytes(32);
             CollectionAssert.AreEqual(Helpers.GetBuffer(32, 1), result);
         }
@@ -59,18 +58,21 @@ namespace OpenMcdf.Extensions.Test
         {
             const string cmp = "Hello World of BinaryWriter !";
 
-            CompoundFile cf = new CompoundFile();
-            Stream s = cf.RootStorage.AddStream("ANewStream").AsIOStream();
-            BinaryWriter bw = new BinaryWriter(s);
-            bw.Write(cmp);
-            cf.SaveAs("$ACFFile.cfs");
-            cf.Close();
+            using (CompoundFile cf = new())
+            {
+                using Stream s = cf.RootStorage.AddStream("ANewStream").AsIOStream();
+                using BinaryWriter bw = new(s);
+                bw.Write(cmp);
+                cf.SaveAs("$ACFFile.cfs");
+            }
 
-            cf = new CompoundFile("$ACFFile.cfs");
-            BinaryReader br = new BinaryReader(cf.RootStorage.GetStream("ANewStream").AsIOStream());
-            string st = br.ReadString();
-            Assert.AreEqual(cmp, st);
-            cf.Close();
+            using (CompoundFile cf = new("$ACFFile.cfs"))
+            {
+                using Stream s = cf.RootStorage.GetStream("ANewStream").AsIOStream();
+                using BinaryReader br = new(s);
+                string st = br.ReadString();
+                Assert.AreEqual(cmp, st);
+            }
         }
 
         [TestMethod]
@@ -82,39 +84,32 @@ namespace OpenMcdf.Extensions.Test
                 data[i] = (byte)(i % 255);
             }
 
-            using (CompoundFile cf = new CompoundFile())
+            using (CompoundFile cf = new())
             {
                 using Stream s = cf.RootStorage.AddStream("ANewStream").AsIOStream();
-                using BinaryWriter bw = new BinaryWriter(s);
+                using BinaryWriter bw = new(s);
                 bw.Write(data);
                 cf.SaveAs("$ACFFile2.cfs");
-                cf.Close();
             }
 
             // Works
-            using (CompoundFile cf = new CompoundFile("$ACFFile2.cfs"))
+            using (CompoundFile cf = new("$ACFFile2.cfs"))
             {
-                using BinaryReader br = new BinaryReader(cf.RootStorage.GetStream("ANewStream").AsIOStream());
+                using Stream s = cf.RootStorage.GetStream("ANewStream").AsIOStream();
+                using BinaryReader br = new(s);
                 byte[] readData = new byte[data.Length];
                 int readCount = br.Read(readData, 0, readData.Length);
                 Assert.AreEqual(readData.Length, readCount);
                 CollectionAssert.AreEqual(data, readData);
-                cf.Close();
             }
 
             // Won't work until #88 is fixed.
-            using (CompoundFile cf = new CompoundFile("$ACFFile2.cfs"))
+            using (CompoundFile cf = new("$ACFFile2.cfs"))
             {
                 using Stream readStream = cf.RootStorage.GetStream("ANewStream").AsIOStream();
-                byte[] readData;
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    readStream.CopyTo(ms);
-                    readData = ms.ToArray();
-                }
-
-                CollectionAssert.AreEqual(data, readData);
-                cf.Close();
+                using MemoryStream ms = new();
+                readStream.CopyTo(ms);
+                CollectionAssert.AreEqual(data, ms.ToArray());
             }
         }
     }
