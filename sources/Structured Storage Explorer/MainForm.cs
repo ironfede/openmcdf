@@ -66,11 +66,11 @@ namespace StructuredStorageExplorer
 
         private void CloseCurrentFile()
         {
-            if (cf != null)
-                cf.Close();
+            cf?.Close();
+            cf = null;
 
-            if (fs != null)
-                fs.Close();
+            fs?.Close();
+            fs = null;
 
             treeView1.Nodes.Clear();
             fileNameLabel.Text = string.Empty;
@@ -108,7 +108,7 @@ namespace StructuredStorageExplorer
             root.ImageIndex = 0;
             root.Tag = cf.RootStorage;
 
-            //Recursive function to get all storage and streams
+            // Recursive function to get all storage and streams
             AddNodes(root, cf.RootStorage);
         }
 
@@ -123,33 +123,26 @@ namespace StructuredStorageExplorer
 
             try
             {
-                if (cf != null)
-                {
-                    cf.Close();
-                    cf = null;
-                }
+                cf?.Close();
+                cf = null;
 
                 CFSConfiguration cfg = CFSConfiguration.SectorRecycle | CFSConfiguration.EraseFreeSectors;
 
                 if (!Settings.Default.EnableValidation)
                     cfg |= CFSConfiguration.NoValidationException;
 
-                //Load file
-                if (enableCommit)
-                {
-                    cf = new CompoundFile(fs, CFSUpdateMode.Update, cfg);
-                }
-                else
-                {
-                    cf = new CompoundFile(fs);
-                }
+                // Load file
+                cf = enableCommit ? new CompoundFile(fs, CFSUpdateMode.Update, cfg) : new CompoundFile(fs);
 
                 RefreshTree();
             }
             catch (Exception ex)
             {
                 cf?.Close();
+                cf = null;
+
                 fs?.Close();
+                fs = null;
 
                 treeView1.Nodes.Clear();
                 fileNameLabel.Text = string.Empty;
@@ -161,62 +154,57 @@ namespace StructuredStorageExplorer
         /// Recursive addition of tree nodes foreach child of current item in the storage
         /// </summary>
         /// <param name="node">Current TreeNode</param>
-        /// <param name="cfs">Current storage associated with node</param>
-        private static void AddNodes(TreeNode node, CFStorage cfs)
+        /// <param name="storage">Current storage associated with node</param>
+        private static void AddNodes(TreeNode node, CFStorage storage)
         {
-            Action<CFItem> va = delegate (CFItem target)
+            void va(CFItem item)
             {
-                TreeNode temp = node.Nodes.Add(
-                    target.Name,
-                    target.Name + (target.IsStream ? " (" + target.Size + " bytes )" : ""));
+                TreeNode childNode = node.Nodes.Add(
+                    item.Name,
+                    item.Name + (item.IsStream ? " (" + item.Size + " bytes )" : ""));
 
-                temp.Tag = target;
+                childNode.Tag = item;
 
-                if (target.IsStream)
+                if (item is CFStorage subStorage)
                 {
-                    //Stream
-                    temp.ImageIndex = 1;
-                    temp.SelectedImageIndex = 1;
+                    // Storage
+                    childNode.ImageIndex = 0;
+                    childNode.SelectedImageIndex = 0;
+
+                    // Recursion into the storage
+                    AddNodes(childNode, subStorage);
                 }
                 else
                 {
-                    //Storage
-                    temp.ImageIndex = 0;
-                    temp.SelectedImageIndex = 0;
-
-                    //Recursion into the storage
-                    AddNodes(temp, (CFStorage)target);
+                    // Stream
+                    childNode.ImageIndex = 1;
+                    childNode.SelectedImageIndex = 1;
                 }
-            };
+            }
 
-            //Visit NON-recursively (first level only)
-            cfs.VisitEntries(va, false);
+            // Visit NON-recursively (first level only)
+            storage.VisitEntries(va, false);
         }
 
         private void exportDataToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //No export if storage
-            if (treeView1.SelectedNode == null || !((CFItem)treeView1.SelectedNode.Tag).IsStream)
+            // No export if storage
+            if (treeView1.SelectedNode == null
+                || treeView1.SelectedNode.Tag is not CFStream stream)
             {
                 MessageBox.Show("Only stream data can be exported", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
                 return;
             }
-
-            CFStream target = (CFStream)treeView1.SelectedNode.Tag;
 
             // A lot of stream and storage have only non-printable characters.
             // We need to sanitize filename.
 
             string sanitizedFileName = string.Empty;
 
-            foreach (char c in target.Name)
+            foreach (char c in stream.Name)
             {
-                if (
-                    char.GetUnicodeCategory(c) == UnicodeCategory.LetterNumber
-                    || char.GetUnicodeCategory(c) == UnicodeCategory.LowercaseLetter
-                    || char.GetUnicodeCategory(c) == UnicodeCategory.UppercaseLetter)
-
+                UnicodeCategory category = char.GetUnicodeCategory(c);
+                if (category is UnicodeCategory.LetterNumber or UnicodeCategory.LowercaseLetter or UnicodeCategory.UppercaseLetter)
                     sanitizedFileName += c;
             }
 
@@ -225,29 +213,19 @@ namespace StructuredStorageExplorer
                 sanitizedFileName = "tempFileName";
             }
 
-            saveFileDialog1.FileName = sanitizedFileName + ".bin";
+            saveFileDialog1.FileName = $"{sanitizedFileName}.bin";
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                FileStream fs = null;
-
                 try
                 {
-                    fs = new FileStream(saveFileDialog1.FileName, FileMode.CreateNew, FileAccess.ReadWrite);
-                    fs.Write(target.GetData(), 0, (int)target.Size);
+                    using FileStream fs = new(saveFileDialog1.FileName, FileMode.CreateNew, FileAccess.ReadWrite);
+                    fs.Write(stream.GetData(), 0, (int)stream.Size);
                 }
                 catch (Exception ex)
                 {
                     treeView1.Nodes.Clear();
-                    MessageBox.Show("Internal error: " + ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-                finally
-                {
-                    if (fs != null)
-                    {
-                        fs.Flush();
-                        fs.Close();
-                    }
+                    MessageBox.Show($"Internal error: {ex.Message}", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
@@ -255,7 +233,8 @@ namespace StructuredStorageExplorer
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             TreeNode n = treeView1.SelectedNode;
-            ((CFStorage)n.Parent.Tag).Delete(n.Name);
+            if (n?.Parent?.Tag is CFStorage storage)
+                storage.Delete(n.Name);
 
             RefreshTree();
         }
@@ -278,27 +257,25 @@ namespace StructuredStorageExplorer
                 cf.Commit();
             }
             else
+            {
                 MessageBox.Show("Cannot update a compound document that is not based on a stream or on a file", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void addStreamToolStripMenuItem_Click(object sender, EventArgs e)
         {
             string streamName = string.Empty;
 
-            if (Utils.InputBox("Add stream", "Insert stream name", ref streamName) == DialogResult.OK)
+            if (Utils.InputBox("Add stream", "Insert stream name", ref streamName) == DialogResult.OK
+                && treeView1.SelectedNode.Tag is CFStorage storage)
             {
-                CFItem cfs = treeView1.SelectedNode.Tag as CFItem;
-
-                if (cfs != null && (cfs.IsStorage || cfs.IsRoot))
+                try
                 {
-                    try
-                    {
-                        ((CFStorage)cfs).AddStream(streamName);
-                    }
-                    catch (CFDuplicatedItemException)
-                    {
-                        MessageBox.Show("Cannot insert a duplicated item", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    storage.AddStream(streamName);
+                }
+                catch (CFDuplicatedItemException)
+                {
+                    MessageBox.Show("Cannot insert a duplicated item", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 RefreshTree();
@@ -307,22 +284,18 @@ namespace StructuredStorageExplorer
 
         private void addStorageStripMenuItem1_Click(object sender, EventArgs e)
         {
-            string storage = string.Empty;
+            string storageName = string.Empty;
 
-            if (Utils.InputBox("Add storage", "Insert storage name", ref storage) == DialogResult.OK)
+            if (Utils.InputBox("Add storage", "Insert storage name", ref storageName) == DialogResult.OK
+                && treeView1.SelectedNode.Tag is CFStorage storage)
             {
-                CFItem cfs = treeView1.SelectedNode.Tag as CFItem;
-
-                if (cfs != null && (cfs.IsStorage || cfs.IsRoot))
+                try
                 {
-                    try
-                    {
-                        ((CFStorage)cfs).AddStorage(storage);
-                    }
-                    catch (CFDuplicatedItemException)
-                    {
-                        MessageBox.Show("Cannot insert a duplicated item", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    }
+                    storage.AddStorage(storageName);
+                }
+                catch (CFDuplicatedItemException)
+                {
+                    MessageBox.Show("Cannot insert a duplicated item", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
 
                 RefreshTree();
@@ -331,28 +304,24 @@ namespace StructuredStorageExplorer
 
         private void importDataStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (openDataFileDialog.ShowDialog() == DialogResult.OK)
+            if (openDataFileDialog.ShowDialog() == DialogResult.OK
+                && treeView1.SelectedNode.Tag is CFStream stream)
             {
-                CFStream s = treeView1.SelectedNode.Tag as CFStream;
+                using FileStream f = new(openDataFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
+                byte[] data = new byte[f.Length];
+                f.Read(data, 0, (int)f.Length);
+                f.Flush();
+                f.Close();
+                stream.SetData(data);
 
-                if (s != null)
-                {
-                    FileStream f = new FileStream(openDataFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    byte[] data = new byte[f.Length];
-                    f.Read(data, 0, (int)f.Length);
-                    f.Flush();
-                    f.Close();
-                    s.SetData(data);
-
-                    RefreshTree();
-                }
+                RefreshTree();
             }
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (cf != null)
-                cf.Close();
+            cf?.Close();
+            cf = null;
         }
 
         private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
@@ -381,141 +350,131 @@ namespace StructuredStorageExplorer
 
         private void treeView1_MouseUp(object sender, MouseEventArgs e)
         {
+            TreeNode n = treeView1.GetNodeAt(e.X, e.Y);
+            if (n is null)
+            {
+                addStorageStripMenuItem1.Enabled = true;
+                addStreamToolStripMenuItem.Enabled = true;
+                importDataStripMenuItem1.Enabled = false;
+                exportDataToolStripMenuItem.Enabled = false;
+                removeToolStripMenuItem.Enabled = false;
+                propertyGrid1.SelectedObject = null;
+                return;
+            }
+
             // Get the node under the mouse cursor.
             // We intercept both left and right mouse clicks
             // and set the selected TreeNode according.
             try
             {
-                TreeNode n = treeView1.GetNodeAt(e.X, e.Y);
-
-                if (n != null)
+                if (hexEditor.ByteProvider != null && hexEditor.ByteProvider.HasChanges())
                 {
-                    if (hexEditor.ByteProvider != null && hexEditor.ByteProvider.HasChanges())
+                    if (MessageBox.Show("Do you want to save pending changes ?", "Save changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                     {
-                        if (MessageBox.Show("Do you want to save pending changes ?", "Save changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-                        {
-                            hexEditor.ByteProvider.ApplyChanges();
-                        }
+                        hexEditor.ByteProvider.ApplyChanges();
                     }
+                }
 
-                    treeView1.SelectedNode = n;
+                treeView1.SelectedNode = n;
 
-                    // The tag property contains the underlying CFItem.
-                    CFItem target = (CFItem)n.Tag;
+                // The tag property contains the underlying CFItem.
+                //CFItem target = (CFItem)n.Tag;
 
-                    if (target.IsStream)
-                    {
-                        addStorageStripMenuItem1.Enabled = false;
-                        addStreamToolStripMenuItem.Enabled = false;
-                        importDataStripMenuItem1.Enabled = true;
-                        exportDataToolStripMenuItem.Enabled = true;
+                if (n.Tag is CFStream stream)
+                {
+                    addStorageStripMenuItem1.Enabled = false;
+                    addStreamToolStripMenuItem.Enabled = false;
+                    importDataStripMenuItem1.Enabled = true;
+                    exportDataToolStripMenuItem.Enabled = true;
 
 #if OLE_PROPERTY
-                        dgvUserDefinedProperties.DataSource = null;
-                        dgvOLEProps.DataSource = null;
+                    dgvUserDefinedProperties.DataSource = null;
+                    dgvOLEProps.DataSource = null;
 
-                        if (target.Name == "\u0005SummaryInformation" || target.Name == "\u0005DocumentSummaryInformation")
+                    if (stream.Name == "\u0005SummaryInformation" || stream.Name == "\u0005DocumentSummaryInformation")
+                    {
+                        OLEPropertiesContainer c = stream.AsOLEPropertiesContainer();
+
+                        DataTable ds = new DataTable();
+                        ds.Columns.Add("Name", typeof(string));
+                        ds.Columns.Add("Type", typeof(string));
+                        ds.Columns.Add("Value", typeof(string));
+
+                        foreach (OLEProperty p in c.Properties)
                         {
-                            OLEPropertiesContainer c = ((CFStream)target).AsOLEPropertiesContainer();
-
-                            DataTable ds = new DataTable();
-
-                            ds.Columns.Add("Name", typeof(string));
-                            ds.Columns.Add("Type", typeof(string));
-                            ds.Columns.Add("Value", typeof(string));
-
-                            foreach (var p in c.Properties)
+                            if (p.Value is not byte[] && p.Value is IList list)
                             {
-                                if (p.Value.GetType() != typeof(byte[]) && p.Value.GetType().GetInterfaces().Any(t => t == typeof(IList)))
+                                for (int h = 0; h < list.Count; h++)
                                 {
-                                    for (int h = 0; h < ((IList)p.Value).Count; h++)
+                                    DataRow dr = ds.NewRow();
+                                    dr.ItemArray = new object[] { p.PropertyName, p.VTType, list[h] };
+                                    ds.Rows.Add(dr);
+                                }
+                            }
+                            else
+                            {
+                                DataRow dr = ds.NewRow();
+                                dr.ItemArray = new object[] { p.PropertyName, p.VTType, p.Value };
+                                ds.Rows.Add(dr);
+                            }
+                        }
+
+                        ds.AcceptChanges();
+                        dgvOLEProps.DataSource = ds;
+
+                        if (c.HasUserDefinedProperties)
+                        {
+                            DataTable ds2 = new();
+                            ds2.Columns.Add("Name", typeof(string));
+                            ds2.Columns.Add("Type", typeof(string));
+                            ds2.Columns.Add("Value", typeof(string));
+
+                            foreach (OLEProperty p in c.UserDefinedProperties.Properties)
+                            {
+                                if (p.Value is not byte[] && p.Value is IList list)
+                                {
+                                    for (int h = 0; h < list.Count; h++)
                                     {
-                                        DataRow dr = ds.NewRow();
-                                        dr.ItemArray = new object[] { p.PropertyName, p.VTType, ((IList)p.Value)[h] };
-                                        ds.Rows.Add(dr);
+                                        DataRow dr = ds2.NewRow();
+                                        dr.ItemArray = new object[] { p.PropertyName, p.VTType, list[h] };
+                                        ds2.Rows.Add(dr);
                                     }
                                 }
                                 else
                                 {
-                                    DataRow dr = ds.NewRow();
+                                    DataRow dr = ds2.NewRow();
                                     dr.ItemArray = new object[] { p.PropertyName, p.VTType, p.Value };
-                                    ds.Rows.Add(dr);
+                                    ds2.Rows.Add(dr);
                                 }
                             }
 
-                            ds.AcceptChanges();
-                            dgvOLEProps.DataSource = ds;
-
-                            if (c.HasUserDefinedProperties)
-                            {
-                                DataTable ds2 = new DataTable();
-
-                                ds2.Columns.Add("Name", typeof(string));
-                                ds2.Columns.Add("Type", typeof(string));
-                                ds2.Columns.Add("Value", typeof(string));
-
-                                foreach (var p in c.UserDefinedProperties.Properties)
-                                {
-                                    if (p.Value.GetType() != typeof(byte[]) && p.Value.GetType().GetInterfaces().Any(t => t == typeof(IList)))
-                                    {
-                                        for (int h = 0; h < ((IList)p.Value).Count; h++)
-                                        {
-                                            DataRow dr = ds2.NewRow();
-                                            dr.ItemArray = new object[] { p.PropertyName, p.VTType, ((IList)p.Value)[h] };
-                                            ds2.Rows.Add(dr);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        DataRow dr = ds2.NewRow();
-                                        dr.ItemArray = new object[] { p.PropertyName, p.VTType, p.Value };
-                                        ds2.Rows.Add(dr);
-                                    }
-                                }
-
-                                ds2.AcceptChanges();
-                                dgvUserDefinedProperties.DataSource = ds2;
-                            }
+                            ds2.AcceptChanges();
+                            dgvUserDefinedProperties.DataSource = ds2;
                         }
-#endif
                     }
+
+                    hexEditor.ByteProvider = new StreamDataProvider(stream);
+#endif
                 }
                 else
                 {
-                    addStorageStripMenuItem1.Enabled = true;
-                    addStreamToolStripMenuItem.Enabled = true;
-                    importDataStripMenuItem1.Enabled = false;
-                    exportDataToolStripMenuItem.Enabled = false;
+                    hexEditor.ByteProvider = null;
                 }
 
-                if (n != null)
-                    propertyGrid1.SelectedObject = n.Tag;
-
-                if (n != null)
-                {
-                    CFStream targetStream = n.Tag as CFStream;
-                    if (targetStream != null)
-                    {
-                        hexEditor.ByteProvider = new StreamDataProvider(targetStream);
-                    }
-                    else
-                    {
-                        hexEditor.ByteProvider = null;
-                    }
-                }
+                propertyGrid1.SelectedObject = n.Tag;
             }
             catch (Exception ex)
             {
                 cf?.Close();
-                fs?.Close();
-
                 cf = null;
+
+                fs?.Close();
                 fs = null;
 
                 treeView1.Nodes.Clear();
                 fileNameLabel.Text = string.Empty;
 
-                MessageBox.Show("Internal error: " + ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Internal error: {ex.Message}", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -525,12 +484,11 @@ namespace StructuredStorageExplorer
 
         private void closeStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (hexEditor.ByteProvider != null && hexEditor.ByteProvider.HasChanges())
+            if (hexEditor.ByteProvider != null
+                && hexEditor.ByteProvider.HasChanges()
+                && MessageBox.Show("Do you want to save pending changes?", "Save changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
             {
-                if (MessageBox.Show("Do you want to save pending changes ?", "Save changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
-                {
-                    hexEditor.ByteProvider.ApplyChanges();
-                }
+                hexEditor.ByteProvider.ApplyChanges();
             }
 
             CloseCurrentFile();
@@ -538,10 +496,8 @@ namespace StructuredStorageExplorer
 
         private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            using (var pref = new PreferencesForm())
-            {
-                pref.ShowDialog();
-            }
+            using PreferencesForm pref = new();
+            pref.ShowDialog();
         }
     }
 }
