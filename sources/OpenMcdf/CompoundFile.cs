@@ -1283,14 +1283,13 @@ namespace OpenMcdf
                         null,
                             sourceStream);
 
-                byte[] nextDIFATSectorBuffer = new byte[4];
+                StreamRW difatStreamRW = new(difatStream);
 
                 int i = 0;
 
                 while (result.Count < header.FATSectorsNumber)
                 {
-                    difatStream.Read(nextDIFATSectorBuffer, 0, 4);
-                    nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
+                    nextSecID = difatStreamRW.ReadInt32();
 
                     EnsureUniqueSectorIndex(nextSecID, processedSectors);
 
@@ -1308,20 +1307,14 @@ namespace OpenMcdf
 
                     result.Add(s);
 
-                    //difatStream.Read(nextDIFATSectorBuffer, 0, 4);
-                    //nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
-
                     if (difatStream.Position == (SectorSize - 4 + i * SectorSize))
                     {
                         // Skip DIFAT chain fields considering the possibility that the last FAT entry has been already read
-                        difatStream.Read(nextDIFATSectorBuffer, 0, 4);
-                        if (BitConverter.ToInt32(nextDIFATSectorBuffer, 0) == Sector.ENDOFCHAIN)
+                        if (difatStreamRW.ReadInt32() == Sector.ENDOFCHAIN)
                             break;
-                        else
-                        {
-                            i++;
-                            continue;
-                        }
+
+                        i++;
+                        continue;
                     }
                 }
             }
