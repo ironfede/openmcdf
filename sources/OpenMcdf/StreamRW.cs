@@ -21,6 +21,19 @@ namespace OpenMcdf
             this.stream = stream;
         }
 
+        void ReadExactly(byte[] buffer, int offset, int count)
+        {
+            int totalRead = 0;
+            do
+            {
+                int read = stream.Read(buffer, offset + totalRead, count - totalRead);
+                if (read == 0)
+                    throw new EndOfStreamException();
+
+                totalRead += read;
+            } while (totalRead < count);
+        }
+
         public long Seek(long count, SeekOrigin origin)
         {
             return stream.Seek(count, origin);
@@ -28,31 +41,31 @@ namespace OpenMcdf
 
         public byte ReadByte()
         {
-            stream.Read(buffer, 0, 1);
+            ReadExactly(buffer, 0, sizeof(byte));
             return buffer[0];
         }
 
         public ushort ReadUInt16()
         {
-            stream.Read(buffer, 0, 2);
+            ReadExactly(buffer, 0, sizeof(ushort));
             return (ushort)(buffer[0] | (buffer[1] << 8));
         }
 
         public int ReadInt32()
         {
-            stream.Read(buffer, 0, 4);
+            ReadExactly(buffer, 0, sizeof(int));
             return buffer[0] | (buffer[1] << 8) | (buffer[2] << 16) | (buffer[3] << 24);
         }
 
         public uint ReadUInt32()
         {
-            stream.Read(buffer, 0, 4);
+            ReadExactly(buffer, 0, sizeof(uint));
             return (uint)(buffer[0] | (buffer[1] << 8) | (buffer[2] << 16) | (buffer[3] << 24));
         }
 
         public long ReadInt64()
         {
-            stream.Read(buffer, 0, 8);
+            ReadExactly(buffer, 0, sizeof(long));
             uint ls = (uint)(buffer[0] | (buffer[1] << 8) | (buffer[2] << 16) | (buffer[3] << 24));
             uint ms = (uint)((buffer[4]) | (buffer[5] << 8) | (buffer[6] << 16) | (buffer[7] << 24));
             return (long)(((ulong)ms << 32) | ls);
@@ -60,19 +73,18 @@ namespace OpenMcdf
 
         public ulong ReadUInt64()
         {
-            stream.Read(buffer, 0, 8);
+            ReadExactly(buffer, 0, sizeof(ulong));
             return (ulong)(buffer[0] | (buffer[1] << 8) | (buffer[2] << 16) | (buffer[3] << 24) | (buffer[4] << 32) | (buffer[5] << 40) | (buffer[6] << 48) | (buffer[7] << 56));
         }
 
         public void ReadBytes(byte[] result)
         {
-            // TODO: Check if the expected number of bytes were read
-            stream.Read(result, 0, result.Length);
+            ReadExactly(result, 0, result.Length);
         }
 
         public Guid ReadGuid()
         {
-            stream.Read(buffer, 0, 16);
+            ReadExactly(buffer, 0, 16);
             return new Guid(buffer);
         }
 
