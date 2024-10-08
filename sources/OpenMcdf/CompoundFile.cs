@@ -1283,14 +1283,13 @@ namespace OpenMcdf
                         null,
                             sourceStream);
 
-                byte[] nextDIFATSectorBuffer = new byte[4];
+                StreamRW difatStreamRW = new(difatStream);
 
                 int i = 0;
 
                 while (result.Count < header.FATSectorsNumber)
                 {
-                    difatStream.Read(nextDIFATSectorBuffer, 0, 4);
-                    nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
+                    nextSecID = difatStreamRW.ReadInt32();
 
                     EnsureUniqueSectorIndex(nextSecID, processedSectors);
 
@@ -1308,20 +1307,14 @@ namespace OpenMcdf
 
                     result.Add(s);
 
-                    //difatStream.Read(nextDIFATSectorBuffer, 0, 4);
-                    //nextSecID = BitConverter.ToInt32(nextDIFATSectorBuffer, 0);
-
                     if (difatStream.Position == (SectorSize - 4 + i * SectorSize))
                     {
                         // Skip DIFAT chain fields considering the possibility that the last FAT entry has been already read
-                        difatStream.Read(nextDIFATSectorBuffer, 0, 4);
-                        if (BitConverter.ToInt32(nextDIFATSectorBuffer, 0) == Sector.ENDOFCHAIN)
+                        if (difatStreamRW.ReadInt32() == Sector.ENDOFCHAIN)
                             break;
-                        else
-                        {
-                            i++;
-                            continue;
-                        }
+
+                        i++;
+                        continue;
                     }
                 }
             }
@@ -1576,13 +1569,14 @@ namespace OpenMcdf
             using StreamView dirReader
                 = new StreamView(directoryChain, SectorSize, directoryChain.Count * SectorSize, null, sourceStream);
 
+            StreamRW dirReaderRW = new(dirReader);
+
             while (dirReader.Position < directoryChain.Count * SectorSize)
             {
-                IDirectoryEntry de
-                = DirectoryEntry.New(string.Empty, StgType.StgInvalid, directoryEntries);
+                IDirectoryEntry de = DirectoryEntry.New(string.Empty, StgType.StgInvalid, directoryEntries);
 
-                //We are not inserting dirs. Do not use 'InsertNewDirectoryEntry'
-                de.Read(dirReader, Version);
+                // We are not inserting dirs. Do not use 'InsertNewDirectoryEntry'
+                de.Read(dirReaderRW, Version);
             }
         }
 
@@ -1598,9 +1592,11 @@ namespace OpenMcdf
 
             using StreamView sv = new StreamView(directorySectors, SectorSize, 0, null, sourceStream);
 
+            StreamRW svRW = new(sv);
+
             foreach (IDirectoryEntry di in directoryEntries)
             {
-                di.Write(sv);
+                di.Write(svRW);
             }
 
             int delta = directoryEntries.Count;
@@ -1608,7 +1604,7 @@ namespace OpenMcdf
             while (delta % (SectorSize / DIRECTORY_SIZE) != 0)
             {
                 IDirectoryEntry dummy = DirectoryEntry.New(string.Empty, StgType.StgInvalid, directoryEntries);
-                dummy.Write(sv);
+                dummy.Write(svRW);
                 delta++;
             }
 

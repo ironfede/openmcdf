@@ -79,6 +79,15 @@ namespace OpenMcdf
 
         public override int Read(byte[] buffer, int offset, int count)
         {
+            if (buffer is null)
+                throw new ArgumentNullException(nameof(buffer));
+
+            if (offset < 0)
+                throw new ArgumentOutOfRangeException(nameof(offset), "Offset must be a non-negative number");
+
+            if ((uint)count > buffer.Length - offset)
+                throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection");
+
             int nRead = 0;
 
             // Don't try to read more bytes than this stream contains.
@@ -157,14 +166,20 @@ namespace OpenMcdf
             switch (origin)
             {
                 case SeekOrigin.Begin:
+                    if (offset < 0)
+                        throw new IOException("Seek before origin");
                     position = offset;
                     break;
 
                 case SeekOrigin.Current:
+                    if (position + offset < 0)
+                        throw new IOException("Seek before origin");
                     position += offset;
                     break;
 
                 case SeekOrigin.End:
+                    if (Length - offset < 0)
+                        throw new IOException("Seek before origin");
                     position = Length - offset;
                     break;
             }

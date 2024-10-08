@@ -21,7 +21,7 @@ namespace OpenMcdf
         byte[] ModifyDate { get; set; }
         string Name { get; }
         ushort NameLength { get; set; }
-        void Read(System.IO.Stream stream, CFSVersion ver = CFSVersion.Ver_3);
+        void Read(StreamRW streamRW, CFSVersion ver = CFSVersion.Ver_3);
         int RightSibling { get; set; }
         void SetEntryName(string entryName);
         int SID { get; set; }
@@ -31,7 +31,7 @@ namespace OpenMcdf
         StgColor StgColor { get; set; }
         StgType StgType { get; set; }
         Guid StorageCLSID { get; set; }
-        void Write(System.IO.Stream stream);
+        void Write(StreamRW stream);
         void Reset();
     }
 }
