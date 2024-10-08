@@ -210,23 +210,21 @@ namespace OpenMcdf
             return (int)fnv_hash(EntryName);
         }
 
-        public void Write(Stream stream)
+        public void Write(StreamRW streamRW)
         {
-            StreamRW rw = new StreamRW(stream);
-
-            rw.Write(EntryName);
-            rw.Write(nameLength);
-            rw.Write((byte)StgType);
-            rw.Write((byte)StgColor);
-            rw.Write(LeftSibling);
-            rw.Write(RightSibling);
-            rw.Write(Child);
-            rw.Write(storageCLSID);
-            rw.Write(StateBits);
-            rw.Write(CreationDate);
-            rw.Write(ModifyDate);
-            rw.Write(StartSect);
-            rw.Write(Size);
+            streamRW.Write(EntryName);
+            streamRW.Write(nameLength);
+            streamRW.Write((byte)StgType);
+            streamRW.Write((byte)StgColor);
+            streamRW.Write(LeftSibling);
+            streamRW.Write(RightSibling);
+            streamRW.Write(Child);
+            streamRW.Write(storageCLSID);
+            streamRW.Write(StateBits);
+            streamRW.Write(CreationDate);
+            streamRW.Write(ModifyDate);
+            streamRW.Write(StartSect);
+            streamRW.Write(Size);
         }
 
         //public Byte[] ToByteArray()
@@ -256,18 +254,16 @@ namespace OpenMcdf
         //    return ms.ToArray();
         //}
 
-        public void Read(Stream stream, CFSVersion ver = CFSVersion.Ver_3)
+        public void Read(StreamRW streamRW, CFSVersion ver = CFSVersion.Ver_3)
         {
-            StreamRW rw = new StreamRW(stream);
-
-            rw.ReadBytes(EntryName);
-            nameLength = rw.ReadUInt16();
-            StgType = (StgType)rw.ReadByte();
+            streamRW.ReadBytes(EntryName);
+            nameLength = streamRW.ReadUInt16();
+            StgType = (StgType)streamRW.ReadByte();
             //rw.ReadByte();//Ignore color, only black tree
-            StgColor = (StgColor)rw.ReadByte();
-            LeftSibling = rw.ReadInt32();
-            RightSibling = rw.ReadInt32();
-            Child = rw.ReadInt32();
+            StgColor = (StgColor)streamRW.ReadByte();
+            LeftSibling = streamRW.ReadInt32();
+            RightSibling = streamRW.ReadInt32();
+            Child = streamRW.ReadInt32();
 
             // Thanks to bugaccount (BugTrack id 3519554)
             if (StgType == StgType.StgInvalid)
@@ -277,23 +273,23 @@ namespace OpenMcdf
                 Child = NOSTREAM;
             }
 
-            storageCLSID = rw.ReadGuid();
-            StateBits = rw.ReadInt32();
-            rw.ReadBytes(CreationDate);
-            rw.ReadBytes(ModifyDate);
-            StartSect = rw.ReadInt32();
+            storageCLSID = streamRW.ReadGuid();
+            StateBits = streamRW.ReadInt32();
+            streamRW.ReadBytes(CreationDate);
+            streamRW.ReadBytes(ModifyDate);
+            StartSect = streamRW.ReadInt32();
 
             if (ver == CFSVersion.Ver_3)
             {
                 // avoid dirty read for version 3 files (max size: 32bit integer)
                 // where most significant bits are not initialized to zero
 
-                Size = rw.ReadInt32();
-                rw.Seek(4, SeekOrigin.Current); // discard most significant 4 (possibly) dirty bytes
+                Size = streamRW.ReadInt32();
+                streamRW.Seek(4, SeekOrigin.Current); // discard most significant 4 (possibly) dirty bytes
             }
             else
             {
-                Size = rw.ReadInt64();
+                Size = streamRW.ReadInt64();
             }
         }
 
