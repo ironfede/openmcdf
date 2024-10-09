@@ -66,6 +66,11 @@ namespace OpenMcdf.Extensions
             if (position >= cfStream.Size)
                 return 0;
 
+            int maxReadableLength = (int)Math.Min(int.MaxValue, Length - Position);
+            count = Math.Max(0, Math.Min(maxReadableLength, count));
+            if (count == 0)
+                return 0;
+
             count = cfStream.Read(buffer, position, offset, count);
             position += count;
             return count;
