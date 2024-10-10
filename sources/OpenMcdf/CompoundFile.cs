@@ -727,6 +727,8 @@ namespace OpenMcdf
                     null,
                     sourceStream);
 
+
+
             // Set updated/new sectors within the ministream
             // We are writing data in a NORMAL Sector chain.
             for (int i = 0; i < sectorChain.Count; i++)
@@ -743,8 +745,12 @@ namespace OpenMcdf
                     s.Id = (int)(miniStreamView.Position - Sector.MINISECTOR_SIZE) / Sector.MINISECTOR_SIZE;
 
                     RootStorage.DirEntry.Size = miniStreamView.Length;
+
+
                 }
             }
+
+
 
             // Update miniFAT
             StreamRW miniFATStreamRW = new(miniFATView);
@@ -754,11 +760,13 @@ namespace OpenMcdf
                 int nextId = sectorChain[i + 1].Id;
                 miniFATStreamRW.Seek(currentId * 4, SeekOrigin.Begin);
                 miniFATStreamRW.Write(nextId);
+
             }
 
             // Write End of Chain in MiniFAT
             miniFATStreamRW.Seek(sectorChain[sectorChain.Count - 1].Id * SIZE_OF_SID, SeekOrigin.Begin);
             miniFATStreamRW.Write(Sector.ENDOFCHAIN);
+
 
             // Update sector chains
             AllocateSectorChain(miniStreamView.BaseSectorChain);
@@ -1007,6 +1015,10 @@ namespace OpenMcdf
         /// <param name="FATsectorChain">A FAT sector chain</param>
         private void AllocateDIFATSectorChain(List<Sector> FATsectorChain)
         {
+            //Get initial DIFAT chain
+            List<Sector> difatSectors =
+                        GetSectorChain(-1, SectorType.DIFAT);
+
             // Get initial sector's count
             header.FATSectorsNumber = FATsectorChain.Count;
 
@@ -1022,10 +1034,11 @@ namespace OpenMcdf
             }
 
             // Sector count...
-            int nCurrentSectors = sectors.Count;
+            //int nCurrentSectors = sectors.Count;
 
             // Temp DIFAT count
-            int nDIFATSectors = (int)header.DIFATSectorsNumber;
+            //int nDIFATSectors = (int)header.DIFATSectorsNumber;
+            int nDIFATSectors = 0;
 
             if (FATsectorChain.Count > HEADER_DIFAT_ENTRIES_COUNT)
             {
@@ -1033,11 +1046,22 @@ namespace OpenMcdf
                 nDIFATSectors = LowSaturation(nDIFATSectors - (int)header.DIFATSectorsNumber); //required DIFAT
             }
 
+
+            for (int i = 0; i < (nDIFATSectors - difatSectors.Count); i++)
+            {
+                Sector s = new Sector(SectorSize, sourceStream);
+                sectors.Add(s);
+                s.Id = sectors.Count - 1;
+                s.Type = SectorType.DIFAT;
+                difatSectors.Add(s);
+            }
+
             // ...sum with new required DIFAT sectors count
-            nCurrentSectors += nDIFATSectors;
+            //nCurrentSectors += nDIFATSectors;
+            //header.FATSectorsNumber += nDIFATSectors;
 
             // ReCheck FAT bias
-            while (header.FATSectorsNumber * FAT_SECTOR_ENTRIES_COUNT < nCurrentSectors)
+            while (FATsectorChain.Count * FAT_SECTOR_ENTRIES_COUNT < sectors.Count)
             {
                 Sector extraFATSector = new Sector(SectorSize, sourceStream);
                 sectors.Add(extraFATSector);
@@ -1047,26 +1071,25 @@ namespace OpenMcdf
 
                 FATsectorChain.Add(extraFATSector);
 
-                header.FATSectorsNumber++;
-                nCurrentSectors++;
+                //header.FATSectorsNumber++;
+                //nCurrentSectors++;
 
                 //... so, adding a FAT sector may induce DIFAT sectors to increase by one
                 // and consequently this may induce ANOTHER FAT sector (TO-THINK: May this condition occur ?)
-                if (nDIFATSectors * DIFAT_SECTOR_FAT_ENTRIES_COUNT <
-                    (header.FATSectorsNumber > HEADER_DIFAT_ENTRIES_COUNT ?
-                    header.FATSectorsNumber - HEADER_DIFAT_ENTRIES_COUNT :
-                    0))
+                if (difatSectors.Count * DIFAT_SECTOR_FAT_ENTRIES_COUNT < (FATsectorChain.Count - HEADER_DIFAT_ENTRIES_COUNT))
                 {
-                    nDIFATSectors++;
-                    nCurrentSectors++;
+
+                    Sector s = new Sector(SectorSize, sourceStream);
+                    sectors.Add(s);
+                    s.Type = SectorType.DIFAT;
+                    s.Id = sectors.Count - 1;
+                    difatSectors.Add(s);
+                    
                 }
             }
 
-            List<Sector> difatSectors =
-                        GetSectorChain(-1, SectorType.DIFAT);
-
             using StreamView difatStream
-                = new StreamView(difatSectors, SectorSize, sourceStream);
+                = new StreamView(difatSectors, SectorSize, difatSectors.Count * SectorSize, null, sourceStream);
 
             StreamRW difatStreamRW = new(difatStream);
 
@@ -1101,7 +1124,7 @@ namespace OpenMcdf
                 }
             }
 
-            header.DIFATSectorsNumber = (uint)nDIFATSectors;
+            header.DIFATSectorsNumber = (uint)difatStream.BaseSectorChain.Count;
 
             // Chain first sector
             if (difatStream.BaseSectorChain != null && difatStream.BaseSectorChain.Count > 0)
@@ -1130,16 +1153,17 @@ namespace OpenMcdf
 
             // Mark DIFAT Sectors in FAT
             using StreamView fatSv =
-                new StreamView(FATsectorChain, SectorSize, header.FATSectorsNumber * SectorSize, null, sourceStream);
+                new StreamView(FATsectorChain, SectorSize, FATsectorChain.Count * SectorSize, null, sourceStream);
 
             StreamRW streamRW = new(fatSv);
-            for (int i = 0; i < header.DIFATSectorsNumber; i++)
+
+            for (int i = 0; i < difatStream.BaseSectorChain.Count; i++)
             {
                 streamRW.Seek(difatStream.BaseSectorChain[i].Id * 4, SeekOrigin.Begin);
                 streamRW.Write(Sector.DIFSECT);
             }
 
-            for (int i = 0; i < header.FATSectorsNumber; i++)
+            for (int i = 0; i < fatSv.BaseSectorChain.Count; i++)
             {
                 streamRW.Seek(fatSv.BaseSectorChain[i].Id * 4, SeekOrigin.Begin);
                 streamRW.Write(Sector.FATSECT);
@@ -1148,7 +1172,8 @@ namespace OpenMcdf
             //fatSv.Seek(fatSv.BaseSectorChain[fatSv.BaseSectorChain.Count - 1].Id * 4, SeekOrigin.Begin);
             //fatSv.Write(BitConverter.GetBytes(Sector.ENDOFCHAIN), 0, 4);
 
-            header.FATSectorsNumber = fatSv.BaseSectorChain.Count;
+            header.FATSectorsNumber = FATsectorChain.Count;
+            header.DIFATSectorsNumber = (uint)difatSectors.Count;
         }
 
         /// <summary>
@@ -1244,9 +1269,8 @@ namespace OpenMcdf
             List<Sector> difatSectors = GetDifatSectorChain();
 
             int idx = 0;
-
-
             int nextSecID;
+
             // Read FAT entries from the header Fat entry array (max 109 entries)
             while (idx < header.FATSectorsNumber && idx < N_HEADER_FAT_ENTRY)
             {
@@ -1277,9 +1301,7 @@ namespace OpenMcdf
                         (
                         difatSectors,
                         SectorSize,
-                        header.FATSectorsNumber > N_HEADER_FAT_ENTRY ?
-                            (header.FATSectorsNumber - N_HEADER_FAT_ENTRY) * 4 :
-                            0,
+                        difatSectors.Count * SectorSize,
                         null,
                             sourceStream);
 
@@ -1340,6 +1362,7 @@ namespace OpenMcdf
             using StreamView fatStream
                 = new StreamView(fatSectors, SectorSize, fatSectors.Count * SectorSize, null, sourceStream);
             StreamRW fatStreamRW = new(fatStream);
+
             while (true)
             {
                 if (nextSecID == Sector.ENDOFCHAIN) break;
@@ -1389,12 +1412,12 @@ namespace OpenMcdf
                 List<Sector> miniStream = GetNormalSectorChain(RootEntry.StartSect);
 
                 using StreamView miniFATView
-                    = new StreamView(miniFAT, SectorSize, header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE, null, sourceStream);
+                    = new StreamView(miniFAT, SectorSize, header.MiniFATSectorsNumber * SectorSize, null, sourceStream);
 
                 using StreamView miniStreamView =
                     new StreamView(miniStream, SectorSize, RootStorage.Size, null, sourceStream);
 
-                using BinaryReader miniFATReader = new BinaryReader(miniFATView);
+                StreamRW miniFATReader = new StreamRW(miniFATView);
 
                 int nextSecID = secID;
                 HashSet<int> processedSectors = new HashSet<int>();
@@ -1834,7 +1857,7 @@ namespace OpenMcdf
                     = GetSectorChain(header.FirstMiniFATSectorID, SectorType.Normal);
 
                 using StreamView miniFATView
-                    = new StreamView(miniFAT, SectorSize, header.MiniFATSectorsNumber * Sector.MINISECTOR_SIZE, null, sourceStream);
+                    = new StreamView(miniFAT, SectorSize, header.MiniFATSectorsNumber * SectorSize, null, sourceStream);
 
                 StreamRW miniFATStreamRW = new(miniFATView);
 

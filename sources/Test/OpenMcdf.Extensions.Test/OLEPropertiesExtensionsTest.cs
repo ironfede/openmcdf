@@ -472,5 +472,27 @@ namespace OpenMcdf.Extensions.Test
                 CollectionAssert.AreEqual(expectedPropertyNames, co.PropertyNames);
             }
         }
+
+        [TestMethod]
+        public void Test_FIX_CRASH()
+        {
+            using CompoundFile cf = new(CFSVersion.Ver_4, CFSConfiguration.Default);
+
+            CFStream cfStream = cf.RootStorage.AddStream("MyStream");
+            using Stream stream = cfStream.AsIOStream();
+            const int BufferLength = 4096 * 21;
+            var buffer = Helpers.GetBuffer(BufferLength);
+            stream.Write(buffer, 0, buffer.Length);
+            stream.Position = 0;
+
+            Assert.AreEqual(BufferLength, cfStream.Size);
+
+            using MemoryStream memoryStream = new();
+            using BufferedStream bufferedStream = new(stream);
+            bufferedStream.CopyTo(memoryStream);
+
+            Assert.AreEqual(memoryStream.Length, cfStream.Size);
+          
+        }
     }
 }
