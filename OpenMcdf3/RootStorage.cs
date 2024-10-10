@@ -15,6 +15,8 @@ public sealed class RootStorage : Storage, IDisposable
     readonly McdfBinaryWriter? writer;
     bool disposed;
 
+    internal McdfBinaryReader Reader => reader;
+
     public static RootStorage Create(string fileName, Version version = Version.V3)
     {
         FileStream stream = File.Create(fileName);
@@ -27,9 +29,15 @@ public sealed class RootStorage : Storage, IDisposable
     public static RootStorage Open(string fileName, FileMode mode)
     {
         FileStream stream = File.Open(fileName, mode);
+        return Open(stream);
+    }
+
+    public static RootStorage Open(Stream stream)
+    {
         McdfBinaryReader reader = new(stream);
+        McdfBinaryWriter? writer = stream.CanWrite ? new(stream) : null;
         Header header = reader.ReadHeader();
-        return new RootStorage(header, reader);
+        return new RootStorage(header, reader, writer);
     }
 
     RootStorage(Header header, McdfBinaryReader reader, McdfBinaryWriter? writer = null)
@@ -95,17 +103,18 @@ public sealed class RootStorage : Storage, IDisposable
         return nextId;
     }
 
-    IEnumerable<Sector> EnumerateFatSectorChain(uint id)
+    internal IEnumerable<Sector> EnumerateFatSectorChain(uint startId)
     {
-        while (id != (uint)SectorType.EndOfChain)
+        uint nextId = startId;
+        while (nextId is not (uint)SectorType.EndOfChain and not (uint)SectorType.Free)
         {
-            Sector sector = new(id, header.SectorSize);
+            Sector sector = new(nextId, header.SectorSize);
             yield return sector;
-            id = GetNextFatSectorId(id);
+            nextId = GetNextFatSectorId(nextId);
         }
     }
 
-    public IEnumerable<EntryInfo> EnumerateEntries()
+    IEnumerable<DirectoryEntry> EnumerateDirectoryEntries()
     {
         foreach (Sector sector in EnumerateFatSectorChain(header.FirstDirectorySectorID))
         {
@@ -116,8 +125,17 @@ public sealed class RootStorage : Storage, IDisposable
             {
                 DirectoryEntry entry = reader.ReadDirectoryEntry((Version)header.MajorVersion);
                 if (entry.Type is not StorageType.Invalid)
-                    yield return new EntryInfo { Name = entry.Name };
+                    yield return entry;
             }
         }
+    }
+
+    public IEnumerable<EntryInfo> EnumerateEntries() => EnumerateDirectoryEntries().Select(e => new EntryInfo { Name = e.Name });
+
+    public CfbStream OpenStream(string name)
+    {
+        DirectoryEntry? entry = EnumerateDirectoryEntries()
+            .FirstOrDefault(entry => entry.Name == name) ?? throw new FileNotFoundException("Stream not found", name);
+        return new CfbStream(this, header.SectorSize, entry);
     }
 }

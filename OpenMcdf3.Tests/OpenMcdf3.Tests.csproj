@@ -26,6 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="test.cfb">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="_Test.ppt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
