@@ -95,4 +95,6 @@ internal class McdfBinaryReader : BinaryReader
 
         return entry;
     }
+
+    public void Seek(long offset) => BaseStream.Seek(offset, SeekOrigin.Begin);
 }
