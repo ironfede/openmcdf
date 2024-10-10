@@ -448,51 +448,79 @@ namespace OpenMcdf.Test
         }
 
         [TestMethod]
-        public void Test_WRITE_AND_READ_CFS()
+        [DataRow(CFSVersion.Ver_3, 0)]
+        [DataRow(CFSVersion.Ver_3, 63)]
+        [DataRow(CFSVersion.Ver_3, 64)]
+        [DataRow(CFSVersion.Ver_3, 65)]
+        [DataRow(CFSVersion.Ver_3, 511)]
+        [DataRow(CFSVersion.Ver_3, 512)]
+        [DataRow(CFSVersion.Ver_3, 513)]
+        [DataRow(CFSVersion.Ver_3, 4095)]
+        [DataRow(CFSVersion.Ver_3, 4096)]
+        [DataRow(CFSVersion.Ver_3, 409)]
+        [DataRow(CFSVersion.Ver_4, 0)]
+        [DataRow(CFSVersion.Ver_4, 63)]
+        [DataRow(CFSVersion.Ver_4, 64)]
+        [DataRow(CFSVersion.Ver_4, 65)]
+        [DataRow(CFSVersion.Ver_4, 511)]
+        [DataRow(CFSVersion.Ver_4, 512)]
+        [DataRow(CFSVersion.Ver_4, 513)]
+        [DataRow(CFSVersion.Ver_4, 4095)]
+        [DataRow(CFSVersion.Ver_4, 4096)]
+        [DataRow(CFSVersion.Ver_4, 4097)]
+        public void Test_INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS(CFSVersion version, int bufferSize)
         {
-            string filename = "WRITE_AND_READ_CFS.cfs";
-
-            using CompoundFile cf = new();
-
-            CFStorage st = cf.RootStorage.AddStorage("MyStorage");
-            CFStream sm = st.AddStream("MyStream");
-            byte[] b = Helpers.GetBuffer(220, 0x0A);
-            sm.SetData(b);
-
-            cf.SaveAs(filename);
-            cf.Close();
-
-            using CompoundFile cf2 = new(filename);
-            CFStorage st2 = cf2.RootStorage.GetStorage("MyStorage");
-            CFStream sm2 = st2.GetStream("MyStream");
-            cf2.Close();
-
-            Assert.IsNotNull(sm2);
-            Assert.AreEqual(220, sm2.Size);
-
-            File.Delete(filename);
+            SingleWriteReadMatching(version, bufferSize);
         }
 
         [TestMethod]
-        public void Test_INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS()
+        [DataRow(CFSVersion.Ver_3, 0)]
+        [DataRow(CFSVersion.Ver_3, 63)]
+        [DataRow(CFSVersion.Ver_3, 64)]
+        [DataRow(CFSVersion.Ver_3, 65)]
+        [DataRow(CFSVersion.Ver_3, 511)]
+        [DataRow(CFSVersion.Ver_3, 512)]
+        [DataRow(CFSVersion.Ver_3, 513)]
+        [DataRow(CFSVersion.Ver_3, 4095)]
+        [DataRow(CFSVersion.Ver_3, 4096)]
+        [DataRow(CFSVersion.Ver_3, 409)]
+        [DataRow(CFSVersion.Ver_4, 0)]
+        [DataRow(CFSVersion.Ver_4, 63)]
+        [DataRow(CFSVersion.Ver_4, 64)]
+        [DataRow(CFSVersion.Ver_4, 65)]
+        [DataRow(CFSVersion.Ver_4, 511)]
+        [DataRow(CFSVersion.Ver_4, 512)]
+        [DataRow(CFSVersion.Ver_4, 513)]
+        [DataRow(CFSVersion.Ver_4, 4095)]
+        [DataRow(CFSVersion.Ver_4, 4096)]
+        [DataRow(CFSVersion.Ver_4, 4097)]
+        public void Test_INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS_STREAM(CFSVersion version, int bufferLength)
         {
-            Random r = new Random();
+            SingleWriteReadMatchingSTREAMED(version, bufferLength);
+        }
 
-            for (int i = r.Next(1, 100); i < 1024 * 1024 * 70; i = i << 1)
+        static IEnumerable<object[]> FuzzyBufferLengths
+        {
+            get
             {
-                SingleWriteReadMatching(i + r.Next(0, 3));
+                Random r = new Random();
+
+                foreach (CFSVersion version in Enum.GetValues(typeof(CFSVersion)))
+                {
+                    for (int i = r.Next(1, 100); i < 1024 * 1024 * 70; i = i << 1)
+                    {
+                        yield return new object[] { version, i + r.Next(0, 3) };
+                    }
+                }
             }
         }
 
         [TestMethod]
-        public void Test_INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS_STREAM()
+        [Ignore("Run fuzzing tests manually")]
+        [DynamicData(nameof(FuzzyBufferLengths), DynamicDataSourceType.Property)]
+        public void Test_INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS_STREAM_FUZZING(CFSVersion version, int bufferLength)
         {
-            Random r = new Random();
-
-            for (int i = r.Next(1, 100); i < 1024 * 1024 * 70; i = i << 1)
-            {
-                SingleWriteReadMatchingSTREAMED(i + r.Next(0, 3));
-            }
+            SingleWriteReadMatchingSTREAMED(version, bufferLength);
         }
 
         [TestMethod]
@@ -554,13 +582,13 @@ namespace OpenMcdf.Test
             CollectionAssert.AreEqual(b, sm2.GetData());
         }
 
-        private static void SingleWriteReadMatching(int size)
+        private static void SingleWriteReadMatching(CFSVersion version, int bufferLength)
         {
-            string filename = "INCREMENTAL_SIZE_MULTIPLE_WRITE_AND_READ_CFS.cfs";
+            string filename = $"{nameof(SingleWriteReadMatching)}_{version}_{bufferLength}.cfs";
 
             File.Delete(filename);
 
-            byte[] b = Helpers.GetBuffer(size);
+            byte[] b = Helpers.GetBuffer(bufferLength);
 
             using (CompoundFile cf = new())
             {
@@ -576,17 +604,17 @@ namespace OpenMcdf.Test
             CFStream sm2 = st2.GetStream("MyStream");
 
             Assert.IsNotNull(sm2);
-            Assert.AreEqual(size, sm2.Size);
+            Assert.AreEqual(bufferLength, sm2.Size);
             CollectionAssert.AreEqual(b, sm2.GetData());
         }
 
-        private static void SingleWriteReadMatchingSTREAMED(int size)
+        private static void SingleWriteReadMatchingSTREAMED(CFSVersion version, int bufferLength)
         {
-            byte[] b = Helpers.GetBuffer(size);
+            byte[] b = Helpers.GetBuffer(bufferLength);
 
-            using MemoryStream ms = new(size);
+            using MemoryStream ms = new(bufferLength);
 
-            using (CompoundFile cf = new())
+            using (CompoundFile cf = new(version, CFSConfiguration.Default))
             {
                 CFStorage st = cf.RootStorage.AddStorage("MyStorage");
                 CFStream sm = st.AddStream("MyStream");
