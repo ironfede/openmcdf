@@ -6,15 +6,13 @@
     <title>OpenMCDF - .net component for ole compound file storage format</title>
 	<meta name="description" content="OpenMCDF is a free structured storage component for .net. MPL licensed, full source included" />
 	<meta name="keywords" content="Structured storage,compound document, .net, free, component, com, ole" /> 
-    <script type="text/javascript" src="js/jquery-1.5.2.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"
+            integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+            crossorigin="anonymous"></script>
 	<script type="text/javascript">
         function hideElement(elemId){  
 			var el = document.getElementById(elemId);
-			
-			if(!$.browser.msie)
 				$(el).fadeOut(300);
-			else
-				$(el).css("display","none");
 		}
         
 		function showElement(elemId){ 
@@ -41,10 +39,7 @@
 			el.style.marginTop = height;
 			el.style.marginLeft = width;
 			
-			if(!jQuery.browser.msie)
-				$(el).fadeIn(300);
-			else
-				$(el).css("display","block");
+			$(el).fadeIn(300);
 		}
     </script>
 </head>
