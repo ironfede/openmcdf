@@ -1,0 +1,37 @@
+﻿// Structured storage
+
+// Functions
+CreateILockBytesOnHGlobal
+PropVariantToVariant
+ReadClassStg
+ReadClassStm
+SHCreateItemFromParsingName
+SHCreateStreamOnFile
+StgCreateDocfileOnILockBytes
+StgCreateStorageEx
+StgIsStorageFile
+StgOpenStorage
+StgOpenStorageEx
+VariantClear
+VariantToPropVariant
+WriteClassStg
+WriteClassStm
+
+// Interfaces
+IEnumSTATPROPSETSTG
+IEnumSTATPROPSTG
+IEnumSTATSTG
+ILockBytes
+IPropertySetStorage
+IPropertyStorage
+IRootStorage
+IStorage
+IStream
+
+// Enumerations
+PROPSETFLAG_*
+STGTY
+
+// Constants
+STG_E_*
+PROPSETFLAG_*
