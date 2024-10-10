@@ -1,10 +1,11 @@
-﻿using System.IO;
-using System.Security.Claims;
+﻿using System.Text;
 
 namespace OpenMcdf3;
 
 internal class McdfBinaryWriter : BinaryWriter
 {
+    readonly byte[] buffer = new byte[DirectoryEntry.NameFieldLength];
+
     public McdfBinaryWriter(Stream input) : base(input)
     {
     }
@@ -43,5 +44,23 @@ internal class McdfBinaryWriter : BinaryWriter
         Write(header.MiniFatSectorCount);
         Write(header.FirstDifatSectorID);
         Write(header.DifatSectorCount);
+    }
+
+    public void Write(DirectoryEntry entry)
+    {
+        int nameLength = Encoding.Unicode.GetBytes(entry.Name, 0, entry.Name.Length, buffer, 0);
+        Write(nameLength);
+        Write(buffer, 0, DirectoryEntry.NameFieldLength);
+        Write((byte)entry.Type);
+        Write((byte)entry.Color);
+        Write(entry.LeftSiblingID);
+        Write(entry.RightSiblingID);
+        Write(entry.ChildID);
+        Write(entry.CLSID);
+        Write(entry.StateBits);
+        Write(entry.CreationTime);
+        Write(entry.ModifiedTime);
+        Write(entry.StartSectorLocation);
+        Write(entry.StreamLength);
     }
 }

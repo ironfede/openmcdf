@@ -1,7 +1,11 @@
-﻿namespace OpenMcdf3;
+﻿using System.Text;
+
+namespace OpenMcdf3;
 
 internal class McdfBinaryReader : BinaryReader
 {
+    readonly byte[] buffer = new byte[DirectoryEntry.NameFieldLength];
+
     public McdfBinaryReader(Stream input) : base(input)
     {
     }
@@ -51,5 +55,44 @@ internal class McdfBinaryReader : BinaryReader
         }
 
         return header;
+    }
+
+    public StorageType ReadStorageType() => (StorageType)ReadByte();
+
+    public Color ReadColor() => (Color)ReadByte();
+
+    public DirectoryEntry ReadDirectoryEntry(Version version)
+    {
+        if (version is not Version.V3 and not Version.V4)
+            throw new ArgumentException($"Unsupported version: {version}");
+
+        DirectoryEntry entry = new();
+        Read(buffer, 0, DirectoryEntry.NameFieldLength);
+        int nameLength = Math.Max(0, ReadUInt16() - 2);
+        entry.Name = Encoding.Unicode.GetString(buffer, 0, nameLength);
+        entry.Type = ReadStorageType();
+        entry.Color = ReadColor();
+        entry.LeftSiblingID = ReadUInt32();
+        entry.RightSiblingID = ReadUInt32();
+        entry.ChildID = ReadUInt32();
+        entry.CLSID = ReadGuid();
+        entry.StateBits = ReadUInt32();
+        entry.CreationTime = ReadFileTime();
+        entry.ModifiedTime = ReadFileTime();
+        entry.StartSectorLocation = ReadUInt32();
+
+        if (version == Version.V3)
+        {
+            entry.StreamLength = ReadUInt32();
+            if (entry.StreamLength > DirectoryEntry.MaxV3StreamLength)
+                throw new FormatException($"Stream length {entry.StreamLength} exceeds maximum value {DirectoryEntry.MaxV3StreamLength}");
+            ReadUInt32(); // Skip unused 4 bytes
+        }
+        else if (version == Version.V4)
+        {
+            entry.StreamLength = ReadInt64();
+        }
+
+        return entry;
     }
 }
