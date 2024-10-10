@@ -6,7 +6,8 @@ internal class McdfBinaryReader : BinaryReader
 {
     readonly byte[] buffer = new byte[DirectoryEntry.NameFieldLength];
 
-    public McdfBinaryReader(Stream input) : base(input)
+    public McdfBinaryReader(Stream input)
+        : base(input, Encoding.Unicode, true)
     {
     }
 

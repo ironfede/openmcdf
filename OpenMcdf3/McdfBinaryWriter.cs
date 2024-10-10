@@ -6,7 +6,8 @@ internal class McdfBinaryWriter : BinaryWriter
 {
     readonly byte[] buffer = new byte[DirectoryEntry.NameFieldLength];
 
-    public McdfBinaryWriter(Stream input) : base(input)
+    public McdfBinaryWriter(Stream input)
+        : base(input, Encoding.Unicode, true)
     {
     }
 

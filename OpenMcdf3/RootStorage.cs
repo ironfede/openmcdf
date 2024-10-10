@@ -54,6 +54,7 @@ public sealed class RootStorage : Storage, IDisposable
 
         writer?.Dispose();
         reader.Dispose();
+        reader.BaseStream.Dispose();
         disposed = true;
     }
 
