@@ -54,7 +54,7 @@ public sealed class RootStorage : Storage, IDisposable
 
         writer?.Dispose();
         reader.Dispose();
-        reader.BaseStream.Dispose();
+        //reader.BaseStream.Dispose();
         disposed = true;
     }
 
@@ -93,11 +93,14 @@ public sealed class RootStorage : Storage, IDisposable
         }
     }
 
+    List<Sector> fatSectors;
+
     uint GetNextFatSectorId(uint id)
     {
         int elementLength = header.SectorSize / sizeof(uint);
         int sectorId = (int)Math.DivRem(id, elementLength, out long sectorOffset);
-        Sector sector = EnumerateFatSectors().ElementAt(sectorId);
+        fatSectors ??= EnumerateFatSectors().ToList();
+        Sector sector = fatSectors[sectorId];
         long position = sector.StartOffset + sectorOffset * sizeof(uint);
         reader.Seek(position);
         uint nextId = reader.ReadUInt32();
