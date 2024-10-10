@@ -1,4 +1,7 @@
-﻿namespace OpenMcdf3;
+﻿using System.IO;
+using System.Security.Claims;
+
+namespace OpenMcdf3;
 
 internal class McdfBinaryWriter : BinaryWriter
 {
@@ -17,5 +20,28 @@ internal class McdfBinaryWriter : BinaryWriter
     {
         long fileTime = value.ToFileTimeUtc();
         Write(fileTime);
+    }
+
+    private void WriteBytes(byte[] buffer) => Write(buffer, 0, buffer.Length);
+
+    public void Write(Header header)
+    {
+        Write(Header.Signature);
+        Write(header.CLSID);
+        Write(header.MinorVersion);
+        Write(header.MajorVersion);
+        Write(Header.LittleEndian);
+        Write(header.SectorShift);
+        Write(Header.MiniSectorShift);
+        WriteBytes(Header.Unused);
+        Write(header.DirectorySectorCount);
+        Write(header.FatSectorCount);
+        Write(header.FirstDirectorySectorID);
+        Write((uint)0);
+        Write(Header.MiniStreamCutoffSize);
+        Write(header.FirstMiniFatSectorID);
+        Write(header.MiniFatSectorCount);
+        Write(header.FirstDifatSectorID);
+        Write(header.DifatSectorCount);
     }
 }

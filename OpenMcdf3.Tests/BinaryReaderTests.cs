@@ -1,7 +1,7 @@
 namespace OpenMcdf3.Tests;
 
 [TestClass]
-public class BinaryReaderTests
+public sealed class BinaryReaderTests
 {
     [TestMethod]
     public void Guid()
