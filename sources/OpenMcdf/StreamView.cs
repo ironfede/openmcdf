@@ -63,18 +63,8 @@ namespace OpenMcdf
 
         public override long Position
         {
-            get
-            {
-                return position;
-            }
-
-            set
-            {
-                if (position > length - 1)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                position = value;
-            }
+            get => position;
+            set => Seek(value, SeekOrigin.Begin);
         }
 
         public override int Read(byte[] buffer, int offset, int count)
@@ -185,9 +175,12 @@ namespace OpenMcdf
                         throw new IOException("Seek before origin");
                     position = Length - offset;
                     break;
+
+                default:
+                    throw new ArgumentException(nameof(origin), "Invalid seek origin");
             }
 
-            if (length <= position) // Don't adjust the length when position is inside the bounds of 0 and the current length.
+            if (position > length)
                 AdjustLength(position);
 
             return position;

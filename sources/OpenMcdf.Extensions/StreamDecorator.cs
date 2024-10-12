@@ -41,14 +41,8 @@ namespace OpenMcdf.Extensions
         /// <inheritdoc/>
         public override long Position
         {
-            get
-            {
-                return position;
-            }
-            set
-            {
-                position = value;
-            }
+            get => position;
+            set => Seek(value, SeekOrigin.Begin);
         }
 
         /// <inheritdoc/>
@@ -82,17 +76,29 @@ namespace OpenMcdf.Extensions
             switch (origin)
             {
                 case SeekOrigin.Begin:
+                    if (offset < 0)
+                        throw new IOException("Seek before origin");
                     position = offset;
                     break;
+
                 case SeekOrigin.Current:
+                    if (position + offset < 0)
+                        throw new IOException("Seek before origin");
                     position += offset;
                     break;
+
                 case SeekOrigin.End:
-                    position -= offset;
+                    if (Length - offset < 0)
+                        throw new IOException("Seek before origin");
+                    position = Length - offset;
                     break;
+
                 default:
-                    throw new Exception("Invalid origin selected");
+                    throw new ArgumentException(nameof(origin), "Invalid seek origin");
             }
+
+            if (position > Length)
+                SetLength(position);
 
             return position;
         }
