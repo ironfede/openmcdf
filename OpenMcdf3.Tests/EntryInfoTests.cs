@@ -8,7 +8,8 @@ public sealed class EntryInfoTests
     [DataRow("test.cfb", 2)]
     public void EnumerateEntryInfos(string fileName, int count)
     {
-        using var rootStorage = RootStorage.Open(fileName, FileMode.Open);
-        Assert.AreEqual(count, rootStorage.EnumerateEntries().Count());
+        using var rootStorage = RootStorage.OpenRead(fileName);
+        IEnumerable<EntryInfo> entries = rootStorage.EnumerateEntries();
+        Assert.AreEqual(count, entries.Count());
     }
 }

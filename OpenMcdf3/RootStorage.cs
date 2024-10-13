@@ -29,6 +29,12 @@ public sealed class RootStorage : Storage, IDisposable
         return Open(stream);
     }
 
+    public static RootStorage OpenRead(string fileName)
+    {
+        FileStream stream = File.OpenRead(fileName);
+        return Open(stream);
+    }
+
     public static RootStorage Open(Stream stream)
     {
         McdfBinaryReader reader = new(stream);
@@ -55,9 +61,10 @@ public sealed class RootStorage : Storage, IDisposable
 
     IEnumerable<DirectoryEntry> EnumerateDirectoryEntries()
     {
-        foreach (Sector sector in ioContext.EnumerateFatSectorChain(ioContext.Header.FirstDirectorySectorID))
+        using FatSectorChainEnumerator chainEnumerator = new(ioContext, ioContext.Header.FirstDirectorySectorID);
+        while (chainEnumerator.MoveNext())
         {
-            ioContext.Reader.Seek(sector.StartOffset);
+            ioContext.Reader.Seek(chainEnumerator.Current.StartOffset);
 
             int entryCount = ioContext.Header.SectorSize / DirectoryEntry.Length;
             for (int i = 0; i < entryCount; i++)

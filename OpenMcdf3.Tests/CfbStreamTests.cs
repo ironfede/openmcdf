@@ -8,8 +8,8 @@ public sealed class CfbStreamTests
     [DataRow("test.cfb", "MyStream0", 1048576)]
     public void CfbStreamTest(string fileName, string streamName, long length)
     {
-        using var rootStorage = RootStorage.Open(fileName, FileMode.Open);
-        using var stream = rootStorage.OpenStream(streamName);
+        using var rootStorage = RootStorage.OpenRead(fileName);
+        using CfbStream stream = rootStorage.OpenStream(streamName);
         Assert.AreEqual(length, stream.Length);
 
         using MemoryStream memoryStream = new();

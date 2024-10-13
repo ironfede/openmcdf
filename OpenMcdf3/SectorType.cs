@@ -1,10 +1,10 @@
 ﻿namespace OpenMcdf3;
 
-internal enum SectorType : uint
+internal static class SectorType
 {
-    Maximum = 0xFFFFFFFA,
-    Difat = 0xFFFFFFFC, // Specifies a DIFAT sector in the FAT.
-    Fat = 0xFFFFFFFD,
-    EndOfChain = 0xFFFFFFFE,
-    Free = 0xFFFFFFFF,
+    public const uint Maximum = 0xFFFFFFFA;
+    public const uint Difat = 0xFFFFFFFC; // Specifies a DIFAT sector in the FAT.
+    public const uint Fat = 0xFFFFFFFD;
+    public const uint EndOfChain = 0xFFFFFFFE;
+    public const uint Free = 0xFFFFFFFF;
 }
