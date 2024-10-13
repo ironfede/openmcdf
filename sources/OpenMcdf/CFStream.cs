@@ -213,14 +213,13 @@ namespace OpenMcdf
         {
             CheckDisposed();
 
-            byte[] buffer = new byte[input.Length];
-
             if (input.CanSeek)
             {
                 input.Seek(0, SeekOrigin.Begin);
             }
 
-            input.Read(buffer, 0, (int)input.Length);
+            byte[] buffer = new byte[input.Length];
+            input.ReadExactly(buffer, 0, buffer.Length);
             SetData(buffer);
         }
 

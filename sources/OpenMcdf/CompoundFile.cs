@@ -1433,7 +1433,7 @@ namespace OpenMcdf
                     ms.Type = SectorType.Mini;
 
                     miniStreamView.Seek(nextSecID * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
-                    miniStreamView.Read(ms.GetData(), 0, Sector.MINISECTOR_SIZE);
+                    miniStreamView.ReadExactly(ms.GetData(), 0, Sector.MINISECTOR_SIZE);
 
                     result.Add(ms);
 
@@ -1886,7 +1886,7 @@ namespace OpenMcdf
                         };
 
                         miniStreamView.Seek(ms.Id * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
-                        miniStreamView.Read(ms.GetData(), 0, Sector.MINISECTOR_SIZE);
+                        miniStreamView.ReadExactly(ms.GetData(), 0, Sector.MINISECTOR_SIZE);
 
                         freeList.Enqueue(ms);
                     }
@@ -2038,7 +2038,7 @@ namespace OpenMcdf
                     destSv.Write(buf, 0, cnt);
                 }
 
-                sv.Read(buf, 0, (int)toRead);
+                sv.ReadExactly(buf, 0, (int)toRead);
                 destSv.Write(buf, 0, (int)toRead);
 
                 //Free old chain
@@ -2087,7 +2087,7 @@ namespace OpenMcdf
                     destSv.Write(buf, 0, cnt);
                 }
 
-                sv.Read(buf, 0, (int)toRead);
+                sv.ReadExactly(buf, 0, (int)toRead);
                 destSv.Write(buf, 0, (int)toRead);
 
                 //Free old mini chain
