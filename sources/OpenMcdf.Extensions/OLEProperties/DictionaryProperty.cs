@@ -121,7 +121,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         }
 
         // Write as much padding as needed to pad fieldLength to a multiple of 4 bytes
-        private void WritePaddingIfNeeded(BinaryWriter bw, int fieldLength)
+        private static void WritePaddingIfNeeded(BinaryWriter bw, int fieldLength)
         {
             var m = fieldLength % 4;
 
