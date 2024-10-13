@@ -2,18 +2,20 @@
 
 public class CfbStream : Stream
 {
-    readonly RootStorage rootStorage;
+    readonly IOContext ioContext;
     readonly long sectorLength;
-    private readonly DirectoryEntry directoryEntry;
+    readonly DirectoryEntry directoryEntry;
+    readonly List<Sector> sectorChain;
     long length;
     long position;
 
-    internal CfbStream(RootStorage rootStorage, long sectorLength, DirectoryEntry directoryEntry)
+    internal CfbStream(IOContext ioContext, long sectorLength, DirectoryEntry directoryEntry)
     {
-        this.rootStorage = rootStorage;
+        this.ioContext = ioContext;
         this.sectorLength = sectorLength;
         this.directoryEntry = directoryEntry;
         length = directoryEntry.StreamLength;
+        sectorChain = ioContext.EnumerateFatSectorChain(directoryEntry.StartSectorLocation).ToList();
     }
 
     public override bool CanRead => true;
@@ -42,11 +44,11 @@ public class CfbStream : Stream
         int realCount = Math.Min(count, maxCount);
         int readCount = 0;
         int remaining = realCount;
-        foreach (Sector sector in rootStorage.EnumerateFatSectorChain(directoryEntry.StartSectorLocation).Skip(sectorSkipCount))
+        foreach (Sector sector in sectorChain.Skip(sectorSkipCount))
         {
             long readLength = Math.Min(remaining, sector.Length - sectorOffset);
-            rootStorage.Reader.Seek(sector.StartOffset + sectorOffset);
-            int read = rootStorage.Reader.Read(buffer, offset, (int)readLength);
+            ioContext.Reader.Seek(sector.StartOffset + sectorOffset);
+            int read = ioContext.Reader.Read(buffer, offset, (int)readLength);
             if (read == 0)
                 return 0;
             position += read;

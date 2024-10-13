@@ -10,12 +10,8 @@ public enum Version : ushort
 
 public sealed class RootStorage : Storage, IDisposable
 {
-    readonly Header header;
-    readonly McdfBinaryReader reader;
-    readonly McdfBinaryWriter? writer;
+    readonly IOContext ioContext;
     bool disposed;
-
-    internal McdfBinaryReader Reader => reader;
 
     public static RootStorage Create(string fileName, Version version = Version.V3)
     {
@@ -23,7 +19,8 @@ public sealed class RootStorage : Storage, IDisposable
         Header header = new(version);
         McdfBinaryReader reader = new(stream);
         McdfBinaryWriter writer = new(stream);
-        return new RootStorage(header, reader, writer);
+        IOContext ioContext = new(header, reader, writer);
+        return new RootStorage(ioContext);
     }
 
     public static RootStorage Open(string fileName, FileMode mode)
@@ -37,14 +34,13 @@ public sealed class RootStorage : Storage, IDisposable
         McdfBinaryReader reader = new(stream);
         McdfBinaryWriter? writer = stream.CanWrite ? new(stream) : null;
         Header header = reader.ReadHeader();
-        return new RootStorage(header, reader, writer);
+        IOContext ioContext = new(header, reader, writer);
+        return new RootStorage(ioContext);
     }
 
-    RootStorage(Header header, McdfBinaryReader reader, McdfBinaryWriter? writer = null)
+    RootStorage(IOContext ioContext)
     {
-        this.header = header;
-        this.reader = reader;
-        this.writer = writer;
+        this.ioContext = ioContext;
     }
 
     public void Dispose()
@@ -52,82 +48,21 @@ public sealed class RootStorage : Storage, IDisposable
         if (disposed)
             return;
 
-        writer?.Dispose();
-        reader.Dispose();
-        //reader.BaseStream.Dispose();
+        ioContext.Writer?.Dispose();
+        ioContext.Reader.Dispose();
         disposed = true;
-    }
-
-    IEnumerable<Sector> EnumerateDifatSectorChain()
-    {
-        uint nextId = header.FirstDifatSectorID;
-        while (nextId != (uint)SectorType.EndOfChain)
-        {
-            Sector s = new(nextId, header.SectorSize);
-            yield return s;
-            long nextIdOffset = s.EndOffset - sizeof(uint);
-            reader.Seek(nextIdOffset);
-            nextId = reader.ReadUInt32();
-        }
-    }
-
-    IEnumerable<Sector> EnumerateFatSectors()
-    {
-        for (uint i = 0; i < header.FatSectorCount && i < Header.DifatLength; i++)
-        {
-            uint nextId = header.Difat[i];
-            Sector s = new(nextId, header.SectorSize);
-            yield return s;
-        }
-
-        foreach (Sector difatSector in EnumerateDifatSectorChain())
-        {
-            reader.Seek(difatSector.StartOffset);
-            int difatElementCount = header.SectorSize / sizeof(uint) - 1;
-            for (int i = 0; i < difatElementCount; i++)
-            {
-                uint nextId = reader.ReadUInt32();
-                Sector s = new(nextId, header.SectorSize);
-                yield return s;
-            }
-        }
-    }
-
-    List<Sector> fatSectors;
-
-    uint GetNextFatSectorId(uint id)
-    {
-        int elementLength = header.SectorSize / sizeof(uint);
-        int sectorId = (int)Math.DivRem(id, elementLength, out long sectorOffset);
-        fatSectors ??= EnumerateFatSectors().ToList();
-        Sector sector = fatSectors[sectorId];
-        long position = sector.StartOffset + sectorOffset * sizeof(uint);
-        reader.Seek(position);
-        uint nextId = reader.ReadUInt32();
-        return nextId;
-    }
-
-    internal IEnumerable<Sector> EnumerateFatSectorChain(uint startId)
-    {
-        uint nextId = startId;
-        while (nextId is not (uint)SectorType.EndOfChain and not (uint)SectorType.Free)
-        {
-            Sector sector = new(nextId, header.SectorSize);
-            yield return sector;
-            nextId = GetNextFatSectorId(nextId);
-        }
     }
 
     IEnumerable<DirectoryEntry> EnumerateDirectoryEntries()
     {
-        foreach (Sector sector in EnumerateFatSectorChain(header.FirstDirectorySectorID))
+        foreach (Sector sector in ioContext.EnumerateFatSectorChain(ioContext.Header.FirstDirectorySectorID))
         {
-            reader.Seek(sector.StartOffset);
+            ioContext.Reader.Seek(sector.StartOffset);
 
-            int entryCount = header.SectorSize / DirectoryEntry.Length;
+            int entryCount = ioContext.Header.SectorSize / DirectoryEntry.Length;
             for (int i = 0; i < entryCount; i++)
             {
-                DirectoryEntry entry = reader.ReadDirectoryEntry((Version)header.MajorVersion);
+                DirectoryEntry entry = ioContext.Reader.ReadDirectoryEntry((Version)ioContext.Header.MajorVersion);
                 if (entry.Type is not StorageType.Invalid)
                     yield return entry;
             }
@@ -140,6 +75,6 @@ public sealed class RootStorage : Storage, IDisposable
     {
         DirectoryEntry? entry = EnumerateDirectoryEntries()
             .FirstOrDefault(entry => entry.Name == name) ?? throw new FileNotFoundException("Stream not found", name);
-        return new CfbStream(this, header.SectorSize, entry);
+        return new CfbStream(ioContext, ioContext.Header.SectorSize, entry);
     }
 }
