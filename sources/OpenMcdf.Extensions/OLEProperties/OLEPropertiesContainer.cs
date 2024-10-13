@@ -180,11 +180,16 @@ namespace OpenMcdf.Extensions.OLEProperties
         /// </summary>
         /// <param name="vtPropertyType">The type of property to create.</param>
         /// <param name="name">The name of the new property.</param>
-        /// <returns>The new property, of null if this container can't contain user defined properties.</returns>
+        /// <returns>The new property.</returns>
+        /// <exception cref="InvalidOperationException">If UserDefinedProperties aren't allowed for this container.</exception>
+        /// <exception cref="ArgumentException">If a property with the name <paramref name="name"/> already exists."/></exception>
         public OLEProperty AddUserDefinedProperty(VTPropertyType vtPropertyType, string name)
         {
+            // @@TBD@@ If this is a DocumentSummaryInfo container, we could forward the add on to that.
             if (this.ContainerType != ContainerType.UserDefinedProperties)
-                return null;
+            {
+                throw new InvalidOperationException($"UserDefinedProperties are not allowed in containers of type {this.ContainerType}");
+            }
 
             // As per https://learn.microsoft.com/en-us/openspecs/windows_protocols/MS-OLEPS/4177a4bc-5547-49fe-a4d9-4767350fd9cf
             // the property names have to be unique, and are case insensitive.
@@ -192,7 +197,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             {
                 throw new ArgumentException($"User defined property names must be unique and {name} already exists", nameof(name));
             }
-    
+
             // Work out a property identifier - must be > 1 and unique as per 
             // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-oleps/333959a3-a999-4eca-8627-48a224e63e77
             uint identifier = 2;
