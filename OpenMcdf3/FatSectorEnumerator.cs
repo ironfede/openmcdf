@@ -15,7 +15,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         this.ioContext = ioContext;
         this.index = SectorType.EndOfChain;
         this.nextDifatSectorId = ioContext.Header.FirstDifatSectorID;
-        Current = default;
+        Current = Sector.EndOfChain;
     }
 
     public Sector Current { get; private set; }
@@ -68,7 +68,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
     {
         index = SectorType.EndOfChain;
         difatSectorElementIndex = SectorType.EndOfChain;
-        Current = new Sector(0, 0); // Reset to default value
+        Current = Sector.EndOfChain;
     }
 
     public uint GetNextFatSectorId(uint id)
@@ -81,8 +81,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
                 return SectorType.EndOfChain;
         }
 
-        Sector sector = Current;
-        long position = sector.StartOffset + sectorOffset * sizeof(uint);
+        long position = Current.StartOffset + sectorOffset * sizeof(uint);
         ioContext.Reader.Seek(position);
         uint nextId = ioContext.Reader.ReadUInt32();
         return nextId;

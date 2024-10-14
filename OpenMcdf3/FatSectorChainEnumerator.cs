@@ -17,7 +17,7 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
         Index = SectorType.EndOfChain;
         this.startId = startId;
         this.nextId = SectorType.Free;
-        this.current = new Sector(0, 0); // Initialize with a default value
+        this.current = Sector.EndOfChain;
     }
 
     public uint Index { get; private set; }
@@ -50,7 +50,7 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
     {
         Index = SectorType.EndOfChain;
         nextId = SectorType.Free;
-        current = new Sector(0, 0); // Reset to default value
+        current = Sector.EndOfChain;
         fatEnumerator.Reset();
     }
 
