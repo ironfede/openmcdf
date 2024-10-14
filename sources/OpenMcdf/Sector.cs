@@ -65,8 +65,17 @@ namespace OpenMcdf
 
                 if (IsStreamed)
                 {
-                    stream.Seek(Size + Id * (long)Size, SeekOrigin.Begin);
-                    stream.Read(data, 0, Size);
+                    long position = Size + Id * (long)Size;
+                    // Enlarge the stream if necessary and possible
+                    long endPosition = position + Size;
+                    if (endPosition > stream.Length)
+                    {
+                        if (!stream.CanWrite)
+                            return data;
+                        stream.SetLength(endPosition);
+                    }
+                    stream.Seek(position, SeekOrigin.Begin);
+                    stream.ReadExactly(data, 0, Size);
                 }
             }
 
