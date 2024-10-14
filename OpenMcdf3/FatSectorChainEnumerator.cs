@@ -4,55 +4,80 @@ namespace OpenMcdf3;
 
 internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
 {
-    private readonly FatSectorEnumerator fatEnumerator;
     private readonly IOContext ioContext;
+    private readonly FatSectorEnumerator fatEnumerator;
     private readonly uint startId;
-    private uint nextId;
-    private Sector current;
+    private bool start = true;
+    private Sector current = Sector.EndOfChain;
 
-    public FatSectorChainEnumerator(IOContext ioContext, uint startId)
+    public FatSectorChainEnumerator(IOContext ioContext, uint startSectorId)
     {
-        fatEnumerator = new(ioContext);
         this.ioContext = ioContext;
-        Index = SectorType.EndOfChain;
-        this.startId = startId;
-        this.nextId = SectorType.Free;
-        this.current = Sector.EndOfChain;
+        if (startSectorId is SectorType.EndOfChain)
+            throw new ArgumentException("Invalid start sector ID", nameof(startSectorId));
+        this.startId = startSectorId;
+        fatEnumerator = new(ioContext);
     }
 
-    // TODO: Fix off-by one error
-    public uint Index { get; private set; }
+    public uint Index { get; private set; } = uint.MaxValue;
 
-    public Sector Current => current;
+    public Sector Current
+    {
+        get
+        {
+            if (current.IsEndOfChain)
+                throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
+            return current;
+        }
+    }
 
     object IEnumerator.Current => Current;
 
     public bool MoveNext()
     {
-        if (nextId is SectorType.Free)
+        if (start)
         {
+            current = new(startId, ioContext.Header.SectorSize);
             Index = 0;
-            nextId = startId;
+            start = false;
+        }
+        else if (!current.IsEndOfChain)
+        {
+            uint sectorId = fatEnumerator.GetNextFatSectorId(current.Id);
+            current = new(sectorId, ioContext.Header.SectorSize);
+            Index++;
         }
 
-        if (nextId is SectorType.EndOfChain)
+        if (current.IsEndOfChain)
         {
-            Index = SectorType.EndOfChain;
+            current = Sector.EndOfChain;
+            Index = uint.MaxValue;
             return false;
         }
 
-        Index++;
-        current = new Sector(nextId, ioContext.Header.SectorSize);
-        nextId = fatEnumerator.GetNextFatSectorId(nextId);
+        return true;
+    }
+
+    public bool MoveTo(uint index)
+    {
+        if (index < Index)
+            Reset();
+
+        while (start || Index < index)
+        {
+            if (!MoveNext())
+                return false;
+        }
+
         return true;
     }
 
     public void Reset()
     {
-        Index = SectorType.EndOfChain;
-        nextId = SectorType.Free;
-        current = Sector.EndOfChain;
+        start = true;
         fatEnumerator.Reset();
+        current = Sector.EndOfChain;
+        Index = uint.MaxValue;
     }
 
     public void Dispose()

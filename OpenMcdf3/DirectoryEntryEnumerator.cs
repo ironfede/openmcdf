@@ -8,7 +8,7 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
     private readonly Version version;
     private readonly int entryCount;
     private readonly FatSectorChainEnumerator chainEnumerator;
-    private int entryIndex;
+    private int entryIndex = -1;
     private DirectoryEntry? current;
 
     public DirectoryEntryEnumerator(IOContext ioContext)
@@ -17,11 +17,17 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         this.version = (Version)ioContext.Header.MajorVersion;
         this.entryCount = ioContext.Header.SectorSize / DirectoryEntry.Length;
         this.chainEnumerator = new FatSectorChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorID);
-        this.entryIndex = -1;
-        this.current = default;
     }
 
-    public DirectoryEntry Current => current!;
+    public DirectoryEntry Current
+    {
+        get
+        {
+            if (current is null)
+                throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
+            return current;
+        }
+    }
 
     object IEnumerator.Current => Current;
 
@@ -46,18 +52,9 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         if (id == StreamId.NoStream)
             return null;
 
-        int sectorIndex = Math.DivRem((int)id, entryCount, out int entryIndex);
-        if (sectorIndex < chainEnumerator.Index)
-        {
-            chainEnumerator.Reset();
-            chainEnumerator.MoveNext();
-        }
-
-        while (chainEnumerator.Index - 1 < sectorIndex)
-        {
-            if (!chainEnumerator.MoveNext())
-                return null;
-        }
+        uint chainIndex = (uint)Math.DivRem(id, entryCount, out long entryIndex);
+        if (!chainEnumerator.MoveTo(chainIndex))
+            throw new ArgumentException("Invalid directory entry ID");
 
         long position = chainEnumerator.Current.StartOffset + entryIndex * DirectoryEntry.Length;
         ioContext.Reader.Seek(position);

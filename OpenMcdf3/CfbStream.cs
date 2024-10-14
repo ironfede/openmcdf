@@ -31,6 +31,13 @@ public class CfbStream : Stream
         set => position = value;
     }
 
+    protected override void Dispose(bool disposing)
+    {
+        chain.Dispose();
+
+        base.Dispose(disposing);
+    }
+
     public override void Flush()
     {
         //rootStorage.Flush();
@@ -38,18 +45,15 @@ public class CfbStream : Stream
 
     public override int Read(byte[] buffer, int offset, int count)
     {
-        int sectorIndex = (int)Math.DivRem(position, ioContext.Header.SectorSize, out long sectorOffset);
-        while (sectorIndex > 0 && (chain.Index == SectorType.EndOfChain || chain.Index < sectorIndex))
-        {
-            if (!chain.MoveNext())
-                return 0;
-        }
+        uint chainIndex = (uint)Math.DivRem(position, ioContext.Header.SectorSize, out long sectorOffset);
+        if (!chain.MoveTo(chainIndex))
+            return 0;
 
         int maxCount = (int)Math.Min(Math.Max(length - position, 0), int.MaxValue);
         int realCount = Math.Min(count, maxCount);
         int readCount = 0;
         int remaining = realCount;
-        while (chain.MoveNext())
+        do
         {
             Sector sector = chain.Current;
             long readLength = Math.Min(remaining, sector.Length - sectorOffset);
@@ -61,7 +65,7 @@ public class CfbStream : Stream
             readCount += read;
             if (readCount >= realCount)
                 return readCount;
-        }
+        } while (chain.MoveNext());
 
         return readCount;
     }

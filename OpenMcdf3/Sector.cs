@@ -1,23 +1,25 @@
 ﻿namespace OpenMcdf3;
 
-internal record struct Sector(uint Index, int Length)
+internal record struct Sector(uint Id, int Length)
 {
     public const int MiniSectorSize = 64;
 
     public static readonly Sector EndOfChain = new(SectorType.EndOfChain, 0);
 
-    readonly void ThrowIfInvalid()
-    {
-        if (Index > SectorType.Maximum)
-            throw new InvalidOperationException($"Invalid sector index: {Index}");
-    }
+    /// <summary>
+    /// Compound File Binary File Format only specifies that ENDOFCHAIN ends the DIFAT chain
+    /// but some implementations use FREESECT
+    /// </summary>
+    public readonly bool IsEndOfChain => Id is SectorType.EndOfChain or SectorType.Free;
+
+    public readonly bool IsValid => Id <= SectorType.Maximum;
 
     public readonly long StartOffset
     {
         get
         {
             ThrowIfInvalid();
-            return (Index + 1) * Length;
+            return (Id + 1) * Length;
         }
     }
 
@@ -26,9 +28,15 @@ internal record struct Sector(uint Index, int Length)
         get
         {
             ThrowIfInvalid();
-            return (Index + 2) * Length;
+            return (Id + 2) * Length;
         }
     }
 
-    public override readonly string ToString() => $"{Index}";
+    readonly void ThrowIfInvalid()
+    {
+        if (!IsValid)
+            throw new InvalidOperationException($"Invalid sector index: {Id}");
+    }
+
+    public override readonly string ToString() => $"{Id}";
 }
