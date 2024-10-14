@@ -56,6 +56,6 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
 
     public void Dispose()
     {
-        // No resources to dispose
+        fatEnumerator.Dispose();
     }
 }

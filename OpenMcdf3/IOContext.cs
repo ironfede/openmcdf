@@ -6,7 +6,7 @@ internal sealed class IOContext : IDisposable
     public McdfBinaryReader Reader { get; }
     public McdfBinaryWriter? Writer { get; }
 
-    public IOContext(Header header, McdfBinaryReader reader, McdfBinaryWriter? writer = null)
+    public IOContext(Header header, McdfBinaryReader reader, McdfBinaryWriter? writer, bool leaveOpen = false)
     {
         Header = header;
         Reader = reader;
