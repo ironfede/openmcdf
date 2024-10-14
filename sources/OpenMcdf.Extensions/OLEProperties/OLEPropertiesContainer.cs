@@ -304,7 +304,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             ps.Write(bw);
         }
 
-        private void AddDictionaryPropertyToPropertySet(Dictionary<uint, string> propertyNames, PropertySet propertySet)
+        private static void AddDictionaryPropertyToPropertySet(Dictionary<uint, string> propertyNames, PropertySet propertySet)
         {
             IDictionaryProperty dictionaryProperty = new DictionaryProperty(propertySet.PropertyContext.CodePage)
             {

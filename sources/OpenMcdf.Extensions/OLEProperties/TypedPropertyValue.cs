@@ -27,7 +27,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         protected virtual bool NeedsPadding { get; set; } = true;
 
-        private PropertyDimensions CheckPropertyDimensions(VTPropertyType vtType)
+        private static PropertyDimensions CheckPropertyDimensions(VTPropertyType vtType)
         {
             if ((((ushort)vtType) & 0x1000) != 0)
                 return PropertyDimensions.IsVector;
