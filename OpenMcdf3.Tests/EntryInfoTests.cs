@@ -4,8 +4,8 @@
 public sealed class EntryInfoTests
 {
     [TestMethod]
-    [DataRow("_Test.ppt", 5)]
-    [DataRow("test.cfb", 2)]
+    [DataRow("_Test.ppt", 4)]
+    [DataRow("test.cfb", 1)]
     public void EnumerateEntryInfos(string fileName, int count)
     {
         using var rootStorage = RootStorage.OpenRead(fileName);

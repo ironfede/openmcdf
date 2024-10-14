@@ -1,14 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
+﻿using System.Text;
 
 namespace OpenMcdf3;
+
+public enum StorageType
+{
+    Unallocated = 0,
+    Storage = 1,
+    Stream = 2,
+    Root = 5
+}
 
 enum Color
 {
     Red = 0,
     Black = 1
+}
+
+internal static class StreamId
+{
+    public const uint Maximum = 0xFFFFFFFA;
+    public const uint NoStream = 0xFFFFFFFF;
 }
 
 internal sealed class DirectoryEntry
@@ -38,7 +49,7 @@ internal sealed class DirectoryEntry
         }
     }
 
-    public StorageType Type { get; set; } = StorageType.Invalid;
+    public StorageType Type { get; set; } = StorageType.Unallocated;
 
     public Color Color { get; set; }
 
@@ -79,4 +90,8 @@ internal sealed class DirectoryEntry
     public uint StartSectorLocation { get; set; }
 
     public long StreamLength { get; set; }
+
+    public EntryInfo ToEntryInfo() => new() { Name = Name };
+
+    public override string ToString() => Name;
 }

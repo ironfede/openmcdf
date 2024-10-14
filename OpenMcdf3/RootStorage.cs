@@ -19,7 +19,8 @@ public sealed class RootStorage : Storage, IDisposable
         McdfBinaryReader reader = new(stream);
         McdfBinaryWriter writer = new(stream);
         IOContext ioContext = new(header, reader, writer);
-        return new RootStorage(ioContext);
+        DirectoryEntry directoryEntry = new();
+        return new RootStorage(ioContext, directoryEntry);
     }
 
     public static RootStorage Open(string fileName, FileMode mode)
@@ -40,11 +41,12 @@ public sealed class RootStorage : Storage, IDisposable
         McdfBinaryWriter? writer = stream.CanWrite ? new(stream) : null;
         Header header = reader.ReadHeader();
         IOContext ioContext = new(header, reader, writer, leaveOpen);
-        return new RootStorage(ioContext);
+        DirectoryEntry rootDirectoryEntry = ioContext.EnumerateDirectoryEntries().First();
+        return new RootStorage(ioContext, rootDirectoryEntry);
     }
 
-    RootStorage(IOContext ioContext)
-        : base(ioContext, ioContext.Header.FirstDirectorySectorID)
+    RootStorage(IOContext ioContext, DirectoryEntry rootDirectoryEntry)
+        : base(ioContext, rootDirectoryEntry)
     {
     }
 

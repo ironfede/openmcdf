@@ -18,4 +18,11 @@ internal sealed class IOContext : IDisposable
         Reader.Dispose();
         Writer?.Dispose();
     }
+
+    public IEnumerable<DirectoryEntry> EnumerateDirectoryEntries()
+    {
+        using DirectoryEntryEnumerator directoryEntriesEnumerator = new(this);
+        while (directoryEntriesEnumerator.MoveNext())
+            yield return directoryEntriesEnumerator.Current;
+    }
 }

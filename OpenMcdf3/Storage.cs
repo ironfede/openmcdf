@@ -1,51 +1,46 @@
 ﻿namespace OpenMcdf3;
 
-public enum StorageType
-{
-    Invalid = 0,
-    Storage = 1,
-    Stream = 2,
-    Lockbytes = 3,
-    Property = 4,
-    Root = 5
-}
-
 public class Storage
 {
     internal IOContext IOContext { get; }
 
-    uint firstDirectorySector;
+    internal DirectoryEntry DirectoryEntry { get; }
 
-    internal Storage(IOContext ioContext, uint firstDirectorySector)
+    internal Storage(IOContext ioContext, DirectoryEntry directoryEntry)
     {
         IOContext = ioContext;
-        this.firstDirectorySector = firstDirectorySector;
+        DirectoryEntry = directoryEntry;
     }
+
+    public IEnumerable<EntryInfo> EnumerateEntries() => EnumerateDirectoryEntries()
+        .Select(e => e.ToEntryInfo());
+
+    public IEnumerable<EntryInfo> EnumerateEntries(StorageType type) => EnumerateDirectoryEntries(type)
+        .Select(e => e.ToEntryInfo());
 
     IEnumerable<DirectoryEntry> EnumerateDirectoryEntries()
     {
-        var version = (Version)IOContext.Header.MajorVersion;
-        int entryCount = IOContext.Header.SectorSize / DirectoryEntry.Length;
-        using FatSectorChainEnumerator chainEnumerator = new(IOContext, firstDirectorySector);
-        while (chainEnumerator.MoveNext())
+        using DirectoryTreeEnumerator treeEnumerator = new(IOContext, DirectoryEntry);
+        while (treeEnumerator.MoveNext())
         {
-            IOContext.Reader.Seek(chainEnumerator.Current.StartOffset);
-
-            for (int i = 0; i < entryCount; i++)
-            {
-                DirectoryEntry entry = IOContext.Reader.ReadDirectoryEntry(version);
-                if (entry.Type is not StorageType.Invalid)
-                    yield return entry;
-            }
+            yield return treeEnumerator.Current;
         }
     }
 
-    public IEnumerable<EntryInfo> EnumerateEntries() => EnumerateDirectoryEntries().Select(e => new EntryInfo { Name = e.Name });
+    IEnumerable<DirectoryEntry> EnumerateDirectoryEntries(StorageType type) => EnumerateDirectoryEntries()
+        .Where(e => e.Type == type);
+
+    public Storage OpenStorage(string name)
+    {
+        DirectoryEntry? entry = EnumerateDirectoryEntries(StorageType.Storage)
+            .FirstOrDefault(entry => entry.Name == name) ?? throw new DirectoryNotFoundException($"Directory not found {name}");
+        return new Storage(IOContext, entry);
+    }
 
     public CfbStream OpenStream(string name)
     {
-        DirectoryEntry? entry = EnumerateDirectoryEntries()
+        DirectoryEntry? entry = EnumerateDirectoryEntries(StorageType.Stream)
             .FirstOrDefault(entry => entry.Name == name) ?? throw new FileNotFoundException("Stream not found", name);
-        return new CfbStream(IOContext, IOContext.Header.SectorSize, entry);
+        return new CfbStream(IOContext, entry);
     }
 }

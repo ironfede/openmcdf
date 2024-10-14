@@ -3,15 +3,13 @@
 public class CfbStream : Stream
 {
     readonly IOContext ioContext;
-    readonly long sectorLength;
     readonly FatSectorChainEnumerator chain;
     long length;
     long position;
 
-    internal CfbStream(IOContext ioContext, long sectorLength, DirectoryEntry directoryEntry)
+    internal CfbStream(IOContext ioContext, DirectoryEntry directoryEntry)
     {
         this.ioContext = ioContext;
-        this.sectorLength = sectorLength;
         DirectoryEntry = directoryEntry;
         length = directoryEntry.StreamLength;
         chain = new(ioContext, directoryEntry.StartSectorLocation);
@@ -40,7 +38,7 @@ public class CfbStream : Stream
 
     public override int Read(byte[] buffer, int offset, int count)
     {
-        int sectorIndex = (int)Math.DivRem(position, sectorLength, out long sectorOffset);
+        int sectorIndex = (int)Math.DivRem(position, ioContext.Header.SectorSize, out long sectorOffset);
         while (sectorIndex > 0 && (chain.Index == SectorType.EndOfChain || chain.Index < sectorIndex))
         {
             if (!chain.MoveNext())

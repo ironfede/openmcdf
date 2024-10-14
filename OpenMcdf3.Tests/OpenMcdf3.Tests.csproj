@@ -26,6 +26,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="MultipleStorage.cfs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MultipleStorage2.cfs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MultipleStorage3.cfs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="MultipleStorage4.cfs">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="test.cfb">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

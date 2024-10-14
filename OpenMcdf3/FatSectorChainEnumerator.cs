@@ -20,6 +20,7 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
         this.current = Sector.EndOfChain;
     }
 
+    // TODO: Fix off-by one error
     public uint Index { get; private set; }
 
     public Sector Current => current;
