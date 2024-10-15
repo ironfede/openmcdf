@@ -175,6 +175,52 @@ namespace OpenMcdf.Extensions.OLEProperties
             properties.Add(property);
         }
 
+        /// <summary>
+        /// Create a new UserDefinedProperty.
+        /// </summary>
+        /// <param name="vtPropertyType">The type of property to create.</param>
+        /// <param name="name">The name of the new property.</param>
+        /// <returns>The new property.</returns>
+        /// <exception cref="InvalidOperationException">If UserDefinedProperties aren't allowed for this container.</exception>
+        /// <exception cref="ArgumentException">If a property with the name <paramref name="name"/> already exists."/></exception>
+        public OLEProperty AddUserDefinedProperty(VTPropertyType vtPropertyType, string name)
+        {
+            // @@TBD@@ If this is a DocumentSummaryInfo container, we could forward the add on to that.
+            if (this.ContainerType != ContainerType.UserDefinedProperties)
+            {
+                throw new InvalidOperationException($"UserDefinedProperties are not allowed in containers of type {this.ContainerType}");
+            }
+
+            // As per https://learn.microsoft.com/en-us/openspecs/windows_protocols/MS-OLEPS/4177a4bc-5547-49fe-a4d9-4767350fd9cf
+            // the property names have to be unique, and are case insensitive.
+            if (this.PropertyNames.Any(property => property.Value.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                throw new ArgumentException($"User defined property names must be unique and {name} already exists", nameof(name));
+            }
+
+            // Work out a property identifier - must be > 1 and unique as per 
+            // https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-oleps/333959a3-a999-4eca-8627-48a224e63e77
+            uint identifier = 2;
+
+            if (this.PropertyNames.Count > 0)
+            {
+                uint highestIdentifier = this.PropertyNames.Keys.Max();
+                identifier = Math.Max(highestIdentifier, 2) + 1;
+            }
+
+            this.PropertyNames[identifier] = name;
+
+            var op = new OLEProperty(this)
+            {
+                VTType = vtPropertyType,
+                PropertyIdentifier = identifier
+            };
+
+            properties.Add(op);
+
+            return op;
+        }
+
         public void RemoveProperty(uint propertyIdentifier)
         {
             //throw new NotImplementedException("API Unstable - Work in progress - Milestone 2.3.0.0");
