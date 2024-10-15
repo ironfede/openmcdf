@@ -85,7 +85,7 @@ namespace OpenMcdf
             count = Math.Min((int)intMax, count);
 
             // Ensure read request greater then stream length, when position is not 0, return only the limited and correct number of bytes
-            count = (int)Math.Min(length - position, count);  
+            count = (int)Math.Min(length - position, count);
 
             if (BaseSectorChain != null && BaseSectorChain.Count > 0)
             {

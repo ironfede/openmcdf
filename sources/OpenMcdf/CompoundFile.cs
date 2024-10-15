@@ -1083,7 +1083,7 @@ namespace OpenMcdf
                     s.Type = SectorType.DIFAT;
                     s.Id = sectors.Count - 1;
                     difatSectors.Add(s);
-                    
+
                 }
             }
 

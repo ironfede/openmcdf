@@ -776,7 +776,7 @@ namespace OpenMcdf.Test
                 byte[] testBuffer = new byte[100];
                 byte t = 0x0A;
 
-                for (int streamId = 0; streamId<streamCount; ++streamId)
+                for (int streamId = 0; streamId < streamCount; ++streamId)
                 {
                     compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + streamId).Read(testBuffer, BUFFER_SIZE / 2, 100);
                     Assert.IsTrue(testBuffer.All(g => g == t));
@@ -1089,6 +1089,6 @@ namespace OpenMcdf.Test
             File.Delete(filename2);
         }
 
-       
+
     }
 }
