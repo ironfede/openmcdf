@@ -402,8 +402,6 @@ namespace OpenMcdf.Extensions.OLEProperties
                     //if (addNullTerminator)
                     dataLength += 1;            // null terminator \u+0000
 
-                    var mod = dataLength % 4;       // pad to multiple of 4 bytes
-
                     bw.Write(dataLength);           // datalength of string + null char (unicode)
                     bw.Write(data);                 // string
 
