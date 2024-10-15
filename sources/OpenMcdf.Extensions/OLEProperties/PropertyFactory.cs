@@ -546,7 +546,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
             public override bool ReadScalarValue(BinaryReader br)
             {
-                propertyValue = br.ReadUInt16() == 0xFFFF ? true : false;
+                propertyValue = br.ReadUInt16() == 0xFFFF;
                 return (bool)propertyValue;
                 //br.ReadUInt16();//padding
             }

@@ -32,7 +32,7 @@ namespace OpenMcdf
 
         public bool DirtyFlag { get; set; } = false;
 
-        public bool IsStreamed => (stream != null && Size != MINISECTOR_SIZE) ? (Id * Size) + Size < stream.Length : false;
+        public bool IsStreamed => (stream != null && Size != MINISECTOR_SIZE) && (Id * Size) + Size < stream.Length;
 
         private readonly Stream stream;
 
