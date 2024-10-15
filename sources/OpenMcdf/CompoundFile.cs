@@ -1780,20 +1780,15 @@ namespace OpenMcdf
                 {
                     Sector s = sectors[i];
 
-                    if (s == null)
+                    // Load source (unmodified) sectors
+                    // Here we have to ignore "Dirty flag" of
+                    // sectors because we are NOT modifying the source
+                    // in a differential way but ALL sectors need to be
+                    // persisted on the destination stream
+                    s ??= new Sector(sSize, sourceStream)
                     {
-                        // Load source (unmodified) sectors
-                        // Here we have to ignore "Dirty flag" of
-                        // sectors because we are NOT modifying the source
-                        // in a differential way but ALL sectors need to be
-                        // persisted on the destination stream
-                        s = new Sector(sSize, sourceStream)
-                        {
-                            Id = i
-                        };
-
-                        //sectors[i] = s;
-                    }
+                        Id = i
+                    };
 
                     stream.Write(s.GetData(), 0, sSize);
 
