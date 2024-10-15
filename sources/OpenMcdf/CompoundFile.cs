@@ -175,7 +175,7 @@ namespace OpenMcdf
         /// </summary>
         private const int FLUSHING_BUFFER_MAX_SIZE = 1024 * 1024 * 16;
 
-        private SectorCollection sectors = new SectorCollection();
+        private SectorCollection sectors = new();
 
         /// <summary>
         /// CompoundFile header
@@ -2320,7 +2320,7 @@ namespace OpenMcdf
 
         #endregion
 
-        private readonly object lockObject = new object();
+        private readonly object lockObject = new();
 
         /// <summary>
         /// When called from user code, release all resources, otherwise, in the case runtime called it,
@@ -2370,7 +2370,7 @@ namespace OpenMcdf
         internal bool IsClosed { get; private set; }
 
         private List<IDirectoryEntry> directoryEntries
-            = new List<IDirectoryEntry>();
+            = new();
 
         internal IList<IDirectoryEntry> Directories => directoryEntries;
 

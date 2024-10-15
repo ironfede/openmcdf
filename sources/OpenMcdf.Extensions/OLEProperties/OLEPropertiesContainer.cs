@@ -19,7 +19,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public PropertyContext Context { get; }
 
-        private readonly List<OLEProperty> properties = new List<OLEProperty>();
+        private readonly List<OLEProperty> properties = new();
         internal CFStream cfStream;
 
         /*

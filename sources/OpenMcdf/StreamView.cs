@@ -22,7 +22,7 @@ namespace OpenMcdf
         private long position;
         private readonly Stream stream;
         private readonly bool isFatStream;
-        private readonly List<Sector> freeSectors = new List<Sector>();
+        private readonly List<Sector> freeSectors = new();
         public IEnumerable<Sector> FreeSectors => freeSectors;
 
         public StreamView(List<Sector> sectorChain, int sectorSize, Stream stream)
