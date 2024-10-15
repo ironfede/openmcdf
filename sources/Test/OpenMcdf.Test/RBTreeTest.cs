@@ -43,7 +43,7 @@ namespace OpenMcdf.Test
         //
         #endregion
 
-        internal IList<IDirectoryEntry> GetDirectoryRepository(int count)
+        internal static IList<IDirectoryEntry> GetDirectoryRepository(int count)
         {
             List<IDirectoryEntry> repo = new List<IDirectoryEntry>();
             for (int i = 0; i < count; i++)
