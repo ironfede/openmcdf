@@ -507,7 +507,7 @@ namespace OpenMcdf.Test
 
                 foreach (CFSVersion version in Enum.GetValues(typeof(CFSVersion)))
                 {
-                    for (int i = r.Next(1, 100); i < 1024 * 1024 * 70; i = i << 1)
+                    for (int i = r.Next(1, 100); i < 1024 * 1024 * 70; i <<= 1)
                     {
                         yield return new object[] { version, i + r.Next(0, 3) };
                     }
