@@ -39,15 +39,9 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public virtual object Value
         {
-            get
-            {
-                return propertyValue;
-            }
+            get => propertyValue;
 
-            set
-            {
-                propertyValue = value;
-            }
+            set => propertyValue = value;
         }
 
         public abstract T ReadScalarValue(BinaryReader br);

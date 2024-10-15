@@ -47,10 +47,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                 return value;
             }
-            set
-            {
-                this.value = value;
-            }
+            set => this.value = value;
         }
 
         public override bool Equals(object obj)

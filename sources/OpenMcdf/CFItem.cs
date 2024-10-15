@@ -163,10 +163,7 @@ namespace OpenMcdf
         /// </summary>
         public DateTime CreationDate
         {
-            get
-            {
-                return DateTime.FromFileTimeUtc(BitConverter.ToInt64(DirEntry.CreationDate, 0));
-            }
+            get => DateTime.FromFileTimeUtc(BitConverter.ToInt64(DirEntry.CreationDate, 0));
 
             set
             {
@@ -182,10 +179,7 @@ namespace OpenMcdf
         /// </summary>
         public DateTime ModifyDate
         {
-            get
-            {
-                return DateTime.FromFileTimeUtc(BitConverter.ToInt64(DirEntry.ModifyDate, 0));
-            }
+            get => DateTime.FromFileTimeUtc(BitConverter.ToInt64(DirEntry.ModifyDate, 0));
 
             set
             {
@@ -201,10 +195,7 @@ namespace OpenMcdf
         /// </summary>
         public Guid CLSID
         {
-            get
-            {
-                return DirEntry.StorageCLSID;
-            }
+            get => DirEntry.StorageCLSID;
             set
             {
                 if (DirEntry.StgType != StgType.StgStream)
