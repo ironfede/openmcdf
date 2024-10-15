@@ -5,7 +5,7 @@ using System.IO;
 
 namespace OpenMcdf.MemTest
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
@@ -130,7 +130,7 @@ namespace OpenMcdf.MemTest
             byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
 
             CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, CFSConfiguration.Default);
-            CFStream st = cf.RootStorage.AddStream("MySuperLargeStream");
+            _ = cf.RootStorage.AddStream("MySuperLargeStream");
             cf.SaveAs("LARGE.cfs");
             cf.Close();
 
@@ -207,7 +207,7 @@ namespace OpenMcdf.MemTest
 
         private static void AddNodes(string depth, CFStorage cfs)
         {
-            Action<CFItem> va = delegate (CFItem target)
+            void va(CFItem target)
             {
                 string temp = target.Name + (target is CFStorage ? "" : " (" + target.Size + " bytes )");
 
@@ -222,7 +222,7 @@ namespace OpenMcdf.MemTest
                     //Recursion into the storage
                     AddNodes(newDepth, (CFStorage)target);
                 }
-            };
+            }
 
             //Visit NON-recursively (first level only)
             cfs.VisitEntries(va, false);

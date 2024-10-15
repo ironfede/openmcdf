@@ -102,7 +102,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class OffsetContainer
+        private sealed class OffsetContainer
         {
             public int OffsetPS { get; set; }
 

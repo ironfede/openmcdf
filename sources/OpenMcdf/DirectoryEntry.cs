@@ -102,16 +102,11 @@ namespace OpenMcdf
         }
 
         private ushort nameLength;
+
         public ushort NameLength
         {
-            get
-            {
-                return nameLength;
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
+            get => nameLength;
+            set => throw new NotImplementedException();
         }
 
         public StgType StgType { get; set; } = StgType.StgInvalid;
@@ -129,14 +124,8 @@ namespace OpenMcdf
 
         public Guid StorageCLSID
         {
-            get
-            {
-                return storageCLSID;
-            }
-            set
-            {
-                storageCLSID = value;
-            }
+            get => storageCLSID;
+            set => storageCLSID = value;
         }
 
         public int StateBits { get; set; }
@@ -333,28 +322,16 @@ namespace OpenMcdf
 
         public RedBlackTree.Color Color
         {
-            get
-            {
-                return (RedBlackTree.Color)StgColor;
-            }
-            set
-            {
-                StgColor = (StgColor)value;
-            }
+            get => (RedBlackTree.Color)StgColor;
+            set => StgColor = (StgColor)value;
         }
 
-        private IDirectoryEntry parent = null;
+        private IDirectoryEntry parent;
 
         public RedBlackTree.IRBNode Parent
         {
-            get
-            {
-                return parent;
-            }
-            set
-            {
-                parent = value as IDirectoryEntry;
-            }
+            get => parent;
+            set => parent = value as IDirectoryEntry;
         }
 
         public RedBlackTree.IRBNode Grandparent()

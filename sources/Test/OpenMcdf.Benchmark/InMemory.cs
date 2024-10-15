@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using BenchmarkDotNet.Jobs;
 using System;
 using System.IO;
 
@@ -22,7 +21,7 @@ namespace OpenMcdf.Benchmark
 
         private byte[] _readBuffer;
 
-        private Stream _stream;
+        private MemoryStream _stream;
 
         [Params(Kb / 2, Kb, 4 * Kb, 128 * Kb, 256 * Kb, 512 * Kb, Kb * Kb)]
         public int BufferSize { get; set; }

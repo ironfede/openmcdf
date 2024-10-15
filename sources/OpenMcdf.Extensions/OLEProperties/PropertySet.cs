@@ -25,7 +25,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             var currPos = br.BaseStream.Position;
 
             PropertyContext = new PropertyContext();
-            var codePageOffset = (int)(propertySetOffset + PropertyIdentifierAndOffsets.Where(pio => pio.PropertyIdentifier == 1).First().Offset);
+            var codePageOffset = (int)(propertySetOffset + PropertyIdentifierAndOffsets.First(pio => pio.PropertyIdentifier == 1).Offset);
             br.BaseStream.Seek(codePageOffset, SeekOrigin.Begin);
 
             VTPropertyType vType = (VTPropertyType)br.ReadUInt16();

@@ -1,6 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RedBlackTree;
-using System;
 using System.Collections.Generic;
 
 namespace OpenMcdf.Test
@@ -43,12 +42,12 @@ namespace OpenMcdf.Test
         //
         #endregion
 
-        internal IList<IDirectoryEntry> GetDirectoryRepository(int count)
+        internal static IList<IDirectoryEntry> GetDirectoryRepository(int count)
         {
             List<IDirectoryEntry> repo = new List<IDirectoryEntry>();
             for (int i = 0; i < count; i++)
             {
-                IDirectoryEntry de = DirectoryEntry.New(i.ToString(), StgType.StgInvalid, repo);
+                _ = DirectoryEntry.New(i.ToString(), StgType.StgInvalid, repo);
             }
 
             return repo;
@@ -85,9 +84,9 @@ namespace OpenMcdf.Test
                 rbTree.Insert(item);
             }
 
-            rbTree.Delete(DirectoryEntry.Mock("5", StgType.StgInvalid), out IRBNode n);
-            rbTree.Delete(DirectoryEntry.Mock("24", StgType.StgInvalid), out n);
-            rbTree.Delete(DirectoryEntry.Mock("7", StgType.StgInvalid), out n);
+            rbTree.Delete(DirectoryEntry.Mock("5", StgType.StgInvalid), out _);
+            rbTree.Delete(DirectoryEntry.Mock("24", StgType.StgInvalid), out _);
+            rbTree.Delete(DirectoryEntry.Mock("7", StgType.StgInvalid), out _);
 
             //    CFItem c;
             //    bool s = rbTree.TryLookup(new CFMock("7", StgType.StgStream), out c);
@@ -120,7 +119,7 @@ namespace OpenMcdf.Test
 
         private static void VerifyProperty1(IRBNode n)
         {
-            Assert.IsTrue(NodeColor(n) == Color.RED || NodeColor(n) == Color.BLACK);
+            Assert.IsTrue(NodeColor(n) is Color.RED or Color.BLACK);
 
             if (n == null) return;
             VerifyProperty1(n.Left);

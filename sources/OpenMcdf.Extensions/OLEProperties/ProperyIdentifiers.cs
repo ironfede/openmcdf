@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
@@ -16,7 +15,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
     public static class CommonIdentifiers
     {
-        public static Dictionary<uint, string> PropertyIdentifiersSummaryInfo = new Dictionary<uint, string>()
+        public static Dictionary<uint, string> PropertyIdentifiersSummaryInfo = new()
         {
             {0x00000001, "CodePageString" },
             {0x00000002, "PIDSI_TITLE" },
@@ -38,7 +37,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             {0x00000013, "PIDSI_DOC_SECURITY" }
         };
 
-        public static Dictionary<uint, string> PropertyIdentifiersDocumentSummaryInfo = new Dictionary<uint, string>()
+        public static Dictionary<uint, string> PropertyIdentifiersDocumentSummaryInfo = new()
         {
             {0x00000001, "CodePageString" },
             {0x00000002, "PIDDSI_CATEGORY" },

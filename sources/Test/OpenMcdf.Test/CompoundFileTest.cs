@@ -363,7 +363,7 @@ namespace OpenMcdf.Test
 
             using (CompoundFile cfTest = new("6_Streams_Shrinked.cfs"))
             {
-                Action<CFItem> va = delegate (CFItem item)
+                static void va(CFItem item)
                 {
                     if (item.IsStream)
                     {
@@ -375,7 +375,7 @@ namespace OpenMcdf.Test
                         Assert.IsTrue(d.Length > 0);
                         Assert.AreEqual(ia.Size, d.Length);
                     }
-                };
+                }
 
                 cfTest.RootStorage.VisitEntries(va, true);
             }
@@ -776,7 +776,7 @@ namespace OpenMcdf.Test
                 byte[] testBuffer = new byte[100];
                 byte t = 0x0A;
 
-                for (int streamId = 0; streamId<streamCount; ++streamId)
+                for (int streamId = 0; streamId < streamCount; ++streamId)
                 {
                     compoundFile.RootStorage.GetStorage(storageName).GetStream(streamName + streamId).Read(testBuffer, BUFFER_SIZE / 2, 100);
                     Assert.IsTrue(testBuffer.All(g => g == t));
@@ -1011,7 +1011,7 @@ namespace OpenMcdf.Test
             // check if all storages can be found in to copied CompundFile
             foreach (var storageName in storageNames)
             {
-                Assert.IsTrue(cf.RootStorage.TryGetStorage(storageName, out var storage)); //<- we will see some missing storages here
+                Assert.IsTrue(cf.RootStorage.TryGetStorage(storageName, out _)); //<- we will see some missing storages here
             }
         }
 
@@ -1089,6 +1089,6 @@ namespace OpenMcdf.Test
             File.Delete(filename2);
         }
 
-       
+
     }
 }

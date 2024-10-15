@@ -1,7 +1,4 @@
-﻿
-using System;
-
-namespace OpenMcdf.Extensions.OLEProperties
+﻿namespace OpenMcdf.Extensions.OLEProperties
 {
     public class OLEProperty
     {
@@ -47,10 +44,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
                 return value;
             }
-            set
-            {
-                this.value = value;
-            }
+            set => this.value = value;
         }
 
         public override bool Equals(object obj)

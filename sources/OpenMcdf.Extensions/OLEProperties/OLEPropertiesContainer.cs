@@ -8,7 +8,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 {
     public class OLEPropertiesContainer
     {
-        public Dictionary<uint, string> PropertyNames = null;
+        public Dictionary<uint, string> PropertyNames;
 
         public OLEPropertiesContainer UserDefinedProperties { get; private set; }
 
@@ -19,7 +19,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public PropertyContext Context { get; }
 
-        private readonly List<OLEProperty> properties = new List<OLEProperty>();
+        private readonly List<OLEProperty> properties = new();
         internal CFStream cfStream;
 
         /*
@@ -98,7 +98,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             FmtID0 = pStream.FMTID0;
 
             PropertyNames = (Dictionary<uint, string>)pStream.PropertySet0.Properties
-                .Where(p => p.PropertyType == PropertyType.DictionaryProperty).FirstOrDefault()?.Value;
+                .FirstOrDefault(p => p.PropertyType == PropertyType.DictionaryProperty)?.Value;
 
             Context = new PropertyContext()
             {
@@ -149,7 +149,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 }
 
                 var existingPropertyNames = (Dictionary<uint, string>)pStream.PropertySet1.Properties
-                    .Where(p => p.PropertyType == PropertyType.DictionaryProperty).FirstOrDefault()?.Value;
+                    .FirstOrDefault(p => p.PropertyType == PropertyType.DictionaryProperty)?.Value;
 
                 UserDefinedProperties.PropertyNames = existingPropertyNames ?? new Dictionary<uint, string>();
             }
@@ -224,7 +224,7 @@ namespace OpenMcdf.Extensions.OLEProperties
         public void RemoveProperty(uint propertyIdentifier)
         {
             //throw new NotImplementedException("API Unstable - Work in progress - Milestone 2.3.0.0");
-            var toRemove = properties.Where(o => o.PropertyIdentifier == propertyIdentifier).FirstOrDefault();
+            var toRemove = properties.FirstOrDefault(o => o.PropertyIdentifier == propertyIdentifier);
 
             if (toRemove != null)
                 properties.Remove(toRemove);

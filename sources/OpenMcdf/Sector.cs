@@ -30,9 +30,9 @@ namespace OpenMcdf
         public const int FATSECT = unchecked((int)0xFFFFFFFD);
         public const int DIFSECT = unchecked((int)0xFFFFFFFC);
 
-        public bool DirtyFlag { get; set; } = false;
+        public bool DirtyFlag { get; set; }
 
-        public bool IsStreamed => (stream != null && Size != MINISECTOR_SIZE) ? (Id * Size) + Size < stream.Length : false;
+        public bool IsStreamed => (stream != null && Size != MINISECTOR_SIZE) && (Id * Size) + Size < stream.Length;
 
         private readonly Stream stream;
 
@@ -53,7 +53,7 @@ namespace OpenMcdf
 
         public int Id { get; set; } = -1;
 
-        public int Size { get; private set; } = 0;
+        public int Size { get; private set; }
 
         private byte[] data;
 

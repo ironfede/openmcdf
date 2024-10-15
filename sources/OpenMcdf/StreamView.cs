@@ -21,8 +21,8 @@ namespace OpenMcdf
 
         private long position;
         private readonly Stream stream;
-        private readonly bool isFatStream = false;
-        private readonly List<Sector> freeSectors = new List<Sector>();
+        private readonly bool isFatStream;
+        private readonly List<Sector> freeSectors = new();
         public IEnumerable<Sector> FreeSectors => freeSectors;
 
         public StreamView(List<Sector> sectorChain, int sectorSize, Stream stream)
@@ -85,7 +85,7 @@ namespace OpenMcdf
             count = Math.Min((int)intMax, count);
 
             // Ensure read request greater then stream length, when position is not 0, return only the limited and correct number of bytes
-            count = (int)Math.Min(length - position, count);  
+            count = (int)Math.Min(length - position, count);
 
             if (BaseSectorChain != null && BaseSectorChain.Count > 0)
             {

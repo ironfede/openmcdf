@@ -21,8 +21,8 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public object Value
         {
-            get { return entries; }
-            set { entries = (Dictionary<uint, string>)value; }
+            get => entries;
+            set => entries = (Dictionary<uint, string>)value;
         }
 
         public void Read(BinaryReader br)

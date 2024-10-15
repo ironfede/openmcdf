@@ -163,14 +163,11 @@ namespace OpenMcdf
         /// </summary>
         public DateTime CreationDate
         {
-            get
-            {
-                return DateTime.FromFileTimeUtc(BitConverter.ToInt64(DirEntry.CreationDate, 0));
-            }
+            get => DateTime.FromFileTimeUtc(BitConverter.ToInt64(DirEntry.CreationDate, 0));
 
             set
             {
-                if (DirEntry.StgType != StgType.StgStream && DirEntry.StgType != StgType.StgRoot)
+                if (DirEntry.StgType is not StgType.StgStream and not StgType.StgRoot)
                     DirEntry.CreationDate = BitConverter.GetBytes(value.ToFileTimeUtc());
                 else
                     throw new CFException("Creation Date can only be set on storage entries");
@@ -182,14 +179,11 @@ namespace OpenMcdf
         /// </summary>
         public DateTime ModifyDate
         {
-            get
-            {
-                return DateTime.FromFileTimeUtc(BitConverter.ToInt64(DirEntry.ModifyDate, 0));
-            }
+            get => DateTime.FromFileTimeUtc(BitConverter.ToInt64(DirEntry.ModifyDate, 0));
 
             set
             {
-                if (DirEntry.StgType != StgType.StgStream && DirEntry.StgType != StgType.StgRoot)
+                if (DirEntry.StgType is not StgType.StgStream and not StgType.StgRoot)
                     DirEntry.ModifyDate = BitConverter.GetBytes(value.ToFileTimeUtc());
                 else
                     throw new CFException("Modify Date can only be set on storage entries");
@@ -201,10 +195,7 @@ namespace OpenMcdf
         /// </summary>
         public Guid CLSID
         {
-            get
-            {
-                return DirEntry.StorageCLSID;
-            }
+            get => DirEntry.StorageCLSID;
             set
             {
                 if (DirEntry.StgType != StgType.StgStream)

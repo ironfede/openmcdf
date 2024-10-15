@@ -82,10 +82,10 @@ namespace OpenMcdf.Test
             using FileStream output = new("LogEntries.txt", FileMode.Create);
             using StreamWriter tw = new(output);
 
-            Action<CFItem> va = delegate (CFItem item)
+            void va(CFItem item)
             {
                 tw.WriteLine(item.Name);
-            };
+            }
 
             cf.RootStorage.VisitEntries(va, true);
         }
@@ -182,10 +182,10 @@ namespace OpenMcdf.Test
 
             Console.SetOut(sw);
 
-            Action<CFItem> va = delegate (CFItem target)
+            void va(CFItem target)
             {
                 sw.WriteLine(target.Name);
-            };
+            }
 
             cf.RootStorage.VisitEntries(va, true);
         }
@@ -212,7 +212,7 @@ namespace OpenMcdf.Test
             using CompoundFile cf = new(FILENAME);
 
             CFStorage found = null;
-            Action<CFItem> action = delegate (CFItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; };
+            void action(CFItem item) { if (item.Name == "AnotherStorage") found = item as CFStorage; }
             cf.RootStorage.VisitEntries(action, true);
 
             Assert.IsNotNull(found);
@@ -229,11 +229,11 @@ namespace OpenMcdf.Test
             using CompoundFile cf = new(FILENAME);
 
             CFStorage found = null;
-            Action<CFItem> action = delegate (CFItem item)
+            void action(CFItem item)
             {
                 if (item.Name == "AnotherStorage")
                     found = item as CFStorage;
-            };
+            }
 
             cf.RootStorage.VisitEntries(action, true);
 

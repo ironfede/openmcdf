@@ -11,7 +11,6 @@
 using RedBlackTree;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 
 namespace OpenMcdf
@@ -152,17 +151,16 @@ namespace OpenMcdf
         /// <summary>
         /// Flag for sector recycling.
         /// </summary>
-        private bool sectorRecycle = false;
+        private bool sectorRecycle;
 
         /// <summary>
         /// Flag for unallocated sector zeroing out.
         /// </summary>
-        private bool eraseFreeSectors = false;
+        private bool eraseFreeSectors;
 
         public bool ValidationExceptionEnabled { get; private set; } = true;
 
         private readonly CFSUpdateMode updateMode = CFSUpdateMode.ReadOnly;
-        private string fileName = string.Empty;
 
         /// <summary>
         /// Initial capacity of the flushing queue used
@@ -176,7 +174,7 @@ namespace OpenMcdf
         /// </summary>
         private const int FLUSHING_BUFFER_MAX_SIZE = 1024 * 1024 * 16;
 
-        private SectorCollection sectors = new SectorCollection();
+        private SectorCollection sectors = new();
 
         /// <summary>
         /// CompoundFile header
@@ -186,7 +184,7 @@ namespace OpenMcdf
         /// <summary>
         /// Compound underlying stream. Null when new CF has been created.
         /// </summary>
-        internal Stream sourceStream = null;
+        internal Stream sourceStream;
 
         /// <summary>
         /// Create a blank, version 3 compound file.
@@ -644,8 +642,6 @@ namespace OpenMcdf
 
         private void LoadFile(string fileName)
         {
-            this.fileName = fileName;
-
             FileAccess access = updateMode == CFSUpdateMode.ReadOnly ? FileAccess.Read : FileAccess.ReadWrite;
             FileShare share = updateMode == CFSUpdateMode.ReadOnly ? FileShare.ReadWrite : FileShare.Read;
             FileStream fs = new(fileName, FileMode.Open, access, share);
@@ -952,9 +948,9 @@ namespace OpenMcdf
             AllocateFATSectorChain(sectorChain);
         }
 
-        internal bool _transactionLockAdded = false;
+        internal bool _transactionLockAdded;
         internal int _lockSectorId = -1;
-        internal bool _transactionLockAllocated = false;
+        internal bool _transactionLockAllocated;
 
         /// <summary>
         /// Check for transaction lock sector addition and mark it in the FAT.
@@ -1084,7 +1080,7 @@ namespace OpenMcdf
                     s.Type = SectorType.DIFAT;
                     s.Id = sectors.Count - 1;
                     difatSectors.Add(s);
-                    
+
                 }
             }
 
@@ -1212,7 +1208,7 @@ namespace OpenMcdf
                     // a specification point of view:
                     // only ENDOFCHAIN should break DIFAT chain but
                     // a lot of existing compound files use FREESECT as DIFAT chain termination
-                    if (nextSecID == Sector.FREESECT || nextSecID == Sector.ENDOFCHAIN) break;
+                    if (nextSecID is Sector.FREESECT or Sector.ENDOFCHAIN) break;
 
                     validationCount--;
 
@@ -1427,10 +1423,11 @@ namespace OpenMcdf
                     if (nextSecID == Sector.ENDOFCHAIN)
                         break;
 
-                    Sector ms = new Sector(Sector.MINISECTOR_SIZE, sourceStream);
-
-                    ms.Id = nextSecID;
-                    ms.Type = SectorType.Mini;
+                    Sector ms = new Sector(Sector.MINISECTOR_SIZE, sourceStream)
+                    {
+                        Id = nextSecID,
+                        Type = SectorType.Mini
+                    };
 
                     miniStreamView.Seek(nextSecID * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
                     miniStreamView.ReadExactly(ms.GetData(), 0, Sector.MINISECTOR_SIZE);
@@ -1783,20 +1780,15 @@ namespace OpenMcdf
                 {
                     Sector s = sectors[i];
 
-                    if (s == null)
+                    // Load source (unmodified) sectors
+                    // Here we have to ignore "Dirty flag" of
+                    // sectors because we are NOT modifying the source
+                    // in a differential way but ALL sectors need to be
+                    // persisted on the destination stream
+                    s ??= new Sector(sSize, sourceStream)
                     {
-                        // Load source (unmodified) sectors
-                        // Here we have to ignore "Dirty flag" of
-                        // sectors because we are NOT modifying the source
-                        // in a differential way but ALL sectors need to be
-                        // persisted on the destination stream
-                        s = new Sector(sSize, sourceStream)
-                        {
-                            Id = i
-                        };
-
-                        //sectors[i] = s;
-                    }
+                        Id = i
+                    };
 
                     stream.Write(s.GetData(), 0, sSize);
 
@@ -2320,7 +2312,7 @@ namespace OpenMcdf
 
         #endregion
 
-        private readonly object lockObject = new object();
+        private readonly object lockObject = new();
 
         /// <summary>
         /// When called from user code, release all resources, otherwise, in the case runtime called it,
@@ -2349,7 +2341,6 @@ namespace OpenMcdf
                             header = null;
                             directoryEntries.Clear();
                             directoryEntries = null;
-                            fileName = null;
                             //this.lockObject = null;
 #if !FLAT_WRITE
                             this.buffer = null;
@@ -2370,7 +2361,7 @@ namespace OpenMcdf
         internal bool IsClosed { get; private set; }
 
         private List<IDirectoryEntry> directoryEntries
-            = new List<IDirectoryEntry>();
+            = new();
 
         internal IList<IDirectoryEntry> Directories => directoryEntries;
 
@@ -2554,23 +2545,22 @@ namespace OpenMcdf
         /// <param name="currDstStorage">Current cloned destination storage</param>
         private static void DoCompression(CFStorage currSrcStorage, CFStorage currDstStorage)
         {
-            Action<CFItem> va =
-                delegate (CFItem item)
+            void va(CFItem item)
+            {
+                if (item.IsStream)
                 {
-                    if (item.IsStream)
-                    {
-                        CFStream itemAsStream = item as CFStream;
-                        CFStream st = currDstStorage.AddStream(itemAsStream.Name);
-                        st.SetData(itemAsStream.GetData());
-                    }
-                    else if (item.IsStorage)
-                    {
-                        CFStorage itemAsStorage = item as CFStorage;
-                        CFStorage strg = currDstStorage.AddStorage(itemAsStorage.Name);
-                        strg.CLSID = itemAsStorage.CLSID;
-                        DoCompression(itemAsStorage, strg); // recursion, one level deeper
-                    }
-                };
+                    CFStream itemAsStream = item as CFStream;
+                    CFStream st = currDstStorage.AddStream(itemAsStream.Name);
+                    st.SetData(itemAsStream.GetData());
+                }
+                else if (item.IsStorage)
+                {
+                    CFStorage itemAsStorage = item as CFStorage;
+                    CFStorage strg = currDstStorage.AddStorage(itemAsStorage.Name);
+                    strg.CLSID = itemAsStorage.CLSID;
+                    DoCompression(itemAsStorage, strg); // recursion, one level deeper
+                }
+            }
 
             currSrcStorage.VisitEntries(va, false);
         }

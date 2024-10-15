@@ -545,7 +545,7 @@ namespace OpenMcdf.Extensions.Test
             bufferedStream.CopyTo(memoryStream);
 
             Assert.AreEqual(memoryStream.Length, cfStream.Size);
-          
+
         }
     }
 }

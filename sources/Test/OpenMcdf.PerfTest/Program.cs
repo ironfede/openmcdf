@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OpenMcdf.PerfTest
 {
-    class Program
+    static class Program
     {
         const int MAX_STREAM_COUNT = 5000;
         const string fileName = "PerfLoad.cfs";
@@ -19,7 +19,7 @@ namespace OpenMcdf.PerfTest
 
             CompoundFile cf = new CompoundFile(fileName);
             var stopwatch = Stopwatch.StartNew();
-            CFStream s = cf.RootStorage.GetStream("Test1");
+            _ = cf.RootStorage.GetStream("Test1");
             Console.WriteLine($"Elapsed: {stopwatch.Elapsed}");
             Console.Read();
         }
