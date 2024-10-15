@@ -341,7 +341,7 @@ namespace StructuredStorageExplorer
                 {
                     OpenFile();
                 }
-                catch (Exception ex) when (ex is IOException || ex is UnauthorizedAccessException || ex is CFException)
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or CFException)
                 {
                     MessageBox.Show($"Cannot open file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -391,7 +391,7 @@ namespace StructuredStorageExplorer
                     dgvUserDefinedProperties.DataSource = null;
                     dgvOLEProps.DataSource = null;
 
-                    if (stream.Name == "\u0005SummaryInformation" || stream.Name == "\u0005DocumentSummaryInformation")
+                    if (stream.Name is "\u0005SummaryInformation" or "\u0005DocumentSummaryInformation")
                     {
                         OLEPropertiesContainer c = stream.AsOLEPropertiesContainer();
 
@@ -402,7 +402,7 @@ namespace StructuredStorageExplorer
 
                         foreach (OLEProperty p in c.Properties)
                         {
-                            if (p.Value is not byte[] && p.Value is IList list)
+                            if (p.Value is not byte[] and IList list)
                             {
                                 for (int h = 0; h < list.Count; h++)
                                 {
@@ -431,7 +431,7 @@ namespace StructuredStorageExplorer
 
                             foreach (OLEProperty p in c.UserDefinedProperties.Properties)
                             {
-                                if (p.Value is not byte[] && p.Value is IList list)
+                                if (p.Value is not byte[] and IList list)
                                 {
                                     for (int h = 0; h < list.Count; h++)
                                     {

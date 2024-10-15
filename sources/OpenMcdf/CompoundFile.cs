@@ -1212,7 +1212,7 @@ namespace OpenMcdf
                     // a specification point of view:
                     // only ENDOFCHAIN should break DIFAT chain but
                     // a lot of existing compound files use FREESECT as DIFAT chain termination
-                    if (nextSecID == Sector.FREESECT || nextSecID == Sector.ENDOFCHAIN) break;
+                    if (nextSecID is Sector.FREESECT or Sector.ENDOFCHAIN) break;
 
                     validationCount--;
 

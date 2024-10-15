@@ -120,7 +120,7 @@ namespace OpenMcdf.Test
 
         private static void VerifyProperty1(IRBNode n)
         {
-            Assert.IsTrue(NodeColor(n) == Color.RED || NodeColor(n) == Color.BLACK);
+            Assert.IsTrue(NodeColor(n) is Color.RED or Color.BLACK);
 
             if (n == null) return;
             VerifyProperty1(n.Left);

@@ -170,7 +170,7 @@ namespace OpenMcdf
 
             set
             {
-                if (DirEntry.StgType != StgType.StgStream && DirEntry.StgType != StgType.StgRoot)
+                if (DirEntry.StgType is not StgType.StgStream and not StgType.StgRoot)
                     DirEntry.CreationDate = BitConverter.GetBytes(value.ToFileTimeUtc());
                 else
                     throw new CFException("Creation Date can only be set on storage entries");
@@ -189,7 +189,7 @@ namespace OpenMcdf
 
             set
             {
-                if (DirEntry.StgType != StgType.StgStream && DirEntry.StgType != StgType.StgRoot)
+                if (DirEntry.StgType is not StgType.StgStream and not StgType.StgRoot)
                     DirEntry.ModifyDate = BitConverter.GetBytes(value.ToFileTimeUtc());
                 else
                     throw new CFException("Modify Date can only be set on storage entries");

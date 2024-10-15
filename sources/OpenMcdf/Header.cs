@@ -147,7 +147,7 @@ namespace OpenMcdf
 
         private void CheckVersion()
         {
-            if (MajorVersion != 3 && MajorVersion != 4)
+            if (MajorVersion is not 3 and not 4)
                 throw new CFFileFormatException("Unsupported Binary File Format version: OpenMcdf only supports Compound Files with major version equal to 3 or 4 ");
         }
 
