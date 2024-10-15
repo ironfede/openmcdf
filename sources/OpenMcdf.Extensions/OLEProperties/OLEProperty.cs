@@ -1,7 +1,4 @@
-﻿
-using System;
-
-namespace OpenMcdf.Extensions.OLEProperties
+﻿namespace OpenMcdf.Extensions.OLEProperties
 {
     public class OLEProperty
     {
