@@ -54,7 +54,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         #region Property implementations
 
-        private class VT_EMPTY_Property : TypedPropertyValue<object>
+        private sealed class VT_EMPTY_Property : TypedPropertyValue<object>
         {
             public VT_EMPTY_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -70,7 +70,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_I1_Property : TypedPropertyValue<sbyte>
+        private sealed class VT_I1_Property : TypedPropertyValue<sbyte>
         {
             public VT_I1_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -88,7 +88,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_UI1_Property : TypedPropertyValue<byte>
+        private sealed class VT_UI1_Property : TypedPropertyValue<byte>
         {
             public VT_UI1_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -106,7 +106,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_UI4_Property : TypedPropertyValue<uint>
+        private sealed class VT_UI4_Property : TypedPropertyValue<uint>
         {
             public VT_UI4_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -124,7 +124,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_UI8_Property : TypedPropertyValue<ulong>
+        private sealed class VT_UI8_Property : TypedPropertyValue<ulong>
         {
             public VT_UI8_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -142,7 +142,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_I2_Property : TypedPropertyValue<short>
+        private sealed class VT_I2_Property : TypedPropertyValue<short>
         {
             public VT_I2_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -160,7 +160,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_UI2_Property : TypedPropertyValue<ushort>
+        private sealed class VT_UI2_Property : TypedPropertyValue<ushort>
         {
             public VT_UI2_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -178,7 +178,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_I4_Property : TypedPropertyValue<int>
+        private sealed class VT_I4_Property : TypedPropertyValue<int>
         {
             public VT_I4_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -196,7 +196,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_I8_Property : TypedPropertyValue<long>
+        private sealed class VT_I8_Property : TypedPropertyValue<long>
         {
             public VT_I8_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -214,7 +214,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_INT_Property : TypedPropertyValue<int>
+        private sealed class VT_INT_Property : TypedPropertyValue<int>
         {
             public VT_INT_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -232,7 +232,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_UINT_Property : TypedPropertyValue<uint>
+        private sealed class VT_UINT_Property : TypedPropertyValue<uint>
         {
             public VT_UINT_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -250,7 +250,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_R4_Property : TypedPropertyValue<float>
+        private sealed class VT_R4_Property : TypedPropertyValue<float>
         {
             public VT_R4_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -268,7 +268,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_R8_Property : TypedPropertyValue<double>
+        private sealed class VT_R8_Property : TypedPropertyValue<double>
         {
             public VT_R8_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -286,7 +286,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_CY_Property : TypedPropertyValue<long>
+        private sealed class VT_CY_Property : TypedPropertyValue<long>
         {
             public VT_CY_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -307,7 +307,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_DATE_Property : TypedPropertyValue<DateTime>
+        private sealed class VT_DATE_Property : TypedPropertyValue<DateTime>
         {
             public VT_DATE_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -418,7 +418,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        protected class VT_Unaligned_LPSTR_Property : VT_LPSTR_Property
+        protected sealed class VT_Unaligned_LPSTR_Property : VT_LPSTR_Property
         {
             public VT_Unaligned_LPSTR_Property(VTPropertyType vType, int codePage, bool isVariant) : base(vType, codePage, isVariant)
             {
@@ -426,7 +426,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_LPWSTR_Property : TypedPropertyValue<string>
+        private sealed class VT_LPWSTR_Property : TypedPropertyValue<string>
         {
             private byte[] data;
             private readonly int codePage;
@@ -476,7 +476,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_FILETIME_Property : TypedPropertyValue<DateTime>
+        private sealed class VT_FILETIME_Property : TypedPropertyValue<DateTime>
         {
             public VT_FILETIME_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -495,7 +495,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_DECIMAL_Property : TypedPropertyValue<decimal>
+        private sealed class VT_DECIMAL_Property : TypedPropertyValue<decimal>
         {
             public VT_DECIMAL_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -538,7 +538,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_BOOL_Property : TypedPropertyValue<bool>
+        private sealed class VT_BOOL_Property : TypedPropertyValue<bool>
         {
             public VT_BOOL_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -557,7 +557,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_CF_Property : TypedPropertyValue<object>
+        private sealed class VT_CF_Property : TypedPropertyValue<object>
         {
             public VT_CF_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -585,7 +585,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_BLOB_Property : TypedPropertyValue<object>
+        private sealed class VT_BLOB_Property : TypedPropertyValue<object>
         {
             public VT_BLOB_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -612,7 +612,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_CLSID_Property : TypedPropertyValue<object>
+        private sealed class VT_CLSID_Property : TypedPropertyValue<object>
         {
             public VT_CLSID_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
             {
@@ -631,7 +631,7 @@ namespace OpenMcdf.Extensions.OLEProperties
             }
         }
 
-        private class VT_VariantVector : TypedPropertyValue<object>
+        private sealed class VT_VariantVector : TypedPropertyValue<object>
         {
             private readonly int codePage;
             private readonly PropertyFactory factory;
