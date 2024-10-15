@@ -85,7 +85,7 @@ namespace StructuredStorageExplorer
 #endif
         }
 
-        private bool canUpdate = false;
+        private bool canUpdate;
 
         private void CreateNewFile()
         {

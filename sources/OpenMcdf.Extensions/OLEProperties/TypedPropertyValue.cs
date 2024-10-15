@@ -12,7 +12,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public VTPropertyType VTType => _VTType;
 
-        protected object propertyValue = null;
+        protected object propertyValue;
 
         public TypedPropertyValue(VTPropertyType vtType, bool isVariant = false)
         {
@@ -23,7 +23,7 @@ namespace OpenMcdf.Extensions.OLEProperties
 
         public PropertyDimensions PropertyDimensions { get; } = PropertyDimensions.IsScalar;
 
-        public bool IsVariant { get; } = false;
+        public bool IsVariant { get; }
 
         protected virtual bool NeedsPadding { get; set; } = true;
 

@@ -151,12 +151,12 @@ namespace OpenMcdf
         /// <summary>
         /// Flag for sector recycling.
         /// </summary>
-        private bool sectorRecycle = false;
+        private bool sectorRecycle;
 
         /// <summary>
         /// Flag for unallocated sector zeroing out.
         /// </summary>
-        private bool eraseFreeSectors = false;
+        private bool eraseFreeSectors;
 
         public bool ValidationExceptionEnabled { get; private set; } = true;
 
@@ -185,7 +185,7 @@ namespace OpenMcdf
         /// <summary>
         /// Compound underlying stream. Null when new CF has been created.
         /// </summary>
-        internal Stream sourceStream = null;
+        internal Stream sourceStream;
 
         /// <summary>
         /// Create a blank, version 3 compound file.
@@ -951,9 +951,9 @@ namespace OpenMcdf
             AllocateFATSectorChain(sectorChain);
         }
 
-        internal bool _transactionLockAdded = false;
+        internal bool _transactionLockAdded;
         internal int _lockSectorId = -1;
-        internal bool _transactionLockAllocated = false;
+        internal bool _transactionLockAllocated;
 
         /// <summary>
         /// Check for transaction lock sector addition and mark it in the FAT.

@@ -31,7 +31,7 @@ namespace OpenMcdf
         public event Ver3SizeLimitReached OnVer3SizeLimitReached;
 
         private readonly List<List<Sector>> largeArraySlices = new();
-        private bool sizeLimitReached = false;
+        private bool sizeLimitReached;
 
         public SectorCollection()
         {
@@ -125,7 +125,7 @@ namespace OpenMcdf
             throw new NotImplementedException();
         }
 
-        public int Count { get; private set; } = 0;
+        public int Count { get; private set; }
 
         public bool IsReadOnly => false;
 

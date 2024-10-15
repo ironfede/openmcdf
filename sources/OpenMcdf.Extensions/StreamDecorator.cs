@@ -9,7 +9,7 @@ namespace OpenMcdf.Extensions
     public class StreamDecorator : Stream
     {
         private readonly CFStream cfStream;
-        private long position = 0;
+        private long position;
 
         /// <summary>
         /// Create a new <see cref="StreamDecorator"/> for the specified <seealso cref="CFStream"/>.

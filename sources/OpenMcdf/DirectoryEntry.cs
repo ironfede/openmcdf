@@ -326,7 +326,7 @@ namespace OpenMcdf
             set => StgColor = (StgColor)value;
         }
 
-        private IDirectoryEntry parent = null;
+        private IDirectoryEntry parent;
 
         public RedBlackTree.IRBNode Parent
         {

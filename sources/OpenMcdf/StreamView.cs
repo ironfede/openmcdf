@@ -21,7 +21,7 @@ namespace OpenMcdf
 
         private long position;
         private readonly Stream stream;
-        private readonly bool isFatStream = false;
+        private readonly bool isFatStream;
         private readonly List<Sector> freeSectors = new List<Sector>();
         public IEnumerable<Sector> FreeSectors => freeSectors;
 
