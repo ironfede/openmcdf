@@ -391,7 +391,7 @@ namespace StructuredStorageExplorer
                     dgvUserDefinedProperties.DataSource = null;
                     dgvOLEProps.DataSource = null;
 
-                    if (stream.Name == "\u0005SummaryInformation" || stream.Name == "\u0005DocumentSummaryInformation")
+                    if (stream.Name.StartsWith("\u0005")) //(stream.Name == "\u0005SummaryInformation" || stream.Name == "\u0005DocumentSummaryInformation")
                     {
                         OLEPropertiesContainer c = stream.AsOLEPropertiesContainer();
 
