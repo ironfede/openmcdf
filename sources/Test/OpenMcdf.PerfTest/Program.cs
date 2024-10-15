@@ -4,7 +4,7 @@ using System.IO;
 
 namespace OpenMcdf.PerfTest
 {
-    class Program
+    static class Program
     {
         const int MAX_STREAM_COUNT = 5000;
         const string fileName = "PerfLoad.cfs";

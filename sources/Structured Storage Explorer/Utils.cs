@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace StructuredStorageExplorer
 {
-    class Utils
+    static class Utils
     {
         public static DialogResult InputBox(string title, string promptText, ref string value)
         {
