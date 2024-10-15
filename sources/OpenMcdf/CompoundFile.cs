@@ -1426,10 +1426,11 @@ namespace OpenMcdf
                     if (nextSecID == Sector.ENDOFCHAIN)
                         break;
 
-                    Sector ms = new Sector(Sector.MINISECTOR_SIZE, sourceStream);
-
-                    ms.Id = nextSecID;
-                    ms.Type = SectorType.Mini;
+                    Sector ms = new Sector(Sector.MINISECTOR_SIZE, sourceStream)
+                    {
+                        Id = nextSecID,
+                        Type = SectorType.Mini
+                    };
 
                     miniStreamView.Seek(nextSecID * Sector.MINISECTOR_SIZE, SeekOrigin.Begin);
                     miniStreamView.ReadExactly(ms.GetData(), 0, Sector.MINISECTOR_SIZE);
