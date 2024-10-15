@@ -57,7 +57,7 @@ public class InMemory : IDisposable
         _stream.Seek(0L, SeekOrigin.Begin);
         //
         using var compoundFile = RootStorage.Open(_stream);
-        using CfbStream cfStream = compoundFile.OpenStream(streamName + 0);
+        using Stream cfStream = compoundFile.OpenStream(streamName + 0);
         long streamSize = cfStream.Length;
         long position = 0L;
         while (true)

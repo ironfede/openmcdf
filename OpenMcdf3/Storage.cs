@@ -37,10 +37,13 @@ public class Storage
         return new Storage(IOContext, entry);
     }
 
-    public CfbStream OpenStream(string name)
+    public Stream OpenStream(string name)
     {
         DirectoryEntry? entry = EnumerateDirectoryEntries(StorageType.Stream)
             .FirstOrDefault(entry => entry.Name == name) ?? throw new FileNotFoundException("Stream not found", name);
-        return new CfbStream(IOContext, entry);
+        if (entry.StreamLength < Header.MiniStreamCutoffSize)
+            return new MiniFatStream(IOContext, entry);
+        else
+            return new FatStream(IOContext, entry);
     }
 }

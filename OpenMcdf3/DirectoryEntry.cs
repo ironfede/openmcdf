@@ -87,6 +87,7 @@ internal sealed class DirectoryEntry
         }
     }
 
+    // Also the first sector of the mini-stream for the root storage object
     public uint StartSectorLocation { get; set; }
 
     public long StreamLength { get; set; }

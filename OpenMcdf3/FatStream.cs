@@ -1,13 +1,13 @@
 ﻿namespace OpenMcdf3;
 
-public class CfbStream : Stream
+public class FatStream : Stream
 {
     readonly IOContext ioContext;
     readonly FatSectorChainEnumerator chain;
     long length;
     long position;
 
-    internal CfbStream(IOContext ioContext, DirectoryEntry directoryEntry)
+    internal FatStream(IOContext ioContext, DirectoryEntry directoryEntry)
     {
         this.ioContext = ioContext;
         DirectoryEntry = directoryEntry;
