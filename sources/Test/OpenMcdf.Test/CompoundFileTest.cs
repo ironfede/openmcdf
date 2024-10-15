@@ -1011,7 +1011,7 @@ namespace OpenMcdf.Test
             // check if all storages can be found in to copied CompundFile
             foreach (var storageName in storageNames)
             {
-                Assert.IsTrue(cf.RootStorage.TryGetStorage(storageName, out var storage)); //<- we will see some missing storages here
+                Assert.IsTrue(cf.RootStorage.TryGetStorage(storageName, out _)); //<- we will see some missing storages here
             }
         }
 

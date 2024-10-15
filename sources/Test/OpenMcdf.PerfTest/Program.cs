@@ -19,7 +19,7 @@ namespace OpenMcdf.PerfTest
 
             CompoundFile cf = new CompoundFile(fileName);
             var stopwatch = Stopwatch.StartNew();
-            CFStream s = cf.RootStorage.GetStream("Test1");
+            _ = cf.RootStorage.GetStream("Test1");
             Console.WriteLine($"Elapsed: {stopwatch.Elapsed}");
             Console.Read();
         }

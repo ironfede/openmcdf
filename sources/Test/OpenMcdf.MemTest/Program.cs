@@ -130,7 +130,7 @@ namespace OpenMcdf.MemTest
             byte[] cmp = new byte[] { 0x0, 0x1, 0x2, 0x3, 0x4, 0x5, 0x6, 0x7 };
 
             CompoundFile cf = new CompoundFile(CFSVersion.Ver_4, CFSConfiguration.Default);
-            CFStream st = cf.RootStorage.AddStream("MySuperLargeStream");
+            _ = cf.RootStorage.AddStream("MySuperLargeStream");
             cf.SaveAs("LARGE.cfs");
             cf.Close();
 
