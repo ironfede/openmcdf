@@ -161,7 +161,6 @@ namespace OpenMcdf
         public bool ValidationExceptionEnabled { get; private set; } = true;
 
         private readonly CFSUpdateMode updateMode = CFSUpdateMode.ReadOnly;
-        private string fileName = string.Empty;
 
         /// <summary>
         /// Initial capacity of the flushing queue used
@@ -643,8 +642,6 @@ namespace OpenMcdf
 
         private void LoadFile(string fileName)
         {
-            this.fileName = fileName;
-
             FileAccess access = updateMode == CFSUpdateMode.ReadOnly ? FileAccess.Read : FileAccess.ReadWrite;
             FileShare share = updateMode == CFSUpdateMode.ReadOnly ? FileShare.ReadWrite : FileShare.Read;
             FileStream fs = new(fileName, FileMode.Open, access, share);
@@ -2349,7 +2346,6 @@ namespace OpenMcdf
                             header = null;
                             directoryEntries.Clear();
                             directoryEntries = null;
-                            fileName = null;
                             //this.lockObject = null;
 #if !FLAT_WRITE
                             this.buffer = null;
