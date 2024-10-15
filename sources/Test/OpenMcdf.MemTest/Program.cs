@@ -207,7 +207,7 @@ namespace OpenMcdf.MemTest
 
         private static void AddNodes(string depth, CFStorage cfs)
         {
-            Action<CFItem> va = delegate (CFItem target)
+            void va(CFItem target)
             {
                 string temp = target.Name + (target is CFStorage ? "" : " (" + target.Size + " bytes )");
 
@@ -222,7 +222,7 @@ namespace OpenMcdf.MemTest
                     //Recursion into the storage
                     AddNodes(newDepth, (CFStorage)target);
                 }
-            };
+            }
 
             //Visit NON-recursively (first level only)
             cfs.VisitEntries(va, false);

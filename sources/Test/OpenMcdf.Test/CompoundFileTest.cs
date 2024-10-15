@@ -363,7 +363,7 @@ namespace OpenMcdf.Test
 
             using (CompoundFile cfTest = new("6_Streams_Shrinked.cfs"))
             {
-                Action<CFItem> va = delegate (CFItem item)
+                static void va(CFItem item)
                 {
                     if (item.IsStream)
                     {
@@ -375,7 +375,7 @@ namespace OpenMcdf.Test
                         Assert.IsTrue(d.Length > 0);
                         Assert.AreEqual(ia.Size, d.Length);
                     }
-                };
+                }
 
                 cfTest.RootStorage.VisitEntries(va, true);
             }
