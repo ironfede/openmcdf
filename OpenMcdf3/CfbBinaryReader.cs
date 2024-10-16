@@ -86,7 +86,7 @@ internal sealed class CfbBinaryReader : BinaryReader
     public DirectoryEntry ReadDirectoryEntry(Version version)
     {
         if (version is not Version.V3 and not Version.V4)
-            throw new ArgumentException($"Unsupported version: {version}");
+            throw new ArgumentException($"Unsupported version: {version}", nameof(version));
 
         DirectoryEntry entry = new();
         Read(buffer, 0, DirectoryEntry.NameFieldLength);

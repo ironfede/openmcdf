@@ -52,10 +52,10 @@ internal sealed class DirectoryEntry
         set
         {
             if (value.Contains(@"\") || value.Contains(@"/") || value.Contains(@":") || value.Contains(@"!"))
-                throw new ArgumentException("Name cannot contain any of the following characters: '\\', '/', ':','!'");
+                throw new ArgumentException("Name cannot contain any of the following characters: '\\', '/', ':','!'", nameof(value));
 
             if (Encoding.Unicode.GetByteCount(value) + 2 > NameFieldLength)
-                throw new ArgumentException($"{value} exceeds maximum encoded length of {NameFieldLength} bytes");
+                throw new ArgumentException($"{value} exceeds maximum encoded length of {NameFieldLength} bytes", nameof(value));
 
             name = value;
         }
@@ -102,7 +102,7 @@ internal sealed class DirectoryEntry
         set
         {
             if (Type is StorageType.Stream or StorageType.Root && value != ZeroFileTime)
-                throw new ArgumentException("Creation time must be zero for streams and root");
+                throw new ArgumentException("Creation time must be zero for streams and root", nameof(value));
 
             creationTime = value;
         }
@@ -117,7 +117,7 @@ internal sealed class DirectoryEntry
         set
         {
             if (Type is StorageType.Stream && value != ZeroFileTime)
-                throw new ArgumentException("Modified time must be zero for streams");
+                throw new ArgumentException("Modified time must be zero for streams", nameof(value));
 
             modifiedTime = value;
         }

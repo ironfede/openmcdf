@@ -112,12 +112,12 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
     public uint GetNextFatSectorId(uint id)
     {
         if (id > SectorType.Maximum)
-            throw new ArgumentException("Invalid sector ID");
+            throw new ArgumentException("Invalid sector ID", nameof(id));
 
         int elementCount = ioContext.Header.SectorSize / sizeof(uint);
         uint sectorId = (uint)Math.DivRem(id, elementCount, out long sectorOffset);
         if (!MoveTo(sectorId))
-            throw new ArgumentException("Invalid sector ID");
+            throw new ArgumentException("Invalid sector ID", nameof(id));
 
         long position = Current.StartOffset + sectorOffset * sizeof(uint);
         ioContext.Reader.Seek(position);
