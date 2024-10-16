@@ -11,8 +11,6 @@ internal sealed class MiniFatSectorChainEnumerator : IEnumerator<MiniSector>
 
     public MiniFatSectorChainEnumerator(IOContext ioContext, uint startSectorId)
     {
-        if (startSectorId is SectorType.EndOfChain)
-            throw new ArgumentException("Invalid start sector ID", nameof(startSectorId));
         this.startId = startSectorId;
         miniFatEnumerator = new(ioContext);
     }

@@ -13,8 +13,6 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
     public FatSectorChainEnumerator(IOContext ioContext, uint startSectorId)
     {
         this.ioContext = ioContext;
-        if (startSectorId is SectorType.EndOfChain)
-            throw new ArgumentException("Invalid start sector ID", nameof(startSectorId));
         this.startId = startSectorId;
         fatEnumerator = new(ioContext);
     }

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace OpenMcdf3;
+﻿namespace OpenMcdf3;
 
 public enum Version : ushort
 {
@@ -10,18 +8,13 @@ public enum Version : ushort
 
 public sealed class RootStorage : Storage, IDisposable
 {
-    bool disposed;
-
     public static RootStorage Create(string fileName, Version version = Version.V3)
     {
         FileStream stream = File.Create(fileName);
         Header header = new(version);
         McdfBinaryReader reader = new(stream);
         McdfBinaryWriter writer = new(stream);
-        IOContext ioContext = new(header, reader, writer)
-        {
-            RootEntry = new()
-        };
+        IOContext ioContext = new(header, reader, writer, IOContextFlags.Create);
         return new RootStorage(ioContext);
     }
 
@@ -42,8 +35,8 @@ public sealed class RootStorage : Storage, IDisposable
         McdfBinaryReader reader = new(stream);
         McdfBinaryWriter? writer = stream.CanWrite ? new(stream) : null;
         Header header = reader.ReadHeader();
-        IOContext ioContext = new(header, reader, writer, leaveOpen);
-        ioContext.RootEntry = ioContext.EnumerateDirectoryEntries().First();
+        IOContextFlags contextFlags = leaveOpen ? IOContextFlags.LeaveOpen : IOContextFlags.None;
+        IOContext ioContext = new(header, reader, writer, contextFlags);
         return new RootStorage(ioContext);
     }
 
@@ -52,12 +45,5 @@ public sealed class RootStorage : Storage, IDisposable
     {
     }
 
-    public void Dispose()
-    {
-        if (disposed)
-            return;
-
-        IOContext?.Dispose();
-        disposed = true;
-    }
+    public void Dispose() => ioContext?.Dispose();
 }
