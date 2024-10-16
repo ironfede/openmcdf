@@ -24,9 +24,11 @@ public sealed class BinaryReaderTests
     }
 
     [TestMethod]
-    public void ReadHeader()
+    [DataRow("TestStream_v3_0.cfs")]
+    [DataRow("TestStream_v4_0.cfs")]
+    public void ReadHeader(string fileName)
     {
-        using FileStream stream = File.OpenRead("_Test.ppt");
+        using FileStream stream = File.OpenRead(fileName);
         using McdfBinaryReader reader = new(stream);
         Header header = reader.ReadHeader();
     }
