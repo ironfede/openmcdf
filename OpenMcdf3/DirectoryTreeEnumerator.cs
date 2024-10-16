@@ -15,7 +15,8 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
     internal DirectoryTreeEnumerator(IOContext ioContext, DirectoryEntry root)
     {
         directoryEntryEnumerator = new(ioContext);
-        child = directoryEntryEnumerator.GetDictionaryEntry(root.ChildId);
+        if (root.ChildId != StreamId.NoStream)
+            child = directoryEntryEnumerator.GetDictionaryEntry(root.ChildId);
         PushLeft(child);
     }
 
@@ -49,8 +50,12 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         }
 
         current = stack.Pop();
-        DirectoryEntry? rightSibling = directoryEntryEnumerator.GetDictionaryEntry(Current.RightSiblingId);
-        PushLeft(rightSibling);
+        if (current.RightSiblingId != StreamId.NoStream)
+        {
+            DirectoryEntry rightSibling = directoryEntryEnumerator.GetDictionaryEntry(current.RightSiblingId);
+            PushLeft(rightSibling);
+        }
+
         return true;
     }
 
@@ -67,7 +72,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         while (node is not null)
         {
             stack.Push(node);
-            node = directoryEntryEnumerator.GetDictionaryEntry(node.LeftSiblingId);
+            node = node.LeftSiblingId == StreamId.NoStream ? null : directoryEntryEnumerator.GetDictionaryEntry(node.LeftSiblingId);
         }
     }
 }

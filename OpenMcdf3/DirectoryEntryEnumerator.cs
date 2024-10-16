@@ -48,7 +48,11 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         if (entryIndex == -1 || entryIndex >= entryCount)
         {
             if (!chainEnumerator.MoveNext())
+            {
+                entryIndex = int.MaxValue;
+                current = null;
                 return false;
+            }
 
             ioContext.Reader.Seek(chainEnumerator.Current.StartOffset);
             entryIndex = 0;
@@ -62,14 +66,14 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
     /// <summary>
     /// Gets the <see cref="DirectoryEntry"/> for the specified stream ID.
     /// </summary>
-    public DirectoryEntry? GetDictionaryEntry(uint streamId)
+    public DirectoryEntry GetDictionaryEntry(uint streamId)
     {
-        if (streamId == StreamId.NoStream)
-            return null;
+        if (streamId > StreamId.Maximum)
+            throw new ArgumentException($"Invalid directory entry stream ID: ${streamId:X8}");
 
         uint chainIndex = (uint)Math.DivRem(streamId, entryCount, out long entryIndex);
         if (!chainEnumerator.MoveTo(chainIndex))
-            throw new ArgumentException("Invalid directory entry ID");
+            throw new KeyNotFoundException($"Directory entry {streamId} was not found");
 
         long position = chainEnumerator.Current.StartOffset + entryIndex * DirectoryEntry.Length;
         ioContext.Reader.Seek(position);
@@ -82,6 +86,6 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
     {
         chainEnumerator.Reset();
         entryIndex = -1;
-        current = default!;
+        current = null;
     }
 }
