@@ -2,7 +2,7 @@
 
 namespace OpenMcdf3;
 
-internal class McdfBinaryWriter : BinaryWriter
+internal sealed class McdfBinaryWriter : BinaryWriter
 {
     readonly byte[] buffer = new byte[DirectoryEntry.NameFieldLength];
 

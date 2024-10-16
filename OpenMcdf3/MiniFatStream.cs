@@ -1,6 +1,6 @@
 ﻿namespace OpenMcdf3;
 
-internal class MiniFatStream : Stream
+internal sealed class MiniFatStream : Stream
 {
     readonly IOContext ioContext;
     readonly MiniFatSectorChainEnumerator chain;
