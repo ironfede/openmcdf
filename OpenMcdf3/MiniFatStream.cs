@@ -14,7 +14,7 @@ internal class MiniFatStream : Stream
         this.ioContext = ioContext;
         DirectoryEntry = directoryEntry;
         length = directoryEntry.StreamLength;
-        chain = new(ioContext, directoryEntry.StartSectorLocation);
+        chain = new(ioContext, directoryEntry.StartSectorId);
         fatStream = new(ioContext, ioContext.RootEntry);
     }
 

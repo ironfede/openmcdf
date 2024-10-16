@@ -13,7 +13,7 @@ internal class FatStream : Stream
         this.ioContext = ioContext;
         DirectoryEntry = directoryEntry;
         length = directoryEntry.StreamLength;
-        chain = new(ioContext, directoryEntry.StartSectorLocation);
+        chain = new(ioContext, directoryEntry.StartSectorId);
     }
 
     internal DirectoryEntry DirectoryEntry { get; private set; }

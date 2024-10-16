@@ -54,14 +54,14 @@ internal class McdfBinaryWriter : BinaryWriter
         Write(buffer, 0, DirectoryEntry.NameFieldLength);
         Write((byte)entry.Type);
         Write((byte)entry.Color);
-        Write(entry.LeftSiblingID);
-        Write(entry.RightSiblingID);
-        Write(entry.ChildID);
+        Write(entry.LeftSiblingId);
+        Write(entry.RightSiblingId);
+        Write(entry.ChildId);
         Write(entry.CLSID);
         Write(entry.StateBits);
         Write(entry.CreationTime);
         Write(entry.ModifiedTime);
-        Write(entry.StartSectorLocation);
+        Write(entry.StartSectorId);
         Write(entry.StreamLength);
     }
 }

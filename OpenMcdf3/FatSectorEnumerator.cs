@@ -17,6 +17,11 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         this.difatSectorId = ioContext.Header.FirstDifatSectorId;
     }
 
+    public void Dispose()
+    {
+        // IOContext is owned by a parent
+    }
+
     public Sector Current
     {
         get
@@ -28,10 +33,6 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
     }
 
     object IEnumerator.Current => Current;
-
-    public void Dispose()
-    {
-    }
 
     public bool MoveNext()
     {

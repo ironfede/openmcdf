@@ -18,6 +18,10 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         this.entryCount = ioContext.Header.SectorSize / DirectoryEntry.Length;
         this.chainEnumerator = new FatSectorChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorId);
     }
+    public void Dispose()
+    {
+        chainEnumerator.Dispose();
+    }
 
     public DirectoryEntry Current
     {
@@ -67,10 +71,5 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         chainEnumerator.Reset();
         entryIndex = -1;
         current = default!;
-    }
-
-    public void Dispose()
-    {
-        chainEnumerator.Dispose();
     }
 }

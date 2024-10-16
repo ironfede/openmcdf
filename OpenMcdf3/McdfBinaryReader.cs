@@ -60,7 +60,7 @@ internal class McdfBinaryReader : BinaryReader
 
     public StorageType ReadStorageType() => (StorageType)ReadByte();
 
-    public Color ReadColor() => (Color)ReadByte();
+    public NodeColor ReadColor() => (NodeColor)ReadByte();
 
     public DirectoryEntry ReadDirectoryEntry(Version version)
     {
@@ -73,14 +73,14 @@ internal class McdfBinaryReader : BinaryReader
         entry.Name = Encoding.Unicode.GetString(buffer, 0, nameLength);
         entry.Type = ReadStorageType();
         entry.Color = ReadColor();
-        entry.LeftSiblingID = ReadUInt32();
-        entry.RightSiblingID = ReadUInt32();
-        entry.ChildID = ReadUInt32();
+        entry.LeftSiblingId = ReadUInt32();
+        entry.RightSiblingId = ReadUInt32();
+        entry.ChildId = ReadUInt32();
         entry.CLSID = ReadGuid();
         entry.StateBits = ReadUInt32();
         entry.CreationTime = ReadFileTime();
         entry.ModifiedTime = ReadFileTime();
-        entry.StartSectorLocation = ReadUInt32();
+        entry.StartSectorId = ReadUInt32();
 
         if (version == Version.V3)
         {

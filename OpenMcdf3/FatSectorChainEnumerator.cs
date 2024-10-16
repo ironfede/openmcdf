@@ -17,6 +17,11 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
         fatEnumerator = new(ioContext);
     }
 
+    public void Dispose()
+    {
+        fatEnumerator.Dispose();
+    }
+
     public uint Index { get; private set; } = uint.MaxValue;
 
     public Sector Current
@@ -76,10 +81,5 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
         start = true;
         current = Sector.EndOfChain;
         Index = uint.MaxValue;
-    }
-
-    public void Dispose()
-    {
-        fatEnumerator.Dispose();
     }
 }
