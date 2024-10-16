@@ -12,7 +12,7 @@ internal sealed class MiniFatSectorEnumerator : IEnumerator<MiniSector>
     public MiniFatSectorEnumerator(IOContext ioContext)
     {
         this.ioContext = ioContext;
-        miniFatChain = new(ioContext, ioContext.Header.FirstMiniFatSectorID);
+        miniFatChain = new(ioContext, ioContext.Header.FirstMiniFatSectorId);
     }
 
     public MiniSector Current
@@ -31,7 +31,7 @@ internal sealed class MiniFatSectorEnumerator : IEnumerator<MiniSector>
     {
         if (start)
         {
-            current = new(ioContext.Header.FirstMiniFatSectorID);
+            current = new(ioContext.Header.FirstMiniFatSectorId);
             start = false;
         }
         else if (!current.IsEndOfChain)
@@ -59,11 +59,15 @@ internal sealed class MiniFatSectorEnumerator : IEnumerator<MiniSector>
 
     public void Reset()
     {
+        start = true;
         current = MiniSector.EndOfChain;
     }
 
     public uint GetNextMiniFatSectorId(uint id)
     {
+        if (id > SectorType.Maximum)
+            throw new ArgumentException("Invalid sector ID");
+
         int elementLength = ioContext.Header.SectorSize / sizeof(uint);
         uint sectorId = (uint)Math.DivRem(id, elementLength, out long sectorOffset);
         if (!miniFatChain.MoveTo(sectorId))

@@ -16,7 +16,7 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         this.ioContext = ioContext;
         this.version = (Version)ioContext.Header.MajorVersion;
         this.entryCount = ioContext.Header.SectorSize / DirectoryEntry.Length;
-        this.chainEnumerator = new FatSectorChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorID);
+        this.chainEnumerator = new FatSectorChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorId);
     }
 
     public DirectoryEntry Current

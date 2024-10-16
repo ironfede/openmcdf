@@ -33,7 +33,7 @@ internal record struct Sector(uint Id, int Length)
     readonly void ThrowIfInvalid()
     {
         if (!IsValid)
-            throw new InvalidOperationException($"Invalid sector index: {Id}");
+            throw new InvalidOperationException($"Invalid sector ID: {Id}");
     }
 
     public override readonly string ToString() => $"{Id}";

@@ -47,18 +47,18 @@ internal sealed class Header
 
     public uint FatSectorCount { get; set; }
 
-    public uint FirstDirectorySectorID { get; set; } = SectorType.EndOfChain;
+    public uint FirstDirectorySectorId { get; set; } = SectorType.EndOfChain;
 
     public uint TransactionSignature { get; set; }
 
     /// <summary>
     /// This integer field contains the starting sector number for the mini FAT
     /// </summary>
-    public uint FirstMiniFatSectorID { get; set; } = SectorType.EndOfChain;
+    public uint FirstMiniFatSectorId { get; set; } = SectorType.EndOfChain;
 
     public uint MiniFatSectorCount { get; set; }
 
-    public uint FirstDifatSectorID { get; set; } = SectorType.EndOfChain;
+    public uint FirstDifatSectorId { get; set; } = SectorType.EndOfChain;
 
     public uint DifatSectorCount { get; set; }
 

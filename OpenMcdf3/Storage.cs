@@ -57,9 +57,10 @@ public class Storage
 
         DirectoryEntry? entry = EnumerateDirectoryEntries(StorageType.Stream)
             .FirstOrDefault(entry => entry.Name == name) ?? throw new FileNotFoundException("Stream not found", name);
-        if (entry.StreamLength < Header.MiniStreamCutoffSize)
-            return new MiniFatStream(ioContext, entry);
-        else
-            return new FatStream(ioContext, entry);
+        return entry.StreamLength switch
+        {
+            < Header.MiniStreamCutoffSize => new MiniFatStream(ioContext, entry),
+            _ => new FatStream(ioContext, entry)
+        };
     }
 }

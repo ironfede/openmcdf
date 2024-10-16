@@ -14,7 +14,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
     public FatSectorEnumerator(IOContext ioContext)
     {
         this.ioContext = ioContext;
-        this.difatSectorId = ioContext.Header.FirstDifatSectorID;
+        this.difatSectorId = ioContext.Header.FirstDifatSectorId;
     }
 
     public Sector Current
@@ -28,6 +28,10 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
     }
 
     object IEnumerator.Current => Current;
+
+    public void Dispose()
+    {
+    }
 
     public bool MoveNext()
     {
@@ -89,14 +93,18 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
     {
         start = true;
         id = SectorType.EndOfChain;
-        difatSectorElementIndex = SectorType.EndOfChain;
+        difatSectorId = ioContext.Header.FirstDifatSectorId;
+        difatSectorElementIndex = 0;
         current = Sector.EndOfChain;
     }
 
     public uint GetNextFatSectorId(uint id)
     {
-        int elementLength = ioContext.Header.SectorSize / sizeof(uint);
-        uint sectorId = (uint)Math.DivRem(id, elementLength, out long sectorOffset);
+        if (id > SectorType.Maximum)
+            throw new ArgumentException("Invalid sector ID");
+
+        int elementCount = ioContext.Header.SectorSize / sizeof(uint);
+        uint sectorId = (uint)Math.DivRem(id, elementCount, out long sectorOffset);
         if (!MoveTo(sectorId))
             throw new ArgumentException("Invalid sector ID");
 
@@ -104,9 +112,5 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         ioContext.Reader.Seek(position);
         uint nextId = ioContext.Reader.ReadUInt32();
         return nextId;
-    }
-
-    public void Dispose()
-    {
     }
 }

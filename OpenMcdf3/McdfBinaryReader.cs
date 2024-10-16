@@ -40,14 +40,14 @@ internal class McdfBinaryReader : BinaryReader
         this.FillBuffer(6);
         header.DirectorySectorCount = ReadUInt32();
         header.FatSectorCount = ReadUInt32();
-        header.FirstDirectorySectorID = ReadUInt32();
+        header.FirstDirectorySectorId = ReadUInt32();
         this.FillBuffer(4);
         uint miniStreamCutoffSize = ReadUInt32();
         if (miniStreamCutoffSize != Header.MiniStreamCutoffSize)
             throw new FormatException("Mini stream cutoff size must be 4096 byte");
-        header.FirstMiniFatSectorID = ReadUInt32();
+        header.FirstMiniFatSectorId = ReadUInt32();
         header.MiniFatSectorCount = ReadUInt32();
-        header.FirstDifatSectorID = ReadUInt32();
+        header.FirstDifatSectorId = ReadUInt32();
         header.DifatSectorCount = ReadUInt32();
 
         for (int i = 0; i < Header.DifatLength; i++)

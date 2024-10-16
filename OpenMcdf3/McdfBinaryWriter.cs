@@ -38,12 +38,12 @@ internal class McdfBinaryWriter : BinaryWriter
         WriteBytes(Header.Unused);
         Write(header.DirectorySectorCount);
         Write(header.FatSectorCount);
-        Write(header.FirstDirectorySectorID);
+        Write(header.FirstDirectorySectorId);
         Write((uint)0);
         Write(Header.MiniStreamCutoffSize);
-        Write(header.FirstMiniFatSectorID);
+        Write(header.FirstMiniFatSectorId);
         Write(header.MiniFatSectorCount);
-        Write(header.FirstDifatSectorID);
+        Write(header.FirstDifatSectorId);
         Write(header.DifatSectorCount);
     }
 

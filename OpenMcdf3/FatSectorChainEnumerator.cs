@@ -72,8 +72,8 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
 
     public void Reset()
     {
-        start = true;
         fatEnumerator.Reset();
+        start = true;
         current = Sector.EndOfChain;
         Index = uint.MaxValue;
     }
