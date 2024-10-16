@@ -8,14 +8,20 @@ namespace OpenMcdf3;
 internal sealed class MiniFatSectorEnumerator : IEnumerator<MiniSector>
 {
     private readonly IOContext ioContext;
-    private readonly FatSectorChainEnumerator miniFatChain;
+    private readonly FatSectorChainEnumerator fatChain;
     bool start = true;
     MiniSector current = MiniSector.EndOfChain;
 
     public MiniFatSectorEnumerator(IOContext ioContext)
     {
         this.ioContext = ioContext;
-        miniFatChain = new(ioContext, ioContext.Header.FirstMiniFatSectorId);
+        fatChain = new(ioContext, ioContext.Header.FirstMiniFatSectorId);
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        fatChain.Dispose();
     }
 
     /// <inheritdoc/>
@@ -49,20 +55,6 @@ internal sealed class MiniFatSectorEnumerator : IEnumerator<MiniSector>
         return !current.IsEndOfChain;
     }
 
-    public bool MoveTo(uint id)
-    {
-        if (id == SectorType.EndOfChain)
-            return false;
-
-        while (start || current.Id < id)
-        {
-            if (!MoveNext())
-                return false;
-        }
-
-        return true;
-    }
-
     /// <inheritdoc/>
     public void Reset()
     {
@@ -70,23 +62,25 @@ internal sealed class MiniFatSectorEnumerator : IEnumerator<MiniSector>
         current = MiniSector.EndOfChain;
     }
 
-    public uint GetNextMiniFatSectorId(uint id)
+    /// <summary>
+    /// Gets the next mini FAT sector ID.
+    /// </summary>
+    /// <param name="sectorId"></param>
+    /// <returns></returns>
+    /// <exception cref="ArgumentException"></exception>
+    public uint GetNextMiniFatSectorId(uint sectorId)
     {
-        if (id > SectorType.Maximum)
-            throw new ArgumentException("Invalid sector ID");
+        if (sectorId > SectorType.Maximum)
+            throw new ArgumentException($"Invalid sector ID: {sectorId}", nameof(sectorId));
 
         int elementLength = ioContext.Header.SectorSize / sizeof(uint);
-        uint sectorId = (uint)Math.DivRem(id, elementLength, out long sectorOffset);
-        if (!miniFatChain.MoveTo(sectorId))
-            throw new ArgumentException("Invalid sector ID");
+        uint fatSectorId = (uint)Math.DivRem(sectorId, elementLength, out long sectorOffset);
+        if (!fatChain.MoveTo(fatSectorId))
+            throw new ArgumentException($"Invalid sector ID: {sectorId}", nameof(sectorId));
 
-        long position = miniFatChain.Current.StartOffset + sectorOffset * sizeof(uint);
+        long position = fatChain.Current.StartOffset + sectorOffset * sizeof(uint);
         ioContext.Reader.Seek(position);
         uint nextId = ioContext.Reader.ReadUInt32();
         return nextId;
-    }
-
-    public void Dispose()
-    {
     }
 }
