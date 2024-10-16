@@ -17,7 +17,10 @@ internal record struct Sector(uint Id, int Length)
 
     public readonly bool IsValid => Id <= SectorType.Maximum;
 
-    public readonly long StartOffset
+    /// <summary>
+    /// The position of the mini sector in the compound file stream.
+    /// </summary>
+    public readonly long Position
     {
         get
         {
@@ -26,7 +29,10 @@ internal record struct Sector(uint Id, int Length)
         }
     }
 
-    public readonly long EndOffset
+    /// <summary>
+    /// The end position of the mini sector in the compound file stream.
+    /// </summary>
+    public readonly long EndPosition
     {
         get
         {

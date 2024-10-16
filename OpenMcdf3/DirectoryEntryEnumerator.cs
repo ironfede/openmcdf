@@ -54,7 +54,7 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
                 return false;
             }
 
-            ioContext.Reader.Seek(chainEnumerator.Current.StartOffset);
+            ioContext.Reader.Seek(chainEnumerator.Current.Position);
             entryIndex = 0;
         }
 
@@ -75,7 +75,7 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         if (!chainEnumerator.MoveTo(chainIndex))
             throw new KeyNotFoundException($"Directory entry {streamId} was not found");
 
-        long position = chainEnumerator.Current.StartOffset + entryIndex * DirectoryEntry.Length;
+        long position = chainEnumerator.Current.Position + entryIndex * DirectoryEntry.Length;
         ioContext.Reader.Seek(position);
         current = ioContext.Reader.ReadDirectoryEntry(version);
         return current;

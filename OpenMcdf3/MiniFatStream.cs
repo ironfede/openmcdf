@@ -86,7 +86,7 @@ internal sealed class MiniFatStream : Stream
             MiniSector sector = chain.Current;
             int remaining = realCount - readCount;
             long readLength = Math.Min(remaining, buffer.Length);
-            fatStream.Position = sector.StartOffset + sectorOffset;
+            fatStream.Position = sector.Position + sectorOffset;
             int localOffset = offset + readCount;
             int read = fatStream.Read(buffer, localOffset, (int)readLength);
             if (read == 0)

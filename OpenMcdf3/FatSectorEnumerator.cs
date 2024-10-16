@@ -67,7 +67,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
 
         int difatElementCount = ioContext.Header.SectorSize / sizeof(uint) - 1;
         Sector difatSector = new(difatSectorId, ioContext.Header.SectorSize);
-        long position = difatSector.StartOffset + difatSectorElementIndex * sizeof(uint);
+        long position = difatSector.Position + difatSectorElementIndex * sizeof(uint);
         ioContext.Reader.Seek(position);
         uint sectorId = ioContext.Reader.ReadUInt32();
         current = new Sector(sectorId, ioContext.Header.SectorSize);
@@ -119,7 +119,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         if (!MoveTo(sectorId))
             throw new ArgumentException("Invalid sector ID", nameof(id));
 
-        long position = Current.StartOffset + sectorOffset * sizeof(uint);
+        long position = Current.Position + sectorOffset * sizeof(uint);
         ioContext.Reader.Seek(position);
         uint nextId = ioContext.Reader.ReadUInt32();
         return nextId;

@@ -118,5 +118,5 @@ internal sealed class CfbBinaryReader : BinaryReader
         return entry;
     }
 
-    public void Seek(long offset) => BaseStream.Seek(offset, SeekOrigin.Begin);
+    public void Seek(long position) => BaseStream.Position = position;
 }

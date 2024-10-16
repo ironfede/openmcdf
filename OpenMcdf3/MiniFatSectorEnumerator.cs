@@ -78,7 +78,7 @@ internal sealed class MiniFatSectorEnumerator : IEnumerator<MiniSector>
         if (!fatChain.MoveTo(fatSectorId))
             throw new ArgumentException($"Invalid sector ID: {sectorId}", nameof(sectorId));
 
-        long position = fatChain.Current.StartOffset + sectorOffset * sizeof(uint);
+        long position = fatChain.Current.Position + sectorOffset * sizeof(uint);
         ioContext.Reader.Seek(position);
         uint nextId = ioContext.Reader.ReadUInt32();
         return nextId;

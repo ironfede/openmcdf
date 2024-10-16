@@ -14,7 +14,10 @@ internal record struct MiniSector(uint Id)
 
     public readonly bool IsEndOfChain => Id is SectorType.EndOfChain or SectorType.Free;
 
-    public readonly long StartOffset
+    /// <summary>
+    /// The position of the mini sector in the mini FAT stream.
+    /// </summary>
+    public readonly long Position
     {
         get
         {
@@ -23,7 +26,10 @@ internal record struct MiniSector(uint Id)
         }
     }
 
-    public readonly long EndOffset
+    /// <summary>
+    /// The end position of the mini sector in the mini FAT stream.
+    /// </summary>
+    public readonly long EndPosition
     {
         get
         {

@@ -30,6 +30,7 @@ internal sealed class IOContext : IDisposable
         RootEntry = contextFlags.HasFlag(IOContextFlags.Create)
             ? new DirectoryEntry()
             : EnumerateDirectoryEntries().First();
+        // TODO: Improve root directory entry validation
     }
 
     public void Dispose()
