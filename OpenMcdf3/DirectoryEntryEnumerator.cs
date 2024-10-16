@@ -2,6 +2,9 @@
 
 namespace OpenMcdf3;
 
+/// <summary>
+/// Enumerates <see cref="DirectoryEntry"/> instances from a <see cref="FatSectorChainEnumerator"/>.
+/// </summary>
 internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
 {
     private readonly IOContext ioContext;
@@ -18,6 +21,7 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         this.entryCount = ioContext.Header.SectorSize / DirectoryEntry.Length;
         this.chainEnumerator = new FatSectorChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorId);
     }
+
     public void Dispose()
     {
         chainEnumerator.Dispose();
@@ -51,12 +55,15 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         return current.Type != StorageType.Unallocated;
     }
 
-    public DirectoryEntry? Get(uint id)
+    /// <summary>
+    /// Gets the <see cref="DirectoryEntry"/> for the specified stream ID.
+    /// </summary>
+    public DirectoryEntry? GetDictionaryEntry(uint streamId)
     {
-        if (id == StreamId.NoStream)
+        if (streamId == StreamId.NoStream)
             return null;
 
-        uint chainIndex = (uint)Math.DivRem(id, entryCount, out long entryIndex);
+        uint chainIndex = (uint)Math.DivRem(streamId, entryCount, out long entryIndex);
         if (!chainEnumerator.MoveTo(chainIndex))
             throw new ArgumentException("Invalid directory entry ID");
 

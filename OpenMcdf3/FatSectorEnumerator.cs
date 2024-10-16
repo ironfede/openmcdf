@@ -2,6 +2,9 @@ using System.Collections;
 
 namespace OpenMcdf3;
 
+/// <summary>
+/// Enumerates the FAT sectors of a compound file.
+/// </summary>
 internal sealed class FatSectorEnumerator : IEnumerator<Sector>
 {
     private readonly IOContext ioContext;

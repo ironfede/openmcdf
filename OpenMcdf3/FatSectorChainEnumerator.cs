@@ -2,6 +2,9 @@ using System.Collections;
 
 namespace OpenMcdf3;
 
+/// <summary>
+/// Enumerates the <see cref="Sector"/>s in a FAT sector chain.
+/// </summary>
 internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
 {
     private readonly IOContext ioContext;
@@ -22,6 +25,9 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
         fatEnumerator.Dispose();
     }
 
+    /// <summary>
+    /// The index within the FAT sector chain, or <see cref="uint.MaxValue"/> if the enumeration has not started.
+    /// </summary>
     public uint Index { get; private set; } = uint.MaxValue;
 
     public Sector Current
@@ -36,6 +42,7 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
 
     object IEnumerator.Current => Current;
 
+    /// <inheritdoc/>
     public bool MoveNext()
     {
         if (start)
@@ -61,6 +68,11 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
         return true;
     }
 
+    /// <summary>
+    /// Moves to the specified index within the FAT sector chain.
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns>true if the enumerator was successfully advanced to the given index</returns>
     public bool MoveTo(uint index)
     {
         if (index < Index)
@@ -75,6 +87,7 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
         return true;
     }
 
+    /// <inheritdoc/>
     public void Reset()
     {
         fatEnumerator.Reset();

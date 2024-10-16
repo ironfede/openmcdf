@@ -1,6 +1,8 @@
 ﻿namespace OpenMcdf3;
 
-
+/// <summary>
+/// The structure at the beginning of a compound file
+/// </summary>
 internal sealed class Header
 {
     internal const int DifatLength = 109;
@@ -11,12 +13,18 @@ internal sealed class Header
     internal const short MiniSectorShift = 6;
     internal const uint MiniStreamCutoffSize = 4096;
 
+    /// <summary>
+    /// Identification signature for the compound file structure
+    /// </summary>
     internal static readonly byte[] Signature = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
 
     internal static readonly byte[] Unused = new byte[6];
     private ushort majorVersion;
     private ushort sectorShift = SectorShiftV3;
 
+    /// <summary>
+    /// Reserved and unused class ID
+    /// </summary>
     public Guid CLSID { get; set; }
 
     public ushort MinorVersion { get; set; }

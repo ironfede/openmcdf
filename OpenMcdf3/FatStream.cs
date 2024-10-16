@@ -1,5 +1,8 @@
 ﻿namespace OpenMcdf3;
 
+/// <summary>
+/// Provides a <inheritdoc cref="Stream"/> for a stream object in a compound file./>
+/// </summary>
 internal class FatStream : Stream
 {
     readonly IOContext ioContext;

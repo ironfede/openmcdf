@@ -2,6 +2,9 @@
 
 namespace OpenMcdf3;
 
+/// <summary>
+/// Enumerates the children of a <see cref="DirectoryEntry"/>.
+/// </summary>
 internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
 {
     private readonly DirectoryEntry? child;
@@ -12,7 +15,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
     internal DirectoryTreeEnumerator(IOContext ioContext, DirectoryEntry root)
     {
         directoryEntryEnumerator = new(ioContext);
-        child = directoryEntryEnumerator.Get(root.ChildId);
+        child = directoryEntryEnumerator.GetDictionaryEntry(root.ChildId);
         PushLeft(child);
     }
 
@@ -42,7 +45,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         }
 
         current = stack.Pop();
-        DirectoryEntry? rightSibling = directoryEntryEnumerator.Get(Current.RightSiblingId);
+        DirectoryEntry? rightSibling = directoryEntryEnumerator.GetDictionaryEntry(Current.RightSiblingId);
         PushLeft(rightSibling);
         return true;
     }
@@ -59,7 +62,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         while (node is not null)
         {
             stack.Push(node);
-            node = directoryEntryEnumerator.Get(node.LeftSiblingId);
+            node = directoryEntryEnumerator.GetDictionaryEntry(node.LeftSiblingId);
         }
     }
 }

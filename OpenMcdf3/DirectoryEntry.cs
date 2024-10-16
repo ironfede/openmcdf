@@ -3,7 +3,7 @@
 namespace OpenMcdf3;
 
 /// <summary>
-/// The storage type of a <c>DirectoryEntry</c>
+/// The storage type of a <see cref="DirectoryEntry"/>.
 /// </summary>
 public enum StorageType
 {
@@ -14,7 +14,7 @@ public enum StorageType
 }
 
 /// <summary>
-/// Red-black node color
+/// Red-black node color.
 /// </summary>
 enum NodeColor
 {
@@ -23,7 +23,7 @@ enum NodeColor
 }
 
 /// <summary>
-/// Stream ID constants for <c>DirectoryEntry</c>
+/// Stream ID constants for <see cref="DirectoryEntry"/>.
 /// </summary>
 internal static class StreamId
 {
@@ -32,7 +32,7 @@ internal static class StreamId
 }
 
 /// <summary>
-/// Encapsulates data about a storage or stream
+/// Encapsulates data about a <see cref="Storage"/> or Stream.
 /// </summary>
 internal sealed class DirectoryEntry
 {
@@ -61,37 +61,40 @@ internal sealed class DirectoryEntry
         }
     }
 
+    /// <summary>
+    /// The type of the storage object.
+    /// </summary>
     public StorageType Type { get; set; } = StorageType.Unallocated;
 
     public NodeColor Color { get; set; }
 
     /// <summary>
-    /// Stream ID of the left sibling
+    /// Stream ID of the left sibling.
     /// </summary>
     public uint LeftSiblingId { get; set; }
 
     /// <summary>
-    /// Stream ID of the right sibling
+    /// Stream ID of the right sibling.
     /// </summary>
     public uint RightSiblingId { get; set; }
 
     /// <summary>
-    /// Stream ID of the child
+    /// Stream ID of the child.
     /// </summary>
     public uint ChildId { get; set; }
 
     /// <summary>
-    /// GUID for storage objects
+    /// GUID for storage objects.
     /// </summary>
     public Guid CLSID { get; set; }
 
     /// <summary>
-    /// User defined flags for storage objects
+    /// User defined flags for storage objects.
     /// </summary>
     public uint StateBits { get; set; }
 
     /// <summary>
-    /// The creation time of the storage object
+    /// The creation time of the storage object.
     /// </summary>
     public DateTime CreationTime
     {
@@ -106,7 +109,7 @@ internal sealed class DirectoryEntry
     }
 
     /// <summary>
-    /// The modified time of the storage object
+    /// The modified time of the storage object.
     /// </summary>
     public DateTime ModifiedTime
     {
@@ -121,12 +124,12 @@ internal sealed class DirectoryEntry
     }
 
     /// <summary>
-    /// The starting sector location for a stream or the first sector of the mini-stream for the root storage object
+    /// The starting sector location for a stream or the first sector of the mini-stream for the root storage object.
     /// </summary>
     public uint StartSectorId { get; set; }
 
     /// <summary>
-    /// The length of the stream
+    /// The length of the stream.
     /// </summary>
     public long StreamLength { get; set; }
 
