@@ -1,5 +1,9 @@
 ﻿namespace OpenMcdf3;
 
+/// <summary>
+/// Encapsulates information about a mini sector in a compound file.
+/// </summary>
+/// <param name="Id">The ID of the mini sector</param>
 internal record struct MiniSector(uint Id)
 {
     public const int Length = 64;

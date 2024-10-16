@@ -2,11 +2,14 @@
 
 namespace OpenMcdf3;
 
-internal sealed class McdfBinaryWriter : BinaryWriter
+/// <summary>
+/// Writes CFB data types to a stream.
+/// </summary>
+internal sealed class CfbBinaryWriter : BinaryWriter
 {
     readonly byte[] buffer = new byte[DirectoryEntry.NameFieldLength];
 
-    public McdfBinaryWriter(Stream input)
+    public CfbBinaryWriter(Stream input)
         : base(input, Encoding.Unicode, true)
     {
     }

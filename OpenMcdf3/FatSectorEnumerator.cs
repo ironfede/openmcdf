@@ -20,11 +20,13 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         this.difatSectorId = ioContext.Header.FirstDifatSectorId;
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         // IOContext is owned by a parent
     }
 
+    /// <inheritdoc/>
     public Sector Current
     {
         get
@@ -35,8 +37,10 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         }
     }
 
+    /// <inheritdoc/>
     object IEnumerator.Current => Current;
 
+    /// <inheritdoc/>
     public bool MoveNext()
     {
         if (start)
@@ -47,7 +51,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
 
         id++;
 
-        if (id < ioContext.Header.FatSectorCount && id < Header.DifatLength)
+        if (id < ioContext.Header.FatSectorCount && id < Header.DifatArrayLength)
         {
             uint id = ioContext.Header.Difat[this.id];
             current = new Sector(id, ioContext.Header.SectorSize);
@@ -79,6 +83,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         return true;
     }
 
+    /// <inheritdoc/>
     public bool MoveTo(uint sectorId)
     {
         if (sectorId < id)
@@ -93,6 +98,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         return true;
     }
 
+    /// <inheritdoc/>
     public void Reset()
     {
         start = true;
@@ -102,6 +108,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         current = Sector.EndOfChain;
     }
 
+    /// <inheritdoc/>
     public uint GetNextFatSectorId(uint id)
     {
         if (id > SectorType.Maximum)

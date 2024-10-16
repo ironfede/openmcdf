@@ -2,6 +2,9 @@ using System.Collections;
 
 namespace OpenMcdf3;
 
+/// <summary>
+/// Enumerates the <see cref="MiniSector"/>s in a FAT sector chain.
+/// </summary>
 internal sealed class MiniFatSectorEnumerator : IEnumerator<MiniSector>
 {
     private readonly IOContext ioContext;
@@ -15,6 +18,7 @@ internal sealed class MiniFatSectorEnumerator : IEnumerator<MiniSector>
         miniFatChain = new(ioContext, ioContext.Header.FirstMiniFatSectorId);
     }
 
+    /// <inheritdoc/>
     public MiniSector Current
     {
         get
@@ -25,8 +29,10 @@ internal sealed class MiniFatSectorEnumerator : IEnumerator<MiniSector>
         }
     }
 
+    /// <inheritdoc/>
     object IEnumerator.Current => Current;
 
+    /// <inheritdoc/>
     public bool MoveNext()
     {
         if (start)
@@ -57,6 +63,7 @@ internal sealed class MiniFatSectorEnumerator : IEnumerator<MiniSector>
         return true;
     }
 
+    /// <inheritdoc/>
     public void Reset()
     {
         start = true;

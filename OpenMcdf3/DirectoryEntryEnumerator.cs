@@ -22,11 +22,13 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         this.chainEnumerator = new FatSectorChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorId);
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         chainEnumerator.Dispose();
     }
 
+    /// <inheritdoc/>
     public DirectoryEntry Current
     {
         get
@@ -37,8 +39,10 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         }
     }
 
+    /// <inheritdoc/>
     object IEnumerator.Current => Current;
 
+    /// <inheritdoc/>
     public bool MoveNext()
     {
         if (entryIndex == -1 || entryIndex >= entryCount)
@@ -73,6 +77,7 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         return current;
     }
 
+    /// <inheritdoc/>
     public void Reset()
     {
         chainEnumerator.Reset();

@@ -1,5 +1,8 @@
 ﻿namespace OpenMcdf3;
 
+/// <summary>
+/// Defines the types of sectors in a compound file.
+/// </summary>
 internal static class SectorType
 {
     public const uint Maximum = 0xFFFFFFFA;

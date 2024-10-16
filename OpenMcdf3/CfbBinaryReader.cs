@@ -2,11 +2,14 @@
 
 namespace OpenMcdf3;
 
-internal sealed class McdfBinaryReader : BinaryReader
+/// <summary>
+/// Reads CFB data types from a stream.
+/// </summary>
+internal sealed class CfbBinaryReader : BinaryReader
 {
     readonly byte[] buffer = new byte[DirectoryEntry.NameFieldLength];
 
-    public McdfBinaryReader(Stream input)
+    public CfbBinaryReader(Stream input)
         : base(input, Encoding.Unicode, true)
     {
     }
@@ -56,7 +59,7 @@ internal sealed class McdfBinaryReader : BinaryReader
         header.FirstDifatSectorId = ReadUInt32();
         header.DifatSectorCount = ReadUInt32();
 
-        for (int i = 0; i < Header.DifatLength; i++)
+        for (int i = 0; i < Header.DifatArrayLength; i++)
         {
             header.Difat[i] = ReadUInt32();
         }

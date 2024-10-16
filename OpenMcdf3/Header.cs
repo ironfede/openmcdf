@@ -1,11 +1,11 @@
 ﻿namespace OpenMcdf3;
 
 /// <summary>
-/// The structure at the beginning of a compound file
+/// The structure at the beginning of a compound file.
 /// </summary>
 internal sealed class Header
 {
-    internal const int DifatLength = 109;
+    internal const int DifatArrayLength = 109;
     internal const ushort ExpectedMinorVersion = 0x003E;
     internal const ushort LittleEndian = 0xFFFE;
     internal const ushort SectorShiftV3 = 0x0009;
@@ -14,21 +14,28 @@ internal sealed class Header
     internal const uint MiniStreamCutoffSize = 4096;
 
     /// <summary>
-    /// Identification signature for the compound file structure
+    /// Identification signature for the compound file structure.
     /// </summary>
     internal static readonly byte[] Signature = new byte[] { 0xD0, 0xCF, 0x11, 0xE0, 0xA1, 0xB1, 0x1A, 0xE1 };
 
     internal static readonly byte[] Unused = new byte[6];
+
     private ushort majorVersion;
     private ushort sectorShift = SectorShiftV3;
 
     /// <summary>
-    /// Reserved and unused class ID
+    /// Reserved and unused class ID.
     /// </summary>
     public Guid CLSID { get; set; }
 
+    /// <summary>
+    /// Version number for non-breaking changes.
+    /// </summary>
     public ushort MinorVersion { get; set; }
 
+    /// <summary>
+    /// Version number for breaking changes.
+    /// </summary>
     public ushort MajorVersion
     {
         get => majorVersion; set
@@ -39,6 +46,9 @@ internal sealed class Header
         }
     }
 
+    /// <summary>
+    /// Specifies the sector size of the compound file.
+    /// </summary>
     public ushort SectorShift
     {
         get => sectorShift; set
@@ -52,27 +62,54 @@ internal sealed class Header
         }
     }
 
+    /// <summary>
+    /// The number of directory sectors in the compound file.
+    /// </summary>
     public uint DirectorySectorCount { get; set; }
 
+    /// <summary>
+    /// The number of FAT sectors in the compound file.
+    /// </summary>
     public uint FatSectorCount { get; set; }
 
+    /// <summary>
+    /// The starting sector ID of the directory stream.
+    /// </summary>
     public uint FirstDirectorySectorId { get; set; } = SectorType.EndOfChain;
 
+    /// <summary>
+    /// A sequence number that is incremented every time the compound file is saved by an implementation that supports file transactions.
+    /// </summary>
     public uint TransactionSignature { get; set; }
 
     /// <summary>
-    /// This integer field contains the starting sector number for the mini FAT
+    /// This integer field contains the starting sector ID of the mini FAT.
     /// </summary>
     public uint FirstMiniFatSectorId { get; set; } = SectorType.EndOfChain;
 
+    /// <summary>
+    /// The number of sectors in the mini FAT.
+    /// </summary>
     public uint MiniFatSectorCount { get; set; }
 
+    /// <summary>
+    /// The starting sector ID of the DIFAT.
+    /// </summary>
     public uint FirstDifatSectorId { get; set; } = SectorType.EndOfChain;
 
+    /// <summary>
+    /// The number of DIFACT sectors in the compound file.
+    /// </summary>
     public uint DifatSectorCount { get; set; }
 
-    public uint[] Difat { get; } = new uint[DifatLength];
+    /// <summary>
+    /// An array of the first FAT sector IDs.
+    /// </summary>
+    public uint[] Difat { get; } = new uint[DifatArrayLength];
 
+    /// <summary>
+    /// The size of a regular sector.
+    /// </summary>
     public int SectorSize => 1 << SectorShift;
 
     public Header(Version version = Version.V3)

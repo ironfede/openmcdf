@@ -20,6 +20,7 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
         fatEnumerator = new(ioContext);
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         fatEnumerator.Dispose();
@@ -30,6 +31,7 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
     /// </summary>
     public uint Index { get; private set; } = uint.MaxValue;
 
+    /// <inheritdoc/>
     public Sector Current
     {
         get
@@ -40,6 +42,7 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
         }
     }
 
+    /// <inheritdoc/>
     object IEnumerator.Current => Current;
 
     /// <inheritdoc/>

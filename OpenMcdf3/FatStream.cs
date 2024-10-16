@@ -19,22 +19,29 @@ internal class FatStream : Stream
         chain = new(ioContext, directoryEntry.StartSectorId);
     }
 
+    /// <inheritdoc/>
     internal DirectoryEntry DirectoryEntry { get; private set; }
 
+    /// <inheritdoc/>
     public override bool CanRead => true;
 
+    /// <inheritdoc/>
     public override bool CanSeek => true;
 
+    /// <inheritdoc/>
     public override bool CanWrite => false;
 
+    /// <inheritdoc/>
     public override long Length => length;
 
+    /// <inheritdoc/>
     public override long Position
     {
         get => position;
         set => Seek(value, SeekOrigin.Begin);
     }
 
+    /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
         if (!disposed)
@@ -46,8 +53,10 @@ internal class FatStream : Stream
         base.Dispose(disposing);
     }
 
+    /// <inheritdoc/>
     public override void Flush() => this.ThrowIfDisposed(disposed);
 
+    /// <inheritdoc/>
     public override int Read(byte[] buffer, int offset, int count)
     {
         if (buffer is null)
@@ -94,6 +103,7 @@ internal class FatStream : Stream
         return readCount;
     }
 
+    /// <inheritdoc/>
     public override long Seek(long offset, SeekOrigin origin)
     {
         this.ThrowIfDisposed(disposed);
@@ -125,7 +135,9 @@ internal class FatStream : Stream
         return position;
     }
 
+    /// <inheritdoc/>
     public override void SetLength(long value) => throw new NotSupportedException();
 
+    /// <inheritdoc/>
     public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
 }

@@ -7,19 +7,22 @@ enum IOContextFlags
     LeaveOpen = 2
 }
 
+/// <summary>
+/// Encapsulates the objects required to read and write data to and from a compound file.
+/// </summary>
 internal sealed class IOContext : IDisposable
 {
     public Header Header { get; }
 
-    public McdfBinaryReader Reader { get; }
+    public CfbBinaryReader Reader { get; }
 
-    public McdfBinaryWriter? Writer { get; }
+    public CfbBinaryWriter? Writer { get; }
 
     public DirectoryEntry RootEntry { get; }
 
     public bool IsDisposed { get; private set; }
 
-    public IOContext(Header header, McdfBinaryReader reader, McdfBinaryWriter? writer, IOContextFlags contextFlags = IOContextFlags.None)
+    public IOContext(Header header, CfbBinaryReader reader, CfbBinaryWriter? writer, IOContextFlags contextFlags = IOContextFlags.None)
     {
         Header = header;
         Reader = reader;
@@ -39,6 +42,9 @@ internal sealed class IOContext : IDisposable
         }
     }
 
+    /// <summary>
+    /// Enumerates all the <see cref="DirectoryEntry"/> instances in the compound file.
+    /// </summary>
     public IEnumerable<DirectoryEntry> EnumerateDirectoryEntries()
     {
         this.ThrowIfDisposed(IsDisposed);

@@ -1,5 +1,8 @@
 ﻿namespace OpenMcdf3;
 
+/// <summary>
+/// An object in a compound file that is analogous to a file system directory.
+/// </summary>
 public class Storage
 {
     internal readonly IOContext ioContext;
