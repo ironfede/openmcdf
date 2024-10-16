@@ -26,10 +26,16 @@ internal class McdfBinaryReader : BinaryReader
         Header header = new();
         Read(buffer, 0, Header.Signature.Length);
         if (!buffer.Take(Header.Signature.Length).SequenceEqual(Header.Signature))
-            throw new FormatException("Invalid signature");
+            throw new FormatException("Invalid header signature");
         header.CLSID = ReadGuid();
+        if (header.CLSID != Guid.Empty)
+            throw new FormatException($"Invalid header CLSID: {header.CLSID}");
         header.MinorVersion = ReadUInt16();
         header.MajorVersion = ReadUInt16();
+        if (header.MajorVersion is not (ushort)Version.V3 and not (ushort)Version.V4)
+            throw new FormatException($"Unsupported major version: {header.MajorVersion}");
+        else if (header.MinorVersion is not Header.ExpectedMinorVersion)
+            throw new FormatException($"Unsupported minor version: {header.MinorVersion}");
         ushort byteOrder = ReadUInt16();
         if (byteOrder != Header.LittleEndian)
             throw new FormatException($"Unsupported byte order: {byteOrder:X4}. Only little-endian is supported ({Header.LittleEndian:X4})");
@@ -58,9 +64,21 @@ internal class McdfBinaryReader : BinaryReader
         return header;
     }
 
-    public StorageType ReadStorageType() => (StorageType)ReadByte();
+    public StorageType ReadStorageType()
+    {
+        var type = (StorageType)ReadByte();
+        if (type is not StorageType.Storage and not StorageType.Stream and not StorageType.Root and not StorageType.Unallocated)
+            throw new FormatException($"Invalid storage type: {type}");
+        return type;
+    }
 
-    public NodeColor ReadColor() => (NodeColor)ReadByte();
+    public NodeColor ReadColor()
+    {
+        var color = (NodeColor)ReadByte();
+        if (color is not NodeColor.Black and not NodeColor.Red)
+            throw new FormatException($"Invalid node color: {color}");
+        return color;
+    }
 
     public DirectoryEntry ReadDirectoryEntry(Version version)
     {

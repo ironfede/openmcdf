@@ -4,6 +4,7 @@
 internal sealed class Header
 {
     internal const int DifatLength = 109;
+    internal const ushort ExpectedMinorVersion = 0x003E;
     internal const ushort LittleEndian = 0xFFFE;
     internal const ushort SectorShiftV3 = 0x0009;
     internal const ushort SectorShiftV4 = 0x000C;
