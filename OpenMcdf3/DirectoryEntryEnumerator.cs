@@ -2,6 +2,9 @@
 
 namespace OpenMcdf3;
 
+/// <summary>
+/// Enumerates <see cref="DirectoryEntry"/> instances from a <see cref="FatSectorChainEnumerator"/>.
+/// </summary>
 internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
 {
     private readonly IOContext ioContext;
@@ -19,6 +22,13 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         this.chainEnumerator = new FatSectorChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorId);
     }
 
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        chainEnumerator.Dispose();
+    }
+
+    /// <inheritdoc/>
     public DirectoryEntry Current
     {
         get
@@ -29,16 +39,22 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         }
     }
 
+    /// <inheritdoc/>
     object IEnumerator.Current => Current;
 
+    /// <inheritdoc/>
     public bool MoveNext()
     {
         if (entryIndex == -1 || entryIndex >= entryCount)
         {
             if (!chainEnumerator.MoveNext())
+            {
+                entryIndex = int.MaxValue;
+                current = null;
                 return false;
+            }
 
-            ioContext.Reader.Seek(chainEnumerator.Current.StartOffset);
+            ioContext.Reader.Seek(chainEnumerator.Current.Position);
             entryIndex = 0;
         }
 
@@ -47,30 +63,29 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         return current.Type != StorageType.Unallocated;
     }
 
-    public DirectoryEntry? Get(uint id)
+    /// <summary>
+    /// Gets the <see cref="DirectoryEntry"/> for the specified stream ID.
+    /// </summary>
+    public DirectoryEntry GetDictionaryEntry(uint streamId)
     {
-        if (id == StreamId.NoStream)
-            return null;
+        if (streamId > StreamId.Maximum)
+            throw new ArgumentException($"Invalid directory entry stream ID: ${streamId:X8}");
 
-        uint chainIndex = (uint)Math.DivRem(id, entryCount, out long entryIndex);
+        uint chainIndex = (uint)Math.DivRem(streamId, entryCount, out long entryIndex);
         if (!chainEnumerator.MoveTo(chainIndex))
-            throw new ArgumentException("Invalid directory entry ID");
+            throw new KeyNotFoundException($"Directory entry {streamId} was not found");
 
-        long position = chainEnumerator.Current.StartOffset + entryIndex * DirectoryEntry.Length;
+        long position = chainEnumerator.Current.Position + entryIndex * DirectoryEntry.Length;
         ioContext.Reader.Seek(position);
         current = ioContext.Reader.ReadDirectoryEntry(version);
         return current;
     }
 
+    /// <inheritdoc/>
     public void Reset()
     {
         chainEnumerator.Reset();
         entryIndex = -1;
-        current = default!;
-    }
-
-    public void Dispose()
-    {
-        chainEnumerator.Dispose();
+        current = null;
     }
 }

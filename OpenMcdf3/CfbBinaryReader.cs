@@ -2,11 +2,14 @@
 
 namespace OpenMcdf3;
 
-internal class McdfBinaryReader : BinaryReader
+/// <summary>
+/// Reads CFB data types from a stream.
+/// </summary>
+internal sealed class CfbBinaryReader : BinaryReader
 {
     readonly byte[] buffer = new byte[DirectoryEntry.NameFieldLength];
 
-    public McdfBinaryReader(Stream input)
+    public CfbBinaryReader(Stream input)
         : base(input, Encoding.Unicode, true)
     {
     }
@@ -26,10 +29,16 @@ internal class McdfBinaryReader : BinaryReader
         Header header = new();
         Read(buffer, 0, Header.Signature.Length);
         if (!buffer.Take(Header.Signature.Length).SequenceEqual(Header.Signature))
-            throw new FormatException("Invalid signature");
+            throw new FormatException("Invalid header signature");
         header.CLSID = ReadGuid();
+        if (header.CLSID != Guid.Empty)
+            throw new FormatException($"Invalid header CLSID: {header.CLSID}");
         header.MinorVersion = ReadUInt16();
         header.MajorVersion = ReadUInt16();
+        if (header.MajorVersion is not (ushort)Version.V3 and not (ushort)Version.V4)
+            throw new FormatException($"Unsupported major version: {header.MajorVersion}");
+        else if (header.MinorVersion is not Header.ExpectedMinorVersion)
+            throw new FormatException($"Unsupported minor version: {header.MinorVersion}");
         ushort byteOrder = ReadUInt16();
         if (byteOrder != Header.LittleEndian)
             throw new FormatException($"Unsupported byte order: {byteOrder:X4}. Only little-endian is supported ({Header.LittleEndian:X4})");
@@ -50,7 +59,7 @@ internal class McdfBinaryReader : BinaryReader
         header.FirstDifatSectorId = ReadUInt32();
         header.DifatSectorCount = ReadUInt32();
 
-        for (int i = 0; i < Header.DifatLength; i++)
+        for (int i = 0; i < Header.DifatArrayLength; i++)
         {
             header.Difat[i] = ReadUInt32();
         }
@@ -58,14 +67,26 @@ internal class McdfBinaryReader : BinaryReader
         return header;
     }
 
-    public StorageType ReadStorageType() => (StorageType)ReadByte();
+    public StorageType ReadStorageType()
+    {
+        var type = (StorageType)ReadByte();
+        if (type is not StorageType.Storage and not StorageType.Stream and not StorageType.Root and not StorageType.Unallocated)
+            throw new FormatException($"Invalid storage type: {type}");
+        return type;
+    }
 
-    public Color ReadColor() => (Color)ReadByte();
+    public NodeColor ReadColor()
+    {
+        var color = (NodeColor)ReadByte();
+        if (color is not NodeColor.Black and not NodeColor.Red)
+            throw new FormatException($"Invalid node color: {color}");
+        return color;
+    }
 
     public DirectoryEntry ReadDirectoryEntry(Version version)
     {
         if (version is not Version.V3 and not Version.V4)
-            throw new ArgumentException($"Unsupported version: {version}");
+            throw new ArgumentException($"Unsupported version: {version}", nameof(version));
 
         DirectoryEntry entry = new();
         Read(buffer, 0, DirectoryEntry.NameFieldLength);
@@ -73,14 +94,14 @@ internal class McdfBinaryReader : BinaryReader
         entry.Name = Encoding.Unicode.GetString(buffer, 0, nameLength);
         entry.Type = ReadStorageType();
         entry.Color = ReadColor();
-        entry.LeftSiblingID = ReadUInt32();
-        entry.RightSiblingID = ReadUInt32();
-        entry.ChildID = ReadUInt32();
+        entry.LeftSiblingId = ReadUInt32();
+        entry.RightSiblingId = ReadUInt32();
+        entry.ChildId = ReadUInt32();
         entry.CLSID = ReadGuid();
         entry.StateBits = ReadUInt32();
         entry.CreationTime = ReadFileTime();
         entry.ModifiedTime = ReadFileTime();
-        entry.StartSectorLocation = ReadUInt32();
+        entry.StartSectorId = ReadUInt32();
 
         if (version == Version.V3)
         {
@@ -97,5 +118,5 @@ internal class McdfBinaryReader : BinaryReader
         return entry;
     }
 
-    public void Seek(long offset) => BaseStream.Seek(offset, SeekOrigin.Begin);
+    public void Seek(long position) => BaseStream.Position = position;
 }

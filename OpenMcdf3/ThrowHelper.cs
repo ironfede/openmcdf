@@ -1,5 +1,8 @@
 ﻿namespace OpenMcdf3;
 
+/// <summary>
+/// Extensions to consistently throw exceptions.
+/// </summary>
 internal static class ThrowHelper
 {
     public static void ThrowIfDisposed(this object instance, bool disposed)

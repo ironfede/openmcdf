@@ -1,5 +1,8 @@
 ﻿namespace OpenMcdf3;
 
+/// <summary>
+/// An object in a compound file that is analogous to a file system directory.
+/// </summary>
 public class Storage
 {
     internal readonly IOContext ioContext;
@@ -47,7 +50,7 @@ public class Storage
         this.ThrowIfDisposed(ioContext);
 
         DirectoryEntry? entry = EnumerateDirectoryEntries(StorageType.Storage)
-            .FirstOrDefault(entry => entry.Name == name) ?? throw new DirectoryNotFoundException($"Directory not found {name}");
+            .FirstOrDefault(entry => entry.Name == name) ?? throw new DirectoryNotFoundException($"Storage not found: {name}");
         return new Storage(ioContext, entry);
     }
 
@@ -56,7 +59,7 @@ public class Storage
         this.ThrowIfDisposed(ioContext);
 
         DirectoryEntry? entry = EnumerateDirectoryEntries(StorageType.Stream)
-            .FirstOrDefault(entry => entry.Name == name) ?? throw new FileNotFoundException("Stream not found", name);
+            .FirstOrDefault(entry => entry.Name == name) ?? throw new FileNotFoundException($"Stream not found: {name}", name);
         return entry.StreamLength switch
         {
             < Header.MiniStreamCutoffSize => new MiniFatStream(ioContext, entry),

@@ -2,6 +2,9 @@
 
 namespace OpenMcdf3;
 
+/// <summary>
+/// Enumerates the children of a <see cref="DirectoryEntry"/>.
+/// </summary>
 internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
 {
     private readonly DirectoryEntry? child;
@@ -12,15 +15,18 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
     internal DirectoryTreeEnumerator(IOContext ioContext, DirectoryEntry root)
     {
         directoryEntryEnumerator = new(ioContext);
-        child = directoryEntryEnumerator.Get(root.ChildID);
+        if (root.ChildId != StreamId.NoStream)
+            child = directoryEntryEnumerator.GetDictionaryEntry(root.ChildId);
         PushLeft(child);
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         directoryEntryEnumerator.Dispose();
     }
 
+    /// <inheritdoc/>
     public DirectoryEntry Current
     {
         get
@@ -31,8 +37,10 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         }
     }
 
+    /// <inheritdoc/>
     object IEnumerator.Current => Current;
 
+    /// <inheritdoc/>
     public bool MoveNext()
     {
         if (stack.Count == 0)
@@ -42,11 +50,16 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         }
 
         current = stack.Pop();
-        DirectoryEntry? rightSibling = directoryEntryEnumerator.Get(Current.RightSiblingID);
-        PushLeft(rightSibling);
+        if (current.RightSiblingId != StreamId.NoStream)
+        {
+            DirectoryEntry rightSibling = directoryEntryEnumerator.GetDictionaryEntry(current.RightSiblingId);
+            PushLeft(rightSibling);
+        }
+
         return true;
     }
 
+    /// <inheritdoc/>
     public void Reset()
     {
         current = null;
@@ -59,7 +72,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         while (node is not null)
         {
             stack.Push(node);
-            node = directoryEntryEnumerator.Get(node.LeftSiblingID);
+            node = node.LeftSiblingId == StreamId.NoStream ? null : directoryEntryEnumerator.GetDictionaryEntry(node.LeftSiblingId);
         }
     }
 }

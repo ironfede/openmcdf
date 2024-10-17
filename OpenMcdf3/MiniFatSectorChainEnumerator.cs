@@ -2,6 +2,9 @@ using System.Collections;
 
 namespace OpenMcdf3;
 
+/// <summary>
+/// Enumerates the <see cref="MiniSector"/>s in a Mini FAT sector chain.
+/// </summary>
 internal sealed class MiniFatSectorChainEnumerator : IEnumerator<MiniSector>
 {
     private readonly MiniFatSectorEnumerator miniFatEnumerator;
@@ -15,8 +18,12 @@ internal sealed class MiniFatSectorChainEnumerator : IEnumerator<MiniSector>
         miniFatEnumerator = new(ioContext);
     }
 
+    /// <summary>
+    /// The index within the Mini FAT sector chain, or <see cref="uint.MaxValue"/> if the enumeration has not started.
+    /// </summary>
     public uint Index { get; private set; } = uint.MaxValue;
 
+    /// <inheritdoc/>
     public MiniSector Current
     {
         get
@@ -27,8 +34,10 @@ internal sealed class MiniFatSectorChainEnumerator : IEnumerator<MiniSector>
         }
     }
 
+    /// <inheritdoc/>
     object IEnumerator.Current => Current;
 
+    /// <inheritdoc/>
     public bool MoveNext()
     {
         if (start)
@@ -54,6 +63,11 @@ internal sealed class MiniFatSectorChainEnumerator : IEnumerator<MiniSector>
         return true;
     }
 
+    /// <summary>
+    /// Moves to the specified index within the mini FAT sector chain.
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns>true if the enumerator was successfully advanced to the given index</returns>
     public bool MoveTo(uint index)
     {
         if (index < Index)
@@ -68,6 +82,7 @@ internal sealed class MiniFatSectorChainEnumerator : IEnumerator<MiniSector>
         return true;
     }
 
+    /// <inheritdoc/>
     public void Reset()
     {
         start = true;
@@ -76,6 +91,7 @@ internal sealed class MiniFatSectorChainEnumerator : IEnumerator<MiniSector>
         Index = uint.MaxValue;
     }
 
+    /// <inheritdoc/>
     public void Dispose()
     {
         miniFatEnumerator.Dispose();

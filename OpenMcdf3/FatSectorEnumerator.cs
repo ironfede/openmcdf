@@ -2,6 +2,9 @@ using System.Collections;
 
 namespace OpenMcdf3;
 
+/// <summary>
+/// Enumerates the FAT sectors of a compound file.
+/// </summary>
 internal sealed class FatSectorEnumerator : IEnumerator<Sector>
 {
     private readonly IOContext ioContext;
@@ -17,6 +20,13 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         this.difatSectorId = ioContext.Header.FirstDifatSectorId;
     }
 
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        // IOContext is owned by a parent
+    }
+
+    /// <inheritdoc/>
     public Sector Current
     {
         get
@@ -27,12 +37,10 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         }
     }
 
+    /// <inheritdoc/>
     object IEnumerator.Current => Current;
 
-    public void Dispose()
-    {
-    }
-
+    /// <inheritdoc/>
     public bool MoveNext()
     {
         if (start)
@@ -43,7 +51,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
 
         id++;
 
-        if (id < ioContext.Header.FatSectorCount && id < Header.DifatLength)
+        if (id < ioContext.Header.FatSectorCount && id < Header.DifatArrayLength)
         {
             uint id = ioContext.Header.Difat[this.id];
             current = new Sector(id, ioContext.Header.SectorSize);
@@ -59,7 +67,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
 
         int difatElementCount = ioContext.Header.SectorSize / sizeof(uint) - 1;
         Sector difatSector = new(difatSectorId, ioContext.Header.SectorSize);
-        long position = difatSector.StartOffset + difatSectorElementIndex * sizeof(uint);
+        long position = difatSector.Position + difatSectorElementIndex * sizeof(uint);
         ioContext.Reader.Seek(position);
         uint sectorId = ioContext.Reader.ReadUInt32();
         current = new Sector(sectorId, ioContext.Header.SectorSize);
@@ -75,6 +83,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         return true;
     }
 
+    /// <inheritdoc/>
     public bool MoveTo(uint sectorId)
     {
         if (sectorId < id)
@@ -89,6 +98,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         return true;
     }
 
+    /// <inheritdoc/>
     public void Reset()
     {
         start = true;
@@ -98,17 +108,18 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         current = Sector.EndOfChain;
     }
 
+    /// <inheritdoc/>
     public uint GetNextFatSectorId(uint id)
     {
         if (id > SectorType.Maximum)
-            throw new ArgumentException("Invalid sector ID");
+            throw new ArgumentException("Invalid sector ID", nameof(id));
 
         int elementCount = ioContext.Header.SectorSize / sizeof(uint);
         uint sectorId = (uint)Math.DivRem(id, elementCount, out long sectorOffset);
         if (!MoveTo(sectorId))
-            throw new ArgumentException("Invalid sector ID");
+            throw new ArgumentException("Invalid sector ID", nameof(id));
 
-        long position = Current.StartOffset + sectorOffset * sizeof(uint);
+        long position = Current.Position + sectorOffset * sizeof(uint);
         ioContext.Reader.Seek(position);
         uint nextId = ioContext.Reader.ReadUInt32();
         return nextId;

@@ -6,14 +6,17 @@ public enum Version : ushort
     V4 = 4
 }
 
+/// <summary>
+/// Encapsulates the root <see cref="Storage"> of a compound file.
+/// </summary>
 public sealed class RootStorage : Storage, IDisposable
 {
     public static RootStorage Create(string fileName, Version version = Version.V3)
     {
         FileStream stream = File.Create(fileName);
         Header header = new(version);
-        McdfBinaryReader reader = new(stream);
-        McdfBinaryWriter writer = new(stream);
+        CfbBinaryReader reader = new(stream);
+        CfbBinaryWriter writer = new(stream);
         IOContext ioContext = new(header, reader, writer, IOContextFlags.Create);
         return new RootStorage(ioContext);
     }
@@ -32,8 +35,8 @@ public sealed class RootStorage : Storage, IDisposable
 
     public static RootStorage Open(Stream stream, bool leaveOpen = false)
     {
-        McdfBinaryReader reader = new(stream);
-        McdfBinaryWriter? writer = stream.CanWrite ? new(stream) : null;
+        CfbBinaryReader reader = new(stream);
+        CfbBinaryWriter? writer = stream.CanWrite ? new(stream) : null;
         Header header = reader.ReadHeader();
         IOContextFlags contextFlags = leaveOpen ? IOContextFlags.LeaveOpen : IOContextFlags.None;
         IOContext ioContext = new(header, reader, writer, contextFlags);

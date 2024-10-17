@@ -1,6 +1,9 @@
 ﻿namespace OpenMcdf3;
 
-internal class MiniFatStream : Stream
+/// <summary>
+/// Provides a <see cref="Stream"> for reading a <see cref="DirectoryEntry"/> from the mini FAT stream.
+/// </summary>
+internal sealed class MiniFatStream : Stream
 {
     readonly IOContext ioContext;
     readonly MiniFatSectorChainEnumerator chain;
@@ -14,7 +17,7 @@ internal class MiniFatStream : Stream
         this.ioContext = ioContext;
         DirectoryEntry = directoryEntry;
         length = directoryEntry.StreamLength;
-        chain = new(ioContext, directoryEntry.StartSectorLocation);
+        chain = new(ioContext, directoryEntry.StartSectorId);
         fatStream = new(ioContext, ioContext.RootEntry);
     }
 
@@ -83,7 +86,7 @@ internal class MiniFatStream : Stream
             MiniSector sector = chain.Current;
             int remaining = realCount - readCount;
             long readLength = Math.Min(remaining, buffer.Length);
-            fatStream.Position = sector.StartOffset + sectorOffset;
+            fatStream.Position = sector.Position + sectorOffset;
             int localOffset = offset + readCount;
             int read = fatStream.Read(buffer, localOffset, (int)readLength);
             if (read == 0)

@@ -1,5 +1,10 @@
 ﻿namespace OpenMcdf3;
 
+/// <summary>
+/// Encapsulates information about a sector in a compound file.
+/// </summary>
+/// <param name="Id">The sector ID</param>
+/// <param name="Length">The sector length</param>
 internal record struct Sector(uint Id, int Length)
 {
     public static readonly Sector EndOfChain = new(SectorType.EndOfChain, 0);
@@ -12,7 +17,10 @@ internal record struct Sector(uint Id, int Length)
 
     public readonly bool IsValid => Id <= SectorType.Maximum;
 
-    public readonly long StartOffset
+    /// <summary>
+    /// The position of the mini sector in the compound file stream.
+    /// </summary>
+    public readonly long Position
     {
         get
         {
@@ -21,7 +29,10 @@ internal record struct Sector(uint Id, int Length)
         }
     }
 
-    public readonly long EndOffset
+    /// <summary>
+    /// The end position of the mini sector in the compound file stream.
+    /// </summary>
+    public readonly long EndPosition
     {
         get
         {
