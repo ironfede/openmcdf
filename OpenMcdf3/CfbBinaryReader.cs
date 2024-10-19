@@ -101,8 +101,9 @@ internal sealed class CfbBinaryReader : BinaryReader
 
         DirectoryEntry entry = new();
         Read(buffer, 0, DirectoryEntry.NameFieldLength);
-        int nameLength = Math.Max(0, ReadUInt16() - 2);
-        entry.Name = Encoding.Unicode.GetString(buffer, 0, nameLength);
+        ushort nameLength = ReadUInt16();
+        int clampedNameLength = Math.Max(0, Math.Min(ushort.MaxValue, nameLength - 2));
+        entry.Name = Encoding.Unicode.GetString(buffer, 0, clampedNameLength);
         entry.Type = ReadStorageType();
         entry.Color = ReadColor();
         entry.LeftSiblingId = ReadUInt32();
