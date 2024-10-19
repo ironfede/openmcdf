@@ -1,17 +1,20 @@
 using System.Collections;
+using System.Diagnostics;
 
 namespace OpenMcdf3;
 
 /// <summary>
 /// Enumerates the <see cref="Sector"/>s in a FAT sector chain.
 /// </summary>
-internal sealed class FatChainEnumerator : IEnumerator<Sector>
+internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
 {
     private readonly IOContext ioContext;
-    private readonly FatSectorEnumerator fatEnumerator;
-    private readonly uint startId;
+    private readonly FatEnumerator fatEnumerator;
+    private uint startId;
     private bool start = true;
-    private Sector current = Sector.EndOfChain;
+    private uint index = uint.MaxValue;
+    private FatChainEntry current = FatChainEntry.Invalid;
+    private long length = -1;
 
     public FatChainEnumerator(IOContext ioContext, uint startSectorId)
     {
@@ -26,17 +29,16 @@ internal sealed class FatChainEnumerator : IEnumerator<Sector>
         fatEnumerator.Dispose();
     }
 
-    /// <summary>
-    /// The index within the FAT sector chain, or <see cref="uint.MaxValue"/> if the enumeration has not started.
-    /// </summary>
-    public uint Index { get; private set; } = uint.MaxValue;
+    public uint StartId => startId;
+
+    public Sector CurrentSector => new(Current.Value, ioContext.SectorSize);
 
     /// <inheritdoc/>
-    public Sector Current
+    public FatChainEntry Current
     {
         get
         {
-            if (current.IsEndOfChain)
+            if (index == uint.MaxValue)
                 throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
             return current;
         }
@@ -50,24 +52,44 @@ internal sealed class FatChainEnumerator : IEnumerator<Sector>
     {
         if (start)
         {
-            current = new(startId, ioContext.Header.SectorSize);
-            Index = 0;
+            if (startId is SectorType.EndOfChain or SectorType.Free)
+            {
+                index = uint.MaxValue;
+                current = FatChainEntry.Invalid;
+                return false;
+            }
+
+            index = 0;
+            current = new(index, startId);
             start = false;
-        }
-        else if (!current.IsEndOfChain)
-        {
-            uint sectorId = GetNextFatSectorId(current.Id);
-            current = new(sectorId, ioContext.Header.SectorSize);
-            Index++;
+            return true;
         }
 
-        if (current.IsEndOfChain)
+        if (current.IsFreeOrEndOfChain || current == FatChainEntry.Invalid)
         {
-            current = Sector.EndOfChain;
-            Index = uint.MaxValue;
+            index = uint.MaxValue;
+            current = FatChainEntry.Invalid;
             return false;
         }
 
+        uint value = ioContext.Fat[current.Value];
+        if (value is SectorType.EndOfChain)
+        {
+            index = uint.MaxValue;
+            current = FatChainEntry.Invalid;
+            return false;
+        }
+
+        index++;
+        if (index > SectorType.Maximum)
+        {
+            // If the index is greater than the maximum, then the chain must contain a loop
+            index = uint.MaxValue;
+            current = FatChainEntry.Invalid;
+            throw new IOException("FAT sector chain is corrupt");
+        }
+
+        current = new(index, value);
         return true;
     }
 
@@ -78,10 +100,10 @@ internal sealed class FatChainEnumerator : IEnumerator<Sector>
     /// <returns>true if the enumerator was successfully advanced to the given index</returns>
     public bool MoveTo(uint index)
     {
-        if (index < Index)
+        if (index < this.index)
             Reset();
 
-        while (start || Index < index)
+        while (start || this.index < index)
         {
             if (!MoveNext())
                 return false;
@@ -90,31 +112,122 @@ internal sealed class FatChainEnumerator : IEnumerator<Sector>
         return true;
     }
 
-    /// <inheritdoc/>
-    public void Reset()
+    public long GetLength()
     {
-        fatEnumerator.Reset();
-        start = true;
-        current = Sector.EndOfChain;
-        Index = uint.MaxValue;
+        if (length == -1)
+        {
+            Reset();
+            length = 0;
+            while (MoveNext())
+            {
+                length++;
+            }
+        }
+
+        return length;
     }
 
     /// <summary>
-    /// Gets the next sector ID in the FAT chain.
+    /// Extends the chain by one
     /// </summary>
-    uint GetNextFatSectorId(uint id)
+    /// <returns>The ID of the new sector</returns>
+    public uint Extend()
     {
-        if (id > SectorType.Maximum)
-            throw new ArgumentException("Invalid sector ID", nameof(id));
+        if (startId == SectorType.EndOfChain)
+        {
+            startId = ioContext.Fat.Add(fatEnumerator, 0);
+            return startId;
+        }
 
-        int elementCount = ioContext.Header.SectorSize / sizeof(uint);
-        uint sectorId = (uint)Math.DivRem(id, elementCount, out long sectorOffset);
-        if (!fatEnumerator.MoveTo(sectorId))
-            throw new ArgumentException("Invalid sector ID", nameof(id));
+        uint lastId = startId;
+        while (MoveNext())
+        {
+            lastId = current.Value;
+        }
 
-        long position = fatEnumerator.Current.Position + sectorOffset * sizeof(uint);
-        ioContext.Reader.Seek(position);
-        uint nextId = ioContext.Reader.ReadUInt32();
-        return nextId;
+        uint id = ioContext.Fat.Add(fatEnumerator, lastId);
+        ioContext.Fat[lastId] = id;
+        return id;
+    }
+
+    /// <summary>
+    /// Returns the ID of the first sector in the chain.
+    /// </summary>
+    public void Extend(uint requiredChainLength)
+    {
+        uint chainLength = (uint)GetLength();
+        if (chainLength >= requiredChainLength)
+            throw new ArgumentException("The chain is already longer than required.", nameof(requiredChainLength));
+
+        if (startId == StreamId.NoStream)
+        {
+            startId = ioContext.Fat.Add(fatEnumerator, 0);
+            chainLength = 1;
+        }
+
+        bool ok = MoveTo(chainLength - 1);
+        Debug.Assert(ok);
+
+        uint lastId = current.Value;
+        ok = fatEnumerator.MoveTo(lastId);
+        Debug.Assert(ok);
+        while (chainLength < requiredChainLength)
+        {
+            uint id = ioContext.Fat.Add(fatEnumerator, lastId);
+            ioContext.Fat[lastId] = id;
+            lastId = id;
+            chainLength++;
+        }
+
+        this.length = requiredChainLength;
+    }
+
+    public void Shrink(uint requiredChainLength)
+    {
+        uint chainLength = (uint)GetLength();
+        if (chainLength <= requiredChainLength)
+            throw new ArgumentException("The chain is already shorter than required.", nameof(requiredChainLength));
+
+        Reset();
+
+        uint lastId = current.Value;
+        while (MoveNext())
+        {
+            if (lastId is not SectorType.EndOfChain and not SectorType.Free)
+            {
+                if (index == requiredChainLength)
+                    ioContext.Fat[lastId] = SectorType.EndOfChain;
+                else if (index > requiredChainLength)
+                    ioContext.Fat[lastId] = SectorType.Free;
+            }
+
+            lastId = current.Value;
+        }
+
+        ioContext.Fat[lastId] = SectorType.Free;
+
+        if (requiredChainLength == 0)
+        {
+            startId = StreamId.NoStream;
+        }
+
+#if DEBUG
+        this.length = -1;
+        this.length = GetLength();
+        Debug.Assert(length == requiredChainLength);
+#endif
+
+        this.length = requiredChainLength;
+    }
+
+    /// <inheritdoc/>
+    public void Reset() => Reset(startId);
+
+    public void Reset(uint startSectorId)
+    {
+        startId = startSectorId;
+        start = true;
+        index = uint.MaxValue;
+        current = FatChainEntry.Invalid;
     }
 }

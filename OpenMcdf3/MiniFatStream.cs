@@ -6,9 +6,7 @@
 internal sealed class MiniFatStream : Stream
 {
     readonly IOContext ioContext;
-    readonly MiniFatChainEnumerator chain;
-    readonly FatStream fatStream;
-    readonly long length;
+    readonly MiniFatChainEnumerator miniChain;
     long position;
     bool disposed;
 
@@ -16,20 +14,20 @@ internal sealed class MiniFatStream : Stream
     {
         this.ioContext = ioContext;
         DirectoryEntry = directoryEntry;
-        length = directoryEntry.StreamLength;
-        chain = new(ioContext, directoryEntry.StartSectorId);
-        fatStream = new(ioContext, ioContext.RootEntry);
+        miniChain = new(ioContext, directoryEntry.StartSectorId);
     }
 
     internal DirectoryEntry DirectoryEntry { get; private set; }
+
+    internal long ChainCapacity => ((Length + ioContext.MiniSectorSize - 1) / ioContext.MiniSectorSize) * ioContext.MiniSectorSize;
 
     public override bool CanRead => true;
 
     public override bool CanSeek => true;
 
-    public override bool CanWrite => false;
+    public override bool CanWrite => ioContext.CanWrite;
 
-    public override long Length => length;
+    public override long Length => DirectoryEntry.StreamLength;
 
     public override long Position
     {
@@ -41,8 +39,7 @@ internal sealed class MiniFatStream : Stream
     {
         if (!disposed)
         {
-            chain.Dispose();
-            fatStream.Dispose();
+            miniChain.Dispose();
             disposed = true;
         }
 
@@ -52,43 +49,38 @@ internal sealed class MiniFatStream : Stream
     public override void Flush()
     {
         this.ThrowIfDisposed(disposed);
-        fatStream.Flush();
+
+        ioContext.MiniStream.Flush();
     }
 
     public override int Read(byte[] buffer, int offset, int count)
     {
-        if (buffer is null)
-            throw new ArgumentNullException(nameof(buffer));
-
-        if (offset < 0)
-            throw new ArgumentOutOfRangeException(nameof(offset), "Offset must be a non-negative number");
-
-        if ((uint)count > buffer.Length - offset)
-            throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection");
+        ThrowHelper.ThrowIfStreamArgumentsAreInvalid(buffer, offset, count);
 
         this.ThrowIfDisposed(disposed);
 
         if (count == 0)
             return 0;
 
-        int maxCount = (int)Math.Min(Math.Max(length - position, 0), int.MaxValue);
+        int maxCount = (int)Math.Min(Math.Max(Length - position, 0), int.MaxValue);
         if (maxCount == 0)
             return 0;
 
-        uint chainIndex = (uint)Math.DivRem(position, ioContext.Header.SectorSize, out long sectorOffset);
-        if (!chain.MoveTo(chainIndex))
+        uint chainIndex = (uint)Math.DivRem(position, ioContext.MiniSectorSize, out long sectorOffset);
+        if (!miniChain.MoveTo(chainIndex))
             return 0;
 
+        FatStream miniStream = ioContext.MiniStream;
         int realCount = Math.Min(count, maxCount);
         int readCount = 0;
         do
         {
-            MiniSector sector = chain.Current;
+            MiniSector miniSector = miniChain.CurrentSector;
             int remaining = realCount - readCount;
-            long readLength = Math.Min(remaining, buffer.Length);
-            fatStream.Position = sector.Position + sectorOffset;
+            long readLength = Math.Min(remaining, miniSector.Length - sectorOffset);
+            miniStream.Position = miniSector.Position + sectorOffset;
             int localOffset = offset + readCount;
-            int read = fatStream.Read(buffer, localOffset, (int)readLength);
+            int read = miniStream.Read(buffer, localOffset, (int)readLength);
             if (read == 0)
                 return readCount;
             position += read;
@@ -96,7 +88,7 @@ internal sealed class MiniFatStream : Stream
             sectorOffset = 0;
             if (readCount >= realCount)
                 return readCount;
-        } while (chain.MoveNext());
+        } while (miniChain.MoveNext());
 
         return readCount;
     }
@@ -109,30 +101,88 @@ internal sealed class MiniFatStream : Stream
         {
             case SeekOrigin.Begin:
                 if (offset < 0)
-                    throw new IOException("Seek before origin");
+                    ThrowHelper.ThrowSeekBeforeOrigin();
                 position = offset;
                 break;
 
             case SeekOrigin.Current:
                 if (position + offset < 0)
-                    throw new IOException("Seek before origin");
+                    ThrowHelper.ThrowSeekBeforeOrigin();
                 position += offset;
                 break;
 
             case SeekOrigin.End:
                 if (Length - offset < 0)
-                    throw new IOException("Seek before origin");
+                    ThrowHelper.ThrowSeekBeforeOrigin();
                 position = Length - offset;
                 break;
 
             default:
-                throw new ArgumentException(nameof(origin), "Invalid seek origin");
+                throw new ArgumentException(nameof(origin), "Invalid seek origin.");
         }
 
         return position;
     }
 
-    public override void SetLength(long value) => throw new NotSupportedException();
+    public override void SetLength(long value)
+    {
+        if (value >= Header.MiniStreamCutoffSize)
+            throw new ArgumentOutOfRangeException(nameof(value));
 
-    public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        this.ThrowIfDisposed(disposed);
+        this.ThrowIfNotWritable();
+
+        uint requiredChainLength = (uint)((value + ioContext.MiniSectorSize - 1) / ioContext.MiniSectorSize);
+        if (value > ChainCapacity)
+            miniChain.Extend(requiredChainLength);
+        else if (value <= ChainCapacity - ioContext.MiniSectorSize)
+            miniChain.Shrink(requiredChainLength);
+
+        if (DirectoryEntry.StartSectorId != miniChain.StartId || DirectoryEntry.StreamLength != value)
+        {
+            DirectoryEntry.StartSectorId = miniChain.StartId;
+            DirectoryEntry.StreamLength = value;
+            ioContext.Write(DirectoryEntry);
+        }
+    }
+
+    public override void Write(byte[] buffer, int offset, int count)
+    {
+        ThrowHelper.ThrowIfStreamArgumentsAreInvalid(buffer, offset, count);
+
+        this.ThrowIfDisposed(disposed);
+        this.ThrowIfNotWritable();
+
+        if (count == 0)
+            return;
+
+        if (position + count > ChainCapacity)
+            SetLength(position + count);
+
+        uint chainIndex = (uint)Math.DivRem(position, ioContext.MiniSectorSize, out long sectorOffset);
+        if (!miniChain.MoveTo(chainIndex))
+            throw new InvalidOperationException($"Failed to move to mini FAT chain index: {chainIndex}.");
+
+        FatStream miniStream = ioContext.MiniStream;
+        int writeCount = 0;
+        do
+        {
+            MiniSector miniSector = miniChain.CurrentSector;
+            long basePosition = miniSector.Position + sectorOffset;
+            miniStream.Seek(basePosition, SeekOrigin.Begin);
+            int remaining = count - writeCount;
+            int localOffset = offset + writeCount;
+            long writeLength = Math.Min(remaining, ioContext.MiniSectorSize - sectorOffset);
+            miniStream.Write(buffer, localOffset, (int)writeLength);
+            position += writeLength;
+            writeCount += (int)writeLength;
+            if (position > Length)
+                DirectoryEntry.StreamLength = position;
+            sectorOffset = 0;
+            if (writeCount >= count)
+                return;
+        } while (miniChain.MoveNext());
+
+        throw new InvalidOperationException($"End of mini FAT chain was reached.");
+    }
 }

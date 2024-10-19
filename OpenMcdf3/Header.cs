@@ -1,16 +1,17 @@
-﻿namespace OpenMcdf3;
+﻿
+namespace OpenMcdf3;
 
 /// <summary>
 /// The structure at the beginning of a compound file.
 /// </summary>
-internal sealed class Header
+internal sealed class Header : IEquatable<Header?>
 {
     internal const int DifatArrayLength = 109;
     internal const ushort ExpectedMinorVersion = 0x003E;
     internal const ushort LittleEndian = 0xFFFE;
     internal const ushort SectorShiftV3 = 0x0009;
     internal const ushort SectorShiftV4 = 0x000C;
-    internal const short MiniSectorShift = 6;
+    internal const ushort ExpectedMiniSectorShift = 6;
     internal const uint MiniStreamCutoffSize = 4096;
 
     /// <summary>
@@ -22,6 +23,7 @@ internal sealed class Header
 
     private ushort majorVersion;
     private ushort sectorShift = SectorShiftV3;
+    private ushort miniSectorShift = ExpectedMiniSectorShift;
 
     /// <summary>
     /// Reserved and unused class ID.
@@ -54,16 +56,28 @@ internal sealed class Header
         get => sectorShift; set
         {
             if (MajorVersion == 3 && value != SectorShiftV3)
-                throw new FormatException($"Unsupported sector shift {value:X4}. Only {SectorShiftV3:X4} is supported for Major Version 3");
+                throw new FormatException($"Unsupported sector shift {value:X4}. Only {SectorShiftV3:X4} is supported for Major Version 3.");
             if (MajorVersion == 4 && value != SectorShiftV4)
-                throw new FormatException($"Unsupported sector shift {value:X4}. Only {SectorShiftV4:X4} is supported for Major Version 4");
+                throw new FormatException($"Unsupported sector shift {value:X4}. Only {SectorShiftV4:X4} is supported for Major Version 4.");
 
             sectorShift = value;
         }
     }
 
+    public ushort MiniSectorShift
+    {
+        get => miniSectorShift;
+        set
+        {
+            if (value != ExpectedMiniSectorShift)
+                throw new FormatException($"Unsupported sector shift {value:X4}. Only {ExpectedMiniSectorShift:X4} is supported.");
+
+            miniSectorShift = value;
+        }
+    }
+
     /// <summary>
-    /// The number of directory sectors in the compound file.
+    /// The number of directory sectors in the compound file (not used in V3).
     /// </summary>
     public uint DirectorySectorCount { get; set; }
 
@@ -98,7 +112,7 @@ internal sealed class Header
     public uint FirstDifatSectorId { get; set; } = SectorType.EndOfChain;
 
     /// <summary>
-    /// The number of DIFACT sectors in the compound file.
+    /// The number of DIFAT sectors in the compound file.
     /// </summary>
     public uint DifatSectorCount { get; set; }
 
@@ -107,17 +121,44 @@ internal sealed class Header
     /// </summary>
     public uint[] Difat { get; } = new uint[DifatArrayLength];
 
-    /// <summary>
-    /// The size of a regular sector.
-    /// </summary>
-    public int SectorSize => 1 << SectorShift;
-
     public Header(Version version = Version.V3)
     {
         MajorVersion = (ushort)version;
+        MinorVersion = ExpectedMinorVersion;
+        SectorShift = version switch
+        {
+            Version.V3 => SectorShiftV3,
+            Version.V4 => SectorShiftV4,
+            _ => throw new FormatException($"Unsupported version: {version}.")
+        };
+        FirstDirectorySectorId = SectorType.EndOfChain;
+        DirectorySectorCount = 0; // Not used in v3
+        FatSectorCount = 0;
         for (int i = 0; i < Difat.Length; i++)
         {
             Difat[i] = SectorType.Free;
         }
     }
+
+    public override bool Equals(object? obj) => Equals(obj as Header);
+
+    public bool Equals(Header? other)
+    {
+        return other is not null
+            && CLSID == other.CLSID
+            && MinorVersion == other.MinorVersion
+            && MajorVersion == other.MajorVersion
+            && SectorShift == other.SectorShift
+            && DirectorySectorCount == other.DirectorySectorCount
+            && FatSectorCount == other.FatSectorCount
+            && FirstDirectorySectorId == other.FirstDirectorySectorId
+            && TransactionSignature == other.TransactionSignature
+            && FirstMiniFatSectorId == other.FirstMiniFatSectorId
+            && MiniFatSectorCount == other.MiniFatSectorCount
+            && FirstDifatSectorId == other.FirstDifatSectorId
+            && DifatSectorCount == other.DifatSectorCount
+            && Difat.SequenceEqual(other.Difat);
+    }
+
+    public override string ToString() => $"MajorVersion: {MajorVersion}, MinorVersion: {MinorVersion}, FirstDirectorySectorId: {FirstDirectorySectorId}, FirstMiniFatSectorId: {FirstMiniFatSectorId}";
 }

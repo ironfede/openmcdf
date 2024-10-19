@@ -3,35 +3,32 @@
 namespace OpenMcdf3;
 
 /// <summary>
-/// Enumerates the <see cref="MiniSector"/>s from the Mini FAT.
+/// Enumerates the entries in a FAT.
 /// </summary>
-internal sealed class MiniFatEnumerator : IEnumerator<FatEntry>
+internal class FatEnumerator : IEnumerator<FatEntry>
 {
-    private readonly IOContext ioContext;
-    private readonly FatChainEnumerator fatChainEnumerator;
-    private bool start = true;
-    private uint index = uint.MaxValue;
-    private uint value = uint.MaxValue;
+    readonly IOContext ioContext;
+    bool start = true;
+    uint index = uint.MaxValue;
+    uint value = uint.MaxValue;
 
-    public MiniFatEnumerator(IOContext ioContext)
+    public FatEnumerator(IOContext ioContext)
     {
-        fatChainEnumerator = new(ioContext, ioContext.Header.FirstMiniFatSectorId);
         this.ioContext = ioContext;
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        fatChainEnumerator.Dispose();
     }
 
-    public MiniSector CurrentSector
+    public Sector CurrentSector
     {
         get
         {
             if (index == uint.MaxValue)
                 throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
-            return new(value, ioContext.MiniSectorSize);
+            return new(index, ioContext.SectorSize);
         }
     }
 
@@ -69,10 +66,11 @@ internal sealed class MiniFatEnumerator : IEnumerator<FatEntry>
     {
         ThrowHelper.ThrowIfSectorIdIsInvalid(index);
 
+        start = false;
         if (this.index == index)
             return true;
 
-        if (ioContext.MiniFat.TryGetValue(index, out value))
+        if (ioContext.Fat.TryGetValue(index, out value))
         {
             this.index = index;
             return true;
@@ -87,9 +85,7 @@ internal sealed class MiniFatEnumerator : IEnumerator<FatEntry>
         while (MoveNext())
         {
             if (value == SectorType.Free)
-            {
                 return true;
-            }
         }
 
         return false;
@@ -98,7 +94,6 @@ internal sealed class MiniFatEnumerator : IEnumerator<FatEntry>
     /// <inheritdoc/>
     public void Reset()
     {
-        fatChainEnumerator.Reset(ioContext.Header.FirstMiniFatSectorId);
         start = true;
         index = uint.MaxValue;
         value = uint.MaxValue;
@@ -108,9 +103,30 @@ internal sealed class MiniFatEnumerator : IEnumerator<FatEntry>
     {
         Reset();
 
-        writer.WriteLine("Start of Mini FAT ============");
+        byte[] data = new byte[ioContext.SectorSize];
+
+        Stream baseStream = ioContext.Reader.BaseStream;
+
+        writer.WriteLine("Start of FAT =================");
+
         while (MoveNext())
-            writer.WriteLine($"Mini FAT entry {Current}");
-        writer.WriteLine("End of Mini FAT ==============");
+        {
+            FatEntry current = Current;
+            if (current.IsFree)
+            {
+                writer.WriteLine($"{current}");
+            }
+            else
+            {
+                baseStream.Position = CurrentSector.Position;
+                baseStream.ReadExactly(data, 0, data.Length);
+                string hex = BitConverter.ToString(data);
+                writer.WriteLine($"{current}: {hex}");
+            }
+        }
+
+        writer.WriteLine("End of FAT ===================");
     }
+
+    public override string ToString() => $"{Current}";
 }

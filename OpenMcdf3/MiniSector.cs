@@ -4,11 +4,9 @@
 /// Encapsulates information about a mini sector in a compound file.
 /// </summary>
 /// <param name="Id">The ID of the mini sector</param>
-internal record struct MiniSector(uint Id)
+internal record struct MiniSector(uint Id, int Length)
 {
-    public const int Length = 64;
-
-    public static readonly MiniSector EndOfChain = new(SectorType.EndOfChain);
+    public static readonly MiniSector EndOfChain = new(SectorType.EndOfChain, int.MaxValue);
 
     public readonly bool IsValid => Id <= SectorType.Maximum;
 
@@ -41,7 +39,7 @@ internal record struct MiniSector(uint Id)
     readonly void ThrowIfInvalid()
     {
         if (!IsValid)
-            throw new InvalidOperationException($"Invalid sector ID: {Id}");
+            throw new InvalidOperationException($"Invalid mini FAT sector ID: {Id}.");
     }
 
     public override readonly string ToString() => $"{Id}";

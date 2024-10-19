@@ -10,4 +10,6 @@ internal static class SectorType
     public const uint Fat = 0xFFFFFFFD;
     public const uint EndOfChain = 0xFFFFFFFE;
     public const uint Free = 0xFFFFFFFF;
+
+    public static bool IsFreeOrEndOfChain(uint value) => value is Free or EndOfChain;
 }
