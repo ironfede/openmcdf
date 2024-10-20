@@ -3,14 +3,14 @@
 namespace OpenMcdf3;
 
 /// <summary>
-/// Enumerates <see cref="DirectoryEntry"/> instances from a <see cref="FatSectorChainEnumerator"/>.
+/// Enumerates <see cref="DirectoryEntry"/> instances from a <see cref="FatChainEnumerator"/>.
 /// </summary>
 internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
 {
     private readonly IOContext ioContext;
     private readonly Version version;
     private readonly int entryCount;
-    private readonly FatSectorChainEnumerator chainEnumerator;
+    private readonly FatChainEnumerator chainEnumerator;
     private int entryIndex = -1;
     private DirectoryEntry? current;
 
@@ -19,7 +19,7 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         this.ioContext = ioContext;
         this.version = (Version)ioContext.Header.MajorVersion;
         this.entryCount = ioContext.Header.SectorSize / DirectoryEntry.Length;
-        this.chainEnumerator = new FatSectorChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorId);
+        this.chainEnumerator = new FatChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorId);
     }
 
     /// <inheritdoc/>

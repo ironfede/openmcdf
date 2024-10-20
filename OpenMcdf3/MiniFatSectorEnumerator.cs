@@ -8,7 +8,7 @@ namespace OpenMcdf3;
 internal sealed class MiniFatSectorEnumerator : IEnumerator<MiniSector>
 {
     private readonly IOContext ioContext;
-    private readonly FatSectorChainEnumerator fatChain;
+    private readonly FatChainEnumerator fatChain;
     bool start = true;
     MiniSector current = MiniSector.EndOfChain;
 

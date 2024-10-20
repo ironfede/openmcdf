@@ -6,7 +6,7 @@
 internal class FatStream : Stream
 {
     readonly IOContext ioContext;
-    readonly FatSectorChainEnumerator chain;
+    readonly FatChainEnumerator chain;
     readonly long length;
     long position;
     bool disposed;

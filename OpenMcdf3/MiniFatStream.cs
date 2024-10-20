@@ -6,7 +6,7 @@
 internal sealed class MiniFatStream : Stream
 {
     readonly IOContext ioContext;
-    readonly MiniFatSectorChainEnumerator chain;
+    readonly MiniFatChainEnumerator chain;
     readonly FatStream fatStream;
     readonly long length;
     long position;
