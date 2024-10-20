@@ -5,7 +5,7 @@ namespace OpenMcdf3;
 /// <summary>
 /// Enumerates the <see cref="Sector"/>s in a FAT sector chain.
 /// </summary>
-internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
+internal sealed class FatChainEnumerator : IEnumerator<Sector>
 {
     private readonly IOContext ioContext;
     private readonly FatSectorEnumerator fatEnumerator;
@@ -13,7 +13,7 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
     private bool start = true;
     private Sector current = Sector.EndOfChain;
 
-    public FatSectorChainEnumerator(IOContext ioContext, uint startSectorId)
+    public FatChainEnumerator(IOContext ioContext, uint startSectorId)
     {
         this.ioContext = ioContext;
         this.startId = startSectorId;

@@ -5,14 +5,14 @@ namespace OpenMcdf3;
 /// <summary>
 /// Enumerates the <see cref="MiniSector"/>s in a Mini FAT sector chain.
 /// </summary>
-internal sealed class MiniFatSectorChainEnumerator : IEnumerator<MiniSector>
+internal sealed class MiniFatChainEnumerator : IEnumerator<MiniSector>
 {
     private readonly MiniFatSectorEnumerator miniFatEnumerator;
     private readonly uint startId;
     private bool start = true;
     private MiniSector current = MiniSector.EndOfChain;
 
-    public MiniFatSectorChainEnumerator(IOContext ioContext, uint startSectorId)
+    public MiniFatChainEnumerator(IOContext ioContext, uint startSectorId)
     {
         this.startId = startSectorId;
         miniFatEnumerator = new(ioContext);

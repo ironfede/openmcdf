@@ -88,6 +88,9 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
     /// </summary>
     public bool MoveTo(uint sectorId)
     {
+        if (sectorId > SectorType.Maximum)
+            throw new ArgumentOutOfRangeException(nameof(sectorId));
+
         if (sectorId < id)
             Reset();
 
