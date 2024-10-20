@@ -60,7 +60,7 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
 
         current = ioContext.Reader.ReadDirectoryEntry(version);
         entryIndex++;
-        return current.Type != StorageType.Unallocated;
+        return true;
     }
 
     /// <summary>
