@@ -73,12 +73,12 @@ internal class FatStream : Stream
         if (count == 0)
             return 0;
 
-        uint chainIndex = (uint)Math.DivRem(position, ioContext.Header.SectorSize, out long sectorOffset);
-        if (!chain.MoveTo(chainIndex))
-            return 0;
-
         int maxCount = (int)Math.Min(Math.Max(length - position, 0), int.MaxValue);
         if (maxCount == 0)
+            return 0;
+
+        uint chainIndex = (uint)Math.DivRem(position, ioContext.Header.SectorSize, out long sectorOffset);
+        if (!chain.MoveTo(chainIndex))
             return 0;
 
         int realCount = Math.Min(count, maxCount);

@@ -7,6 +7,7 @@ namespace OpenMcdf3;
 /// </summary>
 internal sealed class CfbBinaryReader : BinaryReader
 {
+    readonly byte[] guidBuffer = new byte[16];
     readonly byte[] buffer = new byte[DirectoryEntry.NameFieldLength];
 
     public CfbBinaryReader(Stream input)
@@ -14,15 +15,25 @@ internal sealed class CfbBinaryReader : BinaryReader
     {
     }
 
-    public Guid ReadGuid() => new(ReadBytes(16));
+    public Guid ReadGuid()
+    {
+        int bytesRead = 0;
+        do
+        {
+            int n = Read(guidBuffer, bytesRead, guidBuffer.Length - bytesRead);
+            if (n == 0)
+                throw new EndOfStreamException();
+            bytesRead += n;
+        } while (bytesRead < guidBuffer.Length);
+
+        return new Guid(guidBuffer);
+    }
 
     public DateTime ReadFileTime()
     {
         long fileTime = ReadInt64();
         return DateTime.FromFileTimeUtc(fileTime);
     }
-
-    private void ReadBytes(byte[] buffer) => Read(buffer, 0, buffer.Length);
 
     public Header ReadHeader()
     {
@@ -90,8 +101,9 @@ internal sealed class CfbBinaryReader : BinaryReader
 
         DirectoryEntry entry = new();
         Read(buffer, 0, DirectoryEntry.NameFieldLength);
-        int nameLength = Math.Max(0, ReadUInt16() - 2);
-        entry.Name = Encoding.Unicode.GetString(buffer, 0, nameLength);
+        ushort nameLength = ReadUInt16();
+        int clampedNameLength = Math.Max(0, Math.Min(ushort.MaxValue, nameLength - 2));
+        entry.Name = Encoding.Unicode.GetString(buffer, 0, clampedNameLength);
         entry.Type = ReadStorageType();
         entry.Color = ReadColor();
         entry.LeftSiblingId = ReadUInt32();

@@ -83,7 +83,9 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         return true;
     }
 
-    /// <inheritdoc/>
+    /// <summary>
+    /// Moves the enumerator to the specified sector.
+    /// </summary>
     public bool MoveTo(uint sectorId)
     {
         if (sectorId < id)
@@ -106,22 +108,5 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         difatSectorId = ioContext.Header.FirstDifatSectorId;
         difatSectorElementIndex = 0;
         current = Sector.EndOfChain;
-    }
-
-    /// <inheritdoc/>
-    public uint GetNextFatSectorId(uint id)
-    {
-        if (id > SectorType.Maximum)
-            throw new ArgumentException("Invalid sector ID", nameof(id));
-
-        int elementCount = ioContext.Header.SectorSize / sizeof(uint);
-        uint sectorId = (uint)Math.DivRem(id, elementCount, out long sectorOffset);
-        if (!MoveTo(sectorId))
-            throw new ArgumentException("Invalid sector ID", nameof(id));
-
-        long position = Current.Position + sectorOffset * sizeof(uint);
-        ioContext.Reader.Seek(position);
-        uint nextId = ioContext.Reader.ReadUInt32();
-        return nextId;
     }
 }
