@@ -177,7 +177,7 @@ namespace OpenMcdf
                     break;
 
                 default:
-                    throw new ArgumentException(nameof(origin), "Invalid seek origin");
+                    throw new ArgumentException("Invalid seek origin", nameof(origin));
             }
 
             if (position > length)
