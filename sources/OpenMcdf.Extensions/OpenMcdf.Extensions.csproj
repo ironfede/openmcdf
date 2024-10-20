@@ -1,8 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-     <TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
+    <TargetFrameworks>net8.0;netstandard2.0;net40</TargetFrameworks>
     <Configurations>Debug;Release</Configurations>
     <SignAssembly>true</SignAssembly>
+    <!-- Mark as trimmable and enable trimming analysis in .NET 6.0+ builds -->
+    <IsTrimmable Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net6.0'))">true</IsTrimmable>
+    <!-- Mark as AOT compatible and enable AOT analysis in .NET 8.0+ builds -->
+    <IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))">true</IsAotCompatible>
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
