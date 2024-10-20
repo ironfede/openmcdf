@@ -7,7 +7,7 @@ namespace OpenMcdf3;
 /// </summary>
 internal sealed class MiniFatChainEnumerator : IEnumerator<MiniSector>
 {
-    private readonly MiniFatSectorEnumerator miniFatEnumerator;
+    private readonly MiniFatEnumerator miniFatEnumerator;
     private readonly uint startId;
     private bool start = true;
     private MiniSector current = MiniSector.EndOfChain;
@@ -16,6 +16,12 @@ internal sealed class MiniFatChainEnumerator : IEnumerator<MiniSector>
     {
         this.startId = startSectorId;
         miniFatEnumerator = new(ioContext);
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+    {
+        miniFatEnumerator.Dispose();
     }
 
     /// <summary>
@@ -48,7 +54,7 @@ internal sealed class MiniFatChainEnumerator : IEnumerator<MiniSector>
         }
         else if (!current.IsEndOfChain)
         {
-            uint sectorId = miniFatEnumerator.GetNextMiniFatSectorId(current.Id);
+            uint sectorId = GetNextMiniFatSectorId(current.Id);
             current = new(sectorId);
             Index++;
         }
@@ -91,9 +97,12 @@ internal sealed class MiniFatChainEnumerator : IEnumerator<MiniSector>
         Index = uint.MaxValue;
     }
 
-    /// <inheritdoc/>
-    public void Dispose()
+    /// <summary>
+    /// Gets the next sector ID in the FAT chain.
+    /// </summary>
+    uint GetNextMiniFatSectorId(uint id)
     {
-        miniFatEnumerator.Dispose();
+        miniFatEnumerator.MoveTo(id);
+        return miniFatEnumerator.Current.Id;
     }
 }

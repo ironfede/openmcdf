@@ -55,6 +55,26 @@ internal sealed class MiniFatSectorEnumerator : IEnumerator<MiniSector>
         return !current.IsEndOfChain;
     }
 
+    /// <summary>
+    /// Moves the enumerator to the specified sector.
+    /// </summary>
+    public bool MoveTo(uint sectorId)
+    {
+        if (sectorId > SectorType.Maximum)
+            throw new ArgumentOutOfRangeException(nameof(sectorId));
+
+        if (sectorId < current.Id)
+            Reset();
+
+        while (start || current.Id < sectorId)
+        {
+            if (!MoveNext())
+                return false;
+        }
+
+        return true;
+    }
+
     /// <inheritdoc/>
     public void Reset()
     {
