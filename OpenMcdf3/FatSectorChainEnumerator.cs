@@ -56,7 +56,7 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
         }
         else if (!current.IsEndOfChain)
         {
-            uint sectorId = fatEnumerator.GetNextFatSectorId(current.Id);
+            uint sectorId = GetNextFatSectorId(current.Id);
             current = new(sectorId, ioContext.Header.SectorSize);
             Index++;
         }
@@ -97,5 +97,24 @@ internal sealed class FatSectorChainEnumerator : IEnumerator<Sector>
         start = true;
         current = Sector.EndOfChain;
         Index = uint.MaxValue;
+    }
+
+    /// <summary>
+    /// Gets the next sector ID in the FAT chain.
+    /// </summary>
+    uint GetNextFatSectorId(uint id)
+    {
+        if (id > SectorType.Maximum)
+            throw new ArgumentException("Invalid sector ID", nameof(id));
+
+        int elementCount = ioContext.Header.SectorSize / sizeof(uint);
+        uint sectorId = (uint)Math.DivRem(id, elementCount, out long sectorOffset);
+        if (!fatEnumerator.MoveTo(sectorId))
+            throw new ArgumentException("Invalid sector ID", nameof(id));
+
+        long position = fatEnumerator.Current.Position + sectorOffset * sizeof(uint);
+        ioContext.Reader.Seek(position);
+        uint nextId = ioContext.Reader.ReadUInt32();
+        return nextId;
     }
 }
