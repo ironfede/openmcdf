@@ -14,11 +14,26 @@ internal sealed class CfbBinaryWriter : BinaryWriter
     {
     }
 
+    public long Position
+    {
+        get => BaseStream.Position;
+        set => BaseStream.Position = value;
+    }
+
+#if NETSTANDARD2_1_OR_GREATER
+    public override void Write(ReadOnlySpan<byte> buffer) => BaseStream.Write(buffer);
+#endif
+
     public void Write(Guid value)
     {
-        // TODO: Avoid heap allocation
+#if NETSTANDARD2_1_OR_GREATER
+        Span<byte> localBuffer = stackalloc byte[16];
+        value.TryWriteBytes(localBuffer);
+        Write(localBuffer);
+#else
         byte[] bytes = value.ToByteArray();
-        Write(bytes, 0, bytes.Length);
+        Write(bytes);
+#endif
     }
 
     public void Write(DateTime value)
@@ -26,8 +41,6 @@ internal sealed class CfbBinaryWriter : BinaryWriter
         long fileTime = value.ToFileTimeUtc();
         Write(fileTime);
     }
-
-    private void WriteBytes(byte[] buffer) => Write(buffer, 0, buffer.Length);
 
     public void Write(Header header)
     {
@@ -37,8 +50,8 @@ internal sealed class CfbBinaryWriter : BinaryWriter
         Write(header.MajorVersion);
         Write(Header.LittleEndian);
         Write(header.SectorShift);
-        Write(Header.MiniSectorShift);
-        WriteBytes(Header.Unused);
+        Write(header.MiniSectorShift);
+        Write(Header.Unused);
         Write(header.DirectorySectorCount);
         Write(header.FatSectorCount);
         Write(header.FirstDirectorySectorId);
@@ -48,13 +61,16 @@ internal sealed class CfbBinaryWriter : BinaryWriter
         Write(header.MiniFatSectorCount);
         Write(header.FirstDifatSectorId);
         Write(header.DifatSectorCount);
+        for (int i = 0; i < Header.DifatArrayLength; i++)
+            Write(header.Difat[i]);
     }
 
     public void Write(DirectoryEntry entry)
     {
+        buffer.AsSpan().Clear();
         int nameLength = Encoding.Unicode.GetBytes(entry.Name, 0, entry.Name.Length, buffer, 0);
-        Write(nameLength);
         Write(buffer, 0, DirectoryEntry.NameFieldLength);
+        Write((short)(nameLength + 2));
         Write((byte)entry.Type);
         Write((byte)entry.Color);
         Write(entry.LeftSiblingId);

@@ -8,25 +8,24 @@ namespace OpenMcdf3;
 internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
 {
     private readonly IOContext ioContext;
-    private readonly Version version;
-    private readonly int entryCount;
-    private readonly FatChainEnumerator chainEnumerator;
-    private int entryIndex = -1;
+    private readonly FatChainEnumerator fatChainEnumerator;
+    private bool start = true;
+    private uint index = uint.MaxValue;
     private DirectoryEntry? current;
 
     public DirectoryEntryEnumerator(IOContext ioContext)
     {
         this.ioContext = ioContext;
-        this.version = (Version)ioContext.Header.MajorVersion;
-        this.entryCount = ioContext.Header.SectorSize / DirectoryEntry.Length;
-        this.chainEnumerator = new FatChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorId);
+        this.fatChainEnumerator = new FatChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorId);
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        chainEnumerator.Dispose();
+        fatChainEnumerator.Dispose();
     }
+
+    private int EntriesPerSector => ioContext.SectorSize / DirectoryEntry.Length;
 
     /// <inheritdoc/>
     public DirectoryEntry Current
@@ -45,22 +44,61 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
     /// <inheritdoc/>
     public bool MoveNext()
     {
-        if (entryIndex == -1 || entryIndex >= entryCount)
+        if (start)
         {
-            if (!chainEnumerator.MoveNext())
-            {
-                entryIndex = int.MaxValue;
-                current = null;
-                return false;
-            }
-
-            ioContext.Reader.Seek(chainEnumerator.Current.Position);
-            entryIndex = 0;
+            start = false;
+            index = 0;
         }
 
-        current = ioContext.Reader.ReadDirectoryEntry(version);
-        entryIndex++;
-        return current.Type != StorageType.Unallocated;
+        uint chainIndex = (uint)Math.DivRem(index, EntriesPerSector, out long entryIndex);
+        if (!fatChainEnumerator.MoveTo(chainIndex))
+        {
+            current = null;
+            index = uint.MaxValue;
+            return false;
+        }
+
+        ioContext.Reader.Position = fatChainEnumerator.CurrentSector.Position + entryIndex * DirectoryEntry.Length;
+        current = ioContext.Reader.ReadDirectoryEntry(ioContext.Version, index);
+        index++;
+        return true;
+    }
+
+    public DirectoryEntry CreateOrRecycleDirectoryEntry()
+    {
+        DirectoryEntry? entry = TryRecycleDirectoryEntry();
+        if (entry is not null)
+            return entry;
+
+        CfbBinaryWriter writer = ioContext.Writer;
+        uint id = fatChainEnumerator.Extend();
+        if (ioContext.Header.FirstDirectorySectorId == SectorType.EndOfChain)
+            ioContext.Header.FirstDirectorySectorId = id;
+
+        Sector sector = new(id, ioContext.SectorSize);
+        writer.Position = sector.Position;
+        int directoryEntriesPerSector = EntriesPerSector;
+        for (int i = 0; i < directoryEntriesPerSector; i++)
+            writer.Write(DirectoryEntry.Unallocated);
+
+        entry = TryRecycleDirectoryEntry()
+            ?? throw new InvalidOperationException("Failed to add or recycle directory entry.");
+        return entry;
+    }
+
+    private DirectoryEntry? TryRecycleDirectoryEntry()
+    {
+        Reset();
+
+        while (MoveNext())
+        {
+            if (current!.Type == StorageType.Unallocated)
+            {
+                return current;
+            }
+        }
+
+        return null;
     }
 
     /// <summary>
@@ -69,23 +107,34 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
     public DirectoryEntry GetDictionaryEntry(uint streamId)
     {
         if (streamId > StreamId.Maximum)
-            throw new ArgumentException($"Invalid directory entry stream ID: ${streamId:X8}");
+            throw new ArgumentException($"Invalid directory entry stream ID: ${streamId:X8}.", nameof(streamId));
 
-        uint chainIndex = (uint)Math.DivRem(streamId, entryCount, out long entryIndex);
-        if (!chainEnumerator.MoveTo(chainIndex))
-            throw new KeyNotFoundException($"Directory entry {streamId} was not found");
+        uint chainIndex = (uint)Math.DivRem(streamId, EntriesPerSector, out long entryIndex);
+        if (!fatChainEnumerator.MoveTo(chainIndex))
+            throw new KeyNotFoundException($"Directory entry {streamId} was not found.");
 
-        long position = chainEnumerator.Current.Position + entryIndex * DirectoryEntry.Length;
-        ioContext.Reader.Seek(position);
-        current = ioContext.Reader.ReadDirectoryEntry(version);
+        ioContext.Reader.Position = fatChainEnumerator.CurrentSector.Position + entryIndex * DirectoryEntry.Length;
+        current = ioContext.Reader.ReadDirectoryEntry(ioContext.Version, streamId);
         return current;
+    }
+
+    public void Write(DirectoryEntry entry)
+    {
+        uint chainIndex = (uint)Math.DivRem(entry.Id, EntriesPerSector, out long entryIndex);
+        if (!fatChainEnumerator.MoveTo(chainIndex))
+            throw new KeyNotFoundException($"Directory entry {entry.Id} was not found.");
+
+        CfbBinaryWriter writer = ioContext.Writer;
+        writer.Position = fatChainEnumerator.CurrentSector.Position + entryIndex * DirectoryEntry.Length;
+        writer.Write(entry);
     }
 
     /// <inheritdoc/>
     public void Reset()
     {
-        chainEnumerator.Reset();
-        entryIndex = -1;
+        fatChainEnumerator.Reset();
+        start = true;
         current = null;
+        index = uint.MaxValue;
     }
 }

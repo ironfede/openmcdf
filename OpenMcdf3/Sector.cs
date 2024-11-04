@@ -18,7 +18,7 @@ internal record struct Sector(uint Id, int Length)
     public readonly bool IsValid => Id <= SectorType.Maximum;
 
     /// <summary>
-    /// The position of the mini sector in the compound file stream.
+    /// The position of the sector in the compound file stream.
     /// </summary>
     public readonly long Position
     {
@@ -30,7 +30,7 @@ internal record struct Sector(uint Id, int Length)
     }
 
     /// <summary>
-    /// The end position of the mini sector in the compound file stream.
+    /// The end position of the sector in the compound file stream.
     /// </summary>
     public readonly long EndPosition
     {
@@ -44,7 +44,7 @@ internal record struct Sector(uint Id, int Length)
     readonly void ThrowIfInvalid()
     {
         if (!IsValid)
-            throw new InvalidOperationException($"Invalid sector ID: {Id}");
+            throw new InvalidOperationException($"Invalid FAT sector ID: {Id}.");
     }
 
     public override readonly string ToString() => $"{Id}";

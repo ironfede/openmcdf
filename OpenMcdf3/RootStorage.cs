@@ -14,7 +14,13 @@ public sealed class RootStorage : Storage, IDisposable
     public static RootStorage Create(string fileName, Version version = Version.V3)
     {
         FileStream stream = File.Create(fileName);
+        return Create(stream, version);
+    }
+
+    public static RootStorage Create(Stream stream, Version version = Version.V3)
+    {
         Header header = new(version);
+        stream.SetLength(0);
         CfbBinaryReader reader = new(stream);
         CfbBinaryWriter writer = new(stream);
         IOContext ioContext = new(header, reader, writer, IOContextFlags.Create);
@@ -35,9 +41,16 @@ public sealed class RootStorage : Storage, IDisposable
 
     public static RootStorage Open(Stream stream, bool leaveOpen = false)
     {
+        stream.Position = 0;
+
+        Header header;
+        using (CfbBinaryReader headerReader = new(stream))
+        {
+            header = headerReader.ReadHeader();
+        }
+
         CfbBinaryReader reader = new(stream);
         CfbBinaryWriter? writer = stream.CanWrite ? new(stream) : null;
-        Header header = reader.ReadHeader();
         IOContextFlags contextFlags = leaveOpen ? IOContextFlags.LeaveOpen : IOContextFlags.None;
         IOContext ioContext = new(header, reader, writer, contextFlags);
         return new RootStorage(ioContext);
@@ -49,4 +62,11 @@ public sealed class RootStorage : Storage, IDisposable
     }
 
     public void Dispose() => ioContext?.Dispose();
+
+    internal void Trace(TextWriter writer)
+    {
+        writer.WriteLine(ioContext.Header);
+        ioContext.Fat.Trace(writer);
+        ioContext.MiniFat.Trace(writer);
+    }
 }

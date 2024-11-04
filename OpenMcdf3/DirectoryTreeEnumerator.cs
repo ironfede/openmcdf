@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics;
 
 namespace OpenMcdf3;
 
@@ -7,7 +8,9 @@ namespace OpenMcdf3;
 /// </summary>
 internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
 {
-    private readonly DirectoryEntry? child;
+    private readonly IOContext ioContext;
+    private readonly DirectoryEntry root;
+    private DirectoryEntry? child;
     private readonly Stack<DirectoryEntry> stack = new();
     private readonly DirectoryEntryEnumerator directoryEntryEnumerator;
     DirectoryEntry? current;
@@ -15,6 +18,8 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
     internal DirectoryTreeEnumerator(IOContext ioContext, DirectoryEntry root)
     {
         directoryEntryEnumerator = new(ioContext);
+        this.ioContext = ioContext;
+        this.root = root;
         if (root.ChildId != StreamId.NoStream)
             child = directoryEntryEnumerator.GetDictionaryEntry(root.ChildId);
         PushLeft(child);
@@ -73,6 +78,64 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         {
             stack.Push(node);
             node = node.LeftSiblingId == StreamId.NoStream ? null : directoryEntryEnumerator.GetDictionaryEntry(node.LeftSiblingId);
+        }
+    }
+
+    public bool MoveTo(StorageType type, string name)
+    {
+        Reset();
+
+        while (MoveNext())
+        {
+            if (Current.Type == type && Current.Name == name)
+                return true;
+        }
+
+        return false;
+    }
+
+    public DirectoryEntry? TryGetDirectoryEntry(StorageType type, string name)
+    {
+        if (MoveTo(type, name))
+            return Current;
+        return null;
+    }
+
+    public DirectoryEntry Add(StorageType storageType, string name)
+    {
+        if (MoveTo(storageType, name))
+            throw new IOException($"{storageType} \"{name}\" already exists.");
+
+        DirectoryEntry entry = directoryEntryEnumerator.CreateOrRecycleDirectoryEntry();
+        entry.Recycle(storageType, name);
+
+        Add(entry);
+
+        return entry;
+    }
+
+    void Add(DirectoryEntry entry)
+    {
+        Reset();
+
+        entry.Color = NodeColor.Black;
+        directoryEntryEnumerator.Write(entry);
+
+        if (root.ChildId == StreamId.NoStream)
+        {
+            Debug.Assert(child is null);
+            root.ChildId = entry.Id;
+            directoryEntryEnumerator.Write(root);
+            child = entry;
+        }
+        else
+        {
+            Debug.Assert(child is not null);
+            DirectoryEntry node = child!;
+            while (node.LeftSiblingId != StreamId.NoStream)
+                node = directoryEntryEnumerator.GetDictionaryEntry(node.LeftSiblingId);
+            node.LeftSiblingId = entry.Id;
+            directoryEntryEnumerator.Write(node);
         }
     }
 }
