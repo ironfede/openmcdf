@@ -180,7 +180,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
         }
     }
 
-    public EntryInfo ToEntryInfo() => new() { Name = Name };
+    public EntryInfo ToEntryInfo() => new(Name, StreamLength);
 
     public override string ToString() => $"{Id}: \"{Name}\"";
 
