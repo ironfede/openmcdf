@@ -25,6 +25,12 @@ internal static class ThrowHelper
             throw new ArgumentException("Offset and length were out of bounds for the array or count is greater than the number of elements from index to the end of the source collection.");
     }
 
+    public static void ThrowIfNotSeekable(this Stream stream)
+    {
+        if (!stream.CanSeek)
+            throw new ArgumentException("Stream must be seekable", nameof(stream));
+    }
+
     public static void ThrowIfNotWritable(this Stream stream)
     {
         if (!stream.CanWrite)

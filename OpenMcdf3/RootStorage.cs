@@ -19,8 +19,10 @@ public sealed class RootStorage : Storage, IDisposable
 
     public static RootStorage Create(Stream stream, Version version = Version.V3)
     {
-        Header header = new(version);
+        stream.ThrowIfNotSeekable();
         stream.SetLength(0);
+
+        Header header = new(version);
         CfbBinaryReader reader = new(stream);
         CfbBinaryWriter writer = new(stream);
         IOContext ioContext = new(header, reader, writer, IOContextFlags.Create);
@@ -41,6 +43,7 @@ public sealed class RootStorage : Storage, IDisposable
 
     public static RootStorage Open(Stream stream, bool leaveOpen = false)
     {
+        stream.ThrowIfNotSeekable();
         stream.Position = 0;
 
         Header header;
