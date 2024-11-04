@@ -168,7 +168,7 @@ internal class FatStream : Stream
         if (!chain.MoveTo(chainIndex))
             throw new InvalidOperationException($"Failed to move to FAT chain index: {chainIndex}");
 
-        CfbBinaryWriter writer = ioContext.Writer!;
+        CfbBinaryWriter writer = ioContext.Writer;
         int writeCount = 0;
         do
         {

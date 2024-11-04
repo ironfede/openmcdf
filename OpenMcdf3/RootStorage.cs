@@ -2,8 +2,17 @@
 
 public enum Version : ushort
 {
+    Unknown = 0,
     V3 = 3,
     V4 = 4
+}
+
+[Flags]
+public enum StorageModeFlags
+{
+    None = 0,
+    LeaveOpen = 0x01,
+    Transacted = 0x02,
 }
 
 /// <summary>
@@ -11,25 +20,29 @@ public enum Version : ushort
 /// </summary>
 public sealed class RootStorage : Storage, IDisposable
 {
-    public static RootStorage Create(string fileName, Version version = Version.V3)
+    public static RootStorage Create(string fileName, Version version = Version.V3, StorageModeFlags flags = StorageModeFlags.None)
     {
         FileStream stream = File.Create(fileName);
         return Create(stream, version);
     }
 
-    public static RootStorage Create(Stream stream, Version version = Version.V3)
+    public static RootStorage Create(Stream stream, Version version = Version.V3, StorageModeFlags flags = StorageModeFlags.None)
     {
         stream.ThrowIfNotSeekable();
         stream.SetLength(0);
+        stream.Position = 0;
 
-        Header header = new(version);
-        CfbBinaryReader reader = new(stream);
-        CfbBinaryWriter writer = new(stream);
-        IOContext ioContext = new(header, reader, writer, IOContextFlags.Create);
+        IOContextFlags contextFlags = IOContextFlags.Create;
+        if (flags.HasFlag(StorageModeFlags.LeaveOpen))
+            contextFlags |= IOContextFlags.LeaveOpen;
+        if (flags.HasFlag(StorageModeFlags.Transacted))
+            contextFlags |= IOContextFlags.Transacted;
+
+        IOContext ioContext = new(stream, version, contextFlags);
         return new RootStorage(ioContext);
     }
 
-    public static RootStorage Open(string fileName, FileMode mode)
+    public static RootStorage Open(string fileName, FileMode mode, StorageModeFlags flags = StorageModeFlags.None)
     {
         FileStream stream = File.Open(fileName, mode);
         return Open(stream);
@@ -41,21 +54,18 @@ public sealed class RootStorage : Storage, IDisposable
         return Open(stream);
     }
 
-    public static RootStorage Open(Stream stream, bool leaveOpen = false)
+    public static RootStorage Open(Stream stream, StorageModeFlags flags = StorageModeFlags.None)
     {
         stream.ThrowIfNotSeekable();
         stream.Position = 0;
 
-        Header header;
-        using (CfbBinaryReader headerReader = new(stream))
-        {
-            header = headerReader.ReadHeader();
-        }
+        IOContextFlags contextFlags = IOContextFlags.None;
+        if (flags.HasFlag(StorageModeFlags.LeaveOpen))
+            contextFlags |= IOContextFlags.LeaveOpen;
+        if (flags.HasFlag(StorageModeFlags.Transacted))
+            contextFlags |= IOContextFlags.Transacted;
 
-        CfbBinaryReader reader = new(stream);
-        CfbBinaryWriter? writer = stream.CanWrite ? new(stream) : null;
-        IOContextFlags contextFlags = leaveOpen ? IOContextFlags.LeaveOpen : IOContextFlags.None;
-        IOContext ioContext = new(header, reader, writer, contextFlags);
+        IOContext ioContext = new(stream, Version.Unknown, contextFlags);
         return new RootStorage(ioContext);
     }
 
@@ -65,6 +75,16 @@ public sealed class RootStorage : Storage, IDisposable
     }
 
     public void Dispose() => ioContext?.Dispose();
+
+    public void Commit()
+    {
+        ioContext.Commit();
+    }
+
+    public void Revert()
+    {
+        ioContext.Revert();
+    }
 
     internal void Trace(TextWriter writer)
     {

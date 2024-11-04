@@ -325,6 +325,150 @@ public sealed class StreamTests
     [DataRow(Version.V3, 0)]
     [DataRow(Version.V3, 63)]
     [DataRow(Version.V3, 64)] // Mini-stream sector size
+    [DataRow(Version.V3, 65)]
+    [DataRow(Version.V3, 511)]
+    [DataRow(Version.V3, 512)] // Multiple stream sectors
+    [DataRow(Version.V3, 513)]
+    [DataRow(Version.V3, 4095)]
+    [DataRow(Version.V3, 4096)]
+    [DataRow(Version.V3, 4097)]
+    [DataRow(Version.V3, 128 * 512)] // Multiple FAT sectors
+    [DataRow(Version.V3, 1024 * 4096)] // Multiple FAT sectors
+    [DataRow(Version.V3, 7087616)] // First DIFAT chain
+    [DataRow(Version.V3, 2 * 7087616)] // Long DIFAT chain
+    [DataRow(Version.V4, 0)]
+    [DataRow(Version.V4, 63)]
+    [DataRow(Version.V4, 64)] // Mini-stream sector size
+    [DataRow(Version.V4, 65)]
+    [DataRow(Version.V4, 511)]
+    [DataRow(Version.V4, 512)]
+    [DataRow(Version.V4, 513)]
+    [DataRow(Version.V4, 4095)]
+    [DataRow(Version.V4, 4096)] // Multiple stream sectors
+    [DataRow(Version.V4, 4097)]
+    [DataRow(Version.V4, 1024 * 4096)] // Multiple FAT sectors (1024 * 4096)
+    [DataRow(Version.V4, 7087616 * 4)] // First DIFAT chain
+    [DataRow(Version.V4, 2 * 7087616 * 4)] // Long DIFAT chain
+    public void ModifyCommit(Version version, int length)
+    {
+        // Fill with bytes equal to their position modulo 256
+        byte[] expectedBuffer = new byte[length];
+        for (int i = 0; i < length; i++)
+            expectedBuffer[i] = (byte)i;
+
+        using MemoryStream memoryStream = new();
+        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        {
+            using CfbStream stream = rootStorage.CreateStream("TestStream1");
+            Assert.AreEqual(0, stream.Length);
+
+            stream.Write(expectedBuffer, 0, expectedBuffer.Length);
+        }
+
+        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.Transacted))
+        {
+            using CfbStream stream = rootStorage.CreateStream("TestStream2");
+            Assert.AreEqual(0, stream.Length);
+
+            stream.Write(expectedBuffer, 0, expectedBuffer.Length);
+            stream.Flush();
+            rootStorage.Commit();
+        }
+
+        using (var rootStorage = RootStorage.Open(memoryStream))
+        {
+            using (CfbStream stream = rootStorage.OpenStream("TestStream1"))
+            {
+                Assert.AreEqual(length, stream.Length);
+
+                byte[] actualBuffer = new byte[length];
+                stream.ReadExactly(actualBuffer);
+                CollectionAssert.AreEqual(expectedBuffer, actualBuffer);
+            }
+
+            using (CfbStream stream = rootStorage.OpenStream("TestStream2"))
+            {
+                Assert.AreEqual(length, stream.Length);
+
+                byte[] actualBuffer = new byte[length];
+                stream.ReadExactly(actualBuffer);
+                CollectionAssert.AreEqual(expectedBuffer, actualBuffer);
+            }
+        }
+    }
+
+    [TestMethod]
+    [DataRow(Version.V3, 0)]
+    [DataRow(Version.V3, 63)]
+    [DataRow(Version.V3, 64)] // Mini-stream sector size
+    [DataRow(Version.V3, 65)]
+    [DataRow(Version.V3, 511)]
+    [DataRow(Version.V3, 512)] // Multiple stream sectors
+    [DataRow(Version.V3, 513)]
+    [DataRow(Version.V3, 4095)]
+    [DataRow(Version.V3, 4096)]
+    [DataRow(Version.V3, 4097)]
+    [DataRow(Version.V3, 128 * 512)] // Multiple FAT sectors
+    [DataRow(Version.V3, 1024 * 4096)] // Multiple FAT sectors
+    [DataRow(Version.V3, 7087616)] // First DIFAT chain
+    [DataRow(Version.V3, 2 * 7087616)] // Long DIFAT chain
+    [DataRow(Version.V4, 0)]
+    [DataRow(Version.V4, 63)]
+    [DataRow(Version.V4, 64)] // Mini-stream sector size
+    [DataRow(Version.V4, 65)]
+    [DataRow(Version.V4, 511)]
+    [DataRow(Version.V4, 512)]
+    [DataRow(Version.V4, 513)]
+    [DataRow(Version.V4, 4095)]
+    [DataRow(Version.V4, 4096)] // Multiple stream sectors
+    [DataRow(Version.V4, 4097)]
+    [DataRow(Version.V4, 1024 * 4096)] // Multiple FAT sectors (1024 * 4096)
+    [DataRow(Version.V4, 7087616 * 4)] // First DIFAT chain
+    [DataRow(Version.V4, 2 * 7087616 * 4)] // Long DIFAT chain
+    public void ModifyRevert(Version version, int length)
+    {
+        // Fill with bytes equal to their position modulo 256
+        byte[] expectedBuffer = new byte[length];
+        for (int i = 0; i < length; i++)
+            expectedBuffer[i] = (byte)i;
+
+        using MemoryStream memoryStream = new();
+        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        {
+            using CfbStream stream = rootStorage.CreateStream("TestStream1");
+            Assert.AreEqual(0, stream.Length);
+
+            stream.Write(expectedBuffer, 0, expectedBuffer.Length);
+        }
+
+        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.Transacted))
+        {
+            using CfbStream stream = rootStorage.CreateStream("TestStream2");
+            Assert.AreEqual(0, stream.Length);
+
+            stream.Write(expectedBuffer, 0, expectedBuffer.Length);
+            rootStorage.Revert();
+        }
+
+        using (var rootStorage = RootStorage.Open(memoryStream))
+        {
+            using (CfbStream stream = rootStorage.OpenStream("TestStream1"))
+            {
+                Assert.AreEqual(length, stream.Length);
+
+                byte[] actualBuffer = new byte[length];
+                stream.ReadExactly(actualBuffer);
+                CollectionAssert.AreEqual(expectedBuffer, actualBuffer);
+            }
+
+            Assert.ThrowsException<FileNotFoundException>(() => rootStorage.OpenStream("TestStream2"));
+        }
+    }
+
+    [TestMethod]
+    [DataRow(Version.V3, 0)]
+    [DataRow(Version.V3, 63)]
+    [DataRow(Version.V3, 64)] // Mini-stream sector size
     [DataRow(Version.V3, 2 * 64)] // Simplest case (1 sector => 2)
     [DataRow(Version.V3, 65)]
     [DataRow(Version.V3, 511)]

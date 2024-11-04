@@ -4,7 +4,8 @@ enum IOContextFlags
 {
     None = 0,
     Create = 1,
-    LeaveOpen = 2
+    LeaveOpen = 2,
+    Transacted = 4,
 }
 
 /// <summary>
@@ -12,6 +13,7 @@ enum IOContextFlags
 /// </summary>
 internal sealed class IOContext : IDisposable
 {
+    readonly Stream stream;
     readonly DirectoryEntryEnumerator directoryEnumerator;
     readonly CfbBinaryWriter? writer;
     MiniFat? miniFat;
@@ -66,17 +68,25 @@ internal sealed class IOContext : IDisposable
 
     public Version Version => (Version)Header.MajorVersion;
 
-    public IOContext(Header header, CfbBinaryReader reader, CfbBinaryWriter? writer, IOContextFlags contextFlags = IOContextFlags.None)
+    public IOContext(Stream stream, Version version, IOContextFlags contextFlags = IOContextFlags.None)
     {
-        if (contextFlags.HasFlag(IOContextFlags.Create) && writer is null)
-            throw new ArgumentNullException(nameof(writer), "A writer is required to create a new compound file.");
+        this.stream = stream;
 
-        Header = header;
-        Reader = reader;
-        this.writer = writer;
+        using CfbBinaryReader reader = new(stream);
+        Header = contextFlags.HasFlag(IOContextFlags.Create) ? new(version) : reader.ReadHeader();
+        SectorSize = 1 << Header.SectorShift;
+        MiniSectorSize = 1 << Header.MiniSectorShift;
 
-        SectorSize = 1 << header.SectorShift;
-        MiniSectorSize = 1 << header.MiniSectorShift;
+        Stream transactedStream = stream;
+        if (contextFlags.HasFlag(IOContextFlags.Transacted))
+        {
+            Stream overlayStream = stream is MemoryStream ? new MemoryStream() : File.Create(Path.GetTempFileName());
+            transactedStream = new TransactedStream(this, stream, overlayStream);
+        }
+
+        Reader = new(transactedStream);
+        if (stream.CanWrite)
+            writer = new(transactedStream);
 
         Fat = new(this);
         directoryEnumerator = new(this);
@@ -101,7 +111,7 @@ internal sealed class IOContext : IDisposable
     {
         if (!IsDisposed)
         {
-            if (CanWrite)
+            if (writer is not null && writer.BaseStream is not TransactedStream)
                 WriteHeader();
             miniStream?.Dispose();
             miniFat?.Dispose();
@@ -130,5 +140,21 @@ internal sealed class IOContext : IDisposable
     public void Write(DirectoryEntry entry)
     {
         directoryEnumerator.Write(entry);
+    }
+
+    public void Commit()
+    {
+        if (writer is null || writer.BaseStream is not TransactedStream transactedStream)
+            throw new InvalidOperationException("Cannot commit non-transacted storage.");
+
+        WriteHeader();
+        transactedStream.Commit();
+    }
+    public void Revert()
+    {
+        if (writer is null || writer.BaseStream is not TransactedStream transactedStream)
+            throw new InvalidOperationException("Cannot commit non-transacted storage.");
+
+        transactedStream.Revert();
     }
 }
