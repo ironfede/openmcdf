@@ -1,7 +1,7 @@
 ﻿namespace OpenMcdf3;
 
 /// <summary>
-/// Provides a <see cref="Stream"> for reading a <see cref="DirectoryEntry"/> from the mini FAT stream.
+/// Provides a <see cref="Stream"/> for reading a <see cref="DirectoryEntry"/> from the mini FAT stream.
 /// </summary>
 internal sealed class MiniFatStream : Stream
 {

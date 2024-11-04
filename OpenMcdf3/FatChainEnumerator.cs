@@ -19,7 +19,7 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
     public FatChainEnumerator(IOContext ioContext, uint startSectorId)
     {
         this.ioContext = ioContext;
-        this.startId = startSectorId;
+        startId = startSectorId;
         fatEnumerator = new(ioContext);
     }
 
@@ -179,7 +179,7 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
             chainLength++;
         }
 
-        this.length = requiredChainLength;
+        length = requiredChainLength;
     }
 
     public void Shrink(uint requiredChainLength)
@@ -217,7 +217,7 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
         Debug.Assert(length == requiredChainLength);
 #endif
 
-        this.length = requiredChainLength;
+        length = requiredChainLength;
     }
 
     /// <inheritdoc/>

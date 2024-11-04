@@ -7,7 +7,7 @@ public enum Version : ushort
 }
 
 /// <summary>
-/// Encapsulates the root <see cref="Storage"> of a compound file.
+/// Encapsulates the root <see cref="Storage"/> of a compound file.
 /// </summary>
 public sealed class RootStorage : Storage, IDisposable
 {

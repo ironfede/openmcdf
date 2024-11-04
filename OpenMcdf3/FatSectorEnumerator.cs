@@ -16,7 +16,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
     public FatSectorEnumerator(IOContext ioContext)
     {
         this.ioContext = ioContext;
-        this.difatSectorId = ioContext.Header.FirstDifatSectorId;
+        difatSectorId = ioContext.Header.FirstDifatSectorId;
     }
 
     /// <inheritdoc/>
@@ -42,7 +42,11 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
     /// <inheritdoc/>
     public bool MoveNext()
     {
-        start = false;
+        if (start)
+        {
+            start = false;
+            index = uint.MaxValue;
+        }
 
         uint nextIndex = index + 1;
         if (nextIndex < ioContext.Header.FatSectorCount && nextIndex < Header.DifatArrayLength) // Include the free entries

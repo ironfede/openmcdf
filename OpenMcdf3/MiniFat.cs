@@ -42,7 +42,7 @@ internal sealed class MiniFat : IEnumerable<FatEntry>, IDisposable
                 throw new KeyNotFoundException($"Mini FAT index not found: {fatSectorIndex}.");
 
             CfbBinaryWriter writer = ioContext.Writer;
-            writer.Position = fatChainEnumerator.CurrentSector.Position + elementIndex * sizeof(uint);
+            writer.Position = fatChainEnumerator.CurrentSector.Position + (elementIndex * sizeof(uint));
             writer.Write(value);
         }
     }
@@ -60,7 +60,7 @@ internal sealed class MiniFat : IEnumerable<FatEntry>, IDisposable
         }
 
         CfbBinaryReader reader = ioContext.Reader;
-        reader.Position = fatChainEnumerator.CurrentSector.Position + elementIndex * sizeof(uint);
+        reader.Position = fatChainEnumerator.CurrentSector.Position + (elementIndex * sizeof(uint));
         value = reader.ReadUInt32();
         return true;
     }

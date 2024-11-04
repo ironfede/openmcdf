@@ -4,6 +4,7 @@
 /// Encapsulates information about a mini sector in a compound file.
 /// </summary>
 /// <param name="Id">The ID of the mini sector</param>
+/// <param name="Length">The sector length</param>
 internal record struct MiniSector(uint Id, int Length)
 {
     public static readonly MiniSector EndOfChain = new(SectorType.EndOfChain, int.MaxValue);

@@ -8,7 +8,6 @@ namespace OpenMcdf3;
 /// </summary>
 internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
 {
-    private readonly IOContext ioContext;
     private readonly DirectoryEntry root;
     private DirectoryEntry? child;
     private readonly Stack<DirectoryEntry> stack = new();
@@ -18,7 +17,6 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
     internal DirectoryTreeEnumerator(IOContext ioContext, DirectoryEntry root)
     {
         directoryEntryEnumerator = new(ioContext);
-        this.ioContext = ioContext;
         this.root = root;
         if (root.ChildId != StreamId.NoStream)
             child = directoryEntryEnumerator.GetDictionaryEntry(root.ChildId);

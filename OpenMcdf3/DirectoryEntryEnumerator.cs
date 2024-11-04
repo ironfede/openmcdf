@@ -16,7 +16,7 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
     public DirectoryEntryEnumerator(IOContext ioContext)
     {
         this.ioContext = ioContext;
-        this.fatChainEnumerator = new FatChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorId);
+        fatChainEnumerator = new FatChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorId);
     }
 
     /// <inheritdoc/>
@@ -58,7 +58,7 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
             return false;
         }
 
-        ioContext.Reader.Position = fatChainEnumerator.CurrentSector.Position + entryIndex * DirectoryEntry.Length;
+        ioContext.Reader.Position = fatChainEnumerator.CurrentSector.Position + (entryIndex * DirectoryEntry.Length);
         current = ioContext.Reader.ReadDirectoryEntry(ioContext.Version, index);
         index++;
         return true;
@@ -113,7 +113,7 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
         if (!fatChainEnumerator.MoveTo(chainIndex))
             throw new KeyNotFoundException($"Directory entry {streamId} was not found.");
 
-        ioContext.Reader.Position = fatChainEnumerator.CurrentSector.Position + entryIndex * DirectoryEntry.Length;
+        ioContext.Reader.Position = fatChainEnumerator.CurrentSector.Position + (entryIndex * DirectoryEntry.Length);
         current = ioContext.Reader.ReadDirectoryEntry(ioContext.Version, streamId);
         return current;
     }
@@ -125,7 +125,7 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
             throw new KeyNotFoundException($"Directory entry {entry.Id} was not found.");
 
         CfbBinaryWriter writer = ioContext.Writer;
-        writer.Position = fatChainEnumerator.CurrentSector.Position + entryIndex * DirectoryEntry.Length;
+        writer.Position = fatChainEnumerator.CurrentSector.Position + (entryIndex * DirectoryEntry.Length);
         writer.Write(entry);
     }
 

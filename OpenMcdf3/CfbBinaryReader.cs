@@ -61,11 +61,11 @@ internal sealed class CfbBinaryReader : BinaryReader
             throw new FormatException($"Unsupported byte order: {byteOrder:X4}. Only little-endian is supported ({Header.LittleEndian:X4}).");
         header.SectorShift = ReadUInt16();
         header.MiniSectorShift = ReadUInt16();
-        this.FillBuffer(6);
+        FillBuffer(6);
         header.DirectorySectorCount = ReadUInt32();
         header.FatSectorCount = ReadUInt32();
         header.FirstDirectorySectorId = ReadUInt32();
-        this.FillBuffer(4);
+        FillBuffer(4);
         uint miniStreamCutoffSize = ReadUInt32();
         if (miniStreamCutoffSize != Header.MiniStreamCutoffSize)
             throw new FormatException($"Mini stream cutoff size must be {Header.MiniStreamCutoffSize} bytes.");

@@ -252,7 +252,7 @@ public sealed class StreamTests
     [DataRow(Version.V3, 0)]
     [DataRow(Version.V3, 63)]
     [DataRow(Version.V3, 64)] // Mini-stream sector size
-    [DataRow(Version.V3, 2* 64)] // Simplest case (1 sector => 2)
+    [DataRow(Version.V3, 2 * 64)] // Simplest case (1 sector => 2)
     [DataRow(Version.V3, 65)]
     [DataRow(Version.V3, 511)]
     [DataRow(Version.V3, 512)] // Multiple stream sectors

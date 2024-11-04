@@ -13,7 +13,7 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
 
     internal int FatElementsPerSector => ioContext.SectorSize / sizeof(uint);
 
-    internal int DifatElementsPerSector => ioContext.SectorSize / sizeof(uint) - 1;
+    internal int DifatElementsPerSector => (ioContext.SectorSize / sizeof(uint)) - 1;
 
     public Fat(IOContext ioContext)
     {
@@ -64,7 +64,7 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
         }
 
         CfbBinaryReader reader = ioContext.Reader;
-        reader.Position = fatSectorEnumerator.Current.Position + elementIndex * sizeof(uint);
+        reader.Position = fatSectorEnumerator.Current.Position + (elementIndex * sizeof(uint));
         value = reader.ReadUInt32();
         return true;
     }
@@ -78,7 +78,7 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
             return false;
 
         CfbBinaryWriter writer = ioContext.Writer;
-        writer.Position = fatSectorEnumerator.Current.Position + elementIndex * sizeof(uint);
+        writer.Position = fatSectorEnumerator.Current.Position + (elementIndex * sizeof(uint));
         writer.Write(value);
         return true;
     }
