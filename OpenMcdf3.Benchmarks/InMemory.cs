@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Order;
-using OpenMcdf;
 
 namespace OpenMcdf3.Benchmark;
 
@@ -18,10 +17,10 @@ public class InMemory : IDisposable
     private const string storageName = "MyStorage";
     private const string streamName = "MyStream";
 
-    private byte[] readBuffer;
+    private MemoryStream readStream = new();
+    private MemoryStream writeStream = new();
 
-    private readonly MemoryStream readStream = new();
-    private readonly MemoryStream writeStream = new();
+    private byte[] buffer = Array.Empty<byte>();
 
     [Params(512, Mb /*Kb, 4 * Kb, 128 * Kb, 256 * Kb, 512 * Kb,*/)]
     public int BufferSize { get; set; }
@@ -38,58 +37,49 @@ public class InMemory : IDisposable
     [GlobalSetup]
     public void GlobalSetup()
     {
-        readBuffer = new byte[BufferSize];
-        CreateFile(1);
+        buffer = new byte[BufferSize];
+        readStream = new MemoryStream(2 * TotalStreamSize);
+        writeStream = new MemoryStream(2 * TotalStreamSize);
+
+        using var storage = RootStorage.Create(readStream, Version.V3, StorageModeFlags.LeaveOpen);
+        using CfbStream stream = storage.CreateStream(streamName);
+
+        int iterationCount = TotalStreamSize / BufferSize;
+        for (int iteration = 0; iteration < iterationCount; ++iteration)
+            stream.Write(buffer);
     }
 
     [Benchmark]
     public void Read()
     {
         using var compoundFile = RootStorage.Open(readStream);
-        using CfbStream cfStream = compoundFile.OpenStream(streamName + 0);
+        using CfbStream cfStream = compoundFile.OpenStream(streamName);
         long streamSize = cfStream.Length;
         long position = 0L;
-        while (true)
+        while (position < streamSize)
         {
-            if (position >= streamSize)
-                break;
-            int read = cfStream.Read(readBuffer, 0, readBuffer.Length);
+            int read = cfStream.Read(buffer, 0, buffer.Length);
+            if (read <= 0)
+                throw new EndOfStreamException();
             position += read;
-            if (read <= 0) break;
         }
     }
 
     [Benchmark]
-    public void Write()
+    public void Write() => WriteCore(StorageModeFlags.None);
+
+    [Benchmark]
+    public void WriteTransacted() => WriteCore(StorageModeFlags.Transacted);
+
+    void WriteCore(StorageModeFlags flags)
     {
-        MemoryStream memoryStream = writeStream;
-        using var storage = RootStorage.Create(memoryStream);
+        using var storage = RootStorage.Create(writeStream, Version.V3, flags);
         Storage subStorage = storage.CreateStorage(storageName);
         CfbStream stream = subStorage.CreateStream(streamName + 0);
 
         while (stream.Length < TotalStreamSize)
         {
-            stream.Write(readBuffer, 0, readBuffer.Length);
+            stream.Write(buffer, 0, buffer.Length);
         }
-    }
-
-    private void CreateFile(int streamCount)
-    {
-        int iterationCount = TotalStreamSize / BufferSize;
-
-        byte[] buffer = new byte[BufferSize];
-        buffer.AsSpan().Fill(byte.MaxValue);
-        const CFSConfiguration flags = CFSConfiguration.Default | CFSConfiguration.LeaveOpen;
-        using var compoundFile = new CompoundFile(CFSVersion.Ver_3, flags);
-        CFStorage st = compoundFile.RootStorage;
-        for (int streamId = 0; streamId < streamCount; ++streamId)
-        {
-            CFStream sm = st.AddStream(streamName + streamId);
-            for (int iteration = 0; iteration < iterationCount; ++iteration)
-                sm.Append(buffer);
-        }
-
-        compoundFile.Save(readStream);
-        compoundFile.Close();
     }
 }
