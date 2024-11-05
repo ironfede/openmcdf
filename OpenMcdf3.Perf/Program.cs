@@ -7,7 +7,7 @@ internal sealed class Program
     static void Main(string[] args)
     {
         var stopwatch = Stopwatch.StartNew();
-        Write(Version.V3, 512, 1024);
+        Write(Version.V3, 512, 2 * 1024);
         Console.WriteLine($"Elapsed: {stopwatch.Elapsed}");
     }
 
@@ -20,8 +20,8 @@ internal sealed class Program
 
         //byte[] actualBuffer = new byte[length];
 
-        using MemoryStream memoryStream = new(2 * length);
-        using var rootStorage = RootStorage.Create(memoryStream, version);
+        using MemoryStream memoryStream = new(2 * length * iterations);
+        using var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.Transacted);
         using Stream stream = rootStorage.CreateStream("TestStream");
 
         for (int i = 0; i < iterations; i++)

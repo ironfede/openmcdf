@@ -80,7 +80,7 @@ internal sealed class IOContext : IDisposable
         Stream transactedStream = stream;
         if (contextFlags.HasFlag(IOContextFlags.Transacted))
         {
-            Stream overlayStream = stream is MemoryStream ? new MemoryStream() : File.Create(Path.GetTempFileName());
+            Stream overlayStream = stream is MemoryStream ? new MemoryStream((int)stream.Length) : File.Create(Path.GetTempFileName());
             transactedStream = new TransactedStream(this, stream, overlayStream);
         }
 

@@ -3,7 +3,7 @@ using BenchmarkDotNet.Order;
 
 namespace OpenMcdf3.Benchmark;
 
-[SimpleJob]
+[ShortRunJob]
 [CsvExporter]
 [HtmlExporter]
 [MarkdownExporter]
@@ -17,8 +17,8 @@ public class InMemory : IDisposable
     private const string storageName = "MyStorage";
     private const string streamName = "MyStream";
 
-    private MemoryStream readStream = new();
-    private MemoryStream writeStream = new();
+    private FileStream readStream = File.Create(Path.GetTempFileName());
+    private FileStream writeStream = File.Create(Path.GetTempFileName());
 
     private byte[] buffer = Array.Empty<byte>();
 
@@ -38,8 +38,8 @@ public class InMemory : IDisposable
     public void GlobalSetup()
     {
         buffer = new byte[BufferSize];
-        readStream = new MemoryStream(2 * TotalStreamSize);
-        writeStream = new MemoryStream(2 * TotalStreamSize);
+        //readStream = new MemoryStream(2 * TotalStreamSize);
+        //writeStream = new MemoryStream(2 * TotalStreamSize);
 
         using var storage = RootStorage.Create(readStream, Version.V3, StorageModeFlags.LeaveOpen);
         using CfbStream stream = storage.CreateStream(streamName);
