@@ -12,13 +12,14 @@ namespace OpenMcdf3.Benchmark;
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class InMemory : IDisposable
 {
+    bool inMemory = false;
     private const int Kb = 1024;
     private const int Mb = Kb * Kb;
     private const string storageName = "MyStorage";
     private const string streamName = "MyStream";
 
-    private FileStream readStream = File.Create(Path.GetTempFileName());
-    private FileStream writeStream = File.Create(Path.GetTempFileName());
+    private Stream? readStream;
+    private Stream? writeStream;
 
     private byte[] buffer = Array.Empty<byte>();
 
@@ -38,8 +39,8 @@ public class InMemory : IDisposable
     public void GlobalSetup()
     {
         buffer = new byte[BufferSize];
-        //readStream = new MemoryStream(2 * TotalStreamSize);
-        //writeStream = new MemoryStream(2 * TotalStreamSize);
+        readStream = inMemory ? new MemoryStream(2 * TotalStreamSize) : File.Create(Path.GetTempFileName());
+        writeStream = inMemory ? new MemoryStream(2 * TotalStreamSize) : File.Create(Path.GetTempFileName());
 
         using var storage = RootStorage.Create(readStream, Version.V3, StorageModeFlags.LeaveOpen);
         using CfbStream stream = storage.CreateStream(streamName);
