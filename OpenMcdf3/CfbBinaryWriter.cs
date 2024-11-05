@@ -20,13 +20,13 @@ internal sealed class CfbBinaryWriter : BinaryWriter
         set => BaseStream.Position = value;
     }
 
-#if NETSTANDARD2_1_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
     public override void Write(ReadOnlySpan<byte> buffer) => BaseStream.Write(buffer);
 #endif
 
     public void Write(Guid value)
     {
-#if NETSTANDARD2_1_OR_GREATER
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
         Span<byte> localBuffer = stackalloc byte[16];
         value.TryWriteBytes(localBuffer);
         Write(localBuffer);
