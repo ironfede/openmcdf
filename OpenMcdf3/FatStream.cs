@@ -48,6 +48,8 @@ internal class FatStream : Stream
     {
         if (!disposed)
         {
+            Flush();
+
             chain.Dispose();
             disposed = true;
         }
@@ -59,7 +61,12 @@ internal class FatStream : Stream
     public override void Flush()
     {
         this.ThrowIfDisposed(disposed);
-        ioContext.Writer!.Flush(); // TODO: Check validity
+
+        if (CanWrite)
+        {
+            ioContext.Write(DirectoryEntry);
+            ioContext.Writer!.Flush();
+        }
     }
 
     /// <inheritdoc/>
@@ -145,12 +152,8 @@ internal class FatStream : Stream
         else if (value <= ChainCapacity - ioContext.SectorSize)
             chain.Shrink(requiredChainLength);
 
-        if (DirectoryEntry.StartSectorId != chain.StartId || DirectoryEntry.StreamLength != value)
-        {
-            DirectoryEntry.StartSectorId = chain.StartId;
-            DirectoryEntry.StreamLength = value;
-            ioContext.Write(DirectoryEntry);
-        }
+        DirectoryEntry.StartSectorId = chain.StartId;
+        DirectoryEntry.StreamLength = value;
     }
 
     /// <inheritdoc/>

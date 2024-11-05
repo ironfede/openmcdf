@@ -39,6 +39,8 @@ internal sealed class MiniFatStream : Stream
     {
         if (!disposed)
         {
+            Flush();
+
             miniChain.Dispose();
             disposed = true;
         }
@@ -50,6 +52,8 @@ internal sealed class MiniFatStream : Stream
     {
         this.ThrowIfDisposed(disposed);
 
+        if (CanWrite)
+            ioContext.Write(DirectoryEntry);
         ioContext.MiniStream.Flush();
     }
 
@@ -138,12 +142,8 @@ internal sealed class MiniFatStream : Stream
         else if (value <= ChainCapacity - ioContext.MiniSectorSize)
             miniChain.Shrink(requiredChainLength);
 
-        if (DirectoryEntry.StartSectorId != miniChain.StartId || DirectoryEntry.StreamLength != value)
-        {
-            DirectoryEntry.StartSectorId = miniChain.StartId;
-            DirectoryEntry.StreamLength = value;
-            ioContext.Write(DirectoryEntry);
-        }
+        DirectoryEntry.StartSectorId = miniChain.StartId;
+        DirectoryEntry.StreamLength = value;
     }
 
     public override void Write(byte[] buffer, int offset, int count)
