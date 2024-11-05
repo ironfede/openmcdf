@@ -68,6 +68,10 @@ internal sealed class IOContext : IDisposable
 
     public Version Version => (Version)Header.MajorVersion;
 
+    public long Length => Reader.BaseStream.Length;
+
+    public uint SectorCount => (uint)Math.Max(0, (Length - SectorSize) / SectorSize); // TODO: Check
+
     public IOContext(Stream stream, Version version, IOContextFlags contextFlags = IOContextFlags.None)
     {
         this.stream = stream;
@@ -80,7 +84,7 @@ internal sealed class IOContext : IDisposable
         Stream transactedStream = stream;
         if (contextFlags.HasFlag(IOContextFlags.Transacted))
         {
-            Stream overlayStream = stream is MemoryStream ? new MemoryStream((int)stream.Length) : File.Create(Path.GetTempFileName());
+            Stream overlayStream = stream is MemoryStream ? new MemoryStream() : File.Create(Path.GetTempFileName());
             transactedStream = new TransactedStream(this, stream, overlayStream);
         }
 
@@ -151,6 +155,7 @@ internal sealed class IOContext : IDisposable
         Fat.Flush();
         transactedStream.Commit();
     }
+
     public void Revert()
     {
         if (writer is null || writer.BaseStream is not TransactedStream transactedStream)

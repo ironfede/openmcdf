@@ -148,8 +148,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         Header header = ioContext.Header;
         uint nextIndex = ioContext.Header.FatSectorCount + ioContext.Header.DifatSectorCount;
         uint lastIndex = nextIndex - 1;
-        uint id = (uint)Math.Max(0, (ioContext.Reader.BaseStream.Length - ioContext.SectorSize) / ioContext.SectorSize); // TODO: Check
-        Sector newSector = new(id, ioContext.SectorSize);
+        Sector newSector = new(ioContext.SectorCount, ioContext.SectorSize);
 
         CfbBinaryWriter writer = ioContext.Writer;
         writer.Position = newSector.Position;
