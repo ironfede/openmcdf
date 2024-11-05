@@ -99,10 +99,10 @@ internal class TransactedStream : Stream
             overlayStream.Write(this.buffer, 0, this.buffer.Length);
         }
 
-        if (overlayStream.Length < overlayPosition + ioContext.SectorSize)
-            overlayStream.SetLength(overlayPosition + ioContext.SectorSize);
         overlayStream.Position = overlayPosition + sectorOffset;
         overlayStream.Write(buffer, offset, localCount);
+        if (overlayStream.Length < overlayPosition + ioContext.SectorSize)
+            overlayStream.SetLength(overlayPosition + ioContext.SectorSize);
         originalStream.Seek(localCount, SeekOrigin.Current);
     }
 
