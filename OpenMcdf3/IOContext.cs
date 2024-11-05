@@ -151,8 +151,9 @@ internal sealed class IOContext : IDisposable
         if (writer is null || writer.BaseStream is not TransactedStream transactedStream)
             throw new InvalidOperationException("Cannot commit non-transacted storage.");
 
-        WriteHeader();
+        miniStream?.Flush();
         Fat.Flush();
+        WriteHeader();
         transactedStream.Commit();
     }
 
