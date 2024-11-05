@@ -185,4 +185,90 @@ internal sealed class MiniFatStream : Stream
 
         throw new InvalidOperationException($"End of mini FAT chain was reached.");
     }
+
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+
+    public override int ReadByte() => this.ReadByteCore();
+
+    public override int Read(Span<byte> buffer)
+    {
+        this.ThrowIfDisposed(disposed);
+
+        if (buffer.Length == 0)
+            return 0;
+
+        int maxCount = (int)Math.Min(Math.Max(Length - position, 0), int.MaxValue);
+        if (maxCount == 0)
+            return 0;
+
+        uint chainIndex = (uint)Math.DivRem(position, ioContext.MiniSectorSize, out long sectorOffset);
+        if (!miniChain.MoveTo(chainIndex))
+            return 0;
+
+        FatStream miniStream = ioContext.MiniStream;
+        int realCount = Math.Min(buffer.Length, maxCount);
+        int readCount = 0;
+        do
+        {
+            MiniSector miniSector = miniChain.CurrentSector;
+            int remaining = realCount - readCount;
+            long readLength = Math.Min(remaining, miniSector.Length - sectorOffset);
+            miniStream.Position = miniSector.Position + sectorOffset;
+            int localOffset = readCount;
+            Span<byte> slice = buffer.Slice(localOffset, (int)readLength);
+            int read = miniStream.Read(slice);
+            if (read == 0)
+                return readCount;
+            position += read;
+            readCount += read;
+            sectorOffset = 0;
+            if (readCount >= realCount)
+                return readCount;
+        } while (miniChain.MoveNext());
+
+        return readCount;
+    }
+
+    public override void WriteByte(byte value) => this.WriteByteCore(value);
+
+    public override void Write(ReadOnlySpan<byte> buffer)
+    {
+        this.ThrowIfDisposed(disposed);
+        this.ThrowIfNotWritable();
+
+        if (buffer.Length == 0)
+            return;
+
+        if (position + buffer.Length > ChainCapacity)
+            SetLength(position + buffer.Length);
+
+        uint chainIndex = (uint)Math.DivRem(position, ioContext.MiniSectorSize, out long sectorOffset);
+        if (!miniChain.MoveTo(chainIndex))
+            throw new InvalidOperationException($"Failed to move to mini FAT chain index: {chainIndex}.");
+
+        FatStream miniStream = ioContext.MiniStream;
+        int writeCount = 0;
+        do
+        {
+            MiniSector miniSector = miniChain.CurrentSector;
+            long basePosition = miniSector.Position + sectorOffset;
+            miniStream.Seek(basePosition, SeekOrigin.Begin);
+            int remaining = buffer.Length - writeCount;
+            int localOffset = writeCount;
+            long writeLength = Math.Min(remaining, ioContext.MiniSectorSize - sectorOffset);
+            ReadOnlySpan<byte> slice = buffer.Slice(localOffset, (int)writeLength);
+            miniStream.Write(slice);
+            position += writeLength;
+            writeCount += (int)writeLength;
+            if (position > Length)
+                DirectoryEntry.StreamLength = position;
+            sectorOffset = 0;
+            if (writeCount >= buffer.Length)
+                return;
+        } while (miniChain.MoveNext());
+
+        throw new InvalidOperationException($"End of mini FAT chain was reached.");
+    }
+
+#endif
 }

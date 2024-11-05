@@ -93,4 +93,25 @@ public sealed class CfbStream : Stream
 
         stream.Write(buffer, offset, count);
     }
+
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+
+    public override int Read(Span<byte> buffer) => stream.Read(buffer);
+
+    public override int ReadByte() => this.ReadByteCore();
+
+    public override void WriteByte(byte value) => this.WriteByteCore(value);
+
+    public override void Write(ReadOnlySpan<byte> buffer)
+    {
+        this.ThrowIfNotWritable();
+
+        long newPosition = Position + buffer.Length;
+        if (newPosition > stream.Length)
+            SetLength(newPosition);
+
+        stream.Write(buffer);
+    }
+
+#endif
 }

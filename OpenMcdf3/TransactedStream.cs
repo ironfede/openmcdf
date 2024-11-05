@@ -125,4 +125,70 @@ internal class TransactedStream : Stream
     {
         dirtySectorPositions.Clear();
     }
+
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+
+    public override int ReadByte() => this.ReadByteCore();
+
+    public override int Read(Span<byte> buffer)
+    {
+        uint sectorId = (uint)Math.DivRem(originalStream.Position, ioContext.SectorSize, out long sectorOffset);
+        int remainingFromSector = ioContext.SectorSize - (int)sectorOffset;
+        int localCount = Math.Min(buffer.Length, remainingFromSector);
+        Debug.Assert(localCount == buffer.Length);
+
+        Span<byte> slice = buffer.Slice(0, localCount);
+        int read;
+        if (dirtySectorPositions.TryGetValue(sectorId, out long overlayPosition))
+        {
+            overlayStream.Position = overlayPosition + sectorOffset;
+            read = overlayStream.Read(slice);
+            originalStream.Seek(read, SeekOrigin.Current);
+        }
+        else
+        {
+            read = originalStream.Read(slice);
+        }
+
+        return read;
+    }
+
+    public override void WriteByte(byte value) => this.WriteByteCore(value);
+
+    public override void Write(ReadOnlySpan<byte> buffer)
+    {
+        uint sectorId = (uint)Math.DivRem(originalStream.Position, ioContext.SectorSize, out long sectorOffset);
+        int remainingFromSector = ioContext.SectorSize - (int)sectorOffset;
+        int localCount = Math.Min(buffer.Length, remainingFromSector);
+        Debug.Assert(localCount == buffer.Length);
+        // TODO: Loop through the buffer and write to the overlay stream
+
+        bool added = false;
+        if (!dirtySectorPositions.TryGetValue(sectorId, out long overlayPosition))
+        {
+            overlayPosition = overlayStream.Length;
+            dirtySectorPositions.Add(sectorId, overlayPosition);
+            added = true;
+        }
+
+        if (added && originalStream.Position < originalStream.Length && localCount != ioContext.SectorSize)
+        {
+            // Copy the existing sector data
+            long originalPosition = originalStream.Position;
+            originalStream.Position = originalPosition - sectorOffset;
+            originalStream.ReadExactly(this.buffer);
+            originalStream.Position = originalPosition;
+
+            overlayStream.Position = overlayPosition;
+            overlayStream.Write(this.buffer, 0, this.buffer.Length);
+        }
+
+        if (overlayStream.Length < overlayPosition + ioContext.SectorSize)
+            overlayStream.SetLength(overlayPosition + ioContext.SectorSize);
+        overlayStream.Position = overlayPosition + sectorOffset;
+        overlayStream.Write(buffer);
+        originalStream.Seek(localCount, SeekOrigin.Current);
+    }
+
+#endif
 }

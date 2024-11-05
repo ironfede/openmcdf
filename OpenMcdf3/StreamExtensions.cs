@@ -2,10 +2,10 @@
 
 namespace OpenMcdf3;
 
-#if !NET7_0_OR_GREATER
-
 internal static class StreamExtensions
 {
+#if !NET7_0_OR_GREATER
+
     public static void ReadExactly(this Stream stream, Span<byte> buffer)
     {
         byte[] array = ArrayPool<byte>.Shared.Rent(buffer.Length);
@@ -35,6 +35,24 @@ internal static class StreamExtensions
             totalRead += read;
         } while (totalRead < count);
     }
-}
 
 #endif
+
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+
+    public static int ReadByteCore(this Stream stream)
+    {
+        Span<byte> bytes = stackalloc byte[1];
+        int read = stream.Read(bytes);
+        return read == 0 ? -1 : bytes[0];
+    }
+
+    public static void WriteByteCore(this Stream stream, byte value)
+    {
+        ReadOnlySpan<byte> bytes = stackalloc byte[] { value };
+        stream.Write(bytes);
+    }
+
+#endif
+}
+

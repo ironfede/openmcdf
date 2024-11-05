@@ -1,4 +1,6 @@
-﻿namespace OpenMcdf3;
+﻿using System.IO;
+
+namespace OpenMcdf3;
 
 /// <summary>
 /// Provides a <inheritdoc cref="Stream"/> for a stream object in a compound file./>
@@ -189,4 +191,87 @@ internal class FatStream : Stream
 
         throw new InvalidOperationException($"End of FAT chain was reached");
     }
+
+#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+
+    public override int ReadByte() => this.ReadByteCore();
+
+    public override int Read(Span<byte> buffer)
+    {
+        this.ThrowIfDisposed(disposed);
+
+        if (buffer.Length == 0)
+            return 0;
+
+        int maxCount = (int)Math.Min(Math.Max(Length - position, 0), int.MaxValue);
+        if (maxCount == 0)
+            return 0;
+
+        uint chainIndex = (uint)Math.DivRem(position, ioContext.SectorSize, out long sectorOffset);
+        if (!chain.MoveTo(chainIndex))
+            return 0;
+
+        int realCount = Math.Min(buffer.Length, maxCount);
+        int readCount = 0;
+        do
+        {
+            Sector sector = chain.CurrentSector;
+            int remaining = realCount - readCount;
+            long readLength = Math.Min(remaining, sector.Length - sectorOffset);
+            ioContext.Reader.Position = sector.Position + sectorOffset;
+            int localOffset = readCount;
+            Span<byte> slice = buffer.Slice(localOffset, (int)readLength);
+            int read = ioContext.Reader.Read(slice);
+            if (read == 0)
+                return readCount;
+            position += read;
+            readCount += read;
+            sectorOffset = 0;
+            if (readCount >= realCount)
+                return readCount;
+        } while (chain.MoveNext());
+
+        return readCount;
+    }
+
+    public override void WriteByte(byte value) => this.WriteByteCore(value);
+
+    public override void Write(ReadOnlySpan<byte> buffer)
+    {
+        this.ThrowIfNotWritable();
+
+        if (buffer.Length == 0)
+            return;
+
+        if (position + buffer.Length > ChainCapacity)
+            SetLength(position + buffer.Length);
+
+        uint chainIndex = (uint)Math.DivRem(position, ioContext.SectorSize, out long sectorOffset);
+        if (!chain.MoveTo(chainIndex))
+            throw new InvalidOperationException($"Failed to move to FAT chain index: {chainIndex}");
+
+        CfbBinaryWriter writer = ioContext.Writer;
+        int writeCount = 0;
+        do
+        {
+            Sector sector = chain.CurrentSector;
+            writer.Position = sector.Position + sectorOffset;
+            int remaining = buffer.Length - writeCount;
+            int localOffset = writeCount;
+            long writeLength = Math.Min(remaining, sector.Length - sectorOffset);
+            ReadOnlySpan<byte> slice = buffer.Slice(localOffset, (int)writeLength);
+            writer.Write(slice);
+            position += writeLength;
+            writeCount += (int)writeLength;
+            if (position > Length)
+                DirectoryEntry.StreamLength = position;
+            sectorOffset = 0;
+            if (writeCount >= buffer.Length)
+                return;
+        } while (chain.MoveNext());
+
+        throw new InvalidOperationException($"End of FAT chain was reached");
+    }
+
+#endif
 }

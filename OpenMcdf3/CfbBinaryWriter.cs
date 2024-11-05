@@ -21,6 +21,7 @@ internal sealed class CfbBinaryWriter : BinaryWriter
     }
 
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+
     public override void Write(ReadOnlySpan<byte> buffer) => BaseStream.Write(buffer);
 
     public override void Write(byte value)
@@ -28,9 +29,10 @@ internal sealed class CfbBinaryWriter : BinaryWriter
         Span<byte> localBuffer = stackalloc byte[1] { value };
         Write(localBuffer);
     }
+
 #endif
 
-    public void Write(Guid value)
+    public void Write(in Guid value)
     {
 #if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
         Span<byte> localBuffer = stackalloc byte[16];
