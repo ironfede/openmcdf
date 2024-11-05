@@ -68,7 +68,7 @@ internal sealed class IOContext : IDisposable
 
     public Version Version => (Version)Header.MajorVersion;
 
-    public long Length => Reader.BaseStream.Length;
+    public long Length { get; private set; }
 
     public uint SectorCount => (uint)Math.Max(0, (Length - SectorSize) / SectorSize); // TODO: Check
 
@@ -80,6 +80,7 @@ internal sealed class IOContext : IDisposable
         Header = contextFlags.HasFlag(IOContextFlags.Create) ? new(version) : reader.ReadHeader();
         SectorSize = 1 << Header.SectorShift;
         MiniSectorSize = 1 << Header.MiniSectorShift;
+        Length = stream.Length;
 
         Stream transactedStream = stream;
         if (contextFlags.HasFlag(IOContextFlags.Transacted))
@@ -116,7 +117,12 @@ internal sealed class IOContext : IDisposable
         if (!IsDisposed)
         {
             if (writer is not null && writer.BaseStream is not TransactedStream)
+            {
+                // Ensure the stream is as long as expected
+                writer.BaseStream.SetLength(Length);
                 WriteHeader();
+            }
+
             miniStream?.Dispose();
             miniFat?.Dispose();
             directoryEnumerator.Dispose();
@@ -129,9 +135,8 @@ internal sealed class IOContext : IDisposable
 
     public void ExtendStreamLength(long length)
     {
-        Stream baseStream = Writer.BaseStream;
-        if (baseStream.Length < length)
-            baseStream.SetLength(length);
+        if (Length < length)
+            Length = length;
     }
 
     public void WriteHeader()

@@ -64,7 +64,7 @@ internal class TransactedStream : Stream
 
     public override long Seek(long offset, SeekOrigin origin) => originalStream.Seek(offset, origin);
 
-    public override void SetLength(long value) => overlayStream.SetLength(value);
+    public override void SetLength(long value) => throw new NotImplementedException();
 
     public override void Write(byte[] buffer, int offset, int count)
     {
@@ -97,6 +97,8 @@ internal class TransactedStream : Stream
 
         overlayStream.Position = overlayPosition + sectorOffset;
         overlayStream.Write(buffer, offset, localCount);
+        if (overlayStream.Length < overlayPosition + ioContext.SectorSize)
+            overlayStream.SetLength(overlayPosition + ioContext.SectorSize);
         originalStream.Position = originalPosition + localCount;
     }
 
@@ -165,23 +167,22 @@ internal class TransactedStream : Stream
             added = true;
         }
 
-        if (added && originalStream.Position < originalStream.Length && localCount != ioContext.SectorSize)
+        long originalPosition = originalStream.Position;
+        if (added && localCount != ioContext.SectorSize && originalPosition < originalStream.Length)
         {
             // Copy the existing sector data
-            long originalPosition = originalStream.Position;
             originalStream.Position = originalPosition - sectorOffset;
             originalStream.ReadExactly(this.buffer);
-            originalStream.Position = originalPosition;
 
             overlayStream.Position = overlayPosition;
             overlayStream.Write(this.buffer, 0, this.buffer.Length);
         }
 
-        if (overlayStream.Length < overlayPosition + ioContext.SectorSize)
-            overlayStream.SetLength(overlayPosition + ioContext.SectorSize);
         overlayStream.Position = overlayPosition + sectorOffset;
         overlayStream.Write(buffer);
-        originalStream.Seek(localCount, SeekOrigin.Current);
+        if (overlayStream.Length < overlayPosition + ioContext.SectorSize)
+            overlayStream.SetLength(overlayPosition + ioContext.SectorSize);
+        originalStream.Position = originalPosition + localCount;
     }
 
 #endif
