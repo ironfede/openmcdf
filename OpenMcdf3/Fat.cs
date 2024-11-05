@@ -10,14 +10,16 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
 {
     private readonly IOContext ioContext;
     private readonly FatSectorEnumerator fatSectorEnumerator;
-
-    internal int FatElementsPerSector => ioContext.SectorSize / sizeof(uint);
-
-    internal int DifatElementsPerSector => (ioContext.SectorSize / sizeof(uint)) - 1;
+    private readonly int DifatArrayElementCount;
+    private readonly int FatElementsPerSector;
+    private readonly int DifatElementsPerSector;
 
     public Fat(IOContext ioContext)
     {
         this.ioContext = ioContext;
+        FatElementsPerSector = ioContext.SectorSize / sizeof(uint);
+        DifatElementsPerSector = FatElementsPerSector - 1;
+        DifatArrayElementCount = Header.DifatArrayLength * FatElementsPerSector;
         fatSectorEnumerator = new(ioContext);
     }
 
@@ -44,19 +46,22 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
 
     uint GetSectorIndexAndElementOffset(uint key, out long elementIndex)
     {
-        int DifatArrayElementCount = Header.DifatArrayLength * FatElementsPerSector;
         if (key < DifatArrayElementCount)
             return (uint)Math.DivRem(key, FatElementsPerSector, out elementIndex);
-
         return (uint)Math.DivRem(key - DifatArrayElementCount, DifatElementsPerSector, out elementIndex);
+    }
+
+    bool TryMoveToSectorForKey(uint key, out long offset)
+    {
+        uint sectorId = GetSectorIndexAndElementOffset(key, out offset);
+        return fatSectorEnumerator.MoveTo(sectorId);
     }
 
     public bool TryGetValue(uint key, out uint value)
     {
         ThrowHelper.ThrowIfSectorIdIsInvalid(key);
 
-        uint sectorId = GetSectorIndexAndElementOffset(key, out long elementIndex);
-        bool ok = fatSectorEnumerator.MoveTo(sectorId);
+        bool ok = TryMoveToSectorForKey(key, out long elementIndex);
         if (!ok)
         {
             value = uint.MaxValue;
@@ -73,8 +78,7 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
     {
         ThrowHelper.ThrowIfSectorIdIsInvalid(key);
 
-        uint fatSectorIndex = GetSectorIndexAndElementOffset(key, out long elementIndex);
-        if (!fatSectorEnumerator.MoveTo(fatSectorIndex))
+        if (!TryMoveToSectorForKey(key, out long elementIndex))
             return false;
 
         CfbBinaryWriter writer = ioContext.Writer;
@@ -91,15 +95,14 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
     {
         ThrowHelper.ThrowIfSectorIdIsInvalid(startIndex);
 
-        bool movedToFreeEntry = fatEnumerator.MoveTo(startIndex) && fatEnumerator.MoveNextFreeEntry();
+        bool movedToFreeEntry = fatEnumerator.MoveTo(startIndex)
+            && fatEnumerator.MoveNextFreeEntry();
         if (!movedToFreeEntry)
         {
             uint newSectorId = fatSectorEnumerator.Add();
 
-            bool ok = fatEnumerator.MoveTo(newSectorId);
-            Debug.Assert(ok);
-
-            ok = fatEnumerator.MoveNextFreeEntry();
+            // Next id must be free
+            bool ok = fatEnumerator.MoveTo(newSectorId + 1);
             Debug.Assert(ok);
         }
 

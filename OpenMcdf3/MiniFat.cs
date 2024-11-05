@@ -10,12 +10,12 @@ internal sealed class MiniFat : IEnumerable<FatEntry>, IDisposable
 {
     private readonly IOContext ioContext;
     private readonly FatChainEnumerator fatChainEnumerator;
-
-    internal int ElementsPerSector => ioContext.SectorSize / sizeof(uint);
+    private readonly int ElementsPerSector;
 
     public MiniFat(IOContext ioContext)
     {
         this.ioContext = ioContext;
+        ElementsPerSector = ioContext.SectorSize / sizeof(uint);
         fatChainEnumerator = new(ioContext, ioContext.Header.FirstMiniFatSectorId);
     }
 
