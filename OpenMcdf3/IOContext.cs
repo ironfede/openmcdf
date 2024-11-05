@@ -157,6 +157,7 @@ internal sealed class IOContext : IDisposable
             throw new InvalidOperationException("Cannot commit non-transacted storage.");
 
         miniStream?.Flush();
+        miniFat?.Flush();
         Fat.Flush();
         WriteHeader();
         transactedStream.Commit();

@@ -47,6 +47,8 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
     /// <inheritdoc/>
     object IEnumerator.Current => Current;
 
+    public bool IsAt(uint index) => !start && index == this.index;
+
     /// <inheritdoc/>
     public bool MoveNext()
     {

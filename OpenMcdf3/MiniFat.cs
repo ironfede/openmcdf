@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System.Buffers.Binary;
+using System.Collections;
 using System.Diagnostics;
 
 namespace OpenMcdf3;
@@ -11,15 +12,34 @@ internal sealed class MiniFat : IEnumerable<FatEntry>, IDisposable
     private readonly IOContext ioContext;
     private readonly FatChainEnumerator fatChainEnumerator;
     private readonly int ElementsPerSector;
+    private readonly byte[] sector;
+    private bool isDirty;
 
     public MiniFat(IOContext ioContext)
     {
         this.ioContext = ioContext;
         ElementsPerSector = ioContext.SectorSize / sizeof(uint);
         fatChainEnumerator = new(ioContext, ioContext.Header.FirstMiniFatSectorId);
+        sector = new byte[ioContext.SectorSize];
     }
 
-    public void Dispose() => fatChainEnumerator.Dispose();
+    public void Dispose()
+    {
+        Flush();
+
+        fatChainEnumerator.Dispose();
+    }
+
+    public void Flush()
+    {
+        if (isDirty)
+        {
+            CfbBinaryWriter writer = ioContext.Writer;
+            writer.Position = fatChainEnumerator.CurrentSector.Position;
+            writer.Write(sector);
+            isDirty = false;
+        }
+    }
 
     public IEnumerator<FatEntry> GetEnumerator() => new MiniFatEnumerator(ioContext);
 
@@ -35,33 +55,54 @@ internal sealed class MiniFat : IEnumerable<FatEntry>, IDisposable
         }
         set
         {
-            ThrowHelper.ThrowIfSectorIdIsInvalid(key);
-
-            uint fatSectorIndex = (uint)Math.DivRem(key, ElementsPerSector, out long elementIndex);
-            if (!fatChainEnumerator.MoveTo(fatSectorIndex))
-                throw new KeyNotFoundException($"Mini FAT index not found: {fatSectorIndex}.");
-
-            CfbBinaryWriter writer = ioContext.Writer;
-            writer.Position = fatChainEnumerator.CurrentSector.Position + (elementIndex * sizeof(uint));
-            writer.Write(value);
+            if (!TrySetValue(key, value))
+                throw new KeyNotFoundException($"Mini FAT index not found: {key}.");
         }
+    }
+
+    bool TryMoveToSectorForKey(uint key, out long elementIndex)
+    {
+        uint fatChain = (uint)Math.DivRem(key, ElementsPerSector, out elementIndex);
+        if (fatChainEnumerator.IsAt(fatChain))
+            return true;
+
+        Flush();
+
+        bool ok = fatChainEnumerator.MoveTo(fatChain);
+        if (!ok)
+            return false;
+
+        CfbBinaryReader reader = ioContext.Reader;
+        reader.Position = fatChainEnumerator.CurrentSector.Position;
+        reader.Read(sector);
+        return true;
     }
 
     public bool TryGetValue(uint key, out uint value)
     {
         ThrowHelper.ThrowIfSectorIdIsInvalid(key);
 
-        uint fatSectorIndex = (uint)Math.DivRem(key, ElementsPerSector, out long elementIndex);
-        bool ok = fatChainEnumerator.MoveTo(fatSectorIndex);
-        if (!ok)
+        if (!TryMoveToSectorForKey(key, out long elementIndex))
         {
             value = uint.MaxValue;
             return false;
         }
 
-        CfbBinaryReader reader = ioContext.Reader;
-        reader.Position = fatChainEnumerator.CurrentSector.Position + (elementIndex * sizeof(uint));
-        value = reader.ReadUInt32();
+        Span<byte> slice = sector.AsSpan((int)elementIndex * sizeof(uint));
+        value = BinaryPrimitives.ReadUInt32LittleEndian(slice);
+        return true;
+    }
+
+    public bool TrySetValue(uint key, uint value)
+    {
+        ThrowHelper.ThrowIfSectorIdIsInvalid(key);
+
+        if (!TryMoveToSectorForKey(key, out long elementIndex))
+            return false;
+
+        Span<byte> slice = sector.AsSpan((int)elementIndex * sizeof(uint));
+        BinaryPrimitives.WriteUInt32LittleEndian(slice, value);
+        isDirty = true;
         return true;
     }
 
