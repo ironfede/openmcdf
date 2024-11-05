@@ -166,23 +166,28 @@ internal class FatStream : Stream
         if (count == 0)
             return;
 
-        if (position + count > ChainCapacity)
-            SetLength(position + count);
+        //if (position + count > ChainCapacity)
+        //    SetLength(position + count);
 
         uint chainIndex = (uint)Math.DivRem(position, ioContext.SectorSize, out long sectorOffset);
-        if (!chain.MoveTo(chainIndex))
-            throw new InvalidOperationException($"Failed to move to FAT chain index: {chainIndex}");
 
         CfbBinaryWriter writer = ioContext.Writer;
         int writeCount = 0;
-        do
+        uint lastIndex = 0;
+        for (; ; )
         {
+            if (!chain.MoveTo(chainIndex))
+            {
+                lastIndex = chain.ExtendFrom(lastIndex);
+            }
+
             Sector sector = chain.CurrentSector;
             writer.Position = sector.Position + sectorOffset;
             int remaining = count - writeCount;
             int localOffset = offset + writeCount;
             long writeLength = Math.Min(remaining, sector.Length - sectorOffset);
             writer.Write(buffer, localOffset, (int)writeLength);
+            ioContext.ExtendStreamLength(sector.EndPosition);
             position += writeLength;
             writeCount += (int)writeLength;
             if (position > Length)
@@ -190,7 +195,9 @@ internal class FatStream : Stream
             sectorOffset = 0;
             if (writeCount >= count)
                 return;
-        } while (chain.MoveNext());
+
+            chainIndex++;
+        }
 
         throw new InvalidOperationException($"End of FAT chain was reached");
     }

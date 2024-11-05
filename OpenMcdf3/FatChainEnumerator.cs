@@ -133,21 +133,7 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
     /// <returns>The ID of the new sector</returns>
     public uint Extend()
     {
-        if (startId == SectorType.EndOfChain)
-        {
-            startId = ioContext.Fat.Add(fatEnumerator, 0);
-            return startId;
-        }
-
-        uint lastId = startId;
-        while (MoveNext())
-        {
-            lastId = current.Value;
-        }
-
-        uint id = ioContext.Fat.Add(fatEnumerator, lastId);
-        ioContext.Fat[lastId] = id;
-        return id;
+        return ExtendFrom(0);
     }
 
     /// <summary>
@@ -180,6 +166,25 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
         }
 
         length = requiredChainLength;
+    }
+
+    public uint ExtendFrom(uint hintId)
+    {
+        if (startId == SectorType.EndOfChain)
+        {
+            startId = ioContext.Fat.Add(fatEnumerator, hintId);
+            return startId;
+        }
+
+        uint lastId = startId;
+        while (MoveNext())
+        {
+            lastId = current.Value;
+        }
+
+        uint id = ioContext.Fat.Add(fatEnumerator, lastId);
+        ioContext.Fat[lastId] = id;
+        return id;
     }
 
     public void Shrink(uint requiredChainLength)
