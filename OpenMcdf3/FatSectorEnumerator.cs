@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Diagnostics;
 
 namespace OpenMcdf3;
 
@@ -145,10 +146,10 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
     {
         // No FAT sectors are free, so add a new one
         Header header = ioContext.Header;
-        (uint lastIndex, Sector lastSector) = MoveToEnd();
-        uint nextIndex = lastIndex + 1;
-        long id = Math.Max(0, (ioContext.Reader.BaseStream.Length - ioContext.SectorSize) / ioContext.SectorSize); // TODO: Check
-        Sector newSector = new((uint)id, ioContext.SectorSize);
+        uint nextIndex = ioContext.Header.FatSectorCount + ioContext.Header.DifatSectorCount;
+        uint lastIndex = nextIndex - 1;
+        uint id = (uint)Math.Max(0, (ioContext.Reader.BaseStream.Length - ioContext.SectorSize) / ioContext.SectorSize); // TODO: Check
+        Sector newSector = new(id, ioContext.SectorSize);
 
         CfbBinaryWriter writer = ioContext.Writer;
         writer.Position = newSector.Position;
@@ -163,19 +164,29 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
 
             header.Difat[nextIndex] = newSector.Id;
             header.FatSectorCount++; // TODO: Check
+
+            writer.Position = newSector.Position;
+            writer.Write(SectorDataCache.GetFatEntryData(newSector.Length));
         }
         else
         {
+            bool ok = MoveTo(lastIndex);
+            Debug.Assert(ok);
+
+            Sector lastSector = current;
+            writer.Position = lastSector.EndPosition - sizeof(uint);
+            writer.Write(newSector.Id);
+
             index = nextIndex;
             current = newSector;
             difatSectorId = newSector.Id;
             sectorType = SectorType.Difat;
 
+            writer.Position = newSector.Position;
+            writer.Write(SectorDataCache.GetFatEntryData(newSector.Length));
+
             writer.Position = newSector.EndPosition - sizeof(uint);
             writer.Write(SectorType.EndOfChain);
-
-            writer.Position = lastSector.EndPosition - sizeof(uint);
-            writer.Write(newSector.Id);
 
             // Chain the sector
             if (header.FirstDifatSectorId == SectorType.EndOfChain)
