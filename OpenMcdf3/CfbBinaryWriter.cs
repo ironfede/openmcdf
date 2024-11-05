@@ -24,12 +24,6 @@ internal sealed class CfbBinaryWriter : BinaryWriter
 
     public override void Write(ReadOnlySpan<byte> buffer) => BaseStream.Write(buffer);
 
-    public override void Write(byte value)
-    {
-        Span<byte> localBuffer = stackalloc byte[1] { value };
-        Write(localBuffer);
-    }
-
 #endif
 
     public void Write(in Guid value)

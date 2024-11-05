@@ -74,6 +74,8 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         return true;
     }
 
+    public bool IsAt(uint index) => !start && index == this.index;
+
     /// <summary>
     /// Moves the enumerator to the specified sector.
     /// </summary>

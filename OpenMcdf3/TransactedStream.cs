@@ -87,7 +87,7 @@ internal class TransactedStream : Stream
             added = true;
         }
 
-        if (added && originalStream.Position < originalStream.Length && localCount != ioContext.SectorSize)
+        if (added && localCount != ioContext.SectorSize && originalStream.Position < originalStream.Length)
         {
             // Copy the existing sector data
             long originalPosition = originalStream.Position;

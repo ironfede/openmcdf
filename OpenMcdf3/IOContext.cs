@@ -148,6 +148,7 @@ internal sealed class IOContext : IDisposable
             throw new InvalidOperationException("Cannot commit non-transacted storage.");
 
         WriteHeader();
+        Fat.Flush();
         transactedStream.Commit();
     }
     public void Revert()
