@@ -9,5 +9,5 @@ internal record struct FatEntry(uint Index, uint Value)
 
     public readonly bool IsFree => Value == SectorType.Free;
 
-    public readonly override string ToString() => $"#{Index}: {Value}";
+    public override readonly string ToString() => $"#{Index}: {Value}";
 }
