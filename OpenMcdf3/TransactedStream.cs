@@ -62,10 +62,7 @@ internal class TransactedStream : Stream
         return read;
     }
 
-    public override long Seek(long offset, SeekOrigin origin)
-    {
-        return originalStream.Seek(offset, origin);
-    }
+    public override long Seek(long offset, SeekOrigin origin) => originalStream.Seek(offset, origin);
 
     public override void SetLength(long value) => overlayStream.SetLength(value);
 
@@ -87,13 +84,12 @@ internal class TransactedStream : Stream
             added = true;
         }
 
-        if (added && localCount != ioContext.SectorSize && originalStream.Position < originalStream.Length)
+        long originalPosition = originalStream.Position;
+        if (added && localCount != ioContext.SectorSize && originalPosition < originalStream.Length)
         {
             // Copy the existing sector data
-            long originalPosition = originalStream.Position;
             originalStream.Position = originalPosition - sectorOffset;
             originalStream.ReadExactly(this.buffer);
-            originalStream.Position = originalPosition;
 
             overlayStream.Position = overlayPosition;
             overlayStream.Write(this.buffer, 0, this.buffer.Length);
@@ -101,9 +97,7 @@ internal class TransactedStream : Stream
 
         overlayStream.Position = overlayPosition + sectorOffset;
         overlayStream.Write(buffer, offset, localCount);
-        if (overlayStream.Length < overlayPosition + ioContext.SectorSize)
-            overlayStream.SetLength(overlayPosition + ioContext.SectorSize);
-        originalStream.Seek(localCount, SeekOrigin.Current);
+        originalStream.Position = originalPosition + localCount;
     }
 
     public void Commit()
