@@ -87,9 +87,11 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
     {
         Reset();
 
+        ReadOnlySpan<char> nameSpan = name.AsSpan();
+
         while (MoveNext())
         {
-            if (Current.Name == name)
+            if (DirectoryEntryComparer.Compare(Current.NameCharSpan, nameSpan) == 0)
                 return true;
         }
 

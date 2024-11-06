@@ -123,15 +123,12 @@ internal sealed class CfbBinaryReader : BinaryReader
         if (version is not Version.V3 and not Version.V4)
             throw new ArgumentException($"Unsupported version: {version}.", nameof(version));
 
-        Read(buffer, 0, DirectoryEntry.NameFieldLength); // TODO
-        ushort nameLength = ReadUInt16();
-        int clampedNameLength = Math.Max(0, Math.Min(DirectoryEntry.NameFieldLength, nameLength - 2));
-        string name = Encoding.Unicode.GetString(buffer, 0, clampedNameLength);
+        Read(buffer, 0, DirectoryEntry.NameFieldLength);
 
         DirectoryEntry entry = new()
         {
             Id = sid,
-            Name = name,
+            NameLength = ReadUInt16(),
             Type = ReadStorageType(),
             Color = ReadColor(),
             LeftSiblingId = ReadUInt32(),
@@ -143,6 +140,8 @@ internal sealed class CfbBinaryReader : BinaryReader
             ModifiedTime = ReadFileTime(),
             StartSectorId = ReadUInt32()
         };
+
+        Buffer.BlockCopy(buffer, 0, entry.Name, 0, DirectoryEntry.NameFieldLength);
 
         if (version == Version.V3)
         {

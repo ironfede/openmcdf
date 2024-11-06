@@ -1,4 +1,6 @@
-﻿namespace OpenMcdf3.Tests;
+﻿using System.Text;
+
+namespace OpenMcdf3.Tests;
 
 [TestClass]
 public sealed class BinaryWriterTests
@@ -44,7 +46,6 @@ public sealed class BinaryWriterTests
     {
         DirectoryEntry expected = new()
         {
-            Name = "Root Entry",
             Type = StorageType.Storage,
             Color = NodeColor.Red,
             LeftSiblingId = 2,
@@ -57,6 +58,9 @@ public sealed class BinaryWriterTests
             StartSectorId = 6,
             StreamLength = 7
         };
+
+        string name = "Root Entry";
+        expected.NameLength = (ushort)Encoding.Unicode.GetBytes(name, 0, name.Length, expected.Name, 0);
 
         using MemoryStream stream = new();
         using CfbBinaryWriter writer = new(stream);

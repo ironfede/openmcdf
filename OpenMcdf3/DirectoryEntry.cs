@@ -1,4 +1,7 @@
-﻿namespace OpenMcdf3;
+﻿using System.Runtime.InteropServices;
+using System.Text;
+
+namespace OpenMcdf3;
 
 /// <summary>
 /// The storage type of a <see cref="DirectoryEntry"/>.
@@ -42,21 +45,14 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
 
     internal static readonly byte[] Unallocated = new byte[128];
 
-    string name = string.Empty;
     DateTime creationTime;
     DateTime modifiedTime;
 
     public uint Id { get; set; }
 
-    public string Name
-    {
-        get => name;
-        set
-        {
-            ThrowHelper.ThrowIfNameIsInvalid(value);
-            name = value;
-        }
-    }
+    public byte[] Name { get; } = new byte[NameFieldLength];
+
+    public ushort NameLength { get; set; }
 
     /// <summary>
     /// The type of the storage object.
@@ -137,12 +133,34 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
         _ => '?'
     };
 
+    public ReadOnlySpan<byte> NameByteSpan
+    {
+        get
+        {
+            int clampedNameLength = Math.Max(0, Math.Min(NameFieldLength, NameLength - 2));
+            return Name.AsSpan(0, clampedNameLength);
+        }
+    }
+
+    public ReadOnlySpan<char> NameCharSpan => MemoryMarshal.Cast<byte, char>(NameByteSpan);
+
+    public string NameString
+    {
+        get
+        {
+            int clampedNameLength = Math.Max(0, Math.Min(NameFieldLength, NameLength - 2));
+            return Encoding.Unicode.GetString(Name, 0, clampedNameLength);
+        }
+        set => NameLength = (ushort)(Encoding.Unicode.GetBytes(value, 0, value.Length, Name, 0) + 2);
+    }
+
     public override bool Equals(object? obj) => Equals(obj as DirectoryEntry);
 
     public bool Equals(DirectoryEntry? other)
     {
         return other is not null
-            && Name == other.Name
+            && Name.SequenceEqual(other.Name)
+            && NameLength == other.NameLength
             && Type == other.Type
             && Color == other.Color
             && LeftSiblingId == other.LeftSiblingId
@@ -163,8 +181,8 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
     public void Recycle(StorageType storageType, string name)
     {
         Type = storageType;
+        NameString = name;
         Color = NodeColor.Black;
-        Name = name;
         LeftSiblingId = StreamId.NoStream;
         RightSiblingId = StreamId.NoStream;
         ChildId = StreamId.NoStream;
@@ -189,16 +207,16 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
         }
     }
 
-    public EntryInfo ToEntryInfo() => new(Name, StreamLength);
+    public EntryInfo ToEntryInfo() => new(NameString, StreamLength);
 
-    public override string ToString() => $"{Id}: \"{Name}\"";
+    public override string ToString() => $"{Id}: \"{NameString}\"";
 
     public DirectoryEntry Clone()
     {
-        return new DirectoryEntry
+        DirectoryEntry clone = new()
         {
             Id = Id,
-            Name = Name,
+            NameLength = NameLength,
             Type = Type,
             Color = Color,
             LeftSiblingId = LeftSiblingId,
@@ -211,5 +229,9 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
             StartSectorId = StreamId.NoStream,
             StreamLength = 0
         };
+
+        Array.Copy(Name, clone.Name, Name.Length);
+
+        return clone;
     }
 }

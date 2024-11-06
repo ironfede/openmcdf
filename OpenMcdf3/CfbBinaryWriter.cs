@@ -69,10 +69,8 @@ internal sealed class CfbBinaryWriter : BinaryWriter
 
     public void Write(DirectoryEntry entry)
     {
-        buffer.AsSpan().Clear();
-        int nameLength = Encoding.Unicode.GetBytes(entry.Name, 0, entry.Name.Length, buffer, 0);
-        Write(buffer, 0, DirectoryEntry.NameFieldLength);
-        Write((short)(nameLength + 2));
+        Write(entry.Name, 0, DirectoryEntry.NameFieldLength);
+        Write(entry.NameLength);
         Write((byte)entry.Type);
         Write((byte)entry.Color);
         Write(entry.LeftSiblingId);
