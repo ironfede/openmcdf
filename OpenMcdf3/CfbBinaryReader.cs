@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Buffers;
+using System.Text;
 
 namespace OpenMcdf3;
 
@@ -20,6 +21,25 @@ internal sealed class CfbBinaryReader : BinaryReader
         get => BaseStream.Position;
         set => BaseStream.Position = value;
     }
+
+#if NETSTANDARD2_0
+
+    public int Read(Span<byte> buffer)
+    {
+        byte[] array = ArrayPool<byte>.Shared.Rent(buffer.Length);
+        try
+        {
+            int bytesRead = BaseStream.Read(array, 0, buffer.Length);
+            array.AsSpan(0, bytesRead).CopyTo(buffer);
+            return bytesRead;
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(array);
+        }
+    }
+
+#endif
 
     public Guid ReadGuid()
     {
