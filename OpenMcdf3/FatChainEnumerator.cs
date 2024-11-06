@@ -237,4 +237,6 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
         index = uint.MaxValue;
         current = FatChainEntry.Invalid;
     }
+
+    public override string ToString() => $"{current}";
 }

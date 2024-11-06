@@ -10,6 +10,7 @@ internal class FatStream : Stream
     readonly IOContext ioContext;
     readonly FatChainEnumerator chain;
     long position;
+    bool isDirty;
     bool disposed;
 
     internal FatStream(IOContext ioContext, DirectoryEntry directoryEntry)
@@ -62,11 +63,14 @@ internal class FatStream : Stream
     {
         this.ThrowIfDisposed(disposed);
 
-        if (CanWrite)
+        if (isDirty)
         {
             ioContext.Write(DirectoryEntry);
-            ioContext.Writer!.Flush();
+            isDirty = false;
         }
+
+        if (CanWrite)
+            ioContext.Writer!.Flush();
     }
 
     /// <inheritdoc/>
@@ -154,6 +158,7 @@ internal class FatStream : Stream
 
         DirectoryEntry.StartSectorId = chain.StartId;
         DirectoryEntry.StreamLength = value;
+        isDirty = true;
     }
 
     /// <inheritdoc/>
@@ -187,7 +192,10 @@ internal class FatStream : Stream
             position += writeLength;
             writeCount += (int)writeLength;
             if (position > Length)
+            {
                 DirectoryEntry.StreamLength = position;
+                isDirty = true;
+            }
             sectorOffset = 0;
             if (writeCount >= count)
                 return;

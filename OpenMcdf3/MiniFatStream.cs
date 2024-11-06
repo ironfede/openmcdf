@@ -9,6 +9,7 @@ internal sealed class MiniFatStream : Stream
     readonly MiniFatChainEnumerator miniChain;
     long position;
     bool disposed;
+    bool isDirty;
 
     internal MiniFatStream(IOContext ioContext, DirectoryEntry directoryEntry)
     {
@@ -52,8 +53,12 @@ internal sealed class MiniFatStream : Stream
     {
         this.ThrowIfDisposed(disposed);
 
-        if (CanWrite)
+        if (isDirty)
+        {
             ioContext.Write(DirectoryEntry);
+            isDirty = false;
+        }
+
         ioContext.MiniStream.Flush();
     }
 
@@ -144,6 +149,7 @@ internal sealed class MiniFatStream : Stream
 
         DirectoryEntry.StartSectorId = miniChain.StartId;
         DirectoryEntry.StreamLength = value;
+        isDirty = true;
     }
 
     public override void Write(byte[] buffer, int offset, int count)
@@ -177,7 +183,10 @@ internal sealed class MiniFatStream : Stream
             position += writeLength;
             writeCount += (int)writeLength;
             if (position > Length)
+            {
                 DirectoryEntry.StreamLength = position;
+                isDirty = true;
+            }
             sectorOffset = 0;
             if (writeCount >= count)
                 return;
