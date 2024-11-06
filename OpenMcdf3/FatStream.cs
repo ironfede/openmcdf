@@ -161,13 +161,11 @@ internal class FatStream : Stream
     {
         ThrowHelper.ThrowIfStreamArgumentsAreInvalid(buffer, offset, count);
 
+        this.ThrowIfDisposed(disposed);
         this.ThrowIfNotWritable();
 
         if (count == 0)
             return;
-
-        //if (position + count > ChainCapacity)
-        //    SetLength(position + count);
 
         uint chainIndex = (uint)Math.DivRem(position, ioContext.SectorSize, out long sectorOffset);
 
@@ -177,9 +175,7 @@ internal class FatStream : Stream
         for (; ; )
         {
             if (!chain.MoveTo(chainIndex))
-            {
                 lastIndex = chain.ExtendFrom(lastIndex);
-            }
 
             Sector sector = chain.CurrentSector;
             writer.Position = sector.Position + sectorOffset;
@@ -248,22 +244,22 @@ internal class FatStream : Stream
 
     public override void Write(ReadOnlySpan<byte> buffer)
     {
+        this.ThrowIfDisposed(disposed);
         this.ThrowIfNotWritable();
 
         if (buffer.Length == 0)
             return;
 
-        if (position + buffer.Length > ChainCapacity)
-            SetLength(position + buffer.Length);
-
         uint chainIndex = (uint)Math.DivRem(position, ioContext.SectorSize, out long sectorOffset);
-        if (!chain.MoveTo(chainIndex))
-            throw new InvalidOperationException($"Failed to move to FAT chain index: {chainIndex}");
 
         CfbBinaryWriter writer = ioContext.Writer;
         int writeCount = 0;
-        do
+        uint lastIndex = 0;
+        for (; ; )
         {
+            if (!chain.MoveTo(chainIndex))
+                lastIndex = chain.ExtendFrom(lastIndex);
+
             Sector sector = chain.CurrentSector;
             writer.Position = sector.Position + sectorOffset;
             int remaining = buffer.Length - writeCount;
@@ -271,6 +267,7 @@ internal class FatStream : Stream
             long writeLength = Math.Min(remaining, sector.Length - sectorOffset);
             ReadOnlySpan<byte> slice = buffer.Slice(localOffset, (int)writeLength);
             writer.Write(slice);
+            ioContext.ExtendStreamLength(sector.EndPosition);
             position += writeLength;
             writeCount += (int)writeLength;
             if (position > Length)
@@ -278,7 +275,9 @@ internal class FatStream : Stream
             sectorOffset = 0;
             if (writeCount >= buffer.Length)
                 return;
-        } while (chain.MoveNext());
+
+            chainIndex++;
+        }
 
         throw new InvalidOperationException($"End of FAT chain was reached");
     }
