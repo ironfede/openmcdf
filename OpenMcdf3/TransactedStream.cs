@@ -42,24 +42,32 @@ internal class TransactedStream : Stream
     {
         ThrowHelper.ThrowIfStreamArgumentsAreInvalid(buffer, offset, count);
 
-        uint sectorId = (uint)Math.DivRem(originalStream.Position, ioContext.SectorSize, out long sectorOffset);
-        int remainingFromSector = ioContext.SectorSize - (int)sectorOffset;
-        int localCount = Math.Min(count, remainingFromSector);
-        Debug.Assert(localCount == count);
-
         int read;
-        if (dirtySectorPositions.TryGetValue(sectorId, out long overlayPosition))
+        int totalRead = 0;
+        do
         {
-            overlayStream.Position = overlayPosition + sectorOffset;
-            read = overlayStream.Read(buffer, offset, localCount);
-            originalStream.Seek(read, SeekOrigin.Current);
-        }
-        else
-        {
-            read = originalStream.Read(buffer, offset, localCount);
-        }
+            uint sectorId = (uint)Math.DivRem(originalStream.Position, ioContext.SectorSize, out long sectorOffset);
+            int remainingFromSector = ioContext.SectorSize - (int)sectorOffset;
+            int localCount = Math.Min(count - totalRead, remainingFromSector);
 
-        return read;
+            if (dirtySectorPositions.TryGetValue(sectorId, out long overlayPosition))
+            {
+                overlayStream.Position = overlayPosition + sectorOffset;
+                read = overlayStream.Read(buffer, offset + totalRead, localCount);
+                originalStream.Seek(read, SeekOrigin.Current);
+            }
+            else
+            {
+                read = originalStream.Read(buffer, offset + totalRead, localCount);
+            }
+
+            if (read == 0)
+                break;
+
+            totalRead += read;
+        } while (totalRead < count);
+
+        return totalRead;
     }
 
     public override long Seek(long offset, SeekOrigin origin) => originalStream.Seek(offset, origin);

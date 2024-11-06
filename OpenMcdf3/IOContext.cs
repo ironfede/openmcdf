@@ -16,6 +16,7 @@ internal sealed class IOContext : IDisposable
     readonly Stream stream;
     readonly DirectoryEntryEnumerator directoryEnumerator;
     readonly CfbBinaryWriter? writer;
+    TransactedStream? transactedStream;
     MiniFat? miniFat;
     FatStream? miniStream;
 
@@ -82,16 +83,17 @@ internal sealed class IOContext : IDisposable
         MiniSectorSize = 1 << Header.MiniSectorShift;
         Length = stream.Length;
 
-        Stream transactedStream = stream;
+        Stream actualStream = stream;
         if (contextFlags.HasFlag(IOContextFlags.Transacted))
         {
             Stream overlayStream = stream is MemoryStream ? new MemoryStream() : File.Create(Path.GetTempFileName());
             transactedStream = new TransactedStream(this, stream, overlayStream);
+            actualStream = new BufferedStream(transactedStream, SectorSize);
         }
 
-        Reader = new(transactedStream);
+        Reader = new(actualStream);
         if (stream.CanWrite)
-            writer = new(transactedStream);
+            writer = new(actualStream);
 
         Fat = new(this);
         directoryEnumerator = new(this);
@@ -116,10 +118,10 @@ internal sealed class IOContext : IDisposable
     {
         if (!IsDisposed)
         {
-            if (writer is not null && writer.BaseStream is not TransactedStream)
+            if (writer is not null && transactedStream is null)
             {
                 // Ensure the stream is as long as expected
-                writer.BaseStream.SetLength(Length);
+                stream.SetLength(Length);
                 WriteHeader();
             }
 
@@ -153,19 +155,20 @@ internal sealed class IOContext : IDisposable
 
     public void Commit()
     {
-        if (writer is null || writer.BaseStream is not TransactedStream transactedStream)
+        if (writer is null || transactedStream is null)
             throw new InvalidOperationException("Cannot commit non-transacted storage.");
 
         miniStream?.Flush();
         miniFat?.Flush();
         Fat.Flush();
         WriteHeader();
+        writer.BaseStream.Flush();
         transactedStream.Commit();
     }
 
     public void Revert()
     {
-        if (writer is null || writer.BaseStream is not TransactedStream transactedStream)
+        if (writer is null || transactedStream is null)
             throw new InvalidOperationException("Cannot commit non-transacted storage.");
 
         transactedStream.Revert();
