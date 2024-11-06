@@ -151,6 +151,8 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
 
     public void RecycleRoot() => Recycle(StorageType.Root, "Root Entry");
 
+    public void Recycle() => Recycle(StorageType.Unallocated, string.Empty);
+
     public void Recycle(StorageType storageType, string name)
     {
         Type = storageType;

@@ -11,6 +11,9 @@ public class Storage
 
     internal Storage(IOContext ioContext, DirectoryEntry directoryEntry)
     {
+        if (directoryEntry.Type is not StorageType.Storage and not StorageType.Root)
+            throw new ArgumentException("DirectoryEntry must be a Storage or Root.", nameof(directoryEntry));
+
         this.ioContext = ioContext;
         DirectoryEntry = directoryEntry;
     }
@@ -43,10 +46,10 @@ public class Storage
     IEnumerable<DirectoryEntry> EnumerateDirectoryEntries(StorageType type) => EnumerateDirectoryEntries()
         .Where(e => e.Type == type);
 
-    DirectoryEntry? TryGetDirectoryEntry(StorageType storageType, string name)
+    DirectoryEntry? TryGetDirectoryEntry(string name)
     {
         using DirectoryTreeEnumerator directoryTreeEnumerator = new(ioContext, DirectoryEntry);
-        return directoryTreeEnumerator.TryGetDirectoryEntry(storageType, name);
+        return directoryTreeEnumerator.TryGetDirectoryEntry(name);
     }
 
     DirectoryEntry AddDirectoryEntry(StorageType storageType, string name)
@@ -82,8 +85,9 @@ public class Storage
 
         this.ThrowIfDisposed(ioContext.IsDisposed);
 
-        DirectoryEntry entry = TryGetDirectoryEntry(StorageType.Storage, name)
-            ?? throw new DirectoryNotFoundException($"Storage not found: {name}.");
+        DirectoryEntry? entry = TryGetDirectoryEntry(name);
+        if (entry is null || entry.Type is not StorageType.Storage)
+            throw new DirectoryNotFoundException($"Storage not found: {name}.");
         return new Storage(ioContext, entry);
     }
 
@@ -93,10 +97,48 @@ public class Storage
 
         this.ThrowIfDisposed(ioContext.IsDisposed);
 
-        DirectoryEntry? entry = TryGetDirectoryEntry(StorageType.Stream, name)
-            ?? throw new FileNotFoundException($"Stream not found: {name}.", name);
+        DirectoryEntry? entry = TryGetDirectoryEntry(name);
+        if (entry is null || entry.Type is not StorageType.Stream)
+            throw new FileNotFoundException($"Stream not found: {name}.", name);
 
         // TODO: Return a Stream that can transition between FAT and mini FAT
         return new CfbStream(ioContext, entry);
+    }
+
+    public void Delete(string name)
+    {
+        ThrowHelper.ThrowIfNameIsInvalid(name);
+
+        this.ThrowIfDisposed(ioContext.IsDisposed);
+
+        using DirectoryTreeEnumerator directoryTreeEnumerator = new(ioContext, DirectoryEntry);
+        DirectoryEntry? entry = directoryTreeEnumerator.TryGetDirectoryEntry(name);
+        if (entry is null)
+            return;
+
+        if (entry.Type is StorageType.Storage && entry.ChildId is not StreamId.NoStream)
+        {
+            Storage storage = new(ioContext, entry);
+            foreach (EntryInfo childEntry in storage.EnumerateEntries())
+            {
+                storage.Delete(childEntry.Name);
+            };
+        }
+
+        if (entry.Type is StorageType.Stream && entry.StartSectorId is not StreamId.NoStream)
+        {
+            if (entry.StreamLength < Header.MiniStreamCutoffSize)
+            {
+                using MiniFatChainEnumerator miniFatChainEnumerator = new(ioContext, entry.StartSectorId);
+                miniFatChainEnumerator.Shrink(0);
+            }
+            else
+            {
+                using FatChainEnumerator fatChainEnumerator = new(ioContext, entry.StartSectorId);
+                fatChainEnumerator.Shrink(0);
+            }
+        }
+
+        directoryTreeEnumerator.Remove(entry);
     }
 }

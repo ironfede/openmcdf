@@ -12,6 +12,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
     private DirectoryEntry? child;
     private readonly Stack<DirectoryEntry> stack = new();
     private readonly DirectoryEntryEnumerator directoryEntryEnumerator;
+    DirectoryEntry parent;
     DirectoryEntry? current;
 
     internal DirectoryTreeEnumerator(IOContext ioContext, DirectoryEntry root)
@@ -20,6 +21,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         this.root = root;
         if (root.ChildId != StreamId.NoStream)
             child = directoryEntryEnumerator.GetDictionaryEntry(root.ChildId);
+        parent = root;
         PushLeft(child);
     }
 
@@ -49,10 +51,12 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         if (stack.Count == 0)
         {
             current = null;
+            parent = root;
             return false;
         }
 
         current = stack.Pop();
+        parent = stack.Count == 0 ? root : stack.Peek();
         if (current.RightSiblingId != StreamId.NoStream)
         {
             DirectoryEntry rightSibling = directoryEntryEnumerator.GetDictionaryEntry(current.RightSiblingId);
@@ -66,6 +70,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
     public void Reset()
     {
         current = null;
+        parent = root;
         stack.Clear();
         PushLeft(child);
     }
@@ -79,29 +84,29 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         }
     }
 
-    public bool MoveTo(StorageType type, string name)
+    public bool MoveTo(string name)
     {
         Reset();
 
         while (MoveNext())
         {
-            if (Current.Type == type && Current.Name == name)
+            if (Current.Name == name)
                 return true;
         }
 
         return false;
     }
 
-    public DirectoryEntry? TryGetDirectoryEntry(StorageType type, string name)
+    public DirectoryEntry? TryGetDirectoryEntry(string name)
     {
-        if (MoveTo(type, name))
+        if (MoveTo(name))
             return Current;
         return null;
     }
 
     public DirectoryEntry Add(StorageType storageType, string name)
     {
-        if (MoveTo(storageType, name))
+        if (MoveTo(name))
             throw new IOException($"{storageType} \"{name}\" already exists.");
 
         DirectoryEntry entry = directoryEntryEnumerator.CreateOrRecycleDirectoryEntry();
@@ -116,6 +121,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
     {
         Reset();
 
+        // TODO: Implement balancing (all-black for now)
         entry.Color = NodeColor.Black;
         directoryEntryEnumerator.Write(entry);
 
@@ -134,6 +140,37 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
                 node = directoryEntryEnumerator.GetDictionaryEntry(node.LeftSiblingId);
             node.LeftSiblingId = entry.Id;
             directoryEntryEnumerator.Write(node);
+        }
+    }
+
+    public void Remove(DirectoryEntry entry)
+    {
+        if (child is null)
+            throw new KeyNotFoundException("DirectoryEntry has no children");
+
+        if (root.ChildId == entry.Id)
+        {
+            root.ChildId = entry.LeftSiblingId;
+            directoryEntryEnumerator.Write(root);
+            if (root.ChildId == StreamId.NoStream)
+                child = null;
+            return;
+        }
+
+        Reset();
+
+        while (MoveNext())
+        {
+            if (current!.Id == entry.Id)
+            {
+                if (parent.LeftSiblingId == entry.Id)
+                    parent.LeftSiblingId = entry.LeftSiblingId;
+                directoryEntryEnumerator.Write(parent);
+
+                entry.Recycle();
+                directoryEntryEnumerator.Write(entry);
+                break;
+            }
         }
     }
 }
