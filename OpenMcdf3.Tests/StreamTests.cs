@@ -132,6 +132,8 @@ public sealed class StreamTests
         Assert.AreEqual(length, stream.Length);
         Assert.AreEqual(length, stream.Position);
 
+        rootStorage.Trace(DebugWriter.Default);
+
         byte[] actualBuffer = new byte[length];
         stream.Position = 0;
         stream.ReadExactly(actualBuffer);

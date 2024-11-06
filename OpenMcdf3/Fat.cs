@@ -147,6 +147,29 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
     internal void Trace(TextWriter writer)
     {
         using FatEnumerator fatEnumerator = new(ioContext);
-        fatEnumerator.Trace(writer);
+
+        byte[] data = new byte[ioContext.SectorSize];
+
+        Stream baseStream = ioContext.Reader.BaseStream;
+
+        writer.WriteLine("Start of FAT =================");
+
+        while (fatEnumerator.MoveNext())
+        {
+            FatEntry current = fatEnumerator.Current;
+            if (current.IsFree)
+            {
+                writer.WriteLine($"{current}");
+            }
+            else
+            {
+                baseStream.Position = fatEnumerator.CurrentSector.Position;
+                baseStream.ReadExactly(data, 0, data.Length);
+                string hex = BitConverter.ToString(data);
+                writer.WriteLine($"{current}: {hex}");
+            }
+        }
+
+        writer.WriteLine("End of FAT ===================");
     }
 }

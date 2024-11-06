@@ -103,14 +103,4 @@ internal sealed class MiniFatEnumerator : IEnumerator<FatEntry>
         index = uint.MaxValue;
         value = uint.MaxValue;
     }
-
-    internal void Trace(TextWriter writer)
-    {
-        Reset();
-
-        writer.WriteLine("Start of Mini FAT ============");
-        while (MoveNext())
-            writer.WriteLine($"Mini FAT entry {Current}");
-        writer.WriteLine("End of Mini FAT ==============");
-    }
 }

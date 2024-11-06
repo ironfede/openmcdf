@@ -99,34 +99,5 @@ internal class FatEnumerator : IEnumerator<FatEntry>
         value = uint.MaxValue;
     }
 
-    internal void Trace(TextWriter writer)
-    {
-        Reset();
-
-        byte[] data = new byte[ioContext.SectorSize];
-
-        Stream baseStream = ioContext.Reader.BaseStream;
-
-        writer.WriteLine("Start of FAT =================");
-
-        while (MoveNext())
-        {
-            FatEntry current = Current;
-            if (current.IsFree)
-            {
-                writer.WriteLine($"{current}");
-            }
-            else
-            {
-                baseStream.Position = CurrentSector.Position;
-                baseStream.ReadExactly(data, 0, data.Length);
-                string hex = BitConverter.ToString(data);
-                writer.WriteLine($"{current}: {hex}");
-            }
-        }
-
-        writer.WriteLine("End of FAT ===================");
-    }
-
     public override string ToString() => $"{Current}";
 }

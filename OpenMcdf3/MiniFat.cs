@@ -142,6 +142,10 @@ internal sealed class MiniFat : IEnumerable<FatEntry>, IDisposable
     internal void Trace(TextWriter writer)
     {
         using MiniFatEnumerator miniFatEnumerator = new(ioContext);
-        miniFatEnumerator.Trace(writer);
+
+        writer.WriteLine("Start of Mini FAT ============");
+        while (miniFatEnumerator.MoveNext())
+            writer.WriteLine($"{miniFatEnumerator.Current}");
+        writer.WriteLine("End of Mini FAT ==============");
     }
 }
