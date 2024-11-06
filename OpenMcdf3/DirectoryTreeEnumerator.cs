@@ -8,19 +8,19 @@ namespace OpenMcdf3;
 /// </summary>
 internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
 {
+    private readonly Directories directories;
     private readonly DirectoryEntry root;
     private DirectoryEntry? child;
     private readonly Stack<DirectoryEntry> stack = new();
-    private readonly DirectoryEntryEnumerator directoryEntryEnumerator;
     DirectoryEntry parent;
     DirectoryEntry? current;
 
-    internal DirectoryTreeEnumerator(IOContext ioContext, DirectoryEntry root)
+    internal DirectoryTreeEnumerator(Directories directories, DirectoryEntry root)
     {
-        directoryEntryEnumerator = new(ioContext);
+        this.directories = directories;
         this.root = root;
         if (root.ChildId != StreamId.NoStream)
-            child = directoryEntryEnumerator.GetDictionaryEntry(root.ChildId);
+            child = directories.GetDictionaryEntry(root.ChildId);
         parent = root;
         PushLeft(child);
     }
@@ -28,7 +28,6 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
     /// <inheritdoc/>
     public void Dispose()
     {
-        directoryEntryEnumerator.Dispose();
     }
 
     /// <inheritdoc/>
@@ -59,7 +58,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         parent = stack.Count == 0 ? root : stack.Peek();
         if (current.RightSiblingId != StreamId.NoStream)
         {
-            DirectoryEntry rightSibling = directoryEntryEnumerator.GetDictionaryEntry(current.RightSiblingId);
+            DirectoryEntry rightSibling = directories.GetDictionaryEntry(current.RightSiblingId);
             PushLeft(rightSibling);
         }
 
@@ -80,7 +79,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         while (node is not null)
         {
             stack.Push(node);
-            node = node.LeftSiblingId == StreamId.NoStream ? null : directoryEntryEnumerator.GetDictionaryEntry(node.LeftSiblingId);
+            node = node.LeftSiblingId == StreamId.NoStream ? null : directories.GetDictionaryEntry(node.LeftSiblingId);
         }
     }
 
@@ -109,7 +108,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         if (MoveTo(name))
             throw new IOException($"{storageType} \"{name}\" already exists.");
 
-        DirectoryEntry entry = directoryEntryEnumerator.CreateOrRecycleDirectoryEntry();
+        DirectoryEntry entry = directories.CreateOrRecycleDirectoryEntry();
         entry.Recycle(storageType, name);
 
         Add(entry);
@@ -123,13 +122,13 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
 
         // TODO: Implement balancing (all-black for now)
         entry.Color = NodeColor.Black;
-        directoryEntryEnumerator.Write(entry);
+        directories.Write(entry);
 
         if (root.ChildId == StreamId.NoStream)
         {
             Debug.Assert(child is null);
             root.ChildId = entry.Id;
-            directoryEntryEnumerator.Write(root);
+            directories.Write(root);
             child = entry;
         }
         else
@@ -137,9 +136,9 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
             Debug.Assert(child is not null);
             DirectoryEntry node = child!;
             while (node.LeftSiblingId != StreamId.NoStream)
-                node = directoryEntryEnumerator.GetDictionaryEntry(node.LeftSiblingId);
+                node = directories.GetDictionaryEntry(node.LeftSiblingId);
             node.LeftSiblingId = entry.Id;
-            directoryEntryEnumerator.Write(node);
+            directories.Write(node);
         }
     }
 
@@ -151,7 +150,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         if (root.ChildId == entry.Id)
         {
             root.ChildId = entry.LeftSiblingId;
-            directoryEntryEnumerator.Write(root);
+            directories.Write(root);
             if (root.ChildId == StreamId.NoStream)
                 child = null;
             return;
@@ -165,10 +164,10 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
             {
                 if (parent.LeftSiblingId == entry.Id)
                     parent.LeftSiblingId = entry.LeftSiblingId;
-                directoryEntryEnumerator.Write(parent);
+                directories.Write(parent);
 
                 entry.Recycle();
-                directoryEntryEnumerator.Write(entry);
+                directories.Write(entry);
                 break;
             }
         }

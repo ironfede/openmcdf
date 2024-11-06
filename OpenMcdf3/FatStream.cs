@@ -65,7 +65,7 @@ internal class FatStream : Stream
 
         if (isDirty)
         {
-            ioContext.Write(DirectoryEntry);
+            ioContext.Directories.Write(DirectoryEntry);
             isDirty = false;
         }
 

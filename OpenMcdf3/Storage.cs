@@ -36,7 +36,7 @@ public class Storage
 
     IEnumerable<DirectoryEntry> EnumerateDirectoryEntries()
     {
-        using DirectoryTreeEnumerator treeEnumerator = new(ioContext, DirectoryEntry);
+        using DirectoryTreeEnumerator treeEnumerator = new(ioContext.Directories, DirectoryEntry);
         while (treeEnumerator.MoveNext())
         {
             yield return treeEnumerator.Current;
@@ -48,13 +48,13 @@ public class Storage
 
     DirectoryEntry? TryGetDirectoryEntry(string name)
     {
-        using DirectoryTreeEnumerator directoryTreeEnumerator = new(ioContext, DirectoryEntry);
+        using DirectoryTreeEnumerator directoryTreeEnumerator = new(ioContext.Directories, DirectoryEntry);
         return directoryTreeEnumerator.TryGetDirectoryEntry(name);
     }
 
     DirectoryEntry AddDirectoryEntry(StorageType storageType, string name)
     {
-        using DirectoryTreeEnumerator directoryTreeEnumerator = new(ioContext, DirectoryEntry);
+        using DirectoryTreeEnumerator directoryTreeEnumerator = new(ioContext.Directories, DirectoryEntry);
         return directoryTreeEnumerator.Add(storageType, name);
     }
 
@@ -111,7 +111,7 @@ public class Storage
 
         this.ThrowIfDisposed(ioContext.IsDisposed);
 
-        using DirectoryTreeEnumerator directoryTreeEnumerator = new(ioContext, DirectoryEntry);
+        using DirectoryTreeEnumerator directoryTreeEnumerator = new(ioContext.Directories, DirectoryEntry);
         DirectoryEntry? entry = directoryTreeEnumerator.TryGetDirectoryEntry(name);
         if (entry is null)
             return;
@@ -144,7 +144,7 @@ public class Storage
 
     internal void TraceDirectoryEntries(TextWriter writer)
     {
-        using DirectoryTreeEnumerator treeEnumerator = new(ioContext, DirectoryEntry);
+        using DirectoryTreeEnumerator treeEnumerator = new(ioContext.Directories, DirectoryEntry);
         treeEnumerator.PrintTrace(writer);
     }
 }

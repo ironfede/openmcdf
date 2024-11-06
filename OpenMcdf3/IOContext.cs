@@ -14,9 +14,8 @@ enum IOContextFlags
 internal sealed class IOContext : IDisposable
 {
     readonly Stream stream;
-    readonly DirectoryEntryEnumerator directoryEnumerator;
     readonly CfbBinaryWriter? writer;
-    TransactedStream? transactedStream;
+    readonly TransactedStream? transactedStream;
     MiniFat? miniFat;
     FatStream? miniStream;
 
@@ -35,6 +34,8 @@ internal sealed class IOContext : IDisposable
     }
 
     public Fat Fat { get; }
+
+    public Directories Directories { get; }
 
     public DirectoryEntry RootEntry { get; }
 
@@ -96,21 +97,19 @@ internal sealed class IOContext : IDisposable
             writer = new(actualStream);
 
         Fat = new(this);
-        directoryEnumerator = new(this);
+        Directories = new(this);
 
         if (contextFlags.HasFlag(IOContextFlags.Create))
         {
-            RootEntry = directoryEnumerator.CreateOrRecycleDirectoryEntry();
+            RootEntry = Directories.CreateOrRecycleDirectoryEntry();
             RootEntry.RecycleRoot();
 
             WriteHeader();
-            Write(RootEntry);
+            Directories.Write(RootEntry);
         }
         else
         {
-            if (!directoryEnumerator.MoveNext())
-                throw new FormatException("Root directory entry not found.");
-            RootEntry = directoryEnumerator.Current;
+            RootEntry = Directories.GetDictionaryEntry(0);
         }
     }
 
@@ -127,7 +126,7 @@ internal sealed class IOContext : IDisposable
 
             miniStream?.Dispose();
             miniFat?.Dispose();
-            directoryEnumerator.Dispose();
+            Directories.Dispose();
             Fat.Dispose();
             writer?.Dispose();
             Reader.Dispose();
@@ -146,11 +145,6 @@ internal sealed class IOContext : IDisposable
         CfbBinaryWriter writer = Writer;
         writer.Seek(0, SeekOrigin.Begin);
         writer.Write(Header);
-    }
-
-    public void Write(DirectoryEntry entry)
-    {
-        directoryEnumerator.Write(entry);
     }
 
     public void Commit()

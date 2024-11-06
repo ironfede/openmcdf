@@ -55,7 +55,7 @@ internal sealed class MiniFatStream : Stream
 
         if (isDirty)
         {
-            ioContext.Write(DirectoryEntry);
+            ioContext.Directories.Write(DirectoryEntry);
             isDirty = false;
         }
 
