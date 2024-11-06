@@ -173,4 +173,16 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
             }
         }
     }
+
+    internal void PrintTrace(TextWriter writer)
+    {
+        Reset();
+
+        while (MoveNext())
+        {
+            for (int i = 0; i < stack.Count; i++)
+                writer.Write("  ");
+            writer.WriteLine($"{Current.ColorChar} {Current}");
+        }
+    }
 }

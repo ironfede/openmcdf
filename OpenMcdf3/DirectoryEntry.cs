@@ -130,6 +130,13 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
     /// </summary>
     public long StreamLength { get; set; }
 
+    internal char ColorChar => Color switch
+    {
+        NodeColor.Red => 'R',
+        NodeColor.Black => 'B',
+        _ => '?'
+    };
+
     public override bool Equals(object? obj) => Equals(obj as DirectoryEntry);
 
     public bool Equals(DirectoryEntry? other)

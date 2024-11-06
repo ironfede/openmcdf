@@ -5,6 +5,8 @@ namespace OpenMcdf3.Tests;
 
 internal sealed class DebugWriter : TextWriter
 {
+    public static DebugWriter Default { get; } = new();
+
     public override Encoding Encoding => Encoding.Unicode;
 
     public override void Write(char value) => Debug.Write(value);

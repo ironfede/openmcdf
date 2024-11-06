@@ -141,4 +141,10 @@ public class Storage
 
         directoryTreeEnumerator.Remove(entry);
     }
+
+    internal void TraceDirectoryEntries(TextWriter writer)
+    {
+        using DirectoryTreeEnumerator treeEnumerator = new(ioContext, DirectoryEntry);
+        treeEnumerator.PrintTrace(writer);
+    }
 }
