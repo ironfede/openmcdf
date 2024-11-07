@@ -30,6 +30,7 @@ namespace OpenMcdf.Extensions.OLEProperties
                 VTPropertyType.VT_UI1 => new VT_UI1_Property(vType, isVariant),
                 VTPropertyType.VT_UI2 => new VT_UI2_Property(vType, isVariant),
                 VTPropertyType.VT_UI4 => new VT_UI4_Property(vType, isVariant),
+                VTPropertyType.VT_I8 => new VT_I8_Property(vType, isVariant),
                 VTPropertyType.VT_UI8 => new VT_UI8_Property(vType, isVariant),
                 VTPropertyType.VT_BSTR => new VT_LPSTR_Property(vType, codePage, isVariant),
                 VTPropertyType.VT_LPSTR => CreateLpstrProperty(vType, codePage, propertyIdentifier, isVariant),
