@@ -31,6 +31,7 @@ public sealed class StorageTests
         {
             for (int i = 0; i < subStorageCount; i++)
                 rootStorage.CreateStorage($"Test{i}");
+            rootStorage.TraceDirectoryEntries(DebugWriter.Default);
         }
 
         memoryStream.Position = 0;
@@ -38,6 +39,9 @@ public sealed class StorageTests
         {
             IEnumerable<EntryInfo> entries = rootStorage.EnumerateEntries();
             Assert.AreEqual(subStorageCount, entries.Count());
+
+            for (int i = 0; i < subStorageCount; i++)
+                rootStorage.OpenStorage($"Test{i}");
         }
     }
 

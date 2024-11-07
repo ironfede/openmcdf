@@ -6,6 +6,7 @@
 public class Storage
 {
     internal readonly IOContext ioContext;
+    internal readonly DirectoryTree directoryTree;
 
     internal DirectoryEntry DirectoryEntry { get; }
 
@@ -15,6 +16,7 @@ public class Storage
             throw new ArgumentException("DirectoryEntry must be a Storage or Root.", nameof(directoryEntry));
 
         this.ioContext = ioContext;
+        directoryTree = new(ioContext.Directories, directoryEntry);
         DirectoryEntry = directoryEntry;
     }
 
@@ -46,16 +48,12 @@ public class Storage
     IEnumerable<DirectoryEntry> EnumerateDirectoryEntries(StorageType type) => EnumerateDirectoryEntries()
         .Where(e => e.Type == type);
 
-    DirectoryEntry? TryGetDirectoryEntry(string name)
-    {
-        using DirectoryTreeEnumerator directoryTreeEnumerator = new(ioContext.Directories, DirectoryEntry);
-        return directoryTreeEnumerator.TryGetDirectoryEntry(name);
-    }
-
     DirectoryEntry AddDirectoryEntry(StorageType storageType, string name)
     {
-        using DirectoryTreeEnumerator directoryTreeEnumerator = new(ioContext.Directories, DirectoryEntry);
-        return directoryTreeEnumerator.Add(storageType, name);
+        DirectoryEntry entry = ioContext.Directories.CreateOrRecycleDirectoryEntry();
+        entry.Recycle(storageType, name);
+        directoryTree.Add(entry);
+        return entry;
     }
 
     public Storage CreateStorage(string name)
@@ -85,7 +83,7 @@ public class Storage
 
         this.ThrowIfDisposed(ioContext.IsDisposed);
 
-        DirectoryEntry? entry = TryGetDirectoryEntry(name);
+        directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? entry);
         if (entry is null || entry.Type is not StorageType.Storage)
             throw new DirectoryNotFoundException($"Storage not found: {name}.");
         return new Storage(ioContext, entry);
@@ -97,7 +95,7 @@ public class Storage
 
         this.ThrowIfDisposed(ioContext.IsDisposed);
 
-        DirectoryEntry? entry = TryGetDirectoryEntry(name);
+        directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? entry);
         if (entry is null || entry.Type is not StorageType.Stream)
             throw new FileNotFoundException($"Stream not found: {name}.", name);
 
@@ -111,8 +109,7 @@ public class Storage
 
         this.ThrowIfDisposed(ioContext.IsDisposed);
 
-        using DirectoryTreeEnumerator directoryTreeEnumerator = new(ioContext.Directories, DirectoryEntry);
-        DirectoryEntry? entry = directoryTreeEnumerator.TryGetDirectoryEntry(name);
+        directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? entry);
         if (entry is null)
             return;
 
@@ -139,12 +136,11 @@ public class Storage
             }
         }
 
-        directoryTreeEnumerator.Remove(entry);
+        directoryTree.Remove(entry);
     }
 
     internal void TraceDirectoryEntries(TextWriter writer)
     {
-        using DirectoryTreeEnumerator treeEnumerator = new(ioContext.Directories, DirectoryEntry);
-        treeEnumerator.PrintTrace(writer);
+        directoryTree.WriteTrace(writer);
     }
 }

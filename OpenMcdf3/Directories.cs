@@ -32,6 +32,12 @@ internal sealed class Directories : IDisposable
 
     public bool TryGetDictionaryEntry(uint streamId, out DirectoryEntry? entry)
     {
+        if (streamId == StreamId.NoStream)
+        {
+            entry = null;
+            return false;
+        }
+
         if (streamId > StreamId.Maximum)
             throw new ArgumentException($"Invalid directory entry stream ID: ${streamId:X8}.", nameof(streamId));
 
