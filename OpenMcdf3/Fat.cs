@@ -55,7 +55,7 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
     {
         if (key < DifatArrayElementCount)
             return (uint)Math.DivRem(key, FatElementsPerSector, out elementIndex);
-        return (uint)Math.DivRem(key - DifatArrayElementCount, DifatElementsPerSector, out elementIndex);
+        return Header.DifatArrayLength + (uint)Math.DivRem(key - DifatArrayElementCount, DifatElementsPerSector, out elementIndex);
     }
 
     void CacheCurrentSector()
