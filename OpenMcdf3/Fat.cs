@@ -14,7 +14,8 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
     private readonly int DifatArrayElementCount;
     private readonly int FatElementsPerSector;
     private readonly int DifatElementsPerSector;
-    private readonly byte[] sector;
+    private readonly byte[] cachedSectorBuffer;
+    Sector cachedSector = Sector.EndOfChain;
     private bool isDirty;
 
     public Fat(IOContext ioContext)
@@ -24,7 +25,7 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
         DifatElementsPerSector = FatElementsPerSector - 1;
         DifatArrayElementCount = Header.DifatArrayLength * FatElementsPerSector;
         fatSectorEnumerator = new(ioContext);
-        sector = new byte[ioContext.SectorSize];
+        cachedSectorBuffer = new byte[ioContext.SectorSize];
     }
 
     public void Dispose()
@@ -57,13 +58,27 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
         return (uint)Math.DivRem(key - DifatArrayElementCount, DifatElementsPerSector, out elementIndex);
     }
 
+    void CacheCurrentSector()
+    {
+        Sector current = fatSectorEnumerator.Current;
+        if (cachedSector.Id == current.Id)
+            return;
+
+        Flush();
+
+        CfbBinaryReader reader = ioContext.Reader;
+        reader.Position = current.Position;
+        reader.Read(cachedSectorBuffer);
+        cachedSector = current;
+    }
+
     public void Flush()
     {
         if (isDirty)
         {
             CfbBinaryWriter writer = ioContext.Writer;
-            writer.Position = fatSectorEnumerator.Current.Position;
-            writer.Write(sector);
+            writer.Position = cachedSector.Position;
+            writer.Write(cachedSectorBuffer);
             isDirty = false;
         }
     }
@@ -71,18 +86,11 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
     bool TryMoveToSectorForKey(uint key, out long offset)
     {
         uint sectorId = GetSectorIndexAndElementOffset(key, out offset);
-        if (fatSectorEnumerator.IsAt(sectorId))
-            return true;
-
-        Flush();
-
         bool ok = fatSectorEnumerator.MoveTo(sectorId);
         if (!ok)
             return false;
 
-        CfbBinaryReader reader = ioContext.Reader;
-        reader.Position = fatSectorEnumerator.Current.Position;
-        reader.Read(sector);
+        CacheCurrentSector();
         return true;
     }
 
@@ -97,7 +105,7 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
             return false;
         }
 
-        ReadOnlySpan<byte> slice = sector.AsSpan((int)elementIndex * sizeof(uint));
+        ReadOnlySpan<byte> slice = cachedSectorBuffer.AsSpan((int)elementIndex * sizeof(uint));
         value = BinaryPrimitives.ReadUInt32LittleEndian(slice);
         return true;
     }
@@ -109,7 +117,7 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
         if (!TryMoveToSectorForKey(key, out long elementIndex))
             return false;
 
-        Span<byte> slice = sector.AsSpan((int)elementIndex * sizeof(uint));
+        Span<byte> slice = cachedSectorBuffer.AsSpan((int)elementIndex * sizeof(uint));
         BinaryPrimitives.WriteUInt32LittleEndian(slice, value);
         isDirty = true;
         return true;
@@ -127,11 +135,15 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
             && fatEnumerator.MoveNextFreeEntry();
         if (!movedToFreeEntry)
         {
+            Flush();
+
             uint newSectorId = fatSectorEnumerator.Add();
 
             // Next id must be free
             bool ok = fatEnumerator.MoveTo(newSectorId + 1);
             Debug.Assert(ok);
+
+            CacheCurrentSector();
         }
 
         FatEntry entry = fatEnumerator.Current;
