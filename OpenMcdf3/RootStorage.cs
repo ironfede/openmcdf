@@ -48,7 +48,7 @@ public sealed class RootStorage : Storage, IDisposable
         return Open(stream);
     }
 
-    public static RootStorage OpenRead(string fileName)
+    public static RootStorage OpenRead(string fileName, StorageModeFlags flags = StorageModeFlags.None)
     {
         FileStream stream = File.OpenRead(fileName);
         return Open(stream);

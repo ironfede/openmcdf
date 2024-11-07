@@ -10,9 +10,19 @@ public sealed class StorageTests
     [DataRow("MultipleStorage4.cfs", 1)]
     public void Read(string fileName, long storageCount)
     {
-        using var rootStorage = RootStorage.OpenRead(fileName);
-        IEnumerable<EntryInfo> storageEntries = rootStorage.EnumerateEntries(StorageType.Storage);
-        Assert.AreEqual(storageCount, storageEntries.Count());
+        using (var rootStorage = RootStorage.OpenRead(fileName, StorageModeFlags.LeaveOpen))
+        {
+            IEnumerable<EntryInfo> storageEntries = rootStorage.EnumerateEntries(StorageType.Storage);
+            Assert.AreEqual(storageCount, storageEntries.Count());
+        }
+
+#if WINDOWS
+        using (var rootStorage = StructuredStorage.Storage.Open(fileName))
+        {
+            IEnumerable<string> entries = rootStorage.EnumerateEntries();
+            Assert.AreEqual(storageCount, entries.Count());
+        }
+#endif
     }
 
     [TestMethod]
@@ -27,7 +37,7 @@ public sealed class StorageTests
     public void CreateStorage(Version version, int subStorageCount)
     {
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
             for (int i = 0; i < subStorageCount; i++)
                 rootStorage.CreateStorage($"Test{i}");
@@ -35,7 +45,7 @@ public sealed class StorageTests
         }
 
         memoryStream.Position = 0;
-        using (var rootStorage = RootStorage.Open(memoryStream))
+        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen))
         {
             IEnumerable<EntryInfo> entries = rootStorage.EnumerateEntries();
             Assert.AreEqual(subStorageCount, entries.Count());
@@ -43,6 +53,19 @@ public sealed class StorageTests
             for (int i = 0; i < subStorageCount; i++)
                 rootStorage.OpenStorage($"Test{i}");
         }
+
+#if WINDOWS
+        using (var rootStorage = StructuredStorage.Storage.Open(memoryStream))
+        {
+            IEnumerable<string> entries = rootStorage.EnumerateEntries();
+            Assert.AreEqual(subStorageCount, entries.Count());
+
+            for (int i = 0; i < subStorageCount; i++)
+            {
+                using StructuredStorage.Storage storage = rootStorage.OpenStorage($"Test{i}");
+            }
+        }
+#endif
     }
 
     [TestMethod]
@@ -62,13 +85,13 @@ public sealed class StorageTests
     public void DeleteSingleStorage(Version version)
     {
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
             rootStorage.CreateStorage("Test");
             Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
         }
 
-        using (var rootStorage = RootStorage.Open(memoryStream))
+        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen))
         {
             rootStorage.Delete("Test");
             Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
@@ -86,14 +109,14 @@ public sealed class StorageTests
     public void DeleteRedBlackTreeChildLeaf(Version version)
     {
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
             rootStorage.CreateStorage("Test1");
             rootStorage.CreateStorage("Test2");
             Assert.AreEqual(2, rootStorage.EnumerateEntries().Count());
         }
 
-        using (var rootStorage = RootStorage.Open(memoryStream))
+        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen))
         {
             rootStorage.Delete("Test1");
             Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
@@ -111,14 +134,14 @@ public sealed class StorageTests
     public void DeleteRedBlackTreeSiblingLeaf(Version version)
     {
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
             rootStorage.CreateStorage("Test1");
             rootStorage.CreateStorage("Test2");
             Assert.AreEqual(2, rootStorage.EnumerateEntries().Count());
         }
 
-        using (var rootStorage = RootStorage.Open(memoryStream))
+        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen))
         {
             rootStorage.Delete("Test2");
             Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
@@ -136,7 +159,7 @@ public sealed class StorageTests
     public void DeleteRedBlackTreeSibling(Version version)
     {
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
             rootStorage.CreateStorage("Test1");
             rootStorage.CreateStorage("Test2");
@@ -144,7 +167,7 @@ public sealed class StorageTests
             Assert.AreEqual(3, rootStorage.EnumerateEntries().Count());
         }
 
-        using (var rootStorage = RootStorage.Open(memoryStream))
+        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen))
         {
             rootStorage.Delete("Test2");
             Assert.AreEqual(2, rootStorage.EnumerateEntries().Count());
@@ -162,7 +185,7 @@ public sealed class StorageTests
     public void DeleteStorageRecursively(Version version)
     {
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
             Storage storage = rootStorage.CreateStorage("Test");
             Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
@@ -170,7 +193,7 @@ public sealed class StorageTests
             using CfbStream stream = storage.CreateStream("Test");
         }
 
-        using (var rootStorage = RootStorage.Open(memoryStream))
+        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen))
         {
             rootStorage.Delete("Test");
             Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
@@ -188,7 +211,7 @@ public sealed class StorageTests
     public void DeleteStream(Version version)
     {
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
             rootStorage.CreateStream("Test");
             Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());

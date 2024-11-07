@@ -179,7 +179,7 @@ public sealed class StreamTests
             expectedBuffer[i] = (byte)i;
 
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
             using CfbStream stream = rootStorage.CreateStream("TestStream");
             Assert.AreEqual(0, stream.Length);
@@ -288,7 +288,7 @@ public sealed class StreamTests
             expectedBuffer[i] = (byte)i;
 
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
             using CfbStream stream = rootStorage.CreateStream("TestStream1");
             Assert.AreEqual(0, stream.Length);
@@ -296,7 +296,7 @@ public sealed class StreamTests
             stream.Write(expectedBuffer, 0, expectedBuffer.Length);
         }
 
-        using (var rootStorage = RootStorage.Open(memoryStream))
+        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen))
         {
             using CfbStream stream = rootStorage.CreateStream("TestStream2");
             Assert.AreEqual(0, stream.Length);
@@ -364,7 +364,7 @@ public sealed class StreamTests
             expectedBuffer[i] = (byte)i;
 
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
             using CfbStream stream = rootStorage.CreateStream("TestStream1");
             Assert.AreEqual(0, stream.Length);
@@ -372,7 +372,7 @@ public sealed class StreamTests
             stream.Write(expectedBuffer, 0, expectedBuffer.Length);
         }
 
-        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.Transacted))
+        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen | StorageModeFlags.Transacted))
         {
             using CfbStream stream = rootStorage.CreateStream("TestStream2");
             Assert.AreEqual(0, stream.Length);
@@ -442,7 +442,7 @@ public sealed class StreamTests
             expectedBuffer[i] = (byte)i;
 
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
             using CfbStream stream = rootStorage.CreateStream("TestStream1");
             Assert.AreEqual(0, stream.Length);
@@ -495,7 +495,7 @@ public sealed class StreamTests
             expectedBuffer[i] = (byte)i;
 
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
             using CfbStream stream = rootStorage.CreateStream("TestStream1");
             Assert.AreEqual(0, stream.Length);
@@ -503,7 +503,7 @@ public sealed class StreamTests
             stream.Write(expectedBuffer, 0, expectedBuffer.Length);
         }
 
-        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.Transacted))
+        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen | StorageModeFlags.Transacted))
         {
             using CfbStream stream = rootStorage.CreateStream("TestStream2");
             Assert.AreEqual(0, stream.Length);
