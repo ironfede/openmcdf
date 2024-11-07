@@ -12,7 +12,7 @@ namespace OpenMcdf3.Benchmark;
 [Orderer(SummaryOrderPolicy.FastestToSlowest)]
 public class InMemory : IDisposable
 {
-    bool inMemory = false;
+    bool inMemory = true;
     private const int Kb = 1024;
     private const int Mb = Kb * Kb;
     private const string storageName = "MyStorage";

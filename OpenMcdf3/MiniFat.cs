@@ -148,4 +148,18 @@ internal sealed class MiniFat : IEnumerable<FatEntry>, IDisposable
             writer.WriteLine($"{miniFatEnumerator.Current}");
         writer.WriteLine("End of Mini FAT ==============");
     }
+
+    internal void Validate()
+    {
+        using MiniFatEnumerator miniFatEnumerator = new(ioContext);
+
+        while (miniFatEnumerator.MoveNext())
+        {
+            FatEntry current = miniFatEnumerator.Current;
+            if (current.Value <= SectorType.Maximum && miniFatEnumerator.CurrentSector.EndPosition > ioContext.MiniStream.Length)
+            {
+                throw new FormatException($"Mini FAT entry {current} is beyond the end of the mini stream.");
+            }
+        }
+    }
 }

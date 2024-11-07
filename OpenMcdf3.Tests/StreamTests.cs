@@ -29,6 +29,8 @@ public sealed class StreamTests
     {
         string fileName = $"TestStream_v{(int)version}_{length}.cfs";
         using var rootStorage = RootStorage.OpenRead(fileName);
+        rootStorage.Validate();
+
         using Stream stream = rootStorage.OpenStream("TestStream");
         Assert.AreEqual(length, stream.Length);
 
@@ -132,7 +134,7 @@ public sealed class StreamTests
         Assert.AreEqual(length, stream.Length);
         Assert.AreEqual(length, stream.Position);
 
-        rootStorage.Trace(DebugWriter.Default);
+        rootStorage.Validate();
 
         byte[] actualBuffer = new byte[length];
         stream.Position = 0;
@@ -188,6 +190,7 @@ public sealed class StreamTests
         using (var rootStorage = RootStorage.Open(memoryStream))
         {
             using CfbStream stream = rootStorage.OpenStream("TestStream");
+            rootStorage.Validate();
             Assert.AreEqual(length, stream.Length);
 
             byte[] actualBuffer = new byte[length];
@@ -303,6 +306,8 @@ public sealed class StreamTests
 
         using (var rootStorage = RootStorage.Open(memoryStream))
         {
+            rootStorage.Validate();
+
             using (CfbStream stream = rootStorage.OpenStream("TestStream1"))
             {
                 Assert.AreEqual(length, stream.Length);
@@ -379,6 +384,8 @@ public sealed class StreamTests
 
         using (var rootStorage = RootStorage.Open(memoryStream))
         {
+            rootStorage.Validate();
+
             using (CfbStream stream = rootStorage.OpenStream("TestStream1"))
             {
                 Assert.AreEqual(length, stream.Length);
@@ -507,6 +514,8 @@ public sealed class StreamTests
 
         using (var rootStorage = RootStorage.Open(memoryStream))
         {
+            rootStorage.Validate();
+
             using (CfbStream stream = rootStorage.OpenStream("TestStream1"))
             {
                 Assert.AreEqual(length, stream.Length);

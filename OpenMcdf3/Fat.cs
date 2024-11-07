@@ -156,7 +156,7 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-    internal void Trace(TextWriter writer)
+    internal void WriteTrace(TextWriter writer)
     {
         using FatEnumerator fatEnumerator = new(ioContext);
 
@@ -183,5 +183,19 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
         }
 
         writer.WriteLine("End of FAT ===================");
+    }
+
+    internal void Validate()
+    {
+        using FatEnumerator fatEnumerator = new(ioContext);
+
+        while (fatEnumerator.MoveNext())
+        {
+            FatEntry current = fatEnumerator.Current;
+            if (current.Value <= SectorType.Maximum && fatEnumerator.CurrentSector.EndPosition > ioContext.Length)
+            {
+                throw new FormatException($"FAT entry {current} is beyond the end of the stream.");
+            }
+        }
     }
 }

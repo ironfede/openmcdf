@@ -194,7 +194,6 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         }
 
         ioContext.Fat[newSector.Id] = sectorType;
-
         return newSector.Id;
     }
 }

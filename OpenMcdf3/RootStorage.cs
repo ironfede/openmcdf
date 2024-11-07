@@ -89,7 +89,13 @@ public sealed class RootStorage : Storage, IDisposable
     internal void Trace(TextWriter writer)
     {
         writer.WriteLine(ioContext.Header);
-        ioContext.Fat.Trace(writer);
+        ioContext.Fat.WriteTrace(writer);
         ioContext.MiniFat.Trace(writer);
+    }
+
+    internal void Validate()
+    {
+        ioContext.Fat.Validate();
+        ioContext.MiniFat.Validate();
     }
 }
