@@ -14,6 +14,7 @@ enum IOContextFlags
 internal sealed class IOContext : IDisposable
 {
     readonly Stream stream;
+    readonly IOContextFlags contextFlags;
     readonly CfbBinaryWriter? writer;
     readonly TransactedStream? transactedStream;
     MiniFat? miniFat;
@@ -77,6 +78,7 @@ internal sealed class IOContext : IDisposable
     public IOContext(Stream stream, Version version, IOContextFlags contextFlags = IOContextFlags.None)
     {
         this.stream = stream;
+        this.contextFlags = contextFlags;
 
         using CfbBinaryReader reader = new(stream);
         Header = contextFlags.HasFlag(IOContextFlags.Create) ? new(version) : reader.ReadHeader();
@@ -130,6 +132,9 @@ internal sealed class IOContext : IDisposable
             Fat.Dispose();
             writer?.Dispose();
             Reader.Dispose();
+            transactedStream?.Dispose();
+            if (!contextFlags.HasFlag(IOContextFlags.LeaveOpen))
+                stream.Dispose();
             IsDisposed = true;
         }
     }
