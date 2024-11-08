@@ -55,8 +55,11 @@ internal sealed class Directories : IDisposable
 
         CfbBinaryWriter writer = ioContext.Writer;
         uint id = fatChainEnumerator.Extend();
-        if (ioContext.Header.FirstDirectorySectorId == SectorType.EndOfChain)
-            ioContext.Header.FirstDirectorySectorId = id;
+        Header header = ioContext.Header;
+        if (header.FirstDirectorySectorId == SectorType.EndOfChain)
+            header.FirstDirectorySectorId = id;
+        if (ioContext.Version == Version.V4)
+            header.DirectorySectorCount++;
 
         Sector sector = new(id, ioContext.SectorSize);
         writer.Position = sector.Position;
