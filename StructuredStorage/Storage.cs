@@ -185,6 +185,8 @@ public sealed class Storage : IDisposable
 
     public static unsafe Storage Open(MemoryStream stream, StorageModes modes = StorageModes.ShareExclusive | StorageModes.AccessReadWrite)
     {
+        stream.Position = 0;
+
         LockBytes lockBytes = new(stream);
         HRESULT hr = PInvoke.StgOpenStorageOnILockBytes(lockBytes.ILockBytes, null, (STGM)modes, null, out IStorage storage);
         hr.ThrowOnFailure();

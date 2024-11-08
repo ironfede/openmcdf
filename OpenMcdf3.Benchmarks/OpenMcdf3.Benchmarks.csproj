@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
+    <TargetFrameworks>net8.0-windows</TargetFrameworks>
     <LangVersion>11.0</LangVersion>
     <OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OpenMcdf3\OpenMcdf3.csproj" />
+    <ProjectReference Include="..\StructuredStorage\StructuredStorage.csproj" />
   </ItemGroup>
 
 </Project>
