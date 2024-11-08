@@ -94,7 +94,7 @@ public sealed class CfbStream : Stream
         stream.Write(buffer, offset, count);
     }
 
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
 
     public override int Read(Span<byte> buffer) => stream.Read(buffer);
 

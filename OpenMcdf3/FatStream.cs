@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace OpenMcdf3;
+﻿namespace OpenMcdf3;
 
 /// <summary>
 /// Provides a <inheritdoc cref="Stream"/> for a stream object in a compound file./>
@@ -152,11 +150,10 @@ internal class FatStream : Stream
 
         uint requiredChainLength = (uint)((value + ioContext.SectorSize - 1) / ioContext.SectorSize);
         if (value > ChainCapacity)
-            chain.Extend(requiredChainLength);
+            DirectoryEntry.StartSectorId = chain.Extend(requiredChainLength);
         else if (value <= ChainCapacity - ioContext.SectorSize)
-            chain.Shrink(requiredChainLength);
+            DirectoryEntry.StartSectorId = chain.Shrink(requiredChainLength);
 
-        DirectoryEntry.StartSectorId = chain.StartId;
         DirectoryEntry.StreamLength = value;
         isDirty = true;
     }
@@ -206,7 +203,7 @@ internal class FatStream : Stream
         throw new InvalidOperationException($"End of FAT chain was reached");
     }
 
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
 
     public override int ReadByte() => this.ReadByteCore();
 

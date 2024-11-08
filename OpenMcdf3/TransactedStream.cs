@@ -130,7 +130,7 @@ internal class TransactedStream : Stream
         dirtySectorPositions.Clear();
     }
 
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
 
     public override int ReadByte() => this.ReadByteCore();
 
@@ -141,7 +141,7 @@ internal class TransactedStream : Stream
         int localCount = Math.Min(buffer.Length, remainingFromSector);
         Debug.Assert(localCount == buffer.Length);
 
-        Span<byte> slice = buffer.Slice(0, localCount);
+        Span<byte> slice = buffer[..localCount];
         int read;
         if (dirtySectorPositions.TryGetValue(sectorId, out long overlayPosition))
         {

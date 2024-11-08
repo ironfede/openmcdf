@@ -29,8 +29,6 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
         fatEnumerator.Dispose();
     }
 
-    public uint StartId => startId;
-
     public Sector CurrentSector => new(Current.Value, ioContext.SectorSize);
 
     /// <inheritdoc/>
@@ -141,7 +139,7 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
     /// <summary>
     /// Returns the ID of the first sector in the chain.
     /// </summary>
-    public void Extend(uint requiredChainLength)
+    public uint Extend(uint requiredChainLength)
     {
         uint chainLength = (uint)GetLength();
         if (chainLength >= requiredChainLength)
@@ -168,6 +166,7 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
         }
 
         length = requiredChainLength;
+        return startId;
     }
 
     public uint ExtendFrom(uint hintId)
@@ -189,7 +188,7 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
         return id;
     }
 
-    public void Shrink(uint requiredChainLength)
+    public uint Shrink(uint requiredChainLength)
     {
         uint chainLength = (uint)GetLength();
         if (chainLength <= requiredChainLength)
@@ -225,6 +224,7 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
 #endif
 
         length = requiredChainLength;
+        return startId;
     }
 
     /// <inheritdoc/>

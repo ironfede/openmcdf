@@ -7,8 +7,6 @@ namespace OpenMcdf3;
 /// </summary>
 internal sealed class CfbBinaryWriter : BinaryWriter
 {
-    readonly byte[] buffer = new byte[DirectoryEntry.NameFieldLength];
-
     public CfbBinaryWriter(Stream input)
         : base(input, Encoding.Unicode, true)
     {
@@ -20,7 +18,7 @@ internal sealed class CfbBinaryWriter : BinaryWriter
         set => BaseStream.Position = value;
     }
 
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
 
     public override void Write(ReadOnlySpan<byte> buffer) => BaseStream.Write(buffer);
 
@@ -28,13 +26,13 @@ internal sealed class CfbBinaryWriter : BinaryWriter
 
     public void Write(in Guid value)
     {
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+#if NETSTANDARD2_0 || NETFRAMEWORK
+        byte[] bytes = value.ToByteArray();
+        Write(bytes);
+#else
         Span<byte> localBuffer = stackalloc byte[16];
         value.TryWriteBytes(localBuffer);
         Write(localBuffer);
-#else
-        byte[] bytes = value.ToByteArray();
-        Write(bytes);
 #endif
     }
 

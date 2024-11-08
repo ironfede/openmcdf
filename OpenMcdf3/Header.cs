@@ -1,5 +1,4 @@
-﻿
-namespace OpenMcdf3;
+﻿namespace OpenMcdf3;
 
 /// <summary>
 /// The structure at the beginning of a compound file.
@@ -158,6 +157,13 @@ internal sealed class Header : IEquatable<Header?>
             && FirstDifatSectorId == other.FirstDifatSectorId
             && DifatSectorCount == other.DifatSectorCount
             && Difat.SequenceEqual(other.Difat);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(
+            HashCode.Combine(CLSID, MinorVersion, MajorVersion, SectorShift, DirectorySectorCount, FatSectorCount, FirstDirectorySectorId, TransactionSignature),
+            HashCode.Combine(FirstMiniFatSectorId, MiniFatSectorCount, FirstDifatSectorId, DifatSectorCount, Difat));
     }
 
     public override string ToString() => $"MajorVersion: {MajorVersion}, MinorVersion: {MinorVersion}, FirstDirectorySectorId: {FirstDirectorySectorId}, FirstMiniFatSectorId: {FirstMiniFatSectorId}";

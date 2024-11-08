@@ -1,5 +1,8 @@
-﻿using System.Buffers;
-using System.Text;
+﻿using System.Text;
+
+#if NETSTANDARD2_0
+using System.Buffers;
+#endif
 
 namespace OpenMcdf3;
 

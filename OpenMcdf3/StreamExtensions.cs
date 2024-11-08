@@ -1,4 +1,6 @@
-﻿using System.Buffers;
+﻿#if !NET7_0_OR_GREATER
+using System.Buffers;
+#endif
 
 namespace OpenMcdf3;
 
@@ -38,7 +40,7 @@ internal static class StreamExtensions
 
 #endif
 
-#if NETSTANDARD2_1_OR_GREATER || NETCOREAPP3_0_OR_GREATER
+#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
 
     public static int ReadByteCore(this Stream stream)
     {
