@@ -109,6 +109,9 @@ public sealed class Stream : System.IO.Stream
     {
         ObjectDisposedException.ThrowIf(disposed, this);
 
+        if (buffer.Length == 0)
+            return;
+
         fixed (byte* ptr = buffer)
         {
             uint written;
