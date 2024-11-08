@@ -11,9 +11,7 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
 {
     private readonly IOContext ioContext;
     private readonly FatSectorEnumerator fatSectorEnumerator;
-    private readonly int DifatArrayElementCount;
     private readonly int FatElementsPerSector;
-    private readonly int DifatElementsPerSector;
     private readonly byte[] cachedSectorBuffer;
     Sector cachedSector = Sector.EndOfChain;
     private bool isDirty;
@@ -22,8 +20,6 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
     {
         this.ioContext = ioContext;
         FatElementsPerSector = ioContext.SectorSize / sizeof(uint);
-        DifatElementsPerSector = FatElementsPerSector - 1;
-        DifatArrayElementCount = Header.DifatArrayLength * FatElementsPerSector;
         fatSectorEnumerator = new(ioContext);
         cachedSectorBuffer = new byte[ioContext.SectorSize];
     }
@@ -53,9 +49,8 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
 
     uint GetSectorIndexAndElementOffset(uint key, out long elementIndex)
     {
-        if (key < DifatArrayElementCount)
-            return (uint)Math.DivRem(key, FatElementsPerSector, out elementIndex);
-        return Header.DifatArrayLength + (uint)Math.DivRem(key - DifatArrayElementCount, DifatElementsPerSector, out elementIndex);
+        uint index = (uint)Math.DivRem(key, FatElementsPerSector, out elementIndex);
+        return index;
     }
 
     void CacheCurrentSector()

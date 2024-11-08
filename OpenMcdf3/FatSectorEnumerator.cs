@@ -9,6 +9,7 @@ namespace OpenMcdf3;
 internal sealed class FatSectorEnumerator : IEnumerator<Sector>
 {
     private readonly IOContext ioContext;
+    private readonly uint DifatElementsPerSector;
     private bool start = true;
     private uint index = uint.MaxValue;
     private uint difatSectorId;
@@ -17,6 +18,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
     public FatSectorEnumerator(IOContext ioContext)
     {
         this.ioContext = ioContext;
+        DifatElementsPerSector = (uint)((ioContext.SectorSize / sizeof(uint)) - 1);
         difatSectorId = ioContext.Header.FirstDifatSectorId;
     }
 
@@ -66,11 +68,18 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         }
 
         Sector difatSector = new(difatSectorId, ioContext.SectorSize);
-        index = nextIndex;
-        current = difatSector;
+        uint elementIndex = (nextIndex - Header.DifatArrayLength) % DifatElementsPerSector;
+        ioContext.Reader.Position = difatSector.Position + elementIndex * sizeof(uint);
+        uint id2 = ioContext.Reader.ReadUInt32();
 
-        ioContext.Reader.Position = difatSector.EndPosition - sizeof(uint);
-        difatSectorId = ioContext.Reader.ReadUInt32();
+        index = nextIndex;
+        current = new Sector(id2, ioContext.SectorSize);
+
+        if (elementIndex == DifatElementsPerSector - 1)
+        {
+            ioContext.Reader.Position = difatSector.EndPosition - sizeof(uint);
+            difatSectorId = ioContext.Reader.ReadUInt32();
+        }
 
         return true;
     }
