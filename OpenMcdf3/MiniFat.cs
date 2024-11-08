@@ -119,8 +119,10 @@ internal sealed class MiniFat : IEnumerable<FatEntry>, IDisposable
             writer.Position = sector.Position;
             writer.Write(SectorDataCache.GetFatEntryData(sector.Length));
 
-            if (ioContext.Header.FirstMiniFatSectorId == SectorType.EndOfChain)
-                ioContext.Header.FirstMiniFatSectorId = newSectorIndex;
+            Header header = ioContext.Header;
+            if (header.FirstMiniFatSectorId == SectorType.EndOfChain)
+                header.FirstMiniFatSectorId = newSectorIndex;
+            header.MiniFatSectorCount++;
 
             miniFatEnumerator.Reset(); // TODO: Jump closer to the new sector
 

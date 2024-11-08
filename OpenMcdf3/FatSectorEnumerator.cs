@@ -162,7 +162,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
             sectorType = SectorType.Fat;
 
             header.Difat[nextIndex] = newSector.Id;
-            header.FatSectorCount++; // TODO: Check
+            header.FatSectorCount++;
 
             writer.Position = newSector.Position;
             writer.Write(SectorDataCache.GetFatEntryData(newSector.Length));
