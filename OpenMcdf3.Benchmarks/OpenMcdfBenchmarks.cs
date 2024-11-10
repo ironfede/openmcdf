@@ -2,6 +2,12 @@
 
 internal static class OpenMcdfBenchmarks
 {
+    public static void ReadStream(string fileName, byte[] buffer)
+    {
+        using FileStream fileStream = File.OpenRead(fileName);
+        ReadStream(fileStream, buffer);
+    }
+
     public static void ReadStream(Stream stream, byte[] buffer)
     {
         using var storage = RootStorage.Open(stream, StorageModeFlags.LeaveOpen);
@@ -12,6 +18,12 @@ internal static class OpenMcdfBenchmarks
             if (read <= 0)
                 throw new EndOfStreamException();
         }
+    }
+
+    public static void WriteStream(string fileName, Version version, StorageModeFlags flags, byte[] buffer, long streamLength)
+    {
+        using FileStream fileStream = File.Create(fileName);
+        WriteStream(fileStream, version, flags, buffer, streamLength);
     }
 
     public static void WriteStream(Stream stream, Version version, StorageModeFlags flags, byte[] buffer, long streamLength)
