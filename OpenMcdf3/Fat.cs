@@ -135,7 +135,10 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
             uint newSectorId = fatSectorEnumerator.Add();
 
             // Next id must be free
-            bool ok = fatEnumerator.MoveTo(newSectorId + 1);
+            bool ok = fatEnumerator.MoveTo(newSectorId);
+            Debug.Assert(ok);
+
+            ok = fatEnumerator.MoveNextFreeEntry();
             Debug.Assert(ok);
 
             CacheCurrentSector();
