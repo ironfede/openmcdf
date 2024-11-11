@@ -163,15 +163,20 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
 
         writer.WriteLine("Start of FAT =================");
 
+        long freeCount = 0;
+        long usedCount = 0;
+
         foreach (FatEntry entry in this)
         {
             Sector sector = new(entry.Index, ioContext.SectorSize);
             if (entry.IsFree)
             {
+                freeCount++;
                 writer.WriteLine($"{entry}");
             }
             else
             {
+                usedCount++;
                 baseStream.Position = sector.Position;
                 baseStream.ReadExactly(data, 0, data.Length);
                 string hex = BitConverter.ToString(data);
@@ -180,6 +185,9 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
         }
 
         writer.WriteLine("End of FAT ===================");
+        writer.WriteLine();
+        writer.WriteLine($"Free sectors: {freeCount}");
+        writer.WriteLine($"Used sectors: {usedCount}");
     }
 
     internal void Validate()
