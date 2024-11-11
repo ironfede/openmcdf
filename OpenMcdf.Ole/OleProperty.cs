@@ -1,33 +1,22 @@
 ﻿namespace OpenMcdf.Ole;
 
-public class OleProperty
+public sealed class OleProperty
 {
     private readonly OlePropertiesContainer container;
+    object? value;
 
     internal OleProperty(OlePropertiesContainer container)
     {
         this.container = container;
     }
 
-    public string PropertyName => DecodePropertyIdentifier();
+    public string PropertyName => PropertyIdentifiers.GetDescription(PropertyIdentifier, container.ContainerType, container.PropertyNames);
 
-    private string DecodePropertyIdentifier()
-    {
-        return Identifiers.GetDescription(PropertyIdentifier, container.ContainerType, container.PropertyNames);
-    }
-
-    //public string Description { get { return description; }
     public uint PropertyIdentifier { get; internal set; }
 
-    public VTPropertyType VTType
-    {
-        get;
-        internal set;
-    }
+    public VTPropertyType VTType { get; internal set; }
 
-    object value;
-
-    public object Value
+    public object? Value
     {
         get
         {
@@ -47,18 +36,9 @@ public class OleProperty
         set => this.value = value;
     }
 
-    public override bool Equals(object obj)
-    {
-        if (obj is not OleProperty other)
-            return false;
+    public override bool Equals(object? obj) => obj is OleProperty other && other.PropertyIdentifier == PropertyIdentifier;
 
-        return other.PropertyIdentifier == PropertyIdentifier;
-    }
-
-    public override int GetHashCode()
-    {
-        return (int)PropertyIdentifier;
-    }
+    public override int GetHashCode() => (int)PropertyIdentifier;
 
     public override string ToString() => $"{PropertyName} - {VTType} - {Value}";
 }

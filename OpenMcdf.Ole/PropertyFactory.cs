@@ -11,7 +11,7 @@ internal abstract class PropertyFactory
 #endif
     }
 
-    public ITypedPropertyValue NewProperty(VTPropertyType vType, int codePage, uint propertyIdentifier, bool isVariant = false)
+    public ITypedPropertyValue CreateProperty(VTPropertyType vType, int codePage, uint propertyIdentifier, bool isVariant = false)
     {
         ITypedPropertyValue pr = (VTPropertyType)((ushort)vType & 0x00FF) switch
         {
@@ -39,35 +39,29 @@ internal abstract class PropertyFactory
             VTPropertyType.VT_CF => new VT_CF_Property(vType, isVariant),
             VTPropertyType.VT_BLOB_OBJECT or VTPropertyType.VT_BLOB => new VT_BLOB_Property(vType, isVariant),
             VTPropertyType.VT_CLSID => new VT_CLSID_Property(vType, isVariant),
-            _ => throw new Exception("Unrecognized property type"),
+            _ => throw new ArgumentException("Unrecognized property type"),
         };
         return pr;
     }
 
-    protected virtual ITypedPropertyValue CreateLpstrProperty(VTPropertyType vType, int codePage, uint propertyIdentifier, bool isVariant)
-    {
-        return new VT_LPSTR_Property(vType, codePage, isVariant);
-    }
+    protected virtual ITypedPropertyValue CreateLpstrProperty(VTPropertyType vType, int codePage, uint propertyIdentifier, bool isVariant) => new VT_LPSTR_Property(vType, codePage, isVariant);
 
     #region Property implementations
 
-    private class VT_EMPTY_Property : TypedPropertyValue<object>
+    private sealed class VT_EMPTY_Property : TypedPropertyValue<object>
     {
         public VT_EMPTY_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
         }
 
-        public override object ReadScalarValue(BinaryReader br)
-        {
-            return null;
-        }
+        public override object? ReadScalarValue(BinaryReader br) => null;
 
         public override void WriteScalarValue(BinaryWriter bw, object pValue)
         {
         }
     }
 
-    private class VT_I1_Property : TypedPropertyValue<sbyte>
+    private sealed class VT_I1_Property : TypedPropertyValue<sbyte>
     {
         public VT_I1_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -79,13 +73,10 @@ internal abstract class PropertyFactory
             return r;
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, sbyte pValue)
-        {
-            bw.Write(pValue);
-        }
+        public override void WriteScalarValue(BinaryWriter bw, sbyte pValue) => bw.Write(pValue);
     }
 
-    private class VT_UI1_Property : TypedPropertyValue<byte>
+    private sealed class VT_UI1_Property : TypedPropertyValue<byte>
     {
         public VT_UI1_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -97,13 +88,10 @@ internal abstract class PropertyFactory
             return r;
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, byte pValue)
-        {
-            bw.Write(pValue);
-        }
+        public override void WriteScalarValue(BinaryWriter bw, byte pValue) => bw.Write(pValue);
     }
 
-    private class VT_UI4_Property : TypedPropertyValue<uint>
+    private sealed class VT_UI4_Property : TypedPropertyValue<uint>
     {
         public VT_UI4_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -115,13 +103,10 @@ internal abstract class PropertyFactory
             return r;
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, uint pValue)
-        {
-            bw.Write(pValue);
-        }
+        public override void WriteScalarValue(BinaryWriter bw, uint pValue) => bw.Write(pValue);
     }
 
-    private class VT_UI8_Property : TypedPropertyValue<ulong>
+    private sealed class VT_UI8_Property : TypedPropertyValue<ulong>
     {
         public VT_UI8_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -133,13 +118,10 @@ internal abstract class PropertyFactory
             return r;
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, ulong pValue)
-        {
-            bw.Write(pValue);
-        }
+        public override void WriteScalarValue(BinaryWriter bw, ulong pValue) => bw.Write(pValue);
     }
 
-    private class VT_I2_Property : TypedPropertyValue<short>
+    private sealed class VT_I2_Property : TypedPropertyValue<short>
     {
         public VT_I2_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -151,13 +133,10 @@ internal abstract class PropertyFactory
             return r;
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, short pValue)
-        {
-            bw.Write(pValue);
-        }
+        public override void WriteScalarValue(BinaryWriter bw, short pValue) => bw.Write(pValue);
     }
 
-    private class VT_UI2_Property : TypedPropertyValue<ushort>
+    private sealed class VT_UI2_Property : TypedPropertyValue<ushort>
     {
         public VT_UI2_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -169,13 +148,10 @@ internal abstract class PropertyFactory
             return r;
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, ushort pValue)
-        {
-            bw.Write(pValue);
-        }
+        public override void WriteScalarValue(BinaryWriter bw, ushort pValue) => bw.Write(pValue);
     }
 
-    private class VT_I4_Property : TypedPropertyValue<int>
+    private sealed class VT_I4_Property : TypedPropertyValue<int>
     {
         public VT_I4_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -187,13 +163,10 @@ internal abstract class PropertyFactory
             return r;
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, int pValue)
-        {
-            bw.Write(pValue);
-        }
+        public override void WriteScalarValue(BinaryWriter bw, int pValue) => bw.Write(pValue);
     }
 
-    private class VT_I8_Property : TypedPropertyValue<long>
+    private sealed class VT_I8_Property : TypedPropertyValue<long>
     {
         public VT_I8_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -205,13 +178,10 @@ internal abstract class PropertyFactory
             return r;
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, long pValue)
-        {
-            bw.Write(pValue);
-        }
+        public override void WriteScalarValue(BinaryWriter bw, long pValue) => bw.Write(pValue);
     }
 
-    private class VT_INT_Property : TypedPropertyValue<int>
+    private sealed class VT_INT_Property : TypedPropertyValue<int>
     {
         public VT_INT_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -223,13 +193,10 @@ internal abstract class PropertyFactory
             return r;
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, int pValue)
-        {
-            bw.Write(pValue);
-        }
+        public override void WriteScalarValue(BinaryWriter bw, int pValue) => bw.Write(pValue);
     }
 
-    private class VT_UINT_Property : TypedPropertyValue<uint>
+    private sealed class VT_UINT_Property : TypedPropertyValue<uint>
     {
         public VT_UINT_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -241,13 +208,10 @@ internal abstract class PropertyFactory
             return r;
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, uint pValue)
-        {
-            bw.Write(pValue);
-        }
+        public override void WriteScalarValue(BinaryWriter bw, uint pValue) => bw.Write(pValue);
     }
 
-    private class VT_R4_Property : TypedPropertyValue<float>
+    private sealed class VT_R4_Property : TypedPropertyValue<float>
     {
         public VT_R4_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -259,13 +223,10 @@ internal abstract class PropertyFactory
             return r;
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, float pValue)
-        {
-            bw.Write(pValue);
-        }
+        public override void WriteScalarValue(BinaryWriter bw, float pValue) => bw.Write(pValue);
     }
 
-    private class VT_R8_Property : TypedPropertyValue<double>
+    private sealed class VT_R8_Property : TypedPropertyValue<double>
     {
         public VT_R8_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -277,13 +238,10 @@ internal abstract class PropertyFactory
             return r;
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, double pValue)
-        {
-            bw.Write(pValue);
-        }
+        public override void WriteScalarValue(BinaryWriter bw, double pValue) => bw.Write(pValue);
     }
 
-    private class VT_CY_Property : TypedPropertyValue<long>
+    private sealed class VT_CY_Property : TypedPropertyValue<long>
     {
         public VT_CY_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -298,13 +256,10 @@ internal abstract class PropertyFactory
             return tmp;
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, long pValue)
-        {
-            bw.Write(pValue * 10000);
-        }
+        public override void WriteScalarValue(BinaryWriter bw, long pValue) => bw.Write(pValue * 10000);
     }
 
-    private class VT_DATE_Property : TypedPropertyValue<DateTime>
+    private sealed class VT_DATE_Property : TypedPropertyValue<DateTime>
     {
         public VT_DATE_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -317,15 +272,11 @@ internal abstract class PropertyFactory
             return DateTime.FromOADate(temp);
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, DateTime pValue)
-        {
-            bw.Write(pValue.ToOADate());
-        }
+        public override void WriteScalarValue(BinaryWriter bw, DateTime pValue) => bw.Write(pValue.ToOADate());
     }
 
     protected class VT_LPSTR_Property : TypedPropertyValue<string>
     {
-        private byte[] data;
         private readonly int codePage;
 
         public VT_LPSTR_Property(VTPropertyType vType, int codePage, bool isVariant) : base(vType, isVariant)
@@ -336,7 +287,7 @@ internal abstract class PropertyFactory
         public override string ReadScalarValue(BinaryReader br)
         {
             uint size = br.ReadUInt32();
-            data = br.ReadBytes((int)size);
+            byte[] data = br.ReadBytes((int)size);
 
             string result = Encoding.GetEncoding(codePage).GetString(data);
             //result = result.Trim(new char[] { '\0' });
@@ -363,7 +314,7 @@ internal abstract class PropertyFactory
             }
             else if (codePage == CodePages.WinUnicode)
             {
-                data = Encoding.GetEncoding(codePage).GetBytes(pValue);
+                byte[] data = Encoding.GetEncoding(codePage).GetBytes(pValue);
 
                 //if (data.Length >= 2 && data[data.Length - 2] == '\0' && data[data.Length - 1] == '\0')
                 //    addNullTerminator = false;
@@ -389,7 +340,7 @@ internal abstract class PropertyFactory
             }
             else
             {
-                data = Encoding.GetEncoding(codePage).GetBytes(pValue);
+                byte[] data = Encoding.GetEncoding(codePage).GetBytes(pValue);
 
                 //if (data.Length >= 1 && data[data.Length - 1] == '\0')
                 //    addNullTerminator = false;
@@ -415,7 +366,7 @@ internal abstract class PropertyFactory
         }
     }
 
-    protected class VT_Unaligned_LPSTR_Property : VT_LPSTR_Property
+    protected sealed class VT_Unaligned_LPSTR_Property : VT_LPSTR_Property
     {
         public VT_Unaligned_LPSTR_Property(VTPropertyType vType, int codePage, bool isVariant) : base(vType, codePage, isVariant)
         {
@@ -423,9 +374,8 @@ internal abstract class PropertyFactory
         }
     }
 
-    private class VT_LPWSTR_Property : TypedPropertyValue<string>
+    private sealed class VT_LPWSTR_Property : TypedPropertyValue<string>
     {
-        private byte[] data;
         private readonly int codePage;
 
         public VT_LPWSTR_Property(VTPropertyType vType, int codePage, bool isVariant) : base(vType, isVariant)
@@ -436,7 +386,7 @@ internal abstract class PropertyFactory
         public override string ReadScalarValue(BinaryReader br)
         {
             uint nChars = br.ReadUInt32();
-            data = br.ReadBytes((int)((nChars - 1) * 2));  //WChar- null terminator
+            byte[] data = br.ReadBytes((int)((nChars - 1) * 2));  //WChar- null terminator
             br.ReadBytes(2); // Skip null terminator
             string result = Encoding.Unicode.GetString(data);
             //result = result.Trim(new char[] { '\0' });
@@ -446,7 +396,7 @@ internal abstract class PropertyFactory
 
         public override void WriteScalarValue(BinaryWriter bw, string pValue)
         {
-            data = Encoding.Unicode.GetBytes(pValue);
+            byte[] data = Encoding.Unicode.GetBytes(pValue);
 
             // The written data length field is the number of characters (not bytes) and must include a null terminator
             // add a null terminator if there isn't one already
@@ -473,7 +423,7 @@ internal abstract class PropertyFactory
         }
     }
 
-    private class VT_FILETIME_Property : TypedPropertyValue<DateTime>
+    private sealed class VT_FILETIME_Property : TypedPropertyValue<DateTime>
     {
         public VT_FILETIME_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -486,13 +436,10 @@ internal abstract class PropertyFactory
             return DateTime.FromFileTimeUtc(tmp);
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, DateTime pValue)
-        {
-            bw.Write(pValue.ToFileTimeUtc());
-        }
+        public override void WriteScalarValue(BinaryWriter bw, DateTime pValue) => bw.Write(pValue.ToFileTimeUtc());
     }
 
-    private class VT_DECIMAL_Property : TypedPropertyValue<decimal>
+    private sealed class VT_DECIMAL_Property : TypedPropertyValue<decimal>
     {
         public VT_DECIMAL_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -535,7 +482,7 @@ internal abstract class PropertyFactory
         }
     }
 
-    private class VT_BOOL_Property : TypedPropertyValue<bool>
+    private sealed class VT_BOOL_Property : TypedPropertyValue<bool>
     {
         public VT_BOOL_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -548,13 +495,10 @@ internal abstract class PropertyFactory
             //br.ReadUInt16();//padding
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, bool pValue)
-        {
-            bw.Write(pValue ? (ushort)0xFFFF : (ushort)0);
-        }
+        public override void WriteScalarValue(BinaryWriter bw, bool pValue) => bw.Write(pValue ? (ushort)0xFFFF : (ushort)0);
     }
 
-    private class VT_CF_Property : TypedPropertyValue<object>
+    private sealed class VT_CF_Property : TypedPropertyValue<object>
     {
         public VT_CF_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -582,7 +526,7 @@ internal abstract class PropertyFactory
         }
     }
 
-    private class VT_BLOB_Property : TypedPropertyValue<object>
+    private sealed class VT_BLOB_Property : TypedPropertyValue<object>
     {
         public VT_BLOB_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -609,7 +553,7 @@ internal abstract class PropertyFactory
         }
     }
 
-    private class VT_CLSID_Property : TypedPropertyValue<object>
+    private sealed class VT_CLSID_Property : TypedPropertyValue<object>
     {
         public VT_CLSID_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
@@ -628,7 +572,7 @@ internal abstract class PropertyFactory
         }
     }
 
-    private class VT_VariantVector : TypedPropertyValue<object>
+    private sealed class VT_VariantVector : TypedPropertyValue<object>
     {
         private readonly int codePage;
         private readonly PropertyFactory factory;
@@ -647,7 +591,7 @@ internal abstract class PropertyFactory
             VTPropertyType vType = (VTPropertyType)br.ReadUInt16();
             br.ReadUInt16(); // Ushort Padding
 
-            ITypedPropertyValue p = factory.NewProperty(vType, codePage, propertyIdentifier, true);
+            ITypedPropertyValue p = factory.CreateProperty(vType, codePage, propertyIdentifier, true);
             p.Read(br);
             return p;
         }

@@ -2,6 +2,14 @@
 
 internal sealed class PropertySetStream
 {
+    private sealed class OffsetContainer
+    {
+        public int OffsetPS { get; set; }
+
+        public List<long> PropertyIdentifierOffsets { get; } = new();
+        public List<long> PropertyOffsets { get; } = new();
+    }
+
     public ushort ByteOrder { get; set; }
     public ushort Version { get; set; }
     public uint SystemIdentifier { get; set; }
@@ -11,10 +19,8 @@ internal sealed class PropertySetStream
     public uint Offset0 { get; set; }
     public Guid FMTID1 { get; set; }
     public uint Offset1 { get; set; }
-    public PropertySet PropertySet0 { get; set; }
-    public PropertySet PropertySet1 { get; set; }
-
-    //private SummaryInfoMap map;
+    public PropertySet? PropertySet0 { get; set; }
+    public PropertySet? PropertySet1 { get; set; }
 
     public PropertySetStream()
     {
@@ -36,17 +42,19 @@ internal sealed class PropertySetStream
             Offset1 = br.ReadUInt32();
         }
 
+
+        uint size = br.ReadUInt32();
+        uint propertyCount = br.ReadUInt32();
         PropertySet0 = new PropertySet
         {
-            Size = br.ReadUInt32(),
-            NumProperties = br.ReadUInt32()
+            Size = size,
         };
 
         // Create appropriate property factory based on the stream type
-        PropertyFactory factory = FMTID0 == WellKnownFormatIdentifiers.DocSummaryInformation ? DocumentSummaryInfoPropertyFactory.Instance : DefaultPropertyFactory.Instance;
+        PropertyFactory factory = FMTID0 == FormatIdentifiers.DocSummaryInformation ? DocumentSummaryInfoPropertyFactory.Default : DefaultPropertyFactory.Default;
 
         // Read property offsets (P0)
-        for (int i = 0; i < PropertySet0.NumProperties; i++)
+        for (int i = 0; i < propertyCount; i++)
         {
             PropertyIdentifierAndOffset pio = new()
             {
@@ -59,23 +67,28 @@ internal sealed class PropertySetStream
         PropertySet0.LoadContext((int)Offset0, br);  //Read CodePage, Locale
 
         // Read properties (P0)
-        for (int i = 0; i < PropertySet0.NumProperties; i++)
+        for (int i = 0; i < propertyCount; i++)
         {
-            br.BaseStream.Seek(Offset0 + PropertySet0.PropertyIdentifierAndOffsets[i].Offset, SeekOrigin.Begin);
-            PropertySet0.Properties.Add(ReadProperty(PropertySet0.PropertyIdentifierAndOffsets[i].PropertyIdentifier, PropertySet0.PropertyContext.CodePage, br, factory));
+            PropertyIdentifierAndOffset propertyIdentifierAndOffset = PropertySet0.PropertyIdentifierAndOffsets[i];
+            br.BaseStream.Seek(Offset0 + propertyIdentifierAndOffset.Offset, SeekOrigin.Begin);
+            IProperty property = ReadProperty(propertyIdentifierAndOffset.PropertyIdentifier, PropertySet0.PropertyContext.CodePage, br, factory);
+            PropertySet0.Properties.Add(property);
         }
 
         if (NumPropertySets == 2)
         {
             br.BaseStream.Seek(Offset1, SeekOrigin.Begin);
+
+            size = br.ReadUInt32();
+            propertyCount = br.ReadUInt32();
+
             PropertySet1 = new PropertySet
             {
-                Size = br.ReadUInt32(),
-                NumProperties = br.ReadUInt32()
+                Size = size
             };
 
             // Read property offsets
-            for (int i = 0; i < PropertySet1.NumProperties; i++)
+            for (int i = 0; i < propertyCount; i++)
             {
                 PropertyIdentifierAndOffset pio = new()
                 {
@@ -88,32 +101,20 @@ internal sealed class PropertySetStream
             PropertySet1.LoadContext((int)Offset1, br);
 
             // Read properties
-            for (int i = 0; i < PropertySet1.NumProperties; i++)
+            for (int i = 0; i < propertyCount; i++)
             {
-                br.BaseStream.Seek(Offset1 + PropertySet1.PropertyIdentifierAndOffsets[i].Offset, SeekOrigin.Begin);
-                PropertySet1.Properties.Add(ReadProperty(PropertySet1.PropertyIdentifierAndOffsets[i].PropertyIdentifier, PropertySet1.PropertyContext.CodePage, br, DefaultPropertyFactory.Instance));
+                PropertyIdentifierAndOffset idAndOffset = PropertySet1.PropertyIdentifierAndOffsets[i];
+                br.BaseStream.Seek(Offset1 + idAndOffset.Offset, SeekOrigin.Begin);
+                IProperty property = ReadProperty(idAndOffset.PropertyIdentifier, PropertySet1.PropertyContext.CodePage, br, DefaultPropertyFactory.Default);
+                PropertySet1.Properties.Add(property);
             }
-        }
-    }
-
-    private class OffsetContainer
-    {
-        public int OffsetPS { get; set; }
-
-        public List<long> PropertyIdentifierOffsets { get; set; }
-        public List<long> PropertyOffsets { get; set; }
-
-        public OffsetContainer()
-        {
-            PropertyOffsets = new List<long>();
-            PropertyIdentifierOffsets = new List<long>();
         }
     }
 
     public void Write(BinaryWriter bw)
     {
-        var oc0 = new OffsetContainer();
-        var oc1 = new OffsetContainer();
+        OffsetContainer oc0 = new();
+        OffsetContainer oc1 = new();
 
         bw.Write(ByteOrder);
         bw.Write(Version);
@@ -130,17 +131,17 @@ internal sealed class PropertySetStream
         }
 
         oc0.OffsetPS = (int)bw.BaseStream.Position;
-        bw.Write(PropertySet0.Size);
-        bw.Write(PropertySet0.NumProperties);
+        bw.Write(PropertySet0!.Size);
+        bw.Write(PropertySet0.Properties.Count);
 
         // w property offsets
-        for (int i = 0; i < PropertySet0.NumProperties; i++)
+        for (int i = 0; i < PropertySet0.Properties.Count; i++)
         {
-            oc0.PropertyIdentifierOffsets.Add(bw.BaseStream.Position); //Offset of 4 to Offset value
+            oc0.PropertyIdentifierOffsets.Add(bw.BaseStream.Position); // Offset of 4 to Offset value
             PropertySet0.PropertyIdentifierAndOffsets[i].Write(bw);
         }
 
-        for (int i = 0; i < PropertySet0.NumProperties; i++)
+        for (int i = 0; i < PropertySet0.Properties.Count; i++)
         {
             oc0.PropertyOffsets.Add(bw.BaseStream.Position);
             PropertySet0.Properties[i].Write(bw);
@@ -160,8 +161,8 @@ internal sealed class PropertySetStream
         {
             oc1.OffsetPS = (int)bw.BaseStream.Position;
 
-            bw.Write(PropertySet1.Size);
-            bw.Write(PropertySet1.NumProperties);
+            bw.Write(PropertySet1!.Size);
+            bw.Write(PropertySet1.Properties.Count);
 
             // w property offsets
             for (int i = 0; i < PropertySet1.PropertyIdentifierAndOffsets.Count; i++)
@@ -170,7 +171,7 @@ internal sealed class PropertySetStream
                 PropertySet1.PropertyIdentifierAndOffsets[i].Write(bw);
             }
 
-            for (int i = 0; i < PropertySet1.NumProperties; i++)
+            for (int i = 0; i < PropertySet1.Properties.Count; i++)
             {
                 oc1.PropertyOffsets.Add(bw.BaseStream.Position);
                 PropertySet1.Properties[i].Write(bw);
@@ -203,7 +204,7 @@ internal sealed class PropertySetStream
             bw.Write((int)(oc0.PropertyOffsets[i] - oc0.OffsetPS));
         }
 
-        if (PropertySet1 != null)
+        if (PropertySet1 is not null)
         {
             for (int i = 0; i < PropertySet1.PropertyIdentifierAndOffsets.Count; i++)
             {
@@ -215,21 +216,19 @@ internal sealed class PropertySetStream
 
     private static IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br, PropertyFactory factory)
     {
-        if (propertyIdentifier != 0)
-        {
-            var vType = (VTPropertyType)br.ReadUInt16();
-            br.ReadUInt16(); // Ushort Padding
-
-            ITypedPropertyValue pr = factory.NewProperty(vType, codePage, propertyIdentifier);
-            pr.Read(br);
-
-            return pr;
-        }
-        else
+        if (propertyIdentifier == 0)
         {
             DictionaryProperty dictionaryProperty = new(codePage);
             dictionaryProperty.Read(br);
             return dictionaryProperty;
         }
+
+        var vType = (VTPropertyType)br.ReadUInt16();
+        br.ReadUInt16(); // Ushort Padding
+
+        ITypedPropertyValue pr = factory.CreateProperty(vType, codePage, propertyIdentifier);
+        pr.Read(br);
+
+        return pr;
     }
 }

@@ -4,7 +4,7 @@ namespace OpenMcdf.Ole;
 
 public static class PropertyIdentifiers
 {
-    public static ImmutableDictionary<uint, string> SummaryInfo { get; } = new Dictionary<uint, string>()
+    readonly static ImmutableDictionary<uint, string> SummaryInfo = new Dictionary<uint, string>()
     {
         {0x00000001, "CodePageString" },
         {0x00000002, "PIDSI_TITLE" },
@@ -15,7 +15,6 @@ public static class PropertyIdentifiers
         {0x00000007, "PIDSI_TEMPLATE" },
         {0x00000008, "PIDSI_LASTAUTHOR" },
         {0x00000009, "PIDSI_REVNUMBER" },
-        {0x00000012, "PIDSI_APPNAME" },
         {0x0000000A, "PIDSI_EDITTIME" },
         {0x0000000B, "PIDSI_LASTPRINTED" },
         {0x0000000C, "PIDSI_CREATE_DTM" },
@@ -23,10 +22,11 @@ public static class PropertyIdentifiers
         {0x0000000E, "PIDSI_PAGECOUNT" },
         {0x0000000F, "PIDSI_WORDCOUNT" },
         {0x00000010, "PIDSI_CHARCOUNT" },
+        {0x00000012, "PIDSI_APPNAME" },
         {0x00000013, "PIDSI_DOC_SECURITY" }
     }.ToImmutableDictionary();
 
-    public static ImmutableDictionary<uint, string> DocumentSummaryInfo { get; } = new Dictionary<uint, string>()
+    readonly static ImmutableDictionary<uint, string> DocumentSummaryInfo = new Dictionary<uint, string>()
     {
         {0x00000001, "CodePageString" },
         {0x00000002, "PIDDSI_CATEGORY" },
@@ -45,4 +45,28 @@ public static class PropertyIdentifiers
         {0x0000000F, "PIDDSI_COMPANY" },
         {0x00000010, "PIDDSI_LINKSDIRTY" }
     }.ToImmutableDictionary();
+
+    public static string GetDescription(uint identifier, ContainerType map, IDictionary<uint, string>? customDictionary = null)
+    {
+        IDictionary<uint, string> nameDictionary;
+
+        if (customDictionary is null)
+        {
+            nameDictionary = map switch
+            {
+                ContainerType.SummaryInfo => SummaryInfo,
+                ContainerType.DocumentSummaryInfo => DocumentSummaryInfo,
+                _ => throw new ArgumentException("Unknown container type", nameof(map)),
+            };
+        }
+        else
+        {
+            nameDictionary = customDictionary;
+        }
+
+        if (nameDictionary.TryGetValue(identifier, out string? value))
+            return value;
+
+        return $"0x{identifier:x8}";
+    }
 }

@@ -1,5 +1,7 @@
 ﻿namespace OpenMcdf.Ole;
 
+#pragma warning disable CA1707 // Remove the underscores from member name
+
 /// <summary>
 /// VARENUM
 /// </summary>

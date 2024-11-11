@@ -8,14 +8,7 @@ public enum PropertyType
 
 public interface IProperty : IBinarySerializable
 {
-    object Value
-    {
-        get;
-        set;
-    }
+    object? Value { get; set; }
 
-    PropertyType PropertyType
-    {
-        get;
-    }
+    PropertyType PropertyType { get; }
 }

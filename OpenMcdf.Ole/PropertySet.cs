@@ -2,31 +2,34 @@
 
 internal sealed class PropertySet
 {
-    public PropertyContext PropertyContext
-    {
-        get; set;
-    }
+    public PropertyContext PropertyContext { get; set; } = new();
 
     public uint Size { get; set; }
 
-    public uint NumProperties { get; set; }
+    public List<PropertyIdentifierAndOffset> PropertyIdentifierAndOffsets { get; } = new();
 
-    public List<PropertyIdentifierAndOffset> PropertyIdentifierAndOffsets { get; set; } = new List<PropertyIdentifierAndOffset>();
-
-    public List<IProperty> Properties { get; set; } = new List<IProperty>();
+    public List<IProperty> Properties { get; } = new();
 
     public void LoadContext(int propertySetOffset, BinaryReader br)
     {
         long currPos = br.BaseStream.Position;
-
-        PropertyContext = new PropertyContext();
-        int codePageOffset = (int)(propertySetOffset + PropertyIdentifierAndOffsets.Where(pio => pio.PropertyIdentifier == 1).First().Offset);
+        int codePageOffset = (int)(propertySetOffset + PropertyIdentifierAndOffsets.First(pio => pio.PropertyIdentifier == 1).Offset);
         br.BaseStream.Seek(codePageOffset, SeekOrigin.Begin);
 
-        VTPropertyType vType = (VTPropertyType)br.ReadUInt16();
+        var vType = (VTPropertyType)br.ReadUInt16();
         br.ReadUInt16(); // Ushort Padding
         PropertyContext.CodePage = (ushort)br.ReadInt16();
 
         br.BaseStream.Position = currPos;
+    }
+
+    public void Add(IDictionary<uint, string> propertyNames)
+    {
+        DictionaryProperty dictionaryProperty = new(PropertyContext.CodePage)
+        {
+            Value = propertyNames
+        };
+        Properties.Add(dictionaryProperty);
+        PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = 0, Offset = 0 });
     }
 }

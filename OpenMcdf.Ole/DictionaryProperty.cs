@@ -2,24 +2,22 @@
 
 namespace OpenMcdf.Ole;
 
-public class DictionaryProperty : IDictionaryProperty
+public class DictionaryProperty : IProperty
 {
     private readonly int codePage;
+    private Dictionary<uint, string>? entries = new();
 
     public DictionaryProperty(int codePage)
     {
         this.codePage = codePage;
-        entries = new Dictionary<uint, string>();
     }
 
     public PropertyType PropertyType => PropertyType.DictionaryProperty;
 
-    private Dictionary<uint, string> entries;
-
-    public object Value
+    public object? Value
     {
         get => entries;
-        set => entries = (Dictionary<uint, string>)value;
+        set => entries = (Dictionary<uint, string>?)value;
     }
 
     public void Read(BinaryReader br)
@@ -30,10 +28,10 @@ public class DictionaryProperty : IDictionaryProperty
 
         for (uint i = 0; i < numEntries; i++)
         {
-            DictionaryEntry de = new DictionaryEntry(codePage);
+            DictionaryEntry de = new(codePage);
 
             de.Read(br);
-            entries.Add(de.PropertyIdentifier, de.Name);
+            entries!.Add(de.PropertyIdentifier, de.Name);
         }
 
         int m = (int)(br.BaseStream.Position - curPos) % 4;
@@ -58,7 +56,7 @@ public class DictionaryProperty : IDictionaryProperty
     {
         long curPos = bw.BaseStream.Position;
 
-        bw.Write(entries.Count);
+        bw.Write(entries!.Count);
 
         foreach (KeyValuePair<uint, string> kv in entries)
         {
@@ -75,7 +73,7 @@ public class DictionaryProperty : IDictionaryProperty
         // Write the PropertyIdentifier
         bw.Write(propertyIdentifier);
 
-        // Encode string data with the current codepage
+        // Encode string data with the current code page
         byte[] nameBytes = Encoding.GetEncoding(codePage).GetBytes(name);
         uint byteLength = (uint)nameBytes.Length;
 
@@ -118,7 +116,7 @@ public class DictionaryProperty : IDictionaryProperty
     }
 
     // Write as much padding as needed to pad fieldLength to a multiple of 4 bytes
-    private void WritePaddingIfNeeded(BinaryWriter bw, int fieldLength)
+    private static void WritePaddingIfNeeded(BinaryWriter bw, int fieldLength)
     {
         int m = fieldLength % 4;
 

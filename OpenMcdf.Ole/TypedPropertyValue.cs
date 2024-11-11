@@ -3,12 +3,11 @@
 internal abstract class TypedPropertyValue<T> : ITypedPropertyValue
 {
     private readonly VTPropertyType _VTType;
+    protected object? propertyValue;
 
     public PropertyType PropertyType => PropertyType.TypedPropertyValue;
 
     public VTPropertyType VTType => _VTType;
-
-    protected object propertyValue;
 
     public TypedPropertyValue(VTPropertyType vtType, bool isVariant = false)
     {
@@ -23,7 +22,7 @@ internal abstract class TypedPropertyValue<T> : ITypedPropertyValue
 
     protected virtual bool NeedsPadding { get; set; } = true;
 
-    private PropertyDimensions CheckPropertyDimensions(VTPropertyType vtType)
+    private static PropertyDimensions CheckPropertyDimensions(VTPropertyType vtType)
     {
         if ((((ushort)vtType) & 0x1000) != 0)
             return PropertyDimensions.IsVector;
@@ -32,14 +31,13 @@ internal abstract class TypedPropertyValue<T> : ITypedPropertyValue
         return PropertyDimensions.IsScalar;
     }
 
-    public virtual object Value
+    public virtual object? Value
     {
         get => propertyValue;
-
         set => propertyValue = value;
     }
 
-    public abstract T ReadScalarValue(BinaryReader br);
+    public abstract T? ReadScalarValue(BinaryReader br);
 
     public void Read(BinaryReader br)
     {
@@ -64,11 +62,11 @@ internal abstract class TypedPropertyValue<T> : ITypedPropertyValue
                 {
                     uint nItems = br.ReadUInt32();
 
-                    List<T> res = new List<T>();
+                    List<T> res = new();
 
                     for (int i = 0; i < nItems; i++)
                     {
-                        T s = ReadScalarValue(br);
+                        T s = ReadScalarValue(br)!;
 
                         res.Add(s);
 
@@ -108,7 +106,7 @@ internal abstract class TypedPropertyValue<T> : ITypedPropertyValue
                 bw.Write((ushort)_VTType);
                 bw.Write((ushort)0);
 
-                WriteScalarValue(bw, (T)propertyValue);
+                WriteScalarValue(bw, (T)propertyValue!);
                 size = (int)(bw.BaseStream.Position - currentPos);
                 m = size % 4;
 
@@ -124,7 +122,7 @@ internal abstract class TypedPropertyValue<T> : ITypedPropertyValue
 
                 bw.Write((ushort)_VTType);
                 bw.Write((ushort)0);
-                bw.Write((uint)((List<T>)propertyValue).Count);
+                bw.Write((uint)((List<T>)propertyValue!).Count);
 
                 for (int i = 0; i < ((List<T>)propertyValue).Count; i++)
                 {

@@ -1,20 +1,17 @@
 ﻿namespace OpenMcdf.Ole;
 
+public enum PropertyDimensions
+{
+    IsScalar,
+    IsVector,
+    IsArray
+}
+
 public interface ITypedPropertyValue : IProperty
 {
-    VTPropertyType VTType
-    {
-        get;
-        //set;
-    }
+    VTPropertyType VTType { get; }
 
-    PropertyDimensions PropertyDimensions
-    {
-        get;
-    }
+    PropertyDimensions PropertyDimensions { get; }
 
-    bool IsVariant
-    {
-        get;
-    }
+    bool IsVariant { get; }
 }

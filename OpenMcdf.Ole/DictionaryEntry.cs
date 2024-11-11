@@ -5,6 +5,7 @@ namespace OpenMcdf.Ole;
 public class DictionaryEntry
 {
     readonly int codePage;
+    private byte[]? nameBytes;
 
     public DictionaryEntry(int codePage)
     {
@@ -12,21 +13,28 @@ public class DictionaryEntry
     }
 
     public uint PropertyIdentifier { get; set; }
-    public int Length { get; set; }
-    public string Name => GetName();
 
-    private byte[] nameBytes;
+    public int Length { get; set; }
+
+    public string Name
+    {
+        get
+        {
+            if (nameBytes is null)
+                return string.Empty;
+
+            string result = Encoding.GetEncoding(codePage).GetString(nameBytes);
+            result = result.Trim('\0');
+            return result;
+        }
+    }
 
     public void Read(BinaryReader br)
     {
         PropertyIdentifier = br.ReadUInt32();
         Length = br.ReadInt32();
 
-        if (codePage != CodePages.WinUnicode)
-        {
-            nameBytes = br.ReadBytes(Length);
-        }
-        else
+        if (codePage == CodePages.WinUnicode)
         {
             nameBytes = br.ReadBytes(Length << 1);
 
@@ -34,28 +42,16 @@ public class DictionaryEntry
             if (m > 0)
                 br.ReadBytes(m);
         }
+        else
+        {
+            nameBytes = br.ReadBytes(Length);
+        }
     }
 
     public void Write(BinaryWriter bw)
     {
         bw.Write(PropertyIdentifier);
         bw.Write(Length);
-        bw.Write(nameBytes);
-
-        //if (codePage == CP_WINUNICODE)
-        //    int m = Length % 4;
-
-        //if (m > 0)
-        //    for (int i = 0; i < m; i++)
-        //        bw.Write((byte)m);
-    }
-
-    private string GetName()
-    {
-        string result = Encoding.GetEncoding(codePage).GetString(nameBytes);
-
-        result = result.Trim('\0');
-
-        return result;
+        bw.Write(nameBytes!);
     }
 }

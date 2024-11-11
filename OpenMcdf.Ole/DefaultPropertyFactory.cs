@@ -3,5 +3,5 @@
 // The default property factory.
 internal sealed class DefaultPropertyFactory : PropertyFactory
 {
-    public static PropertyFactory Instance { get; } = new DefaultPropertyFactory();
+    public static DefaultPropertyFactory Default { get; } = new();
 }
