@@ -37,7 +37,7 @@ internal sealed class IOContext : IDisposable
 
     public Fat Fat { get; }
 
-    public Directories Directories { get; }
+    public DirectoryEntries DirectoryEntries { get; }
 
     public DirectoryEntry RootEntry { get; }
 
@@ -102,19 +102,19 @@ internal sealed class IOContext : IDisposable
             writer = new(actualStream);
 
         Fat = new(this);
-        Directories = new(this);
+        DirectoryEntries = new(this);
 
         if (contextFlags.HasFlag(IOContextFlags.Create))
         {
-            RootEntry = Directories.CreateOrRecycleDirectoryEntry();
+            RootEntry = DirectoryEntries.CreateOrRecycleDirectoryEntry();
             RootEntry.RecycleRoot();
 
             WriteHeader();
-            Directories.Write(RootEntry);
+            DirectoryEntries.Write(RootEntry);
         }
         else
         {
-            RootEntry = Directories.GetDictionaryEntry(0);
+            RootEntry = DirectoryEntries.GetDictionaryEntry(0);
         }
     }
 
@@ -126,7 +126,7 @@ internal sealed class IOContext : IDisposable
 
             miniStream?.Dispose();
             miniFat?.Dispose();
-            Directories.Dispose();
+            DirectoryEntries.Dispose();
             Fat.Dispose();
             writer?.Dispose();
             Reader.Dispose();

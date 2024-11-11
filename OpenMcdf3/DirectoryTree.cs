@@ -11,10 +11,10 @@ internal class DirectoryTree
         Directory,
     }
 
-    private readonly Directories directories;
+    private readonly DirectoryEntries directories;
     private readonly DirectoryEntry root;
 
-    public DirectoryTree(Directories directories, DirectoryEntry root)
+    public DirectoryTree(DirectoryEntries directories, DirectoryEntry root)
     {
         this.directories = directories;
         this.root = root;

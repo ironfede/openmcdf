@@ -1,13 +1,13 @@
 ﻿namespace OpenMcdf3;
 
-internal sealed class Directories : IDisposable
+internal sealed class DirectoryEntries : IDisposable
 {
     private readonly IOContext ioContext;
     private readonly FatChainEnumerator fatChainEnumerator;
     private readonly DirectoryEntryEnumerator directoryEntryEnumerator;
     private readonly int entriesPerSector;
 
-    public Directories(IOContext ioContext)
+    public DirectoryEntries(IOContext ioContext)
     {
         this.ioContext = ioContext;
         fatChainEnumerator = new FatChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorId);

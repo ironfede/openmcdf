@@ -7,12 +7,12 @@ namespace OpenMcdf3;
 /// </summary>
 internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
 {
-    private readonly Directories directories;
+    private readonly DirectoryEntries directories;
     private readonly DirectoryEntry root;
     private readonly Stack<DirectoryEntry> stack = new();
     DirectoryEntry? current;
 
-    internal DirectoryTreeEnumerator(Directories directories, DirectoryEntry root)
+    internal DirectoryTreeEnumerator(DirectoryEntries directories, DirectoryEntry root)
     {
         this.directories = directories;
         this.root = root;

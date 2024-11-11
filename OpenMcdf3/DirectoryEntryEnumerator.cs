@@ -7,12 +7,12 @@ namespace OpenMcdf3;
 /// </summary>
 internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
 {
-    private readonly Directories directories;
+    private readonly DirectoryEntries directories;
     private bool start = true;
     private uint index = uint.MaxValue;
     private DirectoryEntry? current;
 
-    public DirectoryEntryEnumerator(Directories directories)
+    public DirectoryEntryEnumerator(DirectoryEntries directories)
     {
         this.directories = directories;
     }

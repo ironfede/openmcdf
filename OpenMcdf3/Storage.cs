@@ -16,7 +16,7 @@ public class Storage
             throw new ArgumentException("DirectoryEntry must be a Storage or Root.", nameof(directoryEntry));
 
         this.ioContext = ioContext;
-        directoryTree = new(ioContext.Directories, directoryEntry);
+        directoryTree = new(ioContext.DirectoryEntries, directoryEntry);
         DirectoryEntry = directoryEntry;
     }
 
@@ -38,7 +38,7 @@ public class Storage
 
     IEnumerable<DirectoryEntry> EnumerateDirectoryEntries()
     {
-        using DirectoryTreeEnumerator treeEnumerator = new(ioContext.Directories, DirectoryEntry);
+        using DirectoryTreeEnumerator treeEnumerator = new(ioContext.DirectoryEntries, DirectoryEntry);
         while (treeEnumerator.MoveNext())
         {
             yield return treeEnumerator.Current;
@@ -50,7 +50,7 @@ public class Storage
 
     DirectoryEntry AddDirectoryEntry(StorageType storageType, string name)
     {
-        DirectoryEntry entry = ioContext.Directories.CreateOrRecycleDirectoryEntry();
+        DirectoryEntry entry = ioContext.DirectoryEntries.CreateOrRecycleDirectoryEntry();
         entry.Recycle(storageType, name);
         directoryTree.Add(entry);
         return entry;
