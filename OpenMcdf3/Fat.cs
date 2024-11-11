@@ -184,14 +184,23 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
 
     internal void Validate()
     {
+        long fatSectorCount = 0;
+        long difatSectorCount = 0;
         foreach (FatEntry entry in this)
         {
             Sector sector = new(entry.Index, ioContext.SectorSize);
             if (entry.Value <= SectorType.Maximum && sector.EndPosition > ioContext.Length)
-            {
                 throw new FormatException($"FAT entry {entry} is beyond the end of the stream.");
-            }
+            if (entry.Value == SectorType.Fat)
+                fatSectorCount++;
+            if (entry.Value == SectorType.Difat)
+                difatSectorCount++;
         }
+
+        if (ioContext.Header.FatSectorCount != fatSectorCount)
+            throw new FormatException($"FAT sector count mismatch. Expected: {ioContext.Header.FatSectorCount} Actual: {fatSectorCount}.");
+        if (ioContext.Header.DifatSectorCount != difatSectorCount)
+            throw new FormatException($"DIFAT sector count mismatch: Expected: {ioContext.Header.DifatSectorCount} Actual: {difatSectorCount}.");
     }
 
     internal long GetFreeSectorCount() => this.Count(entry => entry.IsFree);
