@@ -22,10 +22,18 @@ public sealed class RootStorage : Storage, IDisposable
 {
     readonly StorageModeFlags storageModeFlags;
 
+    private static void ThrowIfLeaveOpen(StorageModeFlags flags)
+    {
+        if (flags.HasFlag(StorageModeFlags.LeaveOpen))
+            throw new ArgumentException($"{StorageModeFlags.LeaveOpen} is not valid for files");
+    }
+
     public static RootStorage Create(string fileName, Version version = Version.V3, StorageModeFlags flags = StorageModeFlags.None)
     {
+        ThrowIfLeaveOpen(flags);
+
         FileStream stream = File.Create(fileName);
-        return Create(stream, version);
+        return Create(stream, version, flags);
     }
 
     public static RootStorage Create(Stream stream, Version version = Version.V3, StorageModeFlags flags = StorageModeFlags.None)
@@ -46,14 +54,18 @@ public sealed class RootStorage : Storage, IDisposable
 
     public static RootStorage Open(string fileName, FileMode mode, StorageModeFlags flags = StorageModeFlags.None)
     {
+        ThrowIfLeaveOpen(flags);
+
         FileStream stream = File.Open(fileName, mode);
-        return Open(stream);
+        return Open(stream, flags);
     }
 
     public static RootStorage OpenRead(string fileName, StorageModeFlags flags = StorageModeFlags.None)
     {
+        ThrowIfLeaveOpen(flags);
+
         FileStream stream = File.OpenRead(fileName);
-        return Open(stream);
+        return Open(stream, flags);
     }
 
     public static RootStorage Open(Stream stream, StorageModeFlags flags = StorageModeFlags.None)

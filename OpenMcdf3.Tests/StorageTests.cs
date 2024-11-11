@@ -10,7 +10,7 @@ public sealed class StorageTests
     [DataRow("MultipleStorage4.cfs", 1)]
     public void Read(string fileName, long storageCount)
     {
-        using (var rootStorage = RootStorage.OpenRead(fileName, StorageModeFlags.LeaveOpen))
+        using (var rootStorage = RootStorage.OpenRead(fileName))
         {
             IEnumerable<EntryInfo> storageEntries = rootStorage.EnumerateEntries(StorageType.Storage);
             Assert.AreEqual(storageCount, storageEntries.Count());
