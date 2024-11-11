@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 
 #if NETSTANDARD2_0
 using System.Buffers;
@@ -78,7 +79,7 @@ internal sealed class CfbBinaryReader : BinaryReader
         if (header.MajorVersion is not (ushort)Version.V3 and not (ushort)Version.V4)
             throw new FormatException($"Unsupported major version: {header.MajorVersion}.");
         else if (header.MinorVersion is not Header.ExpectedMinorVersion)
-            throw new FormatException($"Unsupported minor version: {header.MinorVersion}.");
+            Trace.WriteLine($"Unexpected minor version: {header.MinorVersion}.");
         ushort byteOrder = ReadUInt16();
         if (byteOrder != Header.LittleEndian)
             throw new FormatException($"Unsupported byte order: {byteOrder:X4}. Only little-endian is supported ({Header.LittleEndian:X4}).");
