@@ -132,7 +132,10 @@ internal sealed class IOContext : IDisposable
             Fat.Dispose();
             writer?.Dispose();
             Reader.Dispose();
+            string? overlayFileName = (transactedStream?.OverlayStream as FileStream)?.Name;
             transactedStream?.Dispose();
+            if (overlayFileName is not null)
+                File.Delete(overlayFileName);
             if (!contextFlags.HasFlag(IOContextFlags.LeaveOpen))
                 stream.Dispose();
             IsDisposed = true;

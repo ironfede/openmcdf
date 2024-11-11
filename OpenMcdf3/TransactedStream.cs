@@ -6,7 +6,6 @@ internal class TransactedStream : Stream
 {
     readonly IOContext ioContext;
     readonly Stream originalStream;
-    readonly Stream overlayStream;
     readonly Dictionary<uint, long> dirtySectorPositions = new();
     readonly byte[] buffer;
 
@@ -14,17 +13,19 @@ internal class TransactedStream : Stream
     {
         this.ioContext = ioContext;
         this.originalStream = originalStream;
-        this.overlayStream = overlayStream;
+        OverlayStream = overlayStream;
         buffer = new byte[ioContext.SectorSize];
     }
 
     protected override void Dispose(bool disposing)
     {
         // Original stream might be owned by the caller
-        overlayStream.Dispose();
+        OverlayStream.Dispose();
 
         base.Dispose(disposing);
     }
+
+    public Stream OverlayStream { get; }
 
     public override bool CanRead => true;
 
@@ -32,11 +33,11 @@ internal class TransactedStream : Stream
 
     public override bool CanWrite => true;
 
-    public override long Length => overlayStream.Length;
+    public override long Length => OverlayStream.Length;
 
     public override long Position { get => originalStream.Position; set => originalStream.Position = value; }
 
-    public override void Flush() => overlayStream.Flush();
+    public override void Flush() => OverlayStream.Flush();
 
     public override int Read(byte[] buffer, int offset, int count)
     {
@@ -52,8 +53,8 @@ internal class TransactedStream : Stream
 
             if (dirtySectorPositions.TryGetValue(sectorId, out long overlayPosition))
             {
-                overlayStream.Position = overlayPosition + sectorOffset;
-                read = overlayStream.Read(buffer, offset + totalRead, localCount);
+                OverlayStream.Position = overlayPosition + sectorOffset;
+                read = OverlayStream.Read(buffer, offset + totalRead, localCount);
                 originalStream.Seek(read, SeekOrigin.Current);
             }
             else
@@ -87,7 +88,7 @@ internal class TransactedStream : Stream
         bool added = false;
         if (!dirtySectorPositions.TryGetValue(sectorId, out long overlayPosition))
         {
-            overlayPosition = overlayStream.Length;
+            overlayPosition = OverlayStream.Length;
             dirtySectorPositions.Add(sectorId, overlayPosition);
             added = true;
         }
@@ -99,14 +100,14 @@ internal class TransactedStream : Stream
             originalStream.Position = originalPosition - sectorOffset;
             originalStream.ReadExactly(this.buffer);
 
-            overlayStream.Position = overlayPosition;
-            overlayStream.Write(this.buffer, 0, this.buffer.Length);
+            OverlayStream.Position = overlayPosition;
+            OverlayStream.Write(this.buffer, 0, this.buffer.Length);
         }
 
-        overlayStream.Position = overlayPosition + sectorOffset;
-        overlayStream.Write(buffer, offset, localCount);
-        if (overlayStream.Length < overlayPosition + ioContext.SectorSize)
-            overlayStream.SetLength(overlayPosition + ioContext.SectorSize);
+        OverlayStream.Position = overlayPosition + sectorOffset;
+        OverlayStream.Write(buffer, offset, localCount);
+        if (OverlayStream.Length < overlayPosition + ioContext.SectorSize)
+            OverlayStream.SetLength(overlayPosition + ioContext.SectorSize);
         originalStream.Position = originalPosition + localCount;
     }
 
@@ -114,8 +115,8 @@ internal class TransactedStream : Stream
     {
         foreach (KeyValuePair<uint, long> entry in dirtySectorPositions)
         {
-            overlayStream.Position = entry.Value;
-            overlayStream.ReadExactly(buffer);
+            OverlayStream.Position = entry.Value;
+            OverlayStream.ReadExactly(buffer);
 
             originalStream.Position = entry.Key * ioContext.SectorSize;
             originalStream.Write(buffer, 0, buffer.Length);
@@ -145,8 +146,8 @@ internal class TransactedStream : Stream
         int read;
         if (dirtySectorPositions.TryGetValue(sectorId, out long overlayPosition))
         {
-            overlayStream.Position = overlayPosition + sectorOffset;
-            read = overlayStream.Read(slice);
+            OverlayStream.Position = overlayPosition + sectorOffset;
+            read = OverlayStream.Read(slice);
             originalStream.Seek(read, SeekOrigin.Current);
         }
         else
@@ -170,7 +171,7 @@ internal class TransactedStream : Stream
         bool added = false;
         if (!dirtySectorPositions.TryGetValue(sectorId, out long overlayPosition))
         {
-            overlayPosition = overlayStream.Length;
+            overlayPosition = OverlayStream.Length;
             dirtySectorPositions.Add(sectorId, overlayPosition);
             added = true;
         }
@@ -182,14 +183,14 @@ internal class TransactedStream : Stream
             originalStream.Position = originalPosition - sectorOffset;
             originalStream.ReadExactly(this.buffer);
 
-            overlayStream.Position = overlayPosition;
-            overlayStream.Write(this.buffer, 0, this.buffer.Length);
+            OverlayStream.Position = overlayPosition;
+            OverlayStream.Write(this.buffer, 0, this.buffer.Length);
         }
 
-        overlayStream.Position = overlayPosition + sectorOffset;
-        overlayStream.Write(buffer);
-        if (overlayStream.Length < overlayPosition + ioContext.SectorSize)
-            overlayStream.SetLength(overlayPosition + ioContext.SectorSize);
+        OverlayStream.Position = overlayPosition + sectorOffset;
+        OverlayStream.Write(buffer);
+        if (OverlayStream.Length < overlayPosition + ioContext.SectorSize)
+            OverlayStream.SetLength(overlayPosition + ioContext.SectorSize);
         originalStream.Position = originalPosition + localCount;
     }
 
