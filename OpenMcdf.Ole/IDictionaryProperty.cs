@@ -1,6 +1,5 @@
-﻿namespace OpenMcdf.Ole
+﻿namespace OpenMcdf.Ole;
+
+public interface IDictionaryProperty : IProperty
 {
-    public interface IDictionaryProperty : IProperty
-    {
-    }
 }

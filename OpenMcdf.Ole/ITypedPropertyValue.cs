@@ -1,21 +1,20 @@
-﻿namespace OpenMcdf.Ole
+﻿namespace OpenMcdf.Ole;
+
+public interface ITypedPropertyValue : IProperty
 {
-    public interface ITypedPropertyValue : IProperty
+    VTPropertyType VTType
     {
-        VTPropertyType VTType
-        {
-            get;
-            //set;
-        }
+        get;
+        //set;
+    }
 
-        PropertyDimensions PropertyDimensions
-        {
-            get;
-        }
+    PropertyDimensions PropertyDimensions
+    {
+        get;
+    }
 
-        bool IsVariant
-        {
-            get;
-        }
+    bool IsVariant
+    {
+        get;
     }
 }

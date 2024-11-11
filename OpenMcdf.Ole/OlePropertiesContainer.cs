@@ -1,4 +1,6 @@
-﻿namespace OpenMcdf.Ole;
+﻿using OpenMcdf3;
+
+namespace OpenMcdf.Ole;
 
 public enum ContainerType
 {
@@ -84,7 +86,7 @@ public class OlePropertiesContainer
         ContainerType = containerType;
     }
 
-    internal OlePropertiesContainer(Stream cfStream)
+    public OlePropertiesContainer(CfbStream cfStream)
     {
         PropertySetStream pStream = new();
 

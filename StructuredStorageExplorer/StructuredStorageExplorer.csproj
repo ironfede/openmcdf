@@ -1,20 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFrameworks>net8.0-windows</TargetFrameworks>
+    <OutputType>WinExe</OutputType>
+    <UseWindowsForms>true</UseWindowsForms>
     <LangVersion>12.0</LangVersion>
-    <OutputType>Exe</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
+    <PackageReference Include="Be.Windows.Forms.HexBox.Net5" Version="1.8.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OpenMcdf.Ole\OpenMcdf.Ole.csproj" />
     <ProjectReference Include="..\OpenMcdf3\OpenMcdf3.csproj" />
-    <ProjectReference Include="..\StructuredStorage\StructuredStorage.csproj" />
   </ItemGroup>
-
 </Project>

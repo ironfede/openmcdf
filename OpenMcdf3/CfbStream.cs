@@ -25,6 +25,8 @@ public sealed class CfbStream : Stream
         base.Dispose(disposing);
     }
 
+    public EntryInfo EntryInfo => directoryEntry.ToEntryInfo();
+
     public override bool CanRead => stream.CanRead;
 
     public override bool CanSeek => stream.CanSeek;

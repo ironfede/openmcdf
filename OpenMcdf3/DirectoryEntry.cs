@@ -6,7 +6,7 @@ namespace OpenMcdf3;
 /// <summary>
 /// The storage type of a <see cref="DirectoryEntry"/>.
 /// </summary>
-public enum StorageType
+enum StorageType
 {
     Unallocated = 0,
     Storage = 1,
@@ -207,7 +207,14 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
         }
     }
 
-    public EntryInfo ToEntryInfo() => new(NameString, StreamLength);
+    public EntryType EntryType => Type switch
+    {
+        StorageType.Stream => EntryType.Stream,
+        StorageType.Storage => EntryType.Storage,
+        _ => throw new InvalidOperationException("Invalid storage type.")
+    };
+
+    public EntryInfo ToEntryInfo() => new(EntryType, NameString, StreamLength, CLSID, CreationTime, ModifiedTime);
 
     public override string ToString() => $"{Id}: \"{NameString}\"";
 

@@ -20,19 +20,13 @@ public class Storage
         DirectoryEntry = directoryEntry;
     }
 
+    public EntryInfo EntryInfo => DirectoryEntry.ToEntryInfo();
+
     public IEnumerable<EntryInfo> EnumerateEntries()
     {
         this.ThrowIfDisposed(ioContext.IsDisposed);
 
         return EnumerateDirectoryEntries()
-            .Select(e => e.ToEntryInfo());
-    }
-
-    public IEnumerable<EntryInfo> EnumerateEntries(StorageType type)
-    {
-        this.ThrowIfDisposed(ioContext.IsDisposed);
-
-        return EnumerateDirectoryEntries(type)
             .Select(e => e.ToEntryInfo());
     }
 

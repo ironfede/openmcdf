@@ -12,7 +12,7 @@ public sealed class StorageTests
     {
         using (var rootStorage = RootStorage.OpenRead(fileName))
         {
-            IEnumerable<EntryInfo> storageEntries = rootStorage.EnumerateEntries(StorageType.Storage);
+            IEnumerable<EntryInfo> storageEntries = rootStorage.EnumerateEntries();
             Assert.AreEqual(storageCount, storageEntries.Count());
         }
 
