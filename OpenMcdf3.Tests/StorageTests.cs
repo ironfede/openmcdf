@@ -217,10 +217,34 @@ public sealed class StorageTests
             Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
         }
 
-        using (var rootStorage = RootStorage.Create(memoryStream, version))
+        using (var rootStorage = RootStorage.Open(memoryStream))
         {
             rootStorage.Delete("Test");
             Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
         }
+    }
+
+    [TestMethod]
+    [DataRow(Version.V3)]
+    [DataRow(Version.V4)]
+    public void Consolidate(Version version)
+    {
+        byte[] buffer = new byte[4096];
+
+        using MemoryStream memoryStream = new();
+        using var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen);
+        CfbStream stream = rootStorage.CreateStream("Test");
+        Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
+
+        stream.Write(buffer, 0, buffer.Length);
+        rootStorage.Flush();
+
+        int originalMemoryStreamLength = (int)memoryStream.Length;
+
+        rootStorage.Delete("Test");
+
+        rootStorage.Flush(true);
+
+        Assert.IsTrue(originalMemoryStreamLength > memoryStream.Length);
     }
 }

@@ -22,16 +22,6 @@ internal class FatEnumerator : IEnumerator<FatEntry>
     {
     }
 
-    public Sector CurrentSector
-    {
-        get
-        {
-            if (index == uint.MaxValue)
-                throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
-            return new(index, ioContext.SectorSize);
-        }
-    }
-
     /// <inheritdoc/>
     public FatEntry Current
     {

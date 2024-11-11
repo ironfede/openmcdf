@@ -13,7 +13,6 @@ enum IOContextFlags
 /// </summary>
 internal sealed class IOContext : IDisposable
 {
-    readonly Stream stream;
     readonly IOContextFlags contextFlags;
     readonly CfbBinaryWriter? writer;
     readonly TransactedStream? transactedStream;
@@ -21,6 +20,8 @@ internal sealed class IOContext : IDisposable
     FatStream? miniStream;
 
     public Header Header { get; }
+
+    public Stream BaseStream { get; }
 
     public CfbBinaryReader Reader { get; }
 
@@ -75,9 +76,11 @@ internal sealed class IOContext : IDisposable
 
     public uint SectorCount => (uint)Math.Max(0, (Length - SectorSize) / SectorSize); // TODO: Check
 
+    bool isDirty;
+
     public IOContext(Stream stream, Version version, IOContextFlags contextFlags = IOContextFlags.None)
     {
-        this.stream = stream;
+        BaseStream = stream;
         this.contextFlags = contextFlags;
 
         using CfbBinaryReader reader = new(stream);
@@ -119,12 +122,7 @@ internal sealed class IOContext : IDisposable
     {
         if (!IsDisposed)
         {
-            if (writer is not null && transactedStream is null)
-            {
-                // Ensure the stream is as long as expected
-                stream.SetLength(Length);
-                WriteHeader();
-            }
+            Flush();
 
             miniStream?.Dispose();
             miniFat?.Dispose();
@@ -137,8 +135,19 @@ internal sealed class IOContext : IDisposable
             if (overlayFileName is not null)
                 File.Delete(overlayFileName);
             if (!contextFlags.HasFlag(IOContextFlags.LeaveOpen))
-                stream.Dispose();
+                BaseStream.Dispose();
             IsDisposed = true;
+        }
+    }
+
+    public void Flush()
+    {
+        if (isDirty && writer is not null && transactedStream is null)
+        {
+            // Ensure the stream is as long as expected
+            BaseStream.SetLength(Length);
+            WriteHeader();
+            isDirty = false;
         }
     }
 
@@ -146,6 +155,7 @@ internal sealed class IOContext : IDisposable
     {
         if (Length < length)
             Length = length;
+        isDirty = true;
     }
 
     public void WriteHeader()
@@ -171,7 +181,7 @@ internal sealed class IOContext : IDisposable
     public void Revert()
     {
         if (writer is null || transactedStream is null)
-            throw new InvalidOperationException("Cannot commit non-transacted storage.");
+            throw new InvalidOperationException("Cannot revert non-transacted storage.");
 
         transactedStream.Revert();
     }

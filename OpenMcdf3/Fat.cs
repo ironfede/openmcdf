@@ -11,7 +11,7 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
 {
     private readonly IOContext ioContext;
     private readonly FatSectorEnumerator fatSectorEnumerator;
-    private readonly int FatElementsPerSector;
+    internal readonly int FatElementsPerSector;
     private readonly byte[] cachedSectorBuffer;
     Sector cachedSector = Sector.EndOfChain;
     private bool isDirty;
@@ -145,7 +145,8 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
         }
 
         FatEntry entry = fatEnumerator.Current;
-        ioContext.ExtendStreamLength(fatEnumerator.CurrentSector.EndPosition);
+        Sector sector = new(entry.Index, ioContext.SectorSize);
+        ioContext.ExtendStreamLength(sector.EndPosition);
         this[entry.Index] = SectorType.EndOfChain;
         return entry.Index;
     }
@@ -156,27 +157,25 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
 
     internal void WriteTrace(TextWriter writer)
     {
-        using FatEnumerator fatEnumerator = new(ioContext);
-
         byte[] data = new byte[ioContext.SectorSize];
 
         Stream baseStream = ioContext.Reader.BaseStream;
 
         writer.WriteLine("Start of FAT =================");
 
-        while (fatEnumerator.MoveNext())
+        foreach (FatEntry entry in this)
         {
-            FatEntry current = fatEnumerator.Current;
-            if (current.IsFree)
+            Sector sector = new(entry.Index, ioContext.SectorSize);
+            if (entry.IsFree)
             {
-                writer.WriteLine($"{current}");
+                writer.WriteLine($"{entry}");
             }
             else
             {
-                baseStream.Position = fatEnumerator.CurrentSector.Position;
+                baseStream.Position = sector.Position;
                 baseStream.ReadExactly(data, 0, data.Length);
                 string hex = BitConverter.ToString(data);
-                writer.WriteLine($"{current}: {hex}");
+                writer.WriteLine($"{entry}: {hex}");
             }
         }
 
@@ -185,15 +184,15 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
 
     internal void Validate()
     {
-        using FatEnumerator fatEnumerator = new(ioContext);
-
-        while (fatEnumerator.MoveNext())
+        foreach (FatEntry entry in this)
         {
-            FatEntry current = fatEnumerator.Current;
-            if (current.Value <= SectorType.Maximum && fatEnumerator.CurrentSector.EndPosition > ioContext.Length)
+            Sector sector = new(entry.Index, ioContext.SectorSize);
+            if (entry.Value <= SectorType.Maximum && sector.EndPosition > ioContext.Length)
             {
-                throw new FormatException($"FAT entry {current} is beyond the end of the stream.");
+                throw new FormatException($"FAT entry {entry} is beyond the end of the stream.");
             }
         }
     }
+
+    internal long GetFreeSectorCount() => this.Count(entry => entry.IsFree);
 }

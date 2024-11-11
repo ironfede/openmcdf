@@ -103,6 +103,25 @@ public class Storage
         return new CfbStream(ioContext, entry);
     }
 
+    public void CopyTo(Storage destination)
+    {
+        foreach (DirectoryEntry entry in EnumerateDirectoryEntries())
+        {
+            if (entry.Type is StorageType.Storage)
+            {
+                Storage subSource = new(ioContext, entry);
+                Storage subDestination = destination.CreateStorage(entry.NameString);
+                subSource.CopyTo(subDestination);
+            }
+            else if (entry.Type is StorageType.Stream)
+            {
+                CfbStream stream = new(ioContext, entry);
+                CfbStream destinationStream = destination.CreateStream(entry.NameString);
+                stream.CopyTo(destinationStream);
+            }
+        }
+    }
+
     public void Delete(string name)
     {
         ThrowHelper.ThrowIfNameIsInvalid(name);

@@ -20,6 +20,8 @@ public enum StorageModeFlags
 /// </summary>
 public sealed class RootStorage : Storage, IDisposable
 {
+    readonly StorageModeFlags storageModeFlags;
+
     public static RootStorage Create(string fileName, Version version = Version.V3, StorageModeFlags flags = StorageModeFlags.None)
     {
         FileStream stream = File.Create(fileName);
@@ -39,7 +41,7 @@ public sealed class RootStorage : Storage, IDisposable
             contextFlags |= IOContextFlags.Transacted;
 
         IOContext ioContext = new(stream, version, contextFlags);
-        return new RootStorage(ioContext);
+        return new RootStorage(ioContext, flags);
     }
 
     public static RootStorage Open(string fileName, FileMode mode, StorageModeFlags flags = StorageModeFlags.None)
@@ -66,23 +68,73 @@ public sealed class RootStorage : Storage, IDisposable
             contextFlags |= IOContextFlags.Transacted;
 
         IOContext ioContext = new(stream, Version.Unknown, contextFlags);
-        return new RootStorage(ioContext);
+        return new RootStorage(ioContext, flags);
     }
 
-    RootStorage(IOContext ioContext)
+    RootStorage(IOContext ioContext, StorageModeFlags storageModeFlags)
         : base(ioContext, ioContext.RootEntry)
     {
+        this.storageModeFlags = storageModeFlags;
     }
 
     public void Dispose() => ioContext?.Dispose();
 
+    public void Flush(bool consolidate = false)
+    {
+        this.ThrowIfDisposed(ioContext.IsDisposed);
+
+        ioContext.Flush();
+
+        if (consolidate)
+            Consolidate();
+    }
+
+    void Consolidate()
+    {
+        // TODO: Consolidate by defragmentation instead of copy
+
+        Stream? destinationStream = null;
+
+        try
+        {
+            if (ioContext.BaseStream is MemoryStream)
+                destinationStream = new MemoryStream((int)ioContext.BaseStream.Length);
+            else if (ioContext.BaseStream is FileStream)
+                destinationStream = File.Create(Path.GetTempFileName());
+            else
+                throw new NotSupportedException("Unsupported stream type for consolidation.");
+
+            using (RootStorage destinationStorage = Create(destinationStream, ioContext.Version, storageModeFlags))
+                CopyTo(destinationStorage);
+
+            ioContext.BaseStream.Position = 0;
+            destinationStream.Position = 0;
+
+            destinationStream.CopyTo(ioContext.BaseStream);
+            ioContext.BaseStream.SetLength(destinationStream.Length);
+        }
+        catch
+        {
+            if (destinationStream is FileStream fs)
+            {
+                string fileName = fs.Name;
+                fs.Dispose();
+                File.Delete(fileName);
+            }
+        }
+    }
+
     public void Commit()
     {
+        this.ThrowIfDisposed(ioContext.IsDisposed);
+
         ioContext.Commit();
     }
 
     public void Revert()
     {
+        this.ThrowIfDisposed(ioContext.IsDisposed);
+
         ioContext.Revert();
     }
 
