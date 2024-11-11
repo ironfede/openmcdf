@@ -1,0 +1,61 @@
+﻿using System.Text;
+
+namespace OpenMcdf.Ole;
+
+public class DictionaryEntry
+{
+    readonly int codePage;
+
+    public DictionaryEntry(int codePage)
+    {
+        this.codePage = codePage;
+    }
+
+    public uint PropertyIdentifier { get; set; }
+    public int Length { get; set; }
+    public string Name => GetName();
+
+    private byte[] nameBytes;
+
+    public void Read(BinaryReader br)
+    {
+        PropertyIdentifier = br.ReadUInt32();
+        Length = br.ReadInt32();
+
+        if (codePage != CodePages.WinUnicode)
+        {
+            nameBytes = br.ReadBytes(Length);
+        }
+        else
+        {
+            nameBytes = br.ReadBytes(Length << 1);
+
+            int m = Length * 2 % 4;
+            if (m > 0)
+                br.ReadBytes(m);
+        }
+    }
+
+    public void Write(BinaryWriter bw)
+    {
+        bw.Write(PropertyIdentifier);
+        bw.Write(Length);
+        bw.Write(nameBytes);
+
+        //if (codePage == CP_WINUNICODE)
+        //    int m = Length % 4;
+
+        //if (m > 0)
+        //    for (int i = 0; i < m; i++)
+        //        bw.Write((byte)m);
+    }
+
+    private string GetName()
+    {
+        string result = Encoding.GetEncoding(codePage).GetString(nameBytes);
+
+        result = result.Trim('\0');
+
+        return result;
+    }
+}

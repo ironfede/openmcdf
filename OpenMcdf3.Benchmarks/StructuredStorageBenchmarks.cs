@@ -2,7 +2,7 @@
 
 namespace OpenMcdf3.Benchmarks;
 
-internal class StructuredStorageBenchmarks
+internal static class StructuredStorageBenchmarks
 {
     public static void ReadStream(string fileName, byte[] buffer)
     {
