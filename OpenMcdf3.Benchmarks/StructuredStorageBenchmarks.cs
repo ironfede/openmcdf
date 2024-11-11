@@ -57,6 +57,9 @@ internal class StructuredStorageBenchmarks
 
     public static void WriteInMemory(Version version, StorageModeFlags flags, byte[] buffer, long streamLength)
     {
+        if (version == Version.V4)
+            throw new NotSupportedException();
+
         using var storage = StructuredStorage.Storage.CreateInMemory((int)streamLength * 2);
         using StructuredStorage.Stream storageStream = storage.CreateStream("Test");
 

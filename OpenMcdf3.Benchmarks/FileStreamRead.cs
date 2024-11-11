@@ -10,11 +10,11 @@ namespace OpenMcdf3.Benchmark;
 [MarkdownExporter]
 public class FileStreamRead : IDisposable
 {
-    const Version version = Version.V3;
-
     private string readFileName = "";
-
     private byte[] buffer = Array.Empty<byte>();
+
+    [Params(Version.V3, Version.V4)]
+    public Version Version { get; set; }
 
     [Params(512, 1024 * 1024)]
     public int BufferSize { get; set; }
@@ -34,7 +34,7 @@ public class FileStreamRead : IDisposable
 
         buffer = new byte[BufferSize];
 
-        using var storage = RootStorage.Create(readFileName, version, StorageModeFlags.LeaveOpen);
+        using var storage = RootStorage.Create(readFileName, Version, StorageModeFlags.LeaveOpen);
         using CfbStream stream = storage.CreateStream("Test");
 
         int iterationCount = StreamLength / BufferSize;

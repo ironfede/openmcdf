@@ -10,11 +10,11 @@ namespace OpenMcdf3.Benchmark;
 [MarkdownExporter]
 public class FileStreamTransactedWrite : IDisposable
 {
-    const Version version = Version.V3;
-
     private string writeFileName = "";
-
     private byte[] buffer = Array.Empty<byte>();
+
+    [Params(Version.V3, Version.V4)]
+    public Version Version { get; set; }
 
     [Params(512, 1024 * 1024)]
     public int BufferSize { get; set; }
@@ -39,11 +39,11 @@ public class FileStreamTransactedWrite : IDisposable
     public void GlobalCleanup() => Dispose();
 
     [Benchmark]
-    public void WriteTransacted() => OpenMcdfBenchmarks.WriteStream(writeFileName!, version, StorageModeFlags.None | StorageModeFlags.Transacted, buffer, StreamLength);
+    public void WriteTransacted() => OpenMcdfBenchmarks.WriteStream(writeFileName!, Version, StorageModeFlags.None | StorageModeFlags.Transacted, buffer, StreamLength);
 
 #if WINDOWS
 
     [Benchmark(Baseline = true)]
-    public void WriteStructuredStorageTransacted() => StructuredStorageBenchmarks.WriteStream(writeFileName, version, StorageModeFlags.Transacted, buffer, StreamLength);
+    public void WriteStructuredStorageTransacted() => StructuredStorageBenchmarks.WriteStream(writeFileName, Version, StorageModeFlags.Transacted, buffer, StreamLength);
 #endif
 }
