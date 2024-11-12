@@ -1,42 +1,42 @@
 ﻿namespace StructuredStorageExplorer;
 
-class Utils
+static class Utils
 {
     public static DialogResult InputBox(string title, string promptText, ref string value)
     {
-        Form form = new Form();
-        Label label = new Label();
-        TextBox textBox = new TextBox();
-        Button buttonOk = new Button();
-        Button buttonCancel = new Button();
+        using Form form = new();
+        using Label label = new();
+        using TextBox textBox = new();
+        using Button buttonOK = new();
+        using Button buttonCancel = new();
 
         form.Text = title;
         label.Text = promptText;
         textBox.Text = value;
 
-        buttonOk.Text = "OK";
+        buttonOK.Text = "OK";
         buttonCancel.Text = "Cancel";
-        buttonOk.DialogResult = DialogResult.OK;
+        buttonOK.DialogResult = DialogResult.OK;
         buttonCancel.DialogResult = DialogResult.Cancel;
 
         label.SetBounds(9, 20, 372, 13);
         textBox.SetBounds(12, 36, 372, 20);
-        buttonOk.SetBounds(228, 72, 75, 23);
+        buttonOK.SetBounds(228, 72, 75, 23);
         buttonCancel.SetBounds(309, 72, 75, 23);
 
         label.AutoSize = true;
         textBox.Anchor = textBox.Anchor | AnchorStyles.Right;
-        buttonOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+        buttonOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
         buttonCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 
         form.ClientSize = new Size(396, 107);
-        form.Controls.AddRange([label, textBox, buttonOk, buttonCancel]);
+        form.Controls.AddRange([label, textBox, buttonOK, buttonCancel]);
         form.ClientSize = new Size(Math.Max(300, label.Right + 10), form.ClientSize.Height);
         form.FormBorderStyle = FormBorderStyle.FixedDialog;
         form.StartPosition = FormStartPosition.CenterScreen;
         form.MinimizeBox = false;
         form.MaximizeBox = false;
-        form.AcceptButton = buttonOk;
+        form.AcceptButton = buttonOK;
         form.CancelButton = buttonCancel;
 
         DialogResult dialogResult = form.ShowDialog();

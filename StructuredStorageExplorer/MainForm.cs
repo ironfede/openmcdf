@@ -12,7 +12,33 @@ using System.Globalization;
 
 namespace StructuredStorageExplorer;
 
-record class NodeSelection(Storage Parent, EntryInfo EntryInfo);
+sealed record class NodeSelection(Storage? Parent, EntryInfo EntryInfo)
+{
+    public string SanitizedFileName
+    {
+        get
+        {
+            // A lot of stream and storage have only non-printable characters.
+            // We need to sanitize filename.
+
+            string sanitizedFileName = string.Empty;
+
+            foreach (char c in EntryInfo.Name)
+            {
+                UnicodeCategory category = char.GetUnicodeCategory(c);
+                if (category is UnicodeCategory.LetterNumber or UnicodeCategory.LowercaseLetter or UnicodeCategory.UppercaseLetter)
+                    sanitizedFileName += c;
+            }
+
+            if (string.IsNullOrEmpty(sanitizedFileName))
+            {
+                sanitizedFileName = "tempFileName";
+            }
+
+            return $"{sanitizedFileName}.bin";
+        }
+    }
+}
 
 /// <summary>
 /// Sample Structured Storage viewer to
@@ -21,8 +47,6 @@ record class NodeSelection(Storage Parent, EntryInfo EntryInfo);
 public partial class MainForm : Form
 {
     private RootStorage? cf;
-    private FileStream? fs;
-    private bool canUpdate;
 
     public MainForm()
     {
@@ -32,15 +56,10 @@ public partial class MainForm : Form
         tabControl1.TabPages.Remove(tabPage2);
 #endif
 
-        //Load images for icons from resx
-        Image folderImage = (Image)Resources.ResourceManager.GetObject("storage");
-        Image streamImage = (Image)Resources.ResourceManager.GetObject("stream");
-        //Image olePropsImage = (Image)Properties.Resources.ResourceManager.GetObject("oleprops");
-
-        treeView1.ImageList = new ImageList();
-        treeView1.ImageList.Images.Add(folderImage);
-        treeView1.ImageList.Images.Add(streamImage);
-        //treeView1.ImageList.Images.Add(olePropsImage);
+        ImageList imageList = new();
+        imageList.Images.Add(Resources.storage);
+        imageList.Images.Add(Resources.stream);
+        treeView1.ImageList = imageList;
 
         saveAsToolStripMenuItem.Enabled = false;
         updateCurrentFileToolStripMenuItem.Enabled = false;
@@ -52,12 +71,7 @@ public partial class MainForm : Form
         {
             CloseCurrentFile();
 
-            treeView1.Nodes.Clear();
-            fileNameLabel.Text = openFileDialog1.FileName;
-            LoadFile(openFileDialog1.FileName, true);
-            canUpdate = true;
-            saveAsToolStripMenuItem.Enabled = true;
-            updateCurrentFileToolStripMenuItem.Enabled = true;
+            LoadFile(openFileDialog1.FileName);
         }
     }
 
@@ -65,9 +79,6 @@ public partial class MainForm : Form
     {
         cf?.Dispose();
         cf = null;
-
-        fs?.Close();
-        fs = null;
 
         treeView1.Nodes.Clear();
         fileNameLabel.Text = string.Empty;
@@ -87,56 +98,62 @@ public partial class MainForm : Form
     {
         CloseCurrentFile();
 
-        cf = RootStorage.Create(Path.GetTempFileName());
-        canUpdate = false;
-        saveAsToolStripMenuItem.Enabled = true;
+        try
+        {
+            string fileName = Path.GetTempFileName();
 
-        updateCurrentFileToolStripMenuItem.Enabled = false;
+            cf = RootStorage.Create(fileName);
 
-        RefreshTree();
+            fileNameLabel.Text = fileName;
+            saveAsToolStripMenuItem.Enabled = true;
+            updateCurrentFileToolStripMenuItem.Enabled = true;
+
+            RefreshTree();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
+        {
+            CloseCurrentFile();
+
+            MessageBox.Show($"Error creating file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
     private void RefreshTree()
     {
         treeView1.Nodes.Clear();
-        TreeNode root = treeView1.Nodes.Add("Root Entry", "Root");
-        root.ImageIndex = 0;
-        root.Tag = new NodeSelection(null, cf.EntryInfo);
 
-        // Recursive function to get all storage and streams
-        AddNodes(root, cf);
+        if (cf is not null)
+        {
+            TreeNode root = treeView1.Nodes.Add(cf.EntryInfo.Name);
+            root.ImageIndex = 0;
+            root.Tag = new NodeSelection(null, cf.EntryInfo);
+
+            // Recursive function to get all storage and streams
+            AddNodes(root, cf);
+        }
     }
 
-    private void LoadFile(string fileName, bool enableCommit)
+    private void LoadFile(string fileName)
     {
-        fs = new FileStream(
-            fileName,
-            FileMode.Open,
-            enableCommit ?
-                FileAccess.ReadWrite
-                : FileAccess.Read);
-
         try
         {
             cf?.Dispose();
             cf = null;
 
             // Load file
-            cf = RootStorage.Open(fs, enableCommit ? StorageModeFlags.Transacted : StorageModeFlags.None);
+            cf = RootStorage.Open(fileName, FileMode.Open);
+
+            fileNameLabel.Text = fileName;
+            saveAsToolStripMenuItem.Enabled = true;
+            updateCurrentFileToolStripMenuItem.Enabled = true;
 
             RefreshTree();
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
         {
-            cf?.Dispose();
-            cf = null;
+            CloseCurrentFile();
 
-            fs?.Close();
-            fs = null;
-
-            treeView1.Nodes.Clear();
-            fileNameLabel.Text = string.Empty;
-            MessageBox.Show("Internal error: " + ex.Message, "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"Error opening file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
@@ -150,22 +167,18 @@ public partial class MainForm : Form
         foreach (EntryInfo item in storage.EnumerateEntries())
         {
             TreeNode childNode = node.Nodes.Add(item.Name);
-
             childNode.Tag = new NodeSelection(storage, item);
 
             if (item.Type is EntryType.Storage)
             {
-                // Storage
                 childNode.ImageIndex = 0;
                 childNode.SelectedImageIndex = 0;
 
                 Storage subStorage = storage.OpenStorage(item.Name);
-                // Recursion into the storage
                 AddNodes(childNode, subStorage);
             }
             else
             {
-                // Stream
                 childNode.ImageIndex = 1;
                 childNode.SelectedImageIndex = 1;
             }
@@ -175,31 +188,13 @@ public partial class MainForm : Form
     private void exportDataToolStripMenuItem_Click(object sender, EventArgs e)
     {
         // No export if storage
-        NodeSelection? selection = treeView1.SelectedNode?.Tag as NodeSelection;
-        if (selection is null || selection.EntryInfo.Type is not EntryType.Stream)
+        if (treeView1.SelectedNode?.Tag is not NodeSelection selection || selection.EntryInfo.Type is not EntryType.Stream || selection.Parent is null)
         {
             MessageBox.Show("Only stream data can be exported", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
 
-        // A lot of stream and storage have only non-printable characters.
-        // We need to sanitize filename.
-
-        string sanitizedFileName = string.Empty;
-
-        foreach (char c in selection.EntryInfo.Name)
-        {
-            UnicodeCategory category = char.GetUnicodeCategory(c);
-            if (category is UnicodeCategory.LetterNumber or UnicodeCategory.LowercaseLetter or UnicodeCategory.UppercaseLetter)
-                sanitizedFileName += c;
-        }
-
-        if (string.IsNullOrEmpty(sanitizedFileName))
-        {
-            sanitizedFileName = "tempFileName";
-        }
-
-        saveFileDialog1.FileName = $"{sanitizedFileName}.bin";
+        saveFileDialog1.FileName = selection.SanitizedFileName;
 
         if (saveFileDialog1.ShowDialog() == DialogResult.OK)
         {
@@ -209,18 +204,16 @@ public partial class MainForm : Form
                 using CfbStream cfbStream = selection.Parent.OpenStream(selection.EntryInfo.Name);
                 cfbStream.CopyTo(fs);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
-                treeView1.Nodes.Clear();
-                MessageBox.Show($"Internal error: {ex.Message}", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error saving file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
 
     private void removeToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        TreeNode n = treeView1.SelectedNode;
-        if (n?.Parent?.Tag is NodeSelection selection && selection.Parent is not null)
+        if (treeView1.SelectedNode?.Tag is NodeSelection selection && selection.Parent is not null)
             selection.Parent.Delete(selection.EntryInfo.Name);
 
         RefreshTree();
@@ -237,16 +230,12 @@ public partial class MainForm : Form
 
     private void updateCurrentFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        if (canUpdate)
-        {
-            if (hexEditor.ByteProvider is not null && hexEditor.ByteProvider.HasChanges())
-                hexEditor.ByteProvider.ApplyChanges();
-            cf.Commit();
-        }
-        else
-        {
-            MessageBox.Show("Cannot update a compound document that is not based on a stream or on a file", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        }
+        if (cf is null)
+            return;
+
+        if (hexEditor.ByteProvider is not null && hexEditor.ByteProvider.HasChanges())
+            hexEditor.ByteProvider.ApplyChanges();
+        cf.Commit();
     }
 
     private void addStreamToolStripMenuItem_Click(object sender, EventArgs e)
@@ -303,8 +292,7 @@ public partial class MainForm : Form
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
     {
-        cf?.Dispose();
-        cf = null;
+        CloseCurrentFile();
     }
 
     private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
@@ -365,7 +353,7 @@ public partial class MainForm : Form
 
             if (nodeSelection.EntryInfo.Type is EntryType.Stream)
             {
-                using CfbStream stream = nodeSelection.Parent.OpenStream(nodeSelection.EntryInfo.Name);
+                using CfbStream stream = nodeSelection.Parent!.OpenStream(nodeSelection.EntryInfo.Name);
                 addStorageStripMenuItem1.Enabled = false;
                 addStreamToolStripMenuItem.Enabled = false;
                 importDataStripMenuItem1.Enabled = true;
@@ -384,18 +372,11 @@ public partial class MainForm : Form
 
             propertyGrid1.SelectedObject = nodeSelection.EntryInfo;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
         {
-            cf?.Dispose();
-            cf = null;
+            CloseCurrentFile();
 
-            fs?.Close();
-            fs = null;
-
-            treeView1.Nodes.Clear();
-            fileNameLabel.Text = string.Empty;
-
-            MessageBox.Show($"Internal error: {ex.Message}", "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
@@ -435,7 +416,7 @@ public partial class MainForm : Form
             ds.AcceptChanges();
             dgvOLEProps.DataSource = ds;
 
-            if (c.HasUserDefinedProperties)
+            if (c.UserDefinedProperties is not null)
             {
                 DataTable ds2 = new();
                 ds2.Columns.Add("Name", typeof(string));
