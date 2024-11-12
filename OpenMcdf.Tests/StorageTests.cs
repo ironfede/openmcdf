@@ -1,7 +1,5 @@
 ﻿namespace OpenMcdf.Tests;
 
-using Version = OpenMcdf.Version;
-
 [TestClass]
 public sealed class StorageTests
 {

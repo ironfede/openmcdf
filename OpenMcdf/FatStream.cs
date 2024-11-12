@@ -73,6 +73,8 @@ internal class FatStream : Stream
             Context.Writer!.Flush();
     }
 
+    uint GetFatChainIndexAndSectorOffset(long offset, out long sectorOffset) => (uint)Math.DivRem(offset, Context.SectorSize, out sectorOffset);
+
     /// <inheritdoc/>
     public override int Read(byte[] buffer, int offset, int count)
     {
@@ -87,7 +89,7 @@ internal class FatStream : Stream
         if (maxCount == 0)
             return 0;
 
-        uint chainIndex = (uint)Math.DivRem(position, Context.SectorSize, out long sectorOffset);
+        uint chainIndex = GetFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!chain.MoveTo(chainIndex))
             return 0;
 
@@ -171,7 +173,7 @@ internal class FatStream : Stream
         if (count == 0)
             return;
 
-        uint chainIndex = (uint)Math.DivRem(position, Context.SectorSize, out long sectorOffset);
+        uint chainIndex = GetFatChainIndexAndSectorOffset(position, out long sectorOffset);
 
         CfbBinaryWriter writer = Context.Writer;
         int writeCount = 0;
@@ -220,7 +222,7 @@ internal class FatStream : Stream
         if (maxCount == 0)
             return 0;
 
-        uint chainIndex = (uint)Math.DivRem(position, Context.SectorSize, out long sectorOffset);
+        uint chainIndex = GetFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!chain.MoveTo(chainIndex))
             return 0;
 
@@ -257,7 +259,7 @@ internal class FatStream : Stream
         if (buffer.Length == 0)
             return;
 
-        uint chainIndex = (uint)Math.DivRem(position, Context.SectorSize, out long sectorOffset);
+        uint chainIndex = GetFatChainIndexAndSectorOffset(position, out long sectorOffset);
 
         CfbBinaryWriter writer = Context.Writer;
         int writeCount = 0;

@@ -64,6 +64,8 @@ internal sealed class MiniFatStream : Stream
         Context.MiniStream.Flush();
     }
 
+    uint GetMiniFatChainIndexAndSectorOffset(long offset, out long sectorOffset) => (uint)Math.DivRem(offset, Context.MiniSectorSize, out sectorOffset);
+
     public override int Read(byte[] buffer, int offset, int count)
     {
         ThrowHelper.ThrowIfStreamArgumentsAreInvalid(buffer, offset, count);
@@ -77,7 +79,7 @@ internal sealed class MiniFatStream : Stream
         if (maxCount == 0)
             return 0;
 
-        uint chainIndex = (uint)Math.DivRem(position, Context.MiniSectorSize, out long sectorOffset);
+        uint chainIndex = GetMiniFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!miniChain.MoveTo(chainIndex))
             return 0;
 
@@ -167,7 +169,7 @@ internal sealed class MiniFatStream : Stream
         if (position + count > ChainCapacity)
             SetLength(position + count);
 
-        uint chainIndex = (uint)Math.DivRem(position, Context.MiniSectorSize, out long sectorOffset);
+        uint chainIndex = GetMiniFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!miniChain.MoveTo(chainIndex))
             throw new InvalidOperationException($"Failed to move to mini FAT chain index: {chainIndex}.");
 
@@ -212,7 +214,7 @@ internal sealed class MiniFatStream : Stream
         if (maxCount == 0)
             return 0;
 
-        uint chainIndex = (uint)Math.DivRem(position, Context.MiniSectorSize, out long sectorOffset);
+        uint chainIndex = GetMiniFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!miniChain.MoveTo(chainIndex))
             return 0;
 
@@ -253,7 +255,7 @@ internal sealed class MiniFatStream : Stream
         if (position + buffer.Length > ChainCapacity)
             SetLength(position + buffer.Length);
 
-        uint chainIndex = (uint)Math.DivRem(position, Context.MiniSectorSize, out long sectorOffset);
+        uint chainIndex = GetMiniFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!miniChain.MoveTo(chainIndex))
             throw new InvalidOperationException($"Failed to move to mini FAT chain index: {chainIndex}.");
 

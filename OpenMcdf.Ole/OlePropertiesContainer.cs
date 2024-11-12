@@ -1,6 +1,4 @@
-﻿using OpenMcdf;
-
-namespace OpenMcdf.Ole;
+﻿namespace OpenMcdf.Ole;
 
 public enum ContainerType
 {

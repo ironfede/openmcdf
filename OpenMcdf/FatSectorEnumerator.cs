@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Diagnostics;
 
 namespace OpenMcdf;
 
@@ -87,8 +86,8 @@ internal sealed class FatSectorEnumerator : ContextBase, IEnumerator<Sector>
             this.index = Header.DifatArrayLength;
         }
 
-        uint difatSectorIndex = (uint)Math.DivRem(index - Header.DifatArrayLength, difatSectorEnumerator.DifatElementsPerSector, out long difatElementIndex);
-        if (!difatSectorEnumerator.MoveTo(difatSectorIndex))
+        uint difatChainIndex = GetDifatChainIndexAndDifatEntryIndex(index, out long difatElementIndex);
+        if (!difatSectorEnumerator.MoveTo(difatChainIndex))
         {
             this.index = uint.MaxValue;
             current = Sector.EndOfChain;
@@ -103,6 +102,9 @@ internal sealed class FatSectorEnumerator : ContextBase, IEnumerator<Sector>
         return true;
     }
 
+    private uint GetDifatChainIndexAndDifatEntryIndex(uint index, out long difatElementIndex)
+        => (uint)Math.DivRem(index - Header.DifatArrayLength, Context.DifatEntriesPerSector, out difatElementIndex);
+
     /// <inheritdoc/>
     public void Reset()
     {
@@ -110,21 +112,6 @@ internal sealed class FatSectorEnumerator : ContextBase, IEnumerator<Sector>
         index = uint.MaxValue;
         current = Sector.EndOfChain;
         difatSectorEnumerator.Reset();
-    }
-
-    (uint lastIndex, Sector lastSector) MoveToEnd()
-    {
-        Reset();
-
-        uint lastIndex = uint.MaxValue;
-        Sector lastSector = Sector.EndOfChain;
-        while (MoveNext())
-        {
-            lastIndex = index;
-            lastSector = current;
-        }
-
-        return (lastIndex, lastSector);
     }
 
     /// <summary>
@@ -154,7 +141,7 @@ internal sealed class FatSectorEnumerator : ContextBase, IEnumerator<Sector>
         }
         else
         {
-            uint difatSectorIndex = (uint)Math.DivRem(nextIndex - Header.DifatArrayLength, difatSectorEnumerator.DifatElementsPerSector, out long difatElementIndex);
+            uint difatSectorIndex = GetDifatChainIndexAndDifatEntryIndex(nextIndex, out long difatElementIndex);
             if (!difatSectorEnumerator.MoveTo(difatSectorIndex))
                 difatSectorEnumerator.Add();
 

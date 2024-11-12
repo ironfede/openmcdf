@@ -1,6 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace OpenMcdf;
+﻿namespace OpenMcdf;
 
 public enum Version : ushort
 {

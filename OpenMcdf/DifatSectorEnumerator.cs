@@ -1,11 +1,9 @@
 ﻿using System.Collections;
-using System.Diagnostics;
 
 namespace OpenMcdf;
 
 internal class DifatSectorEnumerator : ContextBase, IEnumerator<Sector>
 {
-    public readonly uint DifatElementsPerSector;
     bool start = true;
     uint index = uint.MaxValue;
     Sector current = Sector.EndOfChain;
@@ -14,13 +12,11 @@ internal class DifatSectorEnumerator : ContextBase, IEnumerator<Sector>
     public DifatSectorEnumerator(RootContextSite rootContextSite)
         : base(rootContextSite)
     {
-        DifatElementsPerSector = (uint)((Context.SectorSize / sizeof(uint)) - 1);
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        // IOContext is owned by parent
     }
 
     /// <inheritdoc/>

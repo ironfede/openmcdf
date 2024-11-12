@@ -4,14 +4,12 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
 {
     private readonly FatChainEnumerator fatChainEnumerator;
     private readonly DirectoryEntryEnumerator directoryEntryEnumerator;
-    private readonly int entriesPerSector;
 
     public DirectoryEntries(RootContextSite rootContextSite)
         : base(rootContextSite)
     {
         fatChainEnumerator = new FatChainEnumerator(Context.Fat, Context.Header.FirstDirectorySectorId);
         directoryEntryEnumerator = new DirectoryEntryEnumerator(this);
-        entriesPerSector = Context.SectorSize / DirectoryEntry.Length;
     }
 
     public void Dispose()
@@ -40,7 +38,7 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
         if (streamId > StreamId.Maximum)
             throw new ArgumentException($"Invalid directory entry stream ID: ${streamId:X8}.", nameof(streamId));
 
-        uint chainIndex = (uint)Math.DivRem(streamId, entriesPerSector, out long entryIndex);
+        uint chainIndex = GetChainIndexAndEntryIndex(streamId, out long entryIndex);
         if (!fatChainEnumerator.MoveTo(chainIndex))
         {
             entry = null;
@@ -51,6 +49,8 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
         entry = Context.Reader.ReadDirectoryEntry(Context.Version, streamId);
         return true;
     }
+
+    private uint GetChainIndexAndEntryIndex(uint streamId, out long entryIndex) => (uint)Math.DivRem(streamId, Context.DirectoryEntriesPerSector, out entryIndex);
 
     public DirectoryEntry CreateOrRecycleDirectoryEntry()
     {
@@ -68,7 +68,7 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
 
         Sector sector = new(id, Context.SectorSize);
         writer.Position = sector.Position;
-        for (int i = 0; i < entriesPerSector; i++)
+        for (int i = 0; i < Context.DirectoryEntriesPerSector; i++)
             writer.Write(DirectoryEntry.Unallocated);
 
         entry = TryRecycleDirectoryEntry()
@@ -92,7 +92,7 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
 
     public void Write(DirectoryEntry entry)
     {
-        uint chainIndex = (uint)Math.DivRem(entry.Id, entriesPerSector, out long entryIndex);
+        uint chainIndex = GetChainIndexAndEntryIndex(entry.Id, out long entryIndex);
         if (!fatChainEnumerator.MoveTo(chainIndex))
             throw new KeyNotFoundException($"Directory entry {entry.Id} was not found.");
 

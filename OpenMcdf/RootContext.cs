@@ -70,6 +70,12 @@ internal sealed class RootContext : ContextBase, IDisposable
 
     public int MiniSectorSize { get; }
 
+    public int FatEntriesPerSector { get; }
+
+    public int DifatEntriesPerSector { get; }
+
+    public int DirectoryEntriesPerSector { get; }
+
     public Version Version => (Version)Header.MajorVersion;
 
     public long Length { get; private set; }
@@ -90,13 +96,16 @@ internal sealed class RootContext : ContextBase, IDisposable
         Header = contextFlags.HasFlag(IOContextFlags.Create) ? new(version) : reader.ReadHeader();
         SectorSize = 1 << Header.SectorShift;
         MiniSectorSize = 1 << Header.MiniSectorShift;
+        FatEntriesPerSector = SectorSize / sizeof(uint);
+        DifatEntriesPerSector = FatEntriesPerSector - 1;
+        DirectoryEntriesPerSector = SectorSize / DirectoryEntry.Length;
         Length = stream.Length;
 
         Stream actualStream = stream;
         if (contextFlags.HasFlag(IOContextFlags.Transacted))
         {
             Stream overlayStream = stream is MemoryStream ? new MemoryStream() : File.Create(Path.GetTempFileName());
-            transactedStream = new TransactedStream(this, stream, overlayStream);
+            transactedStream = new TransactedStream(ContextSite, stream, overlayStream);
             actualStream = new BufferedStream(transactedStream, SectorSize);
         }
 

@@ -10,7 +10,6 @@ namespace OpenMcdf;
 internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
 {
     private readonly FatSectorEnumerator fatSectorEnumerator;
-    internal readonly int FatElementsPerSector;
     private readonly byte[] cachedSectorBuffer;
     Sector cachedSector = Sector.EndOfChain;
     private bool isDirty;
@@ -18,7 +17,6 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
     public Fat(RootContextSite rootContextSite)
         : base(rootContextSite)
     {
-        FatElementsPerSector = Context.SectorSize / sizeof(uint);
         fatSectorEnumerator = new(rootContextSite);
         cachedSectorBuffer = new byte[Context.SectorSize];
     }
@@ -46,11 +44,7 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
         }
     }
 
-    uint GetSectorIndexAndElementOffset(uint key, out long elementIndex)
-    {
-        uint index = (uint)Math.DivRem(key, FatElementsPerSector, out elementIndex);
-        return index;
-    }
+    uint GetSectorIndexAndElementOffset(uint key, out long elementIndex) => (uint)Math.DivRem(key, Context.FatEntriesPerSector, out elementIndex);
 
     void CacheCurrentSector()
     {
