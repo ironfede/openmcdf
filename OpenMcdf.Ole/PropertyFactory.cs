@@ -6,9 +6,7 @@ internal abstract class PropertyFactory
 {
     static PropertyFactory()
     {
-#if NETSTANDARD2_0_OR_GREATER
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-#endif
     }
 
     public ITypedPropertyValue CreateProperty(VTPropertyType vType, int codePage, uint propertyIdentifier, bool isVariant = false)
