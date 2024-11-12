@@ -326,7 +326,7 @@ internal abstract class PropertyFactory
 
                 // var mod = dataLength % 4;       // pad to multiple of 4 bytes
 
-                bw.Write(dataLength);           // datalength of string + null char (unicode)
+                bw.Write(dataLength);           // data length of string + null char (unicode)
                 bw.Write(data);                 // string
 
                 //if (addNullTerminator)
@@ -352,7 +352,7 @@ internal abstract class PropertyFactory
 
                 uint mod = dataLength % 4;       // pad to multiple of 4 bytes
 
-                bw.Write(dataLength);           // datalength of string + null char (unicode)
+                bw.Write(dataLength);           // data length of string + null char (unicode)
                 bw.Write(data);                 // string
 
                 //if (addNullTerminator)

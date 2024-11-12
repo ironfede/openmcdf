@@ -4,31 +4,14 @@ root = true
 #### Visual Studio Spell Checker ####
 
 [*]
-spelling_exclusion_path = .\ignored-words.txt
+spelling_exclusion_path = .\exclusion.dic
 
 #### VS Spell Checker ####
 
 [*]
-vsspell_section_id = 57c612f5006c4c25a138fae34ef5a504
+vsspell_section_id = root
 vsspell_determine_resource_file_language_from_name = true
-vsspell_additional_dictionary_folders_57c612f5006c4c25a138fae34ef5a504 = .\dictionaries
-vsspell_ignored_words_57c612f5006c4c25a138fae34ef5a504 = clear_inherited|File:ignored-words.txt|Readit
-
-[*.{cs,da,de,el,es,fr,fi,it,ko,nb-NO,nl-BE,pl,pt,pt-BR,ru,sk,sv}.resx]
-vsspell_spell_check_as_you_type = false
-vsspell_include_in_project_spell_check = false
-
-[*.{Designer.cs,ai,crproj,csproj,props,runsettings,targets,vcxproj,wixproj,wxi,wxl,wxs,xaml,xml}]
-vsspell_spell_check_as_you_type = false
-vsspell_include_in_project_spell_check = false
-
-[Service References/*/*]
-vsspell_spell_check_as_you_type = false
-vsspell_include_in_project_spell_check = false
-
-[{ignored-words.txt,ControlWords.cs,LanguageIdTests.cs,Phoneme.cs,UnicodeData.txt}]
-vsspell_spell_check_as_you_type = false
-vsspell_include_in_project_spell_check = false
+vsspell_ignored_words_root = clear_inherited|File:exclusion.dic
 
 # C# files
 [*.cs]
