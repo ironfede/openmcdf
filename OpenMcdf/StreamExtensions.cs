@@ -4,6 +4,9 @@ using System.Buffers;
 
 namespace OpenMcdf;
 
+/// <summary>
+/// Adds modern extension methods to the <see cref="Stream"/> class for netstandard2.0.
+/// </summary>
 internal static class StreamExtensions
 {
 #if !NET7_0_OR_GREATER

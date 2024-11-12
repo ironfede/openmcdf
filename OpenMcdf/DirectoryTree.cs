@@ -2,7 +2,10 @@
 
 namespace OpenMcdf;
 
-internal class DirectoryTree
+/// <summary>
+/// Encapsulates adding and removing <see cref="DirectoryEntry"/> objects to a tree.
+/// </summary>
+internal sealed class DirectoryTree
 {
     internal enum RelationType
     {

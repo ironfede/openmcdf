@@ -3,7 +3,7 @@ using System.Collections;
 namespace OpenMcdf;
 
 /// <summary>
-/// Enumerates the FAT sectors of a compound file.
+/// Enumerates the <see cref="Sector"/>s of a compound file.
 /// </summary>
 internal sealed class FatSectorEnumerator : ContextBase, IEnumerator<Sector>
 {

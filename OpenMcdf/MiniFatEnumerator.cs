@@ -3,7 +3,7 @@
 namespace OpenMcdf;
 
 /// <summary>
-/// Enumerates the <see cref="MiniSector"/>s from the Mini FAT.
+/// Enumerates the <see cref="MiniSector"/>s from the FAT chain for the mini FAT.
 /// </summary>
 internal sealed class MiniFatEnumerator : ContextBase, IEnumerator<FatEntry>
 {

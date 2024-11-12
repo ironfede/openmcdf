@@ -1,7 +1,7 @@
 ﻿namespace OpenMcdf;
 
 /// <summary>
-/// Supports switching the <see cref="Context"/> object.
+/// Supports switching the <see cref="RootContext"/> object.
 /// </summary>
 public abstract class ContextBase
 {

@@ -3,7 +3,7 @@
 namespace OpenMcdf;
 
 /// <summary>
-/// Enumerates <see cref="DirectoryEntry"/> instances from a <see cref="FatChainEnumerator"/>.
+/// Enumerates <see cref="DirectoryEntry"/> instances from a <see cref="DirectoryEntries"/>.
 /// </summary>
 internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
 {

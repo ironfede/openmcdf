@@ -3,7 +3,7 @@
 namespace OpenMcdf;
 
 /// <summary>
-/// Enumerates the entries in a FAT.
+/// Enumerates the <see cref="FatEntry"/> records in a <see cref="Fat"/>.
 /// </summary>
 internal class FatEnumerator : IEnumerator<FatEntry>
 {

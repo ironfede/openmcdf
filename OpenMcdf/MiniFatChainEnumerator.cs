@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace OpenMcdf;
 
 /// <summary>
-/// Enumerates the <see cref="MiniSector"/>s in a Mini FAT sector chain.
+/// Enumerates the <see cref="MiniSector"/>s in a Mini FAT chain.
 /// </summary>
 internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<FatChainEntry>
 {

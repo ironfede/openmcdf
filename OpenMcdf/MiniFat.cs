@@ -5,7 +5,7 @@ using System.Diagnostics;
 namespace OpenMcdf;
 
 /// <summary>
-/// Encapsulates getting and setting entries in the mini FAT.
+/// Encapsulates getting and setting <see cref="FatEntry"/> records in the mini FAT.
 /// </summary>
 internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
 {

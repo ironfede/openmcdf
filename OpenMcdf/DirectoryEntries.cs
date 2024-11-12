@@ -1,5 +1,8 @@
 ﻿namespace OpenMcdf;
 
+/// <summary>
+/// Encapsulates getting and adding <see cref="DirectoryEntry"/> objects."
+/// </summary>
 internal sealed class DirectoryEntries : ContextBase, IDisposable
 {
     private readonly FatChainEnumerator fatChainEnumerator;
