@@ -45,6 +45,8 @@ internal sealed class CfbBinaryReader : BinaryReader
 
 #endif
 
+    void ReadExactly(byte[] buffer, int offset, int count) => BaseStream.ReadExactly(buffer, offset, count);
+
     public Guid ReadGuid()
     {
         int bytesRead = 0;
@@ -68,8 +70,9 @@ internal sealed class CfbBinaryReader : BinaryReader
     public Header ReadHeader()
     {
         Header header = new();
-        Read(buffer, 0, Header.Signature.Length);
-        if (!buffer.Take(Header.Signature.Length).SequenceEqual(Header.Signature))
+        ReadExactly(buffer, 0, Header.Signature.Length);
+        Span<byte> signature = buffer.AsSpan(0, Header.Signature.Length);
+        if (!signature.SequenceEqual(Header.Signature))
             throw new FormatException("Invalid header signature.");
         header.CLSID = ReadGuid();
         if (header.CLSID != Guid.Empty)
@@ -127,7 +130,7 @@ internal sealed class CfbBinaryReader : BinaryReader
         if (version is not Version.V3 and not Version.V4)
             throw new ArgumentException($"Unsupported version: {version}.", nameof(version));
 
-        Read(buffer, 0, DirectoryEntry.NameFieldLength);
+        ReadExactly(buffer, 0, DirectoryEntry.NameFieldLength);
 
         DirectoryEntry entry = new()
         {
