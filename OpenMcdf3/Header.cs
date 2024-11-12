@@ -139,6 +139,27 @@ internal sealed class Header : IEquatable<Header?>
         }
     }
 
+    public override int GetHashCode()
+    {
+        HashCode code = new();
+        code.Add(CLSID);
+        code.Add(MinorVersion);
+        code.Add(MajorVersion);
+        code.Add(SectorShift);
+        code.Add(DirectorySectorCount);
+        code.Add(FatSectorCount);
+        code.Add(FirstDirectorySectorId);
+        code.Add(TransactionSignature);
+        code.Add(FatSectorCount);
+        code.Add(FirstMiniFatSectorId);
+        code.Add(MiniFatSectorCount);
+        code.Add(FirstDifatSectorId);
+        code.Add(DifatSectorCount);
+        foreach (uint value in Difat)
+            code.Add(value);
+        return code.ToHashCode();
+    }
+
     public override bool Equals(object? obj) => Equals(obj as Header);
 
     public bool Equals(Header? other)
@@ -157,13 +178,6 @@ internal sealed class Header : IEquatable<Header?>
             && FirstDifatSectorId == other.FirstDifatSectorId
             && DifatSectorCount == other.DifatSectorCount
             && Difat.SequenceEqual(other.Difat);
-    }
-
-    public override int GetHashCode()
-    {
-        return HashCode.Combine(
-            HashCode.Combine(CLSID, MinorVersion, MajorVersion, SectorShift, DirectorySectorCount, FatSectorCount, FirstDirectorySectorId, TransactionSignature),
-            HashCode.Combine(FirstMiniFatSectorId, MiniFatSectorCount, FirstDifatSectorId, DifatSectorCount, Difat));
     }
 
     public override string ToString() => $"MajorVersion: {MajorVersion}, MinorVersion: {MinorVersion}, FirstDirectorySectorId: {FirstDirectorySectorId}, FirstMiniFatSectorId: {FirstMiniFatSectorId}";

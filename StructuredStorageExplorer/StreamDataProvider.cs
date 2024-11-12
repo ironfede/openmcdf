@@ -74,12 +74,12 @@ public class StreamDataProvider : IByteProvider
     /// <summary>
     /// Occurs, when the write buffer contains new changes.
     /// </summary>
-    public event EventHandler Changed;
+    public event EventHandler? Changed;
 
     /// <summary>
     /// Occurs, when InsertBytes or DeleteBytes method is called.
     /// </summary>
-    public event EventHandler LengthChanged;
+    public event EventHandler? LengthChanged;
 
     /// <summary>
     /// Reads a byte from the byte collection.

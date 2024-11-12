@@ -154,11 +154,22 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
         set => NameLength = (ushort)(Encoding.Unicode.GetBytes(value, 0, value.Length, Name, 0) + 2);
     }
 
+    public override int GetHashCode()
+    {
+        HashCode code = new();
+        code.Add(Id);
+        code.Add(NameLength);
+        foreach (byte b in Name)
+            code.Add(b);
+        return code.GetHashCode();
+    }
+
     public override bool Equals(object? obj) => Equals(obj as DirectoryEntry);
 
     public bool Equals(DirectoryEntry? other)
     {
         return other is not null
+            && Id == other.Id
             && Name.SequenceEqual(other.Name)
             && NameLength == other.NameLength
             && Type == other.Type
