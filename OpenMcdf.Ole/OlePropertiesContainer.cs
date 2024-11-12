@@ -1,4 +1,6 @@
-﻿namespace OpenMcdf.Ole;
+﻿using System.Text;
+
+namespace OpenMcdf.Ole;
 
 public enum ContainerType
 {
@@ -42,8 +44,7 @@ public class OlePropertiesContainer
 
         this.cfStream = cfStream;
 
-        cfStream.Position = 0;
-        using BinaryReader reader = new(cfStream);
+        using BinaryReader reader = new(cfStream, Encoding.Unicode, true);
         pStream.Read(reader);
 
         if (pStream.FMTID0 == FormatIdentifiers.SummaryInformation)
