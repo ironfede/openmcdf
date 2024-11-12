@@ -349,6 +349,10 @@ dotnet_style_qualification_for_property = false:none
 dotnet_style_qualification_for_method = false:none
 dotnet_style_qualification_for_event = false:none
 dotnet_style_prefer_collection_expression = when_types_exactly_match:suggestion
+dotnet_diagnostic.CA1513.severity = none
+dotnet_diagnostic.CA1510.severity = none
+dotnet_diagnostic.CA1847.severity = none
+dotnet_diagnostic.CA1512.severity = none
 
 [*.{hlsl}]
 
