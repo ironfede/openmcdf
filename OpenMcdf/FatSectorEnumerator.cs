@@ -6,24 +6,23 @@ namespace OpenMcdf;
 /// <summary>
 /// Enumerates the FAT sectors of a compound file.
 /// </summary>
-internal sealed class FatSectorEnumerator : IEnumerator<Sector>
+internal sealed class FatSectorEnumerator : ContextBase, IEnumerator<Sector>
 {
-    private readonly IOContext ioContext;
     private readonly DifatSectorEnumerator difatSectorEnumerator;
     private bool start = true;
     private uint index = uint.MaxValue;
     private Sector current = Sector.EndOfChain;
 
-    public FatSectorEnumerator(IOContext ioContext)
+    public FatSectorEnumerator(RootContextSite rootContextSite)
+        : base(rootContextSite)
     {
-        this.ioContext = ioContext;
-        difatSectorEnumerator = new(ioContext);
+        difatSectorEnumerator = new(rootContextSite);
     }
 
     /// <inheritdoc/>
     public void Dispose()
     {
-        // IOContext is owned by a parent
+        // Context is owned by a parent
         difatSectorEnumerator.Dispose();
     }
 
@@ -68,7 +67,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         if (index == this.index)
             return true;
 
-        if (index >= ioContext.Header.FatSectorCount)
+        if (index >= Context.Header.FatSectorCount)
         {
             this.index = uint.MaxValue;
             current = Sector.EndOfChain;
@@ -78,8 +77,8 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         if (index < Header.DifatArrayLength)
         {
             this.index = index;
-            uint difatId = ioContext.Header.Difat[this.index];
-            current = new(difatId, ioContext.SectorSize);
+            uint difatId = Context.Header.Difat[this.index];
+            current = new(difatId, Context.SectorSize);
             return true;
         }
 
@@ -97,10 +96,10 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
         }
 
         Sector difatSector = difatSectorEnumerator.Current;
-        ioContext.Reader.Position = difatSector.Position + (difatElementIndex * sizeof(uint));
-        uint id = ioContext.Reader.ReadUInt32();
+        Context.Reader.Position = difatSector.Position + (difatElementIndex * sizeof(uint));
+        uint id = Context.Reader.ReadUInt32();
         this.index = index;
-        current = new Sector(id, ioContext.SectorSize);
+        current = new Sector(id, Context.SectorSize);
         return true;
     }
 
@@ -135,14 +134,14 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
     public uint Add()
     {
         // No FAT sectors are free, so add a new one
-        Header header = ioContext.Header;
-        uint nextIndex = ioContext.Header.FatSectorCount;
-        Sector newFatSector = new(ioContext.SectorCount, ioContext.SectorSize);
+        Header header = Context.Header;
+        uint nextIndex = Context.Header.FatSectorCount;
+        Sector newFatSector = new(Context.SectorCount, Context.SectorSize);
 
-        CfbBinaryWriter writer = ioContext.Writer;
+        CfbBinaryWriter writer = Context.Writer;
         writer.Position = newFatSector.Position;
         writer.Write(SectorDataCache.GetFatEntryData(newFatSector.Length));
-        ioContext.ExtendStreamLength(newFatSector.EndPosition);
+        Context.ExtendStreamLength(newFatSector.EndPosition);
 
         header.FatSectorCount++;
 
@@ -164,7 +163,7 @@ internal sealed class FatSectorEnumerator : IEnumerator<Sector>
             writer.Write(newFatSector.Id);
         }
 
-        ioContext.Fat[newFatSector.Id] = SectorType.Fat;
+        Context.Fat[newFatSector.Id] = SectorType.Fat;
         return newFatSector.Id;
     }
 }

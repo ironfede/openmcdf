@@ -11,7 +11,7 @@ enum IOContextFlags
 /// <summary>
 /// Encapsulates the objects required to read and write data to and from a compound file.
 /// </summary>
-internal sealed class IOContext : IDisposable
+internal sealed class RootContext : ContextBase, IDisposable
 {
     readonly IOContextFlags contextFlags;
     readonly CfbBinaryWriter? writer;
@@ -45,7 +45,7 @@ internal sealed class IOContext : IDisposable
     {
         get
         {
-            miniFat ??= new(this);
+            miniFat ??= new(ContextSite);
             return miniFat;
         }
     }
@@ -54,7 +54,7 @@ internal sealed class IOContext : IDisposable
     {
         get
         {
-            miniStream ??= new(this, RootEntry);
+            miniStream ??= new(ContextSite, RootEntry);
             return miniStream;
         }
     }
@@ -78,8 +78,11 @@ internal sealed class IOContext : IDisposable
 
     bool isDirty;
 
-    public IOContext(Stream stream, Version version, IOContextFlags contextFlags = IOContextFlags.None)
+    public RootContext(RootContextSite rootContextSite, Stream stream, Version version, IOContextFlags contextFlags = IOContextFlags.None)
+        : base(rootContextSite)
     {
+        rootContextSite.Switch(this);
+
         BaseStream = stream;
         this.contextFlags = contextFlags;
 
@@ -101,8 +104,8 @@ internal sealed class IOContext : IDisposable
         if (stream.CanWrite)
             writer = new(actualStream);
 
-        Fat = new(this);
-        DirectoryEntries = new(this);
+        Fat = new(ContextSite);
+        DirectoryEntries = new(ContextSite);
 
         if (contextFlags.HasFlag(IOContextFlags.Create))
         {
@@ -142,6 +145,8 @@ internal sealed class IOContext : IDisposable
 
     public void Flush()
     {
+        Fat.Flush();
+
         if (isDirty && writer is not null && transactedStream is null)
         {
             // Ensure the stream is as long as expected

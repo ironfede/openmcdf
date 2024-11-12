@@ -7,14 +7,14 @@ namespace OpenMcdf;
 /// </summary>
 internal class FatEnumerator : IEnumerator<FatEntry>
 {
-    readonly IOContext ioContext;
+    readonly Fat fat;
     bool start = true;
     uint index = uint.MaxValue;
     uint value = uint.MaxValue;
 
-    public FatEnumerator(IOContext ioContext)
+    public FatEnumerator(Fat fat)
     {
-        this.ioContext = ioContext;
+        this.fat = fat;
     }
 
     /// <inheritdoc/>
@@ -60,7 +60,7 @@ internal class FatEnumerator : IEnumerator<FatEntry>
         if (this.index == index)
             return true;
 
-        if (ioContext.Fat.TryGetValue(index, out value))
+        if (fat.TryGetValue(index, out value))
         {
             this.index = index;
             return true;

@@ -3,19 +3,18 @@ using System.Diagnostics;
 
 namespace OpenMcdf;
 
-internal class DifatSectorEnumerator : IEnumerator<Sector>
+internal class DifatSectorEnumerator : ContextBase, IEnumerator<Sector>
 {
-    private readonly IOContext ioContext;
     public readonly uint DifatElementsPerSector;
     bool start = true;
     uint index = uint.MaxValue;
     Sector current = Sector.EndOfChain;
     private uint difatSectorId = SectorType.EndOfChain;
 
-    public DifatSectorEnumerator(IOContext ioContext)
+    public DifatSectorEnumerator(RootContextSite rootContextSite)
+        : base(rootContextSite)
     {
-        this.ioContext = ioContext;
-        DifatElementsPerSector = (uint)((ioContext.SectorSize / sizeof(uint)) - 1);
+        DifatElementsPerSector = (uint)((Context.SectorSize / sizeof(uint)) - 1);
     }
 
     /// <inheritdoc/>
@@ -45,7 +44,7 @@ internal class DifatSectorEnumerator : IEnumerator<Sector>
         {
             start = false;
             index = uint.MaxValue;
-            difatSectorId = ioContext.Header.FirstDifatSectorId;
+            difatSectorId = Context.Header.FirstDifatSectorId;
         }
 
         uint nextIndex = index + 1;
@@ -57,16 +56,16 @@ internal class DifatSectorEnumerator : IEnumerator<Sector>
             return false;
         }
 
-        current = new(difatSectorId, ioContext.SectorSize);
+        current = new(difatSectorId, Context.SectorSize);
         index = nextIndex;
-        ioContext.Reader.Position = current.EndPosition - sizeof(uint);
-        difatSectorId = ioContext.Reader.ReadUInt32();
+        Context.Reader.Position = current.EndPosition - sizeof(uint);
+        difatSectorId = Context.Reader.ReadUInt32();
         return true;
     }
 
     public bool MoveTo(uint index)
     {
-        if (index >= ioContext.Header.DifatSectorCount)
+        if (index >= Context.Header.DifatSectorCount)
             return false;
 
         if (start && !MoveNext())
@@ -95,10 +94,10 @@ internal class DifatSectorEnumerator : IEnumerator<Sector>
 
     public void Add()
     {
-        Sector newDifatSector = new(ioContext.SectorCount, ioContext.SectorSize);
+        Sector newDifatSector = new(Context.SectorCount, Context.SectorSize);
 
-        Header header = ioContext.Header;
-        CfbBinaryWriter writer = ioContext.Writer;
+        Header header = Context.Header;
+        CfbBinaryWriter writer = Context.Writer;
         if (header.FirstDifatSectorId == SectorType.EndOfChain)
         {
             header.FirstDifatSectorId = newDifatSector.Id;
@@ -118,10 +117,10 @@ internal class DifatSectorEnumerator : IEnumerator<Sector>
         writer.Position = newDifatSector.EndPosition - sizeof(uint);
         writer.Write(SectorType.EndOfChain);
 
-        ioContext.ExtendStreamLength(newDifatSector.EndPosition);
+        Context.ExtendStreamLength(newDifatSector.EndPosition);
         header.DifatSectorCount++;
 
-        ioContext.Fat[newDifatSector.Id] = SectorType.Difat;
+        Context.Fat[newDifatSector.Id] = SectorType.Difat;
 
         start = false;
         index = header.DifatSectorCount - 1;

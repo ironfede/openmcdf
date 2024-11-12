@@ -6,9 +6,8 @@ namespace OpenMcdf;
 /// <summary>
 /// Enumerates the <see cref="MiniSector"/>s in a Mini FAT sector chain.
 /// </summary>
-internal sealed class MiniFatChainEnumerator : IEnumerator<FatChainEntry>
+internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<FatChainEntry>
 {
-    private readonly IOContext ioContext;
     private readonly MiniFatEnumerator miniFatEnumerator;
     private uint startId;
     private bool start = true;
@@ -16,11 +15,11 @@ internal sealed class MiniFatChainEnumerator : IEnumerator<FatChainEntry>
     private FatChainEntry current = FatChainEntry.Invalid;
     private long length = -1;
 
-    public MiniFatChainEnumerator(IOContext ioContext, uint startSectorId)
+    public MiniFatChainEnumerator(RootContextSite rootContextSite, uint startSectorId)
+        : base(rootContextSite)
     {
-        this.ioContext = ioContext;
         startId = startSectorId;
-        miniFatEnumerator = new(ioContext);
+        miniFatEnumerator = new(rootContextSite);
     }
 
     /// <inheritdoc/>
@@ -36,7 +35,7 @@ internal sealed class MiniFatChainEnumerator : IEnumerator<FatChainEntry>
 
     public uint Index => index;
 
-    public MiniSector CurrentSector => new(Current.Value, ioContext.MiniSectorSize);
+    public MiniSector CurrentSector => new(Current.Value, Context.MiniSectorSize);
 
     /// <inheritdoc/>
     public FatChainEntry Current
@@ -63,7 +62,7 @@ internal sealed class MiniFatChainEnumerator : IEnumerator<FatChainEntry>
         }
         else if (!current.IsFreeOrEndOfChain)
         {
-            uint sectorId = ioContext.MiniFat[current.Value];
+            uint sectorId = Context.MiniFat[current.Value];
             if (sectorId == SectorType.EndOfChain)
             {
                 index = uint.MaxValue;
@@ -132,7 +131,7 @@ internal sealed class MiniFatChainEnumerator : IEnumerator<FatChainEntry>
 
         if (startId == StreamId.NoStream)
         {
-            startId = ioContext.MiniFat.Add(miniFatEnumerator, 0);
+            startId = Context.MiniFat.Add(miniFatEnumerator, 0);
             chainLength = 1;
         }
 
@@ -144,8 +143,8 @@ internal sealed class MiniFatChainEnumerator : IEnumerator<FatChainEntry>
         Debug.Assert(ok);
         while (chainLength < requiredChainLength)
         {
-            uint id = ioContext.MiniFat.Add(miniFatEnumerator, lastId);
-            ioContext.MiniFat[lastId] = id;
+            uint id = Context.MiniFat.Add(miniFatEnumerator, lastId);
+            Context.MiniFat[lastId] = id;
             lastId = id;
             chainLength++;
         }
@@ -173,16 +172,16 @@ internal sealed class MiniFatChainEnumerator : IEnumerator<FatChainEntry>
             if (lastId <= SectorType.Maximum)
             {
                 if (index == requiredChainLength)
-                    ioContext.MiniFat[lastId] = SectorType.EndOfChain;
+                    Context.MiniFat[lastId] = SectorType.EndOfChain;
                 else if (index > requiredChainLength)
-                    ioContext.MiniFat[lastId] = SectorType.Free;
+                    Context.MiniFat[lastId] = SectorType.Free;
             }
 
             lastId = current.Value;
         }
 
         if (lastId <= SectorType.Maximum)
-            ioContext.MiniFat[lastId] = SectorType.Free;
+            Context.MiniFat[lastId] = SectorType.Free;
 
         if (requiredChainLength == 0)
         {

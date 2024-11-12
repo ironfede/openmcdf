@@ -7,20 +7,19 @@ namespace OpenMcdf;
 /// <summary>
 /// Encapsulates getting and setting entries in the mini FAT.
 /// </summary>
-internal sealed class MiniFat : IEnumerable<FatEntry>, IDisposable
+internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
 {
-    private readonly IOContext ioContext;
     private readonly FatChainEnumerator fatChainEnumerator;
     private readonly int ElementsPerSector;
     private readonly byte[] sector;
     private bool isDirty;
 
-    public MiniFat(IOContext ioContext)
+    public MiniFat(RootContextSite rootContextSite)
+        : base(rootContextSite)
     {
-        this.ioContext = ioContext;
-        ElementsPerSector = ioContext.SectorSize / sizeof(uint);
-        fatChainEnumerator = new(ioContext, ioContext.Header.FirstMiniFatSectorId);
-        sector = new byte[ioContext.SectorSize];
+        ElementsPerSector = Context.SectorSize / sizeof(uint);
+        fatChainEnumerator = new(Context.Fat, Context.Header.FirstMiniFatSectorId);
+        sector = new byte[Context.SectorSize];
     }
 
     public void Dispose()
@@ -34,14 +33,14 @@ internal sealed class MiniFat : IEnumerable<FatEntry>, IDisposable
     {
         if (isDirty)
         {
-            CfbBinaryWriter writer = ioContext.Writer;
+            CfbBinaryWriter writer = Context.Writer;
             writer.Position = fatChainEnumerator.CurrentSector.Position;
             writer.Write(sector);
             isDirty = false;
         }
     }
 
-    public IEnumerator<FatEntry> GetEnumerator() => new MiniFatEnumerator(ioContext);
+    public IEnumerator<FatEntry> GetEnumerator() => new MiniFatEnumerator(ContextSite);
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
@@ -72,7 +71,7 @@ internal sealed class MiniFat : IEnumerable<FatEntry>, IDisposable
         if (!ok)
             return false;
 
-        CfbBinaryReader reader = ioContext.Reader;
+        CfbBinaryReader reader = Context.Reader;
         reader.Position = fatChainEnumerator.CurrentSector.Position;
         reader.Read(sector);
         return true;
@@ -114,12 +113,12 @@ internal sealed class MiniFat : IEnumerable<FatEntry>, IDisposable
         if (!movedToFreeEntry)
         {
             uint newSectorIndex = fatChainEnumerator.Extend();
-            Sector sector = new(newSectorIndex, ioContext.SectorSize);
-            CfbBinaryWriter writer = ioContext.Writer;
+            Sector sector = new(newSectorIndex, Context.SectorSize);
+            CfbBinaryWriter writer = Context.Writer;
             writer.Position = sector.Position;
             writer.Write(SectorDataCache.GetFatEntryData(sector.Length));
 
-            Header header = ioContext.Header;
+            Header header = Context.Header;
             if (header.FirstMiniFatSectorId == SectorType.EndOfChain)
                 header.FirstMiniFatSectorId = newSectorIndex;
             header.MiniFatSectorCount++;
@@ -134,16 +133,16 @@ internal sealed class MiniFat : IEnumerable<FatEntry>, IDisposable
         this[entry.Index] = SectorType.EndOfChain;
 
         Debug.Assert(entry.IsFree);
-        MiniSector miniSector = new(entry.Index, ioContext.MiniSectorSize);
-        if (ioContext.MiniStream.Length < miniSector.EndPosition)
-            ioContext.MiniStream.SetLength(miniSector.EndPosition);
+        MiniSector miniSector = new(entry.Index, Context.MiniSectorSize);
+        if (Context.MiniStream.Length < miniSector.EndPosition)
+            Context.MiniStream.SetLength(miniSector.EndPosition);
 
         return entry.Index;
     }
 
     internal void Trace(TextWriter writer)
     {
-        using MiniFatEnumerator miniFatEnumerator = new(ioContext);
+        using MiniFatEnumerator miniFatEnumerator = new(ContextSite);
 
         writer.WriteLine("Start of Mini FAT ============");
         while (miniFatEnumerator.MoveNext())
@@ -153,12 +152,12 @@ internal sealed class MiniFat : IEnumerable<FatEntry>, IDisposable
 
     internal void Validate()
     {
-        using MiniFatEnumerator miniFatEnumerator = new(ioContext);
+        using MiniFatEnumerator miniFatEnumerator = new(ContextSite);
 
         while (miniFatEnumerator.MoveNext())
         {
             FatEntry current = miniFatEnumerator.Current;
-            if (current.Value <= SectorType.Maximum && miniFatEnumerator.CurrentSector.EndPosition > ioContext.MiniStream.Length)
+            if (current.Value <= SectorType.Maximum && miniFatEnumerator.CurrentSector.EndPosition > Context.MiniStream.Length)
             {
                 throw new FormatException($"Mini FAT entry {current} is beyond the end of the mini stream.");
             }

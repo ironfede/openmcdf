@@ -4,12 +4,12 @@ namespace OpenMcdf;
 
 internal class TransactedStream : Stream
 {
-    readonly IOContext ioContext;
+    readonly RootContext ioContext;
     readonly Stream originalStream;
     readonly Dictionary<uint, long> dirtySectorPositions = new();
     readonly byte[] buffer;
 
-    public TransactedStream(IOContext ioContext, Stream originalStream, Stream overlayStream)
+    public TransactedStream(RootContext ioContext, Stream originalStream, Stream overlayStream)
     {
         this.ioContext = ioContext;
         this.originalStream = originalStream;

@@ -5,23 +5,25 @@
 /// </summary>
 internal class FatStream : Stream
 {
-    readonly IOContext ioContext;
+    readonly RootContextSite rootContextSite;
     readonly FatChainEnumerator chain;
     long position;
     bool isDirty;
     bool disposed;
 
-    internal FatStream(IOContext ioContext, DirectoryEntry directoryEntry)
+    private RootContext Context => rootContextSite.Context;
+
+    internal FatStream(RootContextSite rootContextSite, DirectoryEntry directoryEntry)
     {
-        this.ioContext = ioContext;
+        this.rootContextSite = rootContextSite;
         DirectoryEntry = directoryEntry;
-        chain = new(ioContext, directoryEntry.StartSectorId);
+        chain = new(Context.Fat, directoryEntry.StartSectorId);
     }
 
     /// <inheritdoc/>
     internal DirectoryEntry DirectoryEntry { get; private set; }
 
-    internal long ChainCapacity => ((Length + ioContext.SectorSize - 1) / ioContext.SectorSize) * ioContext.SectorSize;
+    internal long ChainCapacity => ((Length + Context.SectorSize - 1) / Context.SectorSize) * Context.SectorSize;
 
     /// <inheritdoc/>
     public override bool CanRead => true;
@@ -30,7 +32,7 @@ internal class FatStream : Stream
     public override bool CanSeek => true;
 
     /// <inheritdoc/>
-    public override bool CanWrite => ioContext.CanWrite;
+    public override bool CanWrite => Context.CanWrite;
 
     /// <inheritdoc/>
     public override long Length => DirectoryEntry.StreamLength;
@@ -63,12 +65,12 @@ internal class FatStream : Stream
 
         if (isDirty)
         {
-            ioContext.DirectoryEntries.Write(DirectoryEntry);
+            Context.DirectoryEntries.Write(DirectoryEntry);
             isDirty = false;
         }
 
         if (CanWrite)
-            ioContext.Writer!.Flush();
+            Context.Writer!.Flush();
     }
 
     /// <inheritdoc/>
@@ -85,7 +87,7 @@ internal class FatStream : Stream
         if (maxCount == 0)
             return 0;
 
-        uint chainIndex = (uint)Math.DivRem(position, ioContext.SectorSize, out long sectorOffset);
+        uint chainIndex = (uint)Math.DivRem(position, Context.SectorSize, out long sectorOffset);
         if (!chain.MoveTo(chainIndex))
             return 0;
 
@@ -93,12 +95,12 @@ internal class FatStream : Stream
         int readCount = 0;
         do
         {
-            Sector sector = chain.CurrentSector;
+            Sector sector = new(chain.Current.Value, Context.SectorSize);
             int remaining = realCount - readCount;
             long readLength = Math.Min(remaining, sector.Length - sectorOffset);
-            ioContext.Reader.Position = sector.Position + sectorOffset;
+            Context.Reader.Position = sector.Position + sectorOffset;
             int localOffset = offset + readCount;
-            int read = ioContext.Reader.Read(buffer, localOffset, (int)readLength);
+            int read = Context.Reader.Read(buffer, localOffset, (int)readLength);
             if (read == 0)
                 return readCount;
             position += read;
@@ -148,10 +150,10 @@ internal class FatStream : Stream
     {
         this.ThrowIfNotWritable();
 
-        uint requiredChainLength = (uint)((value + ioContext.SectorSize - 1) / ioContext.SectorSize);
+        uint requiredChainLength = (uint)((value + Context.SectorSize - 1) / Context.SectorSize);
         if (value > ChainCapacity)
             DirectoryEntry.StartSectorId = chain.Extend(requiredChainLength);
-        else if (value <= ChainCapacity - ioContext.SectorSize)
+        else if (value <= ChainCapacity - Context.SectorSize)
             DirectoryEntry.StartSectorId = chain.Shrink(requiredChainLength);
 
         DirectoryEntry.StreamLength = value;
@@ -169,9 +171,9 @@ internal class FatStream : Stream
         if (count == 0)
             return;
 
-        uint chainIndex = (uint)Math.DivRem(position, ioContext.SectorSize, out long sectorOffset);
+        uint chainIndex = (uint)Math.DivRem(position, Context.SectorSize, out long sectorOffset);
 
-        CfbBinaryWriter writer = ioContext.Writer;
+        CfbBinaryWriter writer = Context.Writer;
         int writeCount = 0;
         uint lastIndex = 0;
         for (; ; )
@@ -185,7 +187,7 @@ internal class FatStream : Stream
             int localOffset = offset + writeCount;
             long writeLength = Math.Min(remaining, sector.Length - sectorOffset);
             writer.Write(buffer, localOffset, (int)writeLength);
-            ioContext.ExtendStreamLength(sector.EndPosition);
+            Context.ExtendStreamLength(sector.EndPosition);
             position += writeLength;
             writeCount += (int)writeLength;
             if (position > Length)
@@ -218,7 +220,7 @@ internal class FatStream : Stream
         if (maxCount == 0)
             return 0;
 
-        uint chainIndex = (uint)Math.DivRem(position, ioContext.SectorSize, out long sectorOffset);
+        uint chainIndex = (uint)Math.DivRem(position, Context.SectorSize, out long sectorOffset);
         if (!chain.MoveTo(chainIndex))
             return 0;
 
@@ -229,10 +231,10 @@ internal class FatStream : Stream
             Sector sector = chain.CurrentSector;
             int remaining = realCount - readCount;
             long readLength = Math.Min(remaining, sector.Length - sectorOffset);
-            ioContext.Reader.Position = sector.Position + sectorOffset;
+            Context.Reader.Position = sector.Position + sectorOffset;
             int localOffset = readCount;
             Span<byte> slice = buffer.Slice(localOffset, (int)readLength);
-            int read = ioContext.Reader.Read(slice);
+            int read = Context.Reader.Read(slice);
             if (read == 0)
                 return readCount;
             position += read;
@@ -255,9 +257,9 @@ internal class FatStream : Stream
         if (buffer.Length == 0)
             return;
 
-        uint chainIndex = (uint)Math.DivRem(position, ioContext.SectorSize, out long sectorOffset);
+        uint chainIndex = (uint)Math.DivRem(position, Context.SectorSize, out long sectorOffset);
 
-        CfbBinaryWriter writer = ioContext.Writer;
+        CfbBinaryWriter writer = Context.Writer;
         int writeCount = 0;
         uint lastIndex = 0;
         for (; ; )
@@ -272,7 +274,7 @@ internal class FatStream : Stream
             long writeLength = Math.Min(remaining, sector.Length - sectorOffset);
             ReadOnlySpan<byte> slice = buffer.Slice(localOffset, (int)writeLength);
             writer.Write(slice);
-            ioContext.ExtendStreamLength(sector.EndPosition);
+            Context.ExtendStreamLength(sector.EndPosition);
             position += writeLength;
             writeCount += (int)writeLength;
             if (position > Length)

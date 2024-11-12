@@ -1,4 +1,6 @@
-﻿namespace OpenMcdf;
+﻿using System.Runtime.CompilerServices;
+
+namespace OpenMcdf;
 
 public enum Version : ushort
 {
@@ -28,6 +30,16 @@ public sealed class RootStorage : Storage, IDisposable
             throw new ArgumentException($"{StorageModeFlags.LeaveOpen} is not valid for files");
     }
 
+    private static IOContextFlags ToIOContextFlags(StorageModeFlags flags)
+    {
+        IOContextFlags contextFlags = IOContextFlags.None;
+        if (flags.HasFlag(StorageModeFlags.LeaveOpen))
+            contextFlags |= IOContextFlags.LeaveOpen;
+        if (flags.HasFlag(StorageModeFlags.Transacted))
+            contextFlags |= IOContextFlags.Transacted;
+        return contextFlags;
+    }
+
     public static RootStorage Create(string fileName, Version version = Version.V3, StorageModeFlags flags = StorageModeFlags.None)
     {
         ThrowIfLeaveOpen(flags);
@@ -42,14 +54,10 @@ public sealed class RootStorage : Storage, IDisposable
         stream.SetLength(0);
         stream.Position = 0;
 
-        IOContextFlags contextFlags = IOContextFlags.Create;
-        if (flags.HasFlag(StorageModeFlags.LeaveOpen))
-            contextFlags |= IOContextFlags.LeaveOpen;
-        if (flags.HasFlag(StorageModeFlags.Transacted))
-            contextFlags |= IOContextFlags.Transacted;
-
-        IOContext ioContext = new(stream, version, contextFlags);
-        return new RootStorage(ioContext, flags);
+        IOContextFlags contextFlags = ToIOContextFlags(flags) | IOContextFlags.Create;
+        RootContextSite rootContextSite = new();
+        _ = new RootContext(rootContextSite, stream, version, contextFlags);
+        return new RootStorage(rootContextSite, flags);
     }
 
     public static RootStorage Open(string fileName, FileMode mode, StorageModeFlags flags = StorageModeFlags.None)
@@ -73,29 +81,25 @@ public sealed class RootStorage : Storage, IDisposable
         stream.ThrowIfNotSeekable();
         stream.Position = 0;
 
-        IOContextFlags contextFlags = IOContextFlags.None;
-        if (flags.HasFlag(StorageModeFlags.LeaveOpen))
-            contextFlags |= IOContextFlags.LeaveOpen;
-        if (flags.HasFlag(StorageModeFlags.Transacted))
-            contextFlags |= IOContextFlags.Transacted;
-
-        IOContext ioContext = new(stream, Version.Unknown, contextFlags);
-        return new RootStorage(ioContext, flags);
+        IOContextFlags contextFlags = ToIOContextFlags(flags);
+        RootContextSite rootContextSite = new();
+        _ = new RootContext(rootContextSite, stream, Version.Unknown, contextFlags);
+        return new RootStorage(rootContextSite, flags);
     }
 
-    RootStorage(IOContext ioContext, StorageModeFlags storageModeFlags)
-        : base(ioContext, ioContext.RootEntry)
+    RootStorage(RootContextSite rootContextSite, StorageModeFlags storageModeFlags)
+        : base(rootContextSite, rootContextSite.Context.RootEntry)
     {
         this.storageModeFlags = storageModeFlags;
     }
 
-    public void Dispose() => ioContext?.Dispose();
+    public void Dispose() => Context?.Dispose();
 
     public void Flush(bool consolidate = false)
     {
-        this.ThrowIfDisposed(ioContext.IsDisposed);
+        this.ThrowIfDisposed(Context.IsDisposed);
 
-        ioContext.Flush();
+        Context.Flush();
 
         if (consolidate)
             Consolidate();
@@ -109,21 +113,21 @@ public sealed class RootStorage : Storage, IDisposable
 
         try
         {
-            if (ioContext.BaseStream is MemoryStream)
-                destinationStream = new MemoryStream((int)ioContext.BaseStream.Length);
-            else if (ioContext.BaseStream is FileStream)
+            if (Context.BaseStream is MemoryStream)
+                destinationStream = new MemoryStream((int)Context.BaseStream.Length);
+            else if (Context.BaseStream is FileStream)
                 destinationStream = File.Create(Path.GetTempFileName());
             else
                 throw new NotSupportedException("Unsupported stream type for consolidation.");
 
-            using (RootStorage destinationStorage = Create(destinationStream, ioContext.Version, storageModeFlags))
+            using (RootStorage destinationStorage = Create(destinationStream, Context.Version, storageModeFlags))
                 CopyTo(destinationStorage);
 
-            ioContext.BaseStream.Position = 0;
+            Context.BaseStream.Position = 0;
             destinationStream.Position = 0;
 
-            destinationStream.CopyTo(ioContext.BaseStream);
-            ioContext.BaseStream.SetLength(destinationStream.Length);
+            destinationStream.CopyTo(Context.BaseStream);
+            Context.BaseStream.SetLength(destinationStream.Length);
         }
         catch
         {
@@ -138,28 +142,46 @@ public sealed class RootStorage : Storage, IDisposable
 
     public void Commit()
     {
-        this.ThrowIfDisposed(ioContext.IsDisposed);
+        this.ThrowIfDisposed(Context.IsDisposed);
 
-        ioContext.Commit();
+        Context.Commit();
     }
 
     public void Revert()
     {
-        this.ThrowIfDisposed(ioContext.IsDisposed);
+        this.ThrowIfDisposed(Context.IsDisposed);
 
-        ioContext.Revert();
+        Context.Revert();
+    }
+
+    public void SwitchTo(Stream stream)
+    {
+        Flush();
+
+        stream.SetLength(Context.BaseStream.Length);
+
+        stream.Position = 0;
+        Context.BaseStream.Position = 0;
+
+        Context.BaseStream.CopyTo(stream);
+        stream.Position = 0;
+
+        Context.Dispose();
+
+        IOContextFlags contextFlags = ToIOContextFlags(storageModeFlags);
+        _ = new RootContext(ContextSite, stream, Version.Unknown, contextFlags);
     }
 
     internal void Trace(TextWriter writer)
     {
-        writer.WriteLine(ioContext.Header);
-        ioContext.Fat.WriteTrace(writer);
-        ioContext.MiniFat.Trace(writer);
+        writer.WriteLine(Context.Header);
+        Context.Fat.WriteTrace(writer);
+        Context.MiniFat.Trace(writer);
     }
 
     internal void Validate()
     {
-        ioContext.Fat.Validate();
-        ioContext.MiniFat.Validate();
+        Context.Fat.Validate();
+        Context.MiniFat.Validate();
     }
 }

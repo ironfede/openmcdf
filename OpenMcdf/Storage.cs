@@ -3,20 +3,19 @@
 /// <summary>
 /// An object in a compound file that is analogous to a file system directory.
 /// </summary>
-public class Storage
+public class Storage : ContextBase
 {
-    internal readonly IOContext ioContext;
     internal readonly DirectoryTree directoryTree;
 
     internal DirectoryEntry DirectoryEntry { get; }
 
-    internal Storage(IOContext ioContext, DirectoryEntry directoryEntry)
+    internal Storage(RootContextSite rootContextSite, DirectoryEntry directoryEntry)
+        : base(rootContextSite)
     {
         if (directoryEntry.Type is not StorageType.Storage and not StorageType.Root)
             throw new ArgumentException("DirectoryEntry must be a Storage or Root.", nameof(directoryEntry));
 
-        this.ioContext = ioContext;
-        directoryTree = new(ioContext.DirectoryEntries, directoryEntry);
+        directoryTree = new(Context.DirectoryEntries, directoryEntry);
         DirectoryEntry = directoryEntry;
     }
 
@@ -24,7 +23,7 @@ public class Storage
 
     public IEnumerable<EntryInfo> EnumerateEntries()
     {
-        this.ThrowIfDisposed(ioContext.IsDisposed);
+        this.ThrowIfDisposed(Context.IsDisposed);
 
         return EnumerateDirectoryEntries()
             .Select(e => e.ToEntryInfo());
@@ -32,7 +31,7 @@ public class Storage
 
     IEnumerable<DirectoryEntry> EnumerateDirectoryEntries()
     {
-        using DirectoryTreeEnumerator treeEnumerator = new(ioContext.DirectoryEntries, DirectoryEntry);
+        using DirectoryTreeEnumerator treeEnumerator = new(Context.DirectoryEntries, DirectoryEntry);
         while (treeEnumerator.MoveNext())
         {
             yield return treeEnumerator.Current;
@@ -44,7 +43,7 @@ public class Storage
 
     DirectoryEntry AddDirectoryEntry(StorageType storageType, string name)
     {
-        DirectoryEntry entry = ioContext.DirectoryEntries.CreateOrRecycleDirectoryEntry();
+        DirectoryEntry entry = Context.DirectoryEntries.CreateOrRecycleDirectoryEntry();
         entry.Recycle(storageType, name);
         directoryTree.Add(entry);
         return entry;
@@ -54,47 +53,47 @@ public class Storage
     {
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
-        this.ThrowIfDisposed(ioContext.IsDisposed);
+        this.ThrowIfDisposed(Context.IsDisposed);
 
         DirectoryEntry entry = AddDirectoryEntry(StorageType.Storage, name);
-        return new Storage(ioContext, entry);
+        return new Storage(ContextSite, entry);
     }
 
     public CfbStream CreateStream(string name)
     {
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
-        this.ThrowIfDisposed(ioContext.IsDisposed);
+        this.ThrowIfDisposed(Context.IsDisposed);
 
         // TODO: Return a Stream that can transition between FAT and mini FAT
         DirectoryEntry entry = AddDirectoryEntry(StorageType.Stream, name);
-        return new CfbStream(ioContext, entry);
+        return new CfbStream(ContextSite, entry);
     }
 
     public Storage OpenStorage(string name)
     {
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
-        this.ThrowIfDisposed(ioContext.IsDisposed);
+        this.ThrowIfDisposed(Context.IsDisposed);
 
         directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? entry);
         if (entry is null || entry.Type is not StorageType.Storage)
             throw new DirectoryNotFoundException($"Storage not found: {name}.");
-        return new Storage(ioContext, entry);
+        return new Storage(ContextSite, entry);
     }
 
     public CfbStream OpenStream(string name)
     {
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
-        this.ThrowIfDisposed(ioContext.IsDisposed);
+        this.ThrowIfDisposed(Context.IsDisposed);
 
         directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? entry);
         if (entry is null || entry.Type is not StorageType.Stream)
             throw new FileNotFoundException($"Stream not found: {name}.", name);
 
         // TODO: Return a Stream that can transition between FAT and mini FAT
-        return new CfbStream(ioContext, entry);
+        return new CfbStream(ContextSite, entry);
     }
 
     public void CopyTo(Storage destination)
@@ -103,13 +102,13 @@ public class Storage
         {
             if (entry.Type is StorageType.Storage)
             {
-                Storage subSource = new(ioContext, entry);
+                Storage subSource = new(ContextSite, entry);
                 Storage subDestination = destination.CreateStorage(entry.NameString);
                 subSource.CopyTo(subDestination);
             }
             else if (entry.Type is StorageType.Stream)
             {
-                CfbStream stream = new(ioContext, entry);
+                CfbStream stream = new(ContextSite, entry);
                 CfbStream destinationStream = destination.CreateStream(entry.NameString);
                 stream.CopyTo(destinationStream);
             }
@@ -120,7 +119,7 @@ public class Storage
     {
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
-        this.ThrowIfDisposed(ioContext.IsDisposed);
+        this.ThrowIfDisposed(Context.IsDisposed);
 
         directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? entry);
         if (entry is null)
@@ -128,7 +127,7 @@ public class Storage
 
         if (entry.Type is StorageType.Storage && entry.ChildId is not StreamId.NoStream)
         {
-            Storage storage = new(ioContext, entry);
+            Storage storage = new(ContextSite, entry);
             foreach (EntryInfo childEntry in storage.EnumerateEntries())
             {
                 storage.Delete(childEntry.Name);
@@ -139,12 +138,12 @@ public class Storage
         {
             if (entry.StreamLength < Header.MiniStreamCutoffSize)
             {
-                using MiniFatChainEnumerator miniFatChainEnumerator = new(ioContext, entry.StartSectorId);
+                using MiniFatChainEnumerator miniFatChainEnumerator = new(ContextSite, entry.StartSectorId);
                 miniFatChainEnumerator.Shrink(0);
             }
             else
             {
-                using FatChainEnumerator fatChainEnumerator = new(ioContext, entry.StartSectorId);
+                using FatChainEnumerator fatChainEnumerator = new(Context.Fat, entry.StartSectorId);
                 fatChainEnumerator.Shrink(0);
             }
         }

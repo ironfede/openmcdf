@@ -5,28 +5,30 @@
 /// </summary>
 internal sealed class MiniFatStream : Stream
 {
-    readonly IOContext ioContext;
+    readonly RootContextSite rootContextSite;
     readonly MiniFatChainEnumerator miniChain;
     long position;
     bool disposed;
     bool isDirty;
 
-    internal MiniFatStream(IOContext ioContext, DirectoryEntry directoryEntry)
+    internal MiniFatStream(RootContextSite rootContextSite, DirectoryEntry directoryEntry)
     {
-        this.ioContext = ioContext;
+        this.rootContextSite = rootContextSite;
         DirectoryEntry = directoryEntry;
-        miniChain = new(ioContext, directoryEntry.StartSectorId);
+        miniChain = new(rootContextSite, directoryEntry.StartSectorId);
     }
+
+    RootContext Context => rootContextSite.Context;
 
     internal DirectoryEntry DirectoryEntry { get; private set; }
 
-    internal long ChainCapacity => ((Length + ioContext.MiniSectorSize - 1) / ioContext.MiniSectorSize) * ioContext.MiniSectorSize;
+    internal long ChainCapacity => ((Length + Context.MiniSectorSize - 1) / Context.MiniSectorSize) * Context.MiniSectorSize;
 
     public override bool CanRead => true;
 
     public override bool CanSeek => true;
 
-    public override bool CanWrite => ioContext.CanWrite;
+    public override bool CanWrite => Context.CanWrite;
 
     public override long Length => DirectoryEntry.StreamLength;
 
@@ -55,11 +57,11 @@ internal sealed class MiniFatStream : Stream
 
         if (isDirty)
         {
-            ioContext.DirectoryEntries.Write(DirectoryEntry);
+            Context.DirectoryEntries.Write(DirectoryEntry);
             isDirty = false;
         }
 
-        ioContext.MiniStream.Flush();
+        Context.MiniStream.Flush();
     }
 
     public override int Read(byte[] buffer, int offset, int count)
@@ -75,11 +77,11 @@ internal sealed class MiniFatStream : Stream
         if (maxCount == 0)
             return 0;
 
-        uint chainIndex = (uint)Math.DivRem(position, ioContext.MiniSectorSize, out long sectorOffset);
+        uint chainIndex = (uint)Math.DivRem(position, Context.MiniSectorSize, out long sectorOffset);
         if (!miniChain.MoveTo(chainIndex))
             return 0;
 
-        FatStream miniStream = ioContext.MiniStream;
+        FatStream miniStream = Context.MiniStream;
         int realCount = Math.Min(count, maxCount);
         int readCount = 0;
         do
@@ -141,10 +143,10 @@ internal sealed class MiniFatStream : Stream
         this.ThrowIfDisposed(disposed);
         this.ThrowIfNotWritable();
 
-        uint requiredChainLength = (uint)((value + ioContext.MiniSectorSize - 1) / ioContext.MiniSectorSize);
+        uint requiredChainLength = (uint)((value + Context.MiniSectorSize - 1) / Context.MiniSectorSize);
         if (value > ChainCapacity)
             miniChain.Extend(requiredChainLength);
-        else if (value <= ChainCapacity - ioContext.MiniSectorSize)
+        else if (value <= ChainCapacity - Context.MiniSectorSize)
             miniChain.Shrink(requiredChainLength);
 
         DirectoryEntry.StartSectorId = miniChain.StartId;
@@ -165,11 +167,11 @@ internal sealed class MiniFatStream : Stream
         if (position + count > ChainCapacity)
             SetLength(position + count);
 
-        uint chainIndex = (uint)Math.DivRem(position, ioContext.MiniSectorSize, out long sectorOffset);
+        uint chainIndex = (uint)Math.DivRem(position, Context.MiniSectorSize, out long sectorOffset);
         if (!miniChain.MoveTo(chainIndex))
             throw new InvalidOperationException($"Failed to move to mini FAT chain index: {chainIndex}.");
 
-        FatStream miniStream = ioContext.MiniStream;
+        FatStream miniStream = Context.MiniStream;
         int writeCount = 0;
         do
         {
@@ -178,7 +180,7 @@ internal sealed class MiniFatStream : Stream
             miniStream.Seek(basePosition, SeekOrigin.Begin);
             int remaining = count - writeCount;
             int localOffset = offset + writeCount;
-            long writeLength = Math.Min(remaining, ioContext.MiniSectorSize - sectorOffset);
+            long writeLength = Math.Min(remaining, Context.MiniSectorSize - sectorOffset);
             miniStream.Write(buffer, localOffset, (int)writeLength);
             position += writeLength;
             writeCount += (int)writeLength;
@@ -210,11 +212,11 @@ internal sealed class MiniFatStream : Stream
         if (maxCount == 0)
             return 0;
 
-        uint chainIndex = (uint)Math.DivRem(position, ioContext.MiniSectorSize, out long sectorOffset);
+        uint chainIndex = (uint)Math.DivRem(position, Context.MiniSectorSize, out long sectorOffset);
         if (!miniChain.MoveTo(chainIndex))
             return 0;
 
-        FatStream miniStream = ioContext.MiniStream;
+        FatStream miniStream = Context.MiniStream;
         int realCount = Math.Min(buffer.Length, maxCount);
         int readCount = 0;
         do
@@ -251,11 +253,11 @@ internal sealed class MiniFatStream : Stream
         if (position + buffer.Length > ChainCapacity)
             SetLength(position + buffer.Length);
 
-        uint chainIndex = (uint)Math.DivRem(position, ioContext.MiniSectorSize, out long sectorOffset);
+        uint chainIndex = (uint)Math.DivRem(position, Context.MiniSectorSize, out long sectorOffset);
         if (!miniChain.MoveTo(chainIndex))
             throw new InvalidOperationException($"Failed to move to mini FAT chain index: {chainIndex}.");
 
-        FatStream miniStream = ioContext.MiniStream;
+        FatStream miniStream = Context.MiniStream;
         int writeCount = 0;
         do
         {
@@ -264,7 +266,7 @@ internal sealed class MiniFatStream : Stream
             miniStream.Seek(basePosition, SeekOrigin.Begin);
             int remaining = buffer.Length - writeCount;
             int localOffset = writeCount;
-            long writeLength = Math.Min(remaining, ioContext.MiniSectorSize - sectorOffset);
+            long writeLength = Math.Min(remaining, Context.MiniSectorSize - sectorOffset);
             ReadOnlySpan<byte> slice = buffer.Slice(localOffset, (int)writeLength);
             miniStream.Write(slice);
             position += writeLength;

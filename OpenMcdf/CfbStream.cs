@@ -5,17 +5,17 @@
 /// </summary>
 public sealed class CfbStream : Stream
 {
-    private readonly IOContext ioContext;
+    private readonly RootContextSite rootContextSite;
     private readonly DirectoryEntry directoryEntry;
     private Stream stream;
 
-    internal CfbStream(IOContext ioContext, DirectoryEntry directoryEntry)
+    internal CfbStream(RootContextSite rootContextSite, DirectoryEntry directoryEntry)
     {
-        this.ioContext = ioContext;
+        this.rootContextSite = rootContextSite;
         this.directoryEntry = directoryEntry;
         stream = directoryEntry.StreamLength < Header.MiniStreamCutoffSize
-            ? new MiniFatStream(ioContext, directoryEntry)
-            : new FatStream(ioContext, directoryEntry);
+            ? new MiniFatStream(rootContextSite, directoryEntry)
+            : new FatStream(rootContextSite, directoryEntry);
     }
 
     protected override void Dispose(bool disposing)
@@ -53,7 +53,7 @@ public sealed class CfbStream : Stream
             miniStream.Position = 0;
 
             DirectoryEntry newDirectoryEntry = directoryEntry.Clone();
-            FatStream fatStream = new(ioContext, newDirectoryEntry);
+            FatStream fatStream = new(rootContextSite, newDirectoryEntry);
             fatStream.SetLength(value); // Reserve enough space up front
             miniStream.CopyTo(fatStream);
             fatStream.Position = position;
@@ -68,7 +68,7 @@ public sealed class CfbStream : Stream
             fatStream.Position = 0;
 
             DirectoryEntry newDirectoryEntry = directoryEntry.Clone();
-            MiniFatStream miniFatStream = new(ioContext, newDirectoryEntry);
+            MiniFatStream miniFatStream = new(rootContextSite, newDirectoryEntry);
             fatStream.SetLength(value); // Truncate the stream
             fatStream.CopyTo(miniFatStream);
             miniFatStream.Position = position;

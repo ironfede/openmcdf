@@ -1,18 +1,17 @@
 ﻿namespace OpenMcdf;
 
-internal sealed class DirectoryEntries : IDisposable
+internal sealed class DirectoryEntries : ContextBase, IDisposable
 {
-    private readonly IOContext ioContext;
     private readonly FatChainEnumerator fatChainEnumerator;
     private readonly DirectoryEntryEnumerator directoryEntryEnumerator;
     private readonly int entriesPerSector;
 
-    public DirectoryEntries(IOContext ioContext)
+    public DirectoryEntries(RootContextSite rootContextSite)
+        : base(rootContextSite)
     {
-        this.ioContext = ioContext;
-        fatChainEnumerator = new FatChainEnumerator(ioContext, ioContext.Header.FirstDirectorySectorId);
+        fatChainEnumerator = new FatChainEnumerator(Context.Fat, Context.Header.FirstDirectorySectorId);
         directoryEntryEnumerator = new DirectoryEntryEnumerator(this);
-        entriesPerSector = ioContext.SectorSize / DirectoryEntry.Length;
+        entriesPerSector = Context.SectorSize / DirectoryEntry.Length;
     }
 
     public void Dispose()
@@ -48,8 +47,8 @@ internal sealed class DirectoryEntries : IDisposable
             return false;
         }
 
-        ioContext.Reader.Position = fatChainEnumerator.CurrentSector.Position + (entryIndex * DirectoryEntry.Length);
-        entry = ioContext.Reader.ReadDirectoryEntry(ioContext.Version, streamId);
+        Context.Reader.Position = fatChainEnumerator.CurrentSector.Position + (entryIndex * DirectoryEntry.Length);
+        entry = Context.Reader.ReadDirectoryEntry(Context.Version, streamId);
         return true;
     }
 
@@ -59,15 +58,15 @@ internal sealed class DirectoryEntries : IDisposable
         if (entry is not null)
             return entry;
 
-        CfbBinaryWriter writer = ioContext.Writer;
+        CfbBinaryWriter writer = Context.Writer;
         uint id = fatChainEnumerator.Extend();
-        Header header = ioContext.Header;
+        Header header = Context.Header;
         if (header.FirstDirectorySectorId == SectorType.EndOfChain)
             header.FirstDirectorySectorId = id;
-        if (ioContext.Version == Version.V4)
+        if (Context.Version == Version.V4)
             header.DirectorySectorCount++;
 
-        Sector sector = new(id, ioContext.SectorSize);
+        Sector sector = new(id, Context.SectorSize);
         writer.Position = sector.Position;
         for (int i = 0; i < entriesPerSector; i++)
             writer.Write(DirectoryEntry.Unallocated);
@@ -97,8 +96,9 @@ internal sealed class DirectoryEntries : IDisposable
         if (!fatChainEnumerator.MoveTo(chainIndex))
             throw new KeyNotFoundException($"Directory entry {entry.Id} was not found.");
 
-        CfbBinaryWriter writer = ioContext.Writer;
-        writer.Position = fatChainEnumerator.CurrentSector.Position + (entryIndex * DirectoryEntry.Length);
+        CfbBinaryWriter writer = Context.Writer;
+        Sector sector = new(fatChainEnumerator.Current.Value, Context.SectorSize);
+        writer.Position = sector.Position + (entryIndex * DirectoryEntry.Length);
         writer.Write(entry);
     }
 }

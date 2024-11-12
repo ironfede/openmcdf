@@ -7,21 +7,20 @@ namespace OpenMcdf;
 /// <summary>
 /// Encapsulates getting and setting entries in the FAT.
 /// </summary>
-internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
+internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
 {
-    private readonly IOContext ioContext;
     private readonly FatSectorEnumerator fatSectorEnumerator;
     internal readonly int FatElementsPerSector;
     private readonly byte[] cachedSectorBuffer;
     Sector cachedSector = Sector.EndOfChain;
     private bool isDirty;
 
-    public Fat(IOContext ioContext)
+    public Fat(RootContextSite rootContextSite)
+        : base(rootContextSite)
     {
-        this.ioContext = ioContext;
-        FatElementsPerSector = ioContext.SectorSize / sizeof(uint);
-        fatSectorEnumerator = new(ioContext);
-        cachedSectorBuffer = new byte[ioContext.SectorSize];
+        FatElementsPerSector = Context.SectorSize / sizeof(uint);
+        fatSectorEnumerator = new(rootContextSite);
+        cachedSectorBuffer = new byte[Context.SectorSize];
     }
 
     public void Dispose()
@@ -61,7 +60,7 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
 
         Flush();
 
-        CfbBinaryReader reader = ioContext.Reader;
+        CfbBinaryReader reader = Context.Reader;
         reader.Position = current.Position;
         reader.Read(cachedSectorBuffer);
         cachedSector = current;
@@ -71,7 +70,7 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
     {
         if (isDirty)
         {
-            CfbBinaryWriter writer = ioContext.Writer;
+            CfbBinaryWriter writer = Context.Writer;
             writer.Position = cachedSector.Position;
             writer.Write(cachedSectorBuffer);
             isDirty = false;
@@ -145,21 +144,21 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
         }
 
         FatEntry entry = fatEnumerator.Current;
-        Sector sector = new(entry.Index, ioContext.SectorSize);
-        ioContext.ExtendStreamLength(sector.EndPosition);
+        Sector sector = new(entry.Index, Context.SectorSize);
+        Context.ExtendStreamLength(sector.EndPosition);
         this[entry.Index] = SectorType.EndOfChain;
         return entry.Index;
     }
 
-    public IEnumerator<FatEntry> GetEnumerator() => new FatEnumerator(ioContext);
+    public IEnumerator<FatEntry> GetEnumerator() => new FatEnumerator(Context.Fat);
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
     internal void WriteTrace(TextWriter writer)
     {
-        byte[] data = new byte[ioContext.SectorSize];
+        byte[] data = new byte[Context.SectorSize];
 
-        Stream baseStream = ioContext.Reader.BaseStream;
+        Stream baseStream = Context.Reader.BaseStream;
 
         writer.WriteLine("Start of FAT =================");
 
@@ -168,7 +167,7 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
 
         foreach (FatEntry entry in this)
         {
-            Sector sector = new(entry.Index, ioContext.SectorSize);
+            Sector sector = new(entry.Index, Context.SectorSize);
             if (entry.IsFree)
             {
                 freeCount++;
@@ -196,8 +195,8 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
         long difatSectorCount = 0;
         foreach (FatEntry entry in this)
         {
-            Sector sector = new(entry.Index, ioContext.SectorSize);
-            if (entry.Value <= SectorType.Maximum && sector.EndPosition > ioContext.Length)
+            Sector sector = new(entry.Index, Context.SectorSize);
+            if (entry.Value <= SectorType.Maximum && sector.EndPosition > Context.Length)
                 throw new FormatException($"FAT entry {entry} is beyond the end of the stream.");
             if (entry.Value == SectorType.Fat)
                 fatSectorCount++;
@@ -205,10 +204,10 @@ internal sealed class Fat : IEnumerable<FatEntry>, IDisposable
                 difatSectorCount++;
         }
 
-        if (ioContext.Header.FatSectorCount != fatSectorCount)
-            throw new FormatException($"FAT sector count mismatch. Expected: {ioContext.Header.FatSectorCount} Actual: {fatSectorCount}.");
-        if (ioContext.Header.DifatSectorCount != difatSectorCount)
-            throw new FormatException($"DIFAT sector count mismatch: Expected: {ioContext.Header.DifatSectorCount} Actual: {difatSectorCount}.");
+        if (Context.Header.FatSectorCount != fatSectorCount)
+            throw new FormatException($"FAT sector count mismatch. Expected: {Context.Header.FatSectorCount} Actual: {fatSectorCount}.");
+        if (Context.Header.DifatSectorCount != difatSectorCount)
+            throw new FormatException($"DIFAT sector count mismatch: Expected: {Context.Header.DifatSectorCount} Actual: {difatSectorCount}.");
     }
 
     internal long GetFreeSectorCount() => this.Count(entry => entry.IsFree);
