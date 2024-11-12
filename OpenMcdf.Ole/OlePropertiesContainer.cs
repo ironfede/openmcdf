@@ -1,4 +1,4 @@
-﻿using OpenMcdf3;
+﻿using OpenMcdf;
 
 namespace OpenMcdf.Ole;
 

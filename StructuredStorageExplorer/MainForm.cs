@@ -1,7 +1,7 @@
 ﻿#define OLE_PROPERTY
 
 using OpenMcdf.Ole;
-using OpenMcdf3;
+using OpenMcdf;
 using StructuredStorageExplorer.Properties;
 using System.Collections;
 using System.ComponentModel;

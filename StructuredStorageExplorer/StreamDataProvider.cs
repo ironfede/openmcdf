@@ -1,5 +1,5 @@
 ﻿using Be.Windows.Forms;
-using OpenMcdf3;
+using OpenMcdf;
 
 namespace StructuredStorageExplorer;
 
