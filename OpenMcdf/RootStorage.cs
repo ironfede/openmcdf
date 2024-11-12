@@ -58,6 +58,8 @@ public sealed class RootStorage : Storage, IDisposable
         return new RootStorage(rootContextSite, flags);
     }
 
+    public static RootStorage CreateInMemory(Version version = Version.V3) => Create(new MemoryStream(), version);
+
     public static RootStorage Open(string fileName, FileMode mode, StorageModeFlags flags = StorageModeFlags.None)
     {
         ThrowIfLeaveOpen(flags);
@@ -91,7 +93,7 @@ public sealed class RootStorage : Storage, IDisposable
         this.storageModeFlags = storageModeFlags;
     }
 
-    public void Dispose() => Context?.Dispose();
+    public void Dispose() => Context.Dispose();
 
     public void Flush(bool consolidate = false)
     {

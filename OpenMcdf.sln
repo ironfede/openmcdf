@@ -24,6 +24,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Ole", "OpenMcdf.Ol
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StructuredStorageExplorer", "StructuredStorageExplorer\StructuredStorageExplorer.csproj", "{D5DDCC19-80C4-40D2-AEBF-2DA1CCB1D543}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.Ole.Tests", "OpenMcdf.Ole.Tests\OpenMcdf.Ole.Tests.csproj", "{34F153C4-3EFA-4D6E-B860-AEE300CCCF98}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{D5DDCC19-80C4-40D2-AEBF-2DA1CCB1D543}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5DDCC19-80C4-40D2-AEBF-2DA1CCB1D543}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5DDCC19-80C4-40D2-AEBF-2DA1CCB1D543}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34F153C4-3EFA-4D6E-B860-AEE300CCCF98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34F153C4-3EFA-4D6E-B860-AEE300CCCF98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34F153C4-3EFA-4D6E-B860-AEE300CCCF98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34F153C4-3EFA-4D6E-B860-AEE300CCCF98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
