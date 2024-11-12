@@ -147,11 +147,10 @@ internal sealed class MiniFatStream : Stream
 
         uint requiredChainLength = (uint)((value + Context.MiniSectorSize - 1) / Context.MiniSectorSize);
         if (value > ChainCapacity)
-            miniChain.Extend(requiredChainLength);
+            DirectoryEntry.StartSectorId = miniChain.Extend(requiredChainLength);
         else if (value <= ChainCapacity - Context.MiniSectorSize)
-            miniChain.Shrink(requiredChainLength);
+            DirectoryEntry.StartSectorId = miniChain.Shrink(requiredChainLength);
 
-        DirectoryEntry.StartSectorId = miniChain.StartId;
         DirectoryEntry.StreamLength = value;
         isDirty = true;
     }

@@ -6,13 +6,13 @@ namespace OpenMcdf;
 /// <summary>
 /// Enumerates the <see cref="MiniSector"/>s in a Mini FAT chain.
 /// </summary>
-internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<FatChainEntry>
+internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
 {
     private readonly MiniFatEnumerator miniFatEnumerator;
     private uint startId;
     private bool start = true;
     uint index = uint.MaxValue;
-    private FatChainEntry current = FatChainEntry.Invalid;
+    private uint current = uint.MaxValue;
     private long length = -1;
 
     public MiniFatChainEnumerator(RootContextSite rootContextSite, uint startSectorId)
@@ -31,18 +31,14 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<FatChain
     /// The index within the Mini FAT sector chain, or <see cref="uint.MaxValue"/> if the enumeration has not started.
     /// </summary>
 
-    public uint StartId => startId;
-
-    public uint Index => index;
-
-    public MiniSector CurrentSector => new(Current.Value, Context.MiniSectorSize);
+    public MiniSector CurrentSector => new(Current, Context.MiniSectorSize);
 
     /// <inheritdoc/>
-    public FatChainEntry Current
+    public uint Current
     {
         get
         {
-            if (current.IsFreeOrEndOfChain)
+            if (index == uint.MaxValue)
                 throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
             return current;
         }
@@ -58,15 +54,15 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<FatChain
         {
             start = false;
             index = 0;
-            current = new(index, startId);
+            current = startId;
         }
-        else if (!current.IsFreeOrEndOfChain)
+        else if (!SectorType.IsFreeOrEndOfChain(current))
         {
-            uint sectorId = Context.MiniFat[current.Value];
+            uint sectorId = Context.MiniFat[current];
             if (sectorId == SectorType.EndOfChain)
             {
                 index = uint.MaxValue;
-                current = FatChainEntry.Invalid;
+                current = uint.MaxValue;
                 return false;
             }
 
@@ -75,14 +71,14 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<FatChain
                 throw new FormatException("Mini FAT chain is corrupt.");
 
             index = nextIndex;
-            current = new(nextIndex, sectorId);
+            current = sectorId;
             return true;
         }
 
-        if (current.IsFreeOrEndOfChain)
+        if (SectorType.IsFreeOrEndOfChain(current))
         {
             index = uint.MaxValue;
-            current = FatChainEntry.Invalid;
+            current = uint.MaxValue;
             return false;
         }
 
@@ -123,7 +119,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<FatChain
         return length;
     }
 
-    public void Extend(uint requiredChainLength)
+    public uint Extend(uint requiredChainLength)
     {
         uint chainLength = (uint)GetLength();
         if (chainLength >= requiredChainLength)
@@ -138,7 +134,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<FatChain
         bool ok = MoveTo(chainLength - 1);
         Debug.Assert(ok);
 
-        uint lastId = current.Value;
+        uint lastId = current;
         ok = miniFatEnumerator.MoveTo(lastId);
         Debug.Assert(ok);
         while (chainLength < requiredChainLength)
@@ -156,9 +152,10 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<FatChain
 #endif
 
         length = requiredChainLength;
+        return startId;
     }
 
-    public void Shrink(uint requiredChainLength)
+    public uint Shrink(uint requiredChainLength)
     {
         uint chainLength = (uint)GetLength();
         if (chainLength <= requiredChainLength)
@@ -166,7 +163,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<FatChain
 
         Reset();
 
-        uint lastId = current.Value;
+        uint lastId = current;
         while (MoveNext())
         {
             if (lastId <= SectorType.Maximum)
@@ -177,7 +174,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<FatChain
                     Context.MiniFat[lastId] = SectorType.Free;
             }
 
-            lastId = current.Value;
+            lastId = current;
         }
 
         if (lastId <= SectorType.Maximum)
@@ -195,6 +192,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<FatChain
 #endif
 
         length = requiredChainLength;
+        return startId;
     }
 
     /// <inheritdoc/>
@@ -202,8 +200,8 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<FatChain
     {
         start = true;
         index = uint.MaxValue;
-        current = FatChainEntry.Invalid;
+        current = uint.MaxValue;
     }
 
-    public override string ToString() => $"Index: {index} Value {current}";
+    public override string ToString() => $"Index: {index} Current: {current}";
 }

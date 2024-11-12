@@ -238,5 +238,5 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
         current = uint.MaxValue;
     }
 
-    public override string ToString() => $"{current}";
+    public override string ToString() => $"Index: {index} Current: {current}";
 }
