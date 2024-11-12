@@ -3,7 +3,7 @@ using OpenMcdf;
 
 namespace StructuredStorageExplorer;
 
-public class StreamDataProvider : IByteProvider
+internal sealed class StreamDataProvider : IByteProvider
 {
     /// <summary>
     /// Modifying stream
