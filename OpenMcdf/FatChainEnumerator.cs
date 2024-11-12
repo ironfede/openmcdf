@@ -6,14 +6,14 @@ namespace OpenMcdf;
 /// <summary>
 /// Enumerates the <see cref="Sector"/>s in a FAT sector chain.
 /// </summary>
-internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
+internal sealed class FatChainEnumerator : IEnumerator<uint>
 {
     private readonly Fat fat;
     private readonly FatEnumerator fatEnumerator;
     private uint startId;
     private bool start = true;
     private uint index = uint.MaxValue;
-    private FatChainEntry current = FatChainEntry.Invalid;
+    private uint current = uint.MaxValue;
     private long length = -1;
 
     public FatChainEnumerator(Fat fat, uint startSectorId)
@@ -29,10 +29,10 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
         fatEnumerator.Dispose();
     }
 
-    public Sector CurrentSector => new(Current.Value, fat.Context.SectorSize);
+    public Sector CurrentSector => new(current, fat.Context.SectorSize);
 
     /// <inheritdoc/>
-    public FatChainEntry Current
+    public uint Current
     {
         get
         {
@@ -55,28 +55,28 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
             if (startId is SectorType.EndOfChain or SectorType.Free)
             {
                 index = uint.MaxValue;
-                current = FatChainEntry.Invalid;
+                current = uint.MaxValue;
                 return false;
             }
 
             index = 0;
-            current = new(index, startId);
+            current = startId;
             start = false;
             return true;
         }
 
-        if (current.IsFreeOrEndOfChain || current == FatChainEntry.Invalid)
+        if (SectorType.IsFreeOrEndOfChain(current))
         {
             index = uint.MaxValue;
-            current = FatChainEntry.Invalid;
+            current = uint.MaxValue;
             return false;
         }
 
-        uint value = fat[current.Value];
+        uint value = fat[current];
         if (value is SectorType.EndOfChain)
         {
             index = uint.MaxValue;
-            current = FatChainEntry.Invalid;
+            current = uint.MaxValue;
             return false;
         }
 
@@ -85,11 +85,11 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
         {
             // If the index is greater than the maximum, then the chain must contain a loop
             index = uint.MaxValue;
-            current = FatChainEntry.Invalid;
-            throw new IOException("FAT sector chain is corrupt");
+            current = uint.MaxValue;
+            throw new IOException("FAT sector chain is corrupt.");
         }
 
-        current = new(index, value);
+        current = value;
         return true;
     }
 
@@ -154,7 +154,7 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
         bool ok = MoveTo(chainLength - 1);
         Debug.Assert(ok);
 
-        uint lastId = current.Value;
+        uint lastId = current;
         ok = fatEnumerator.MoveTo(lastId);
         Debug.Assert(ok);
         while (chainLength < requiredChainLength)
@@ -180,7 +180,7 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
         uint lastId = startId;
         while (MoveNext())
         {
-            lastId = current.Value;
+            lastId = current;
         }
 
         uint id = fat.Add(fatEnumerator, lastId);
@@ -196,7 +196,7 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
 
         Reset();
 
-        uint lastId = current.Value;
+        uint lastId = current;
         while (MoveNext())
         {
             if (lastId is not SectorType.EndOfChain and not SectorType.Free)
@@ -207,7 +207,7 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
                     fat[lastId] = SectorType.Free;
             }
 
-            lastId = current.Value;
+            lastId = current;
         }
 
         fat[lastId] = SectorType.Free;
@@ -235,7 +235,7 @@ internal sealed class FatChainEnumerator : IEnumerator<FatChainEntry>
         startId = startSectorId;
         start = true;
         index = uint.MaxValue;
-        current = FatChainEntry.Invalid;
+        current = uint.MaxValue;
     }
 
     public override string ToString() => $"{current}";

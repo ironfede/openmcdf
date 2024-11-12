@@ -97,7 +97,7 @@ internal class FatStream : Stream
         int readCount = 0;
         do
         {
-            Sector sector = new(chain.Current.Value, Context.SectorSize);
+            Sector sector = chain.CurrentSector;
             int remaining = realCount - readCount;
             long readLength = Math.Min(remaining, sector.Length - sectorOffset);
             Context.Reader.Position = sector.Position + sectorOffset;

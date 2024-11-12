@@ -100,8 +100,7 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
             throw new KeyNotFoundException($"Directory entry {entry.Id} was not found.");
 
         CfbBinaryWriter writer = Context.Writer;
-        Sector sector = new(fatChainEnumerator.Current.Value, Context.SectorSize);
-        writer.Position = sector.Position + (entryIndex * DirectoryEntry.Length);
+        writer.Position = fatChainEnumerator.CurrentSector.Position + (entryIndex * DirectoryEntry.Length);
         writer.Write(entry);
     }
 }
