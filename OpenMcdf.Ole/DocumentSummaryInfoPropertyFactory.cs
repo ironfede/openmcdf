@@ -11,6 +11,6 @@ internal sealed class DocumentSummaryInfoPropertyFactory : PropertyFactory
         if (propertyIdentifier is 0x0000000C or 0x0000000D)
             return new VT_Unaligned_LPSTR_Property(vType, codePage, isVariant);
 
-        return CreateLpstrProperty(vType, codePage, propertyIdentifier, isVariant);
+        return base.CreateLpstrProperty(vType, codePage, propertyIdentifier, isVariant);
     }
 }

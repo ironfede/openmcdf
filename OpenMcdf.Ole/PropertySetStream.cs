@@ -28,6 +28,8 @@ internal sealed class PropertySetStream
 
     public void Read(BinaryReader br)
     {
+        br.BaseStream.Position = 0;
+
         ByteOrder = br.ReadUInt16();
         Version = br.ReadUInt16();
         SystemIdentifier = br.ReadUInt32();
@@ -113,6 +115,8 @@ internal sealed class PropertySetStream
 
     public void Write(BinaryWriter bw)
     {
+        bw.BaseStream.Position = 0;
+
         OffsetContainer oc0 = new();
         OffsetContainer oc1 = new();
 
