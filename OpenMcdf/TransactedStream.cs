@@ -90,7 +90,6 @@ internal class TransactedStream : Stream
         int remainingFromSector = Context.SectorSize - (int)sectorOffset;
         int localCount = Math.Min(count, remainingFromSector);
         Debug.Assert(localCount == count);
-        // TODO: Loop through the buffer and write to the overlay stream
 
         bool added = false;
         if (!dirtySectorPositions.TryGetValue(sectorId, out long overlayPosition))
@@ -173,7 +172,6 @@ internal class TransactedStream : Stream
         int remainingFromSector = Context.SectorSize - (int)sectorOffset;
         int localCount = Math.Min(buffer.Length, remainingFromSector);
         Debug.Assert(localCount == buffer.Length);
-        // TODO: Loop through the buffer and write to the overlay stream
 
         bool added = false;
         if (!dirtySectorPositions.TryGetValue(sectorId, out long overlayPosition))

@@ -41,9 +41,6 @@ public class Storage : ContextBase
         }
     }
 
-    IEnumerable<DirectoryEntry> EnumerateDirectoryEntries(StorageType type) => EnumerateDirectoryEntries()
-        .Where(e => e.Type == type);
-
     DirectoryEntry AddDirectoryEntry(StorageType storageType, string name)
     {
         DirectoryEntry entry = Context.DirectoryEntries.CreateOrRecycleDirectoryEntry();
@@ -68,7 +65,6 @@ public class Storage : ContextBase
 
         this.ThrowIfDisposed(Context.IsDisposed);
 
-        // TODO: Return a Stream that can transition between FAT and mini FAT
         DirectoryEntry entry = AddDirectoryEntry(StorageType.Stream, name);
         return new CfbStream(ContextSite, entry, this);
     }
@@ -95,7 +91,6 @@ public class Storage : ContextBase
         if (entry is null || entry.Type is not StorageType.Stream)
             throw new FileNotFoundException($"Stream not found: {name}.", name);
 
-        // TODO: Return a Stream that can transition between FAT and mini FAT
         return new CfbStream(ContextSite, entry, this);
     }
 
