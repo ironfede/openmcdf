@@ -321,8 +321,8 @@ public partial class MainForm : Form
 
     private void treeView1_MouseUp(object sender, MouseEventArgs e)
     {
-        TreeNode n = treeView1.GetNodeAt(e.X, e.Y);
-        if (n.Tag is not NodeSelection nodeSelection)
+        TreeNode? n = treeView1.GetNodeAt(e.X, e.Y);
+        if (n?.Tag is not NodeSelection nodeSelection)
         {
             addStorageStripMenuItem1.Enabled = true;
             addStreamToolStripMenuItem.Enabled = true;
