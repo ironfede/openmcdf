@@ -9,7 +9,7 @@ internal class FatStream : Stream
     readonly FatChainEnumerator chain;
     long position;
     bool isDirty;
-    bool disposed;
+    bool isDisposed;
 
     private RootContext Context => rootContextSite.Context;
 
@@ -47,12 +47,12 @@ internal class FatStream : Stream
     /// <inheritdoc/>
     protected override void Dispose(bool disposing)
     {
-        if (!disposed)
+        if (!isDisposed)
         {
             Flush();
 
             chain.Dispose();
-            disposed = true;
+            isDisposed = true;
         }
 
         base.Dispose(disposing);
@@ -61,7 +61,7 @@ internal class FatStream : Stream
     /// <inheritdoc/>
     public override void Flush()
     {
-        this.ThrowIfDisposed(disposed);
+        this.ThrowIfDisposed(isDisposed);
 
         if (isDirty)
         {
@@ -78,9 +78,7 @@ internal class FatStream : Stream
     /// <inheritdoc/>
     public override int Read(byte[] buffer, int offset, int count)
     {
-        ThrowHelper.ThrowIfStreamArgumentsAreInvalid(buffer, offset, count);
-
-        this.ThrowIfDisposed(disposed);
+        this.ThrowIfDisposed(isDisposed);
 
         if (count == 0)
             return 0;
@@ -118,7 +116,7 @@ internal class FatStream : Stream
     /// <inheritdoc/>
     public override long Seek(long offset, SeekOrigin origin)
     {
-        this.ThrowIfDisposed(disposed);
+        this.ThrowIfDisposed(isDisposed);
 
         switch (origin)
         {
@@ -150,7 +148,7 @@ internal class FatStream : Stream
     /// <inheritdoc/>
     public override void SetLength(long value)
     {
-        this.ThrowIfNotWritable();
+        this.ThrowIfDisposed(isDisposed);
 
         uint requiredChainLength = (uint)((value + Context.SectorSize - 1) / Context.SectorSize);
         if (value > ChainCapacity)
@@ -165,10 +163,7 @@ internal class FatStream : Stream
     /// <inheritdoc/>
     public override void Write(byte[] buffer, int offset, int count)
     {
-        ThrowHelper.ThrowIfStreamArgumentsAreInvalid(buffer, offset, count);
-
-        this.ThrowIfDisposed(disposed);
-        this.ThrowIfNotWritable();
+        this.ThrowIfDisposed(isDisposed);
 
         if (count == 0)
             return;
@@ -213,7 +208,7 @@ internal class FatStream : Stream
 
     public override int Read(Span<byte> buffer)
     {
-        this.ThrowIfDisposed(disposed);
+        this.ThrowIfDisposed(isDisposed);
 
         if (buffer.Length == 0)
             return 0;
@@ -253,8 +248,7 @@ internal class FatStream : Stream
 
     public override void Write(ReadOnlySpan<byte> buffer)
     {
-        this.ThrowIfDisposed(disposed);
-        this.ThrowIfNotWritable();
+        this.ThrowIfDisposed(isDisposed);
 
         if (buffer.Length == 0)
             return;

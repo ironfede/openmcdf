@@ -8,6 +8,7 @@ public sealed class CfbStream : Stream
     private readonly RootContextSite rootContextSite;
     private readonly DirectoryEntry directoryEntry;
     private Stream stream;
+    private bool isDisposed;
 
     internal CfbStream(RootContextSite rootContextSite, DirectoryEntry directoryEntry, Storage parent)
     {
@@ -21,7 +22,11 @@ public sealed class CfbStream : Stream
 
     protected override void Dispose(bool disposing)
     {
-        stream.Dispose();
+        if (!isDisposed)
+        {
+            stream.Dispose();
+            isDisposed = true;
+        }
 
         base.Dispose(disposing);
     }
@@ -48,14 +53,30 @@ public sealed class CfbStream : Stream
 
     public override long Position { get => stream.Position; set => stream.Position = value; }
 
-    public override void Flush() => stream.Flush();
+    public override void Flush()
+    {
+        this.ThrowIfDisposed(isDisposed);
 
-    public override int Read(byte[] buffer, int offset, int count) => stream.Read(buffer, offset, count);
+        stream.Flush();
+    }
 
-    public override long Seek(long offset, SeekOrigin origin) => stream.Seek(offset, origin);
+    public override int Read(byte[] buffer, int offset, int count)
+    {
+        this.ThrowIfDisposed(isDisposed);
+
+        return stream.Read(buffer, offset, count);
+    }
+
+    public override long Seek(long offset, SeekOrigin origin)
+    {
+        this.ThrowIfDisposed(isDisposed);
+
+        return stream.Seek(offset, origin);
+    }
 
     public override void SetLength(long value)
     {
+        this.ThrowIfDisposed(isDisposed);
         this.ThrowIfNotWritable();
 
         if (value >= Header.MiniStreamCutoffSize && stream is MiniFatStream miniStream)
@@ -98,6 +119,7 @@ public sealed class CfbStream : Stream
     {
         ThrowHelper.ThrowIfStreamArgumentsAreInvalid(buffer, offset, count);
 
+        this.ThrowIfDisposed(isDisposed);
         this.ThrowIfNotWritable();
 
         long newPosition = Position + count;
@@ -117,6 +139,7 @@ public sealed class CfbStream : Stream
 
     public override void Write(ReadOnlySpan<byte> buffer)
     {
+        this.ThrowIfDisposed(isDisposed);
         this.ThrowIfNotWritable();
 
         long newPosition = Position + buffer.Length;

@@ -8,7 +8,7 @@ internal sealed class MiniFatStream : Stream
     readonly RootContextSite rootContextSite;
     readonly MiniFatChainEnumerator miniChain;
     long position;
-    bool disposed;
+    bool isDisposed;
     bool isDirty;
 
     internal MiniFatStream(RootContextSite rootContextSite, DirectoryEntry directoryEntry)
@@ -40,12 +40,12 @@ internal sealed class MiniFatStream : Stream
 
     protected override void Dispose(bool disposing)
     {
-        if (!disposed)
+        if (!isDisposed)
         {
             Flush();
 
             miniChain.Dispose();
-            disposed = true;
+            isDisposed = true;
         }
 
         base.Dispose(disposing);
@@ -53,7 +53,7 @@ internal sealed class MiniFatStream : Stream
 
     public override void Flush()
     {
-        this.ThrowIfDisposed(disposed);
+        this.ThrowIfDisposed(isDisposed);
 
         if (isDirty)
         {
@@ -68,9 +68,7 @@ internal sealed class MiniFatStream : Stream
 
     public override int Read(byte[] buffer, int offset, int count)
     {
-        ThrowHelper.ThrowIfStreamArgumentsAreInvalid(buffer, offset, count);
-
-        this.ThrowIfDisposed(disposed);
+        this.ThrowIfDisposed(isDisposed);
 
         if (count == 0)
             return 0;
@@ -108,7 +106,7 @@ internal sealed class MiniFatStream : Stream
 
     public override long Seek(long offset, SeekOrigin origin)
     {
-        this.ThrowIfDisposed(disposed);
+        this.ThrowIfDisposed(isDisposed);
 
         switch (origin)
         {
@@ -142,8 +140,7 @@ internal sealed class MiniFatStream : Stream
         if (value >= Header.MiniStreamCutoffSize)
             throw new ArgumentOutOfRangeException(nameof(value));
 
-        this.ThrowIfDisposed(disposed);
-        this.ThrowIfNotWritable();
+        this.ThrowIfDisposed(isDisposed);
 
         uint requiredChainLength = (uint)((value + Context.MiniSectorSize - 1) / Context.MiniSectorSize);
         if (value > ChainCapacity)
@@ -157,9 +154,7 @@ internal sealed class MiniFatStream : Stream
 
     public override void Write(byte[] buffer, int offset, int count)
     {
-        ThrowHelper.ThrowIfStreamArgumentsAreInvalid(buffer, offset, count);
-
-        this.ThrowIfDisposed(disposed);
+        this.ThrowIfDisposed(isDisposed);
         this.ThrowIfNotWritable();
 
         if (count == 0)
@@ -204,7 +199,7 @@ internal sealed class MiniFatStream : Stream
 
     public override int Read(Span<byte> buffer)
     {
-        this.ThrowIfDisposed(disposed);
+        this.ThrowIfDisposed(isDisposed);
 
         if (buffer.Length == 0)
             return 0;
@@ -245,8 +240,7 @@ internal sealed class MiniFatStream : Stream
 
     public override void Write(ReadOnlySpan<byte> buffer)
     {
-        this.ThrowIfDisposed(disposed);
-        this.ThrowIfNotWritable();
+        this.ThrowIfDisposed(isDisposed);
 
         if (buffer.Length == 0)
             return;
