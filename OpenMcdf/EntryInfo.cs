@@ -11,6 +11,7 @@ public enum EntryType
 /// </summary>
 public readonly record struct EntryInfo(
     EntryType Type,
+    string Path,
     string Name,
     long Length,
     Guid CLSID,

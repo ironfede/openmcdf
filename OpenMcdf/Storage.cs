@@ -9,7 +9,9 @@ public class Storage : ContextBase
 
     internal DirectoryEntry DirectoryEntry { get; }
 
-    internal Storage(RootContextSite rootContextSite, DirectoryEntry directoryEntry)
+    public Storage? Parent { get; }
+
+    internal Storage(RootContextSite rootContextSite, DirectoryEntry directoryEntry, Storage? parent)
         : base(rootContextSite)
     {
         if (directoryEntry.Type is not StorageType.Storage and not StorageType.Root)
@@ -17,16 +19,17 @@ public class Storage : ContextBase
 
         directoryTree = new(Context.DirectoryEntries, directoryEntry);
         DirectoryEntry = directoryEntry;
+        Parent = parent;
     }
 
-    public EntryInfo EntryInfo => DirectoryEntry.ToEntryInfo();
+    public EntryInfo EntryInfo => DirectoryEntry.ToEntryInfo(Parent);
 
     public IEnumerable<EntryInfo> EnumerateEntries()
     {
         this.ThrowIfDisposed(Context.IsDisposed);
 
         return EnumerateDirectoryEntries()
-            .Select(e => e.ToEntryInfo());
+            .Select(e => e.ToEntryInfo(this));
     }
 
     IEnumerable<DirectoryEntry> EnumerateDirectoryEntries()
@@ -56,7 +59,7 @@ public class Storage : ContextBase
         this.ThrowIfDisposed(Context.IsDisposed);
 
         DirectoryEntry entry = AddDirectoryEntry(StorageType.Storage, name);
-        return new Storage(ContextSite, entry);
+        return new Storage(ContextSite, entry, this);
     }
 
     public CfbStream CreateStream(string name)
@@ -67,7 +70,7 @@ public class Storage : ContextBase
 
         // TODO: Return a Stream that can transition between FAT and mini FAT
         DirectoryEntry entry = AddDirectoryEntry(StorageType.Stream, name);
-        return new CfbStream(ContextSite, entry);
+        return new CfbStream(ContextSite, entry, this);
     }
 
     public Storage OpenStorage(string name)
@@ -79,7 +82,7 @@ public class Storage : ContextBase
         directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? entry);
         if (entry is null || entry.Type is not StorageType.Storage)
             throw new DirectoryNotFoundException($"Storage not found: {name}.");
-        return new Storage(ContextSite, entry);
+        return new Storage(ContextSite, entry, this);
     }
 
     public CfbStream OpenStream(string name)
@@ -93,7 +96,7 @@ public class Storage : ContextBase
             throw new FileNotFoundException($"Stream not found: {name}.", name);
 
         // TODO: Return a Stream that can transition between FAT and mini FAT
-        return new CfbStream(ContextSite, entry);
+        return new CfbStream(ContextSite, entry, this);
     }
 
     public void CopyTo(Storage destination)
@@ -102,13 +105,13 @@ public class Storage : ContextBase
         {
             if (entry.Type is StorageType.Storage)
             {
-                Storage subSource = new(ContextSite, entry);
+                Storage subSource = new(ContextSite, entry, this);
                 Storage subDestination = destination.CreateStorage(entry.NameString);
                 subSource.CopyTo(subDestination);
             }
             else if (entry.Type is StorageType.Stream)
             {
-                CfbStream stream = new(ContextSite, entry);
+                CfbStream stream = new(ContextSite, entry, this);
                 CfbStream destinationStream = destination.CreateStream(entry.NameString);
                 stream.CopyTo(destinationStream);
             }
@@ -127,7 +130,7 @@ public class Storage : ContextBase
 
         if (entry.Type is StorageType.Storage && entry.ChildId is not StreamId.NoStream)
         {
-            Storage storage = new(ContextSite, entry);
+            Storage storage = new(ContextSite, entry, this);
             foreach (EntryInfo childEntry in storage.EnumerateEntries())
             {
                 storage.Delete(childEntry.Name);

@@ -9,10 +9,11 @@ public sealed class CfbStream : Stream
     private readonly DirectoryEntry directoryEntry;
     private Stream stream;
 
-    internal CfbStream(RootContextSite rootContextSite, DirectoryEntry directoryEntry)
+    internal CfbStream(RootContextSite rootContextSite, DirectoryEntry directoryEntry, Storage parent)
     {
         this.rootContextSite = rootContextSite;
         this.directoryEntry = directoryEntry;
+        Parent = parent;
         stream = directoryEntry.StreamLength < Header.MiniStreamCutoffSize
             ? new MiniFatStream(rootContextSite, directoryEntry)
             : new FatStream(rootContextSite, directoryEntry);
@@ -24,8 +25,9 @@ public sealed class CfbStream : Stream
 
         base.Dispose(disposing);
     }
+    public Storage Parent { get; }
 
-    public EntryInfo EntryInfo => directoryEntry.ToEntryInfo();
+    public EntryInfo EntryInfo => directoryEntry.ToEntryInfo(Parent);
 
     public override bool CanRead => stream.CanRead;
 

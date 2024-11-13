@@ -226,7 +226,19 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
         _ => throw new InvalidOperationException("Invalid storage type.")
     };
 
-    public EntryInfo ToEntryInfo() => new(EntryType, NameString, StreamLength, CLSID, CreationTime, ModifiedTime);
+    public EntryInfo ToEntryInfo(Storage? parent)
+    {
+        StringBuilder path = new();
+        path.Append('/');
+        while (parent is not null)
+        {
+            path.Insert(0, parent.DirectoryEntry.NameString);
+            path.Insert(0, '/');
+            parent = parent.Parent;
+        }
+
+        return new(EntryType, path.ToString(), NameString, StreamLength, CLSID, CreationTime, ModifiedTime);
+    }
 
     public override string ToString() => $"{Id}: \"{NameString}\"";
 

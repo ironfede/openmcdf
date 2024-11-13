@@ -88,7 +88,7 @@ public sealed class RootStorage : Storage, IDisposable
     }
 
     RootStorage(RootContextSite rootContextSite, StorageModeFlags storageModeFlags)
-        : base(rootContextSite, rootContextSite.Context.RootEntry)
+        : base(rootContextSite, rootContextSite.Context.RootEntry, null)
     {
         this.storageModeFlags = storageModeFlags;
     }
