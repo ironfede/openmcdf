@@ -26,6 +26,46 @@ public class Storage : ContextBase
 
     public EntryInfo EntryInfo => DirectoryEntry.ToEntryInfo(path);
 
+    public Guid CLISD
+    {
+        get => DirectoryEntry.CLSID;
+        set
+        {
+            DirectoryEntry.CLSID = value;
+            Context.DirectoryEntries.Write(DirectoryEntry);
+        }
+    }
+
+    public DateTime CreationTime
+    {
+        get => DirectoryEntry.CreationTime;
+        set
+        {
+            DirectoryEntry.CreationTime = value;
+            Context.DirectoryEntries.Write(DirectoryEntry);
+        }
+    }
+
+    public DateTime ModifiedTime
+    {
+        get => DirectoryEntry.ModifiedTime;
+        set
+        {
+            DirectoryEntry.ModifiedTime = value;
+            Context.DirectoryEntries.Write(DirectoryEntry);
+        }
+    }
+
+    public uint StateBits
+    {
+        get => DirectoryEntry.StateBits;
+        set
+        {
+            DirectoryEntry.StateBits = value;
+            Context.DirectoryEntries.Write(DirectoryEntry);
+        }
+    }
+
     public IEnumerable<EntryInfo> EnumerateEntries()
     {
         this.ThrowIfDisposed(Context.IsDisposed);

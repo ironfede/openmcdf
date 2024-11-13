@@ -205,7 +205,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
             CreationTime = ZeroFileTime;
             ModifiedTime = DateTime.UtcNow;
         }
-        if (storageType is StorageType.Storage)
+        else if (storageType is StorageType.Storage)
         {
             DateTime now = DateTime.UtcNow;
             CreationTime = now;
