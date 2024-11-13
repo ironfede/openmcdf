@@ -25,9 +25,18 @@ public sealed class CfbStream : Stream
 
         base.Dispose(disposing);
     }
+
     public Storage Parent { get; }
 
-    public EntryInfo EntryInfo => directoryEntry.ToEntryInfo(Parent);
+    public EntryInfo EntryInfo
+    {
+        get
+        {
+            EntryInfo parentEntryInfo = Parent.EntryInfo;
+            string path = $"{parentEntryInfo.Path}{parentEntryInfo.Name}";
+            return directoryEntry.ToEntryInfo(path);
+        }
+    }
 
     public override bool CanRead => stream.CanRead;
 

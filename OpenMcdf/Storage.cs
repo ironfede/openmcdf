@@ -5,7 +5,8 @@
 /// </summary>
 public class Storage : ContextBase
 {
-    internal readonly DirectoryTree directoryTree;
+    readonly DirectoryTree directoryTree;
+    readonly string path;
 
     internal DirectoryEntry DirectoryEntry { get; }
 
@@ -20,16 +21,19 @@ public class Storage : ContextBase
         directoryTree = new(Context.DirectoryEntries, directoryEntry);
         DirectoryEntry = directoryEntry;
         Parent = parent;
+        path = parent is null ? $"/" : $"{parent.path}{parent.EntryInfo.Name}/";
     }
 
-    public EntryInfo EntryInfo => DirectoryEntry.ToEntryInfo(Parent);
+    public EntryInfo EntryInfo => DirectoryEntry.ToEntryInfo(path);
 
     public IEnumerable<EntryInfo> EnumerateEntries()
     {
         this.ThrowIfDisposed(Context.IsDisposed);
 
+        EntryInfo entryInfo = EntryInfo;
+        string path = $"{entryInfo.Path}{entryInfo.Name}";
         return EnumerateDirectoryEntries()
-            .Select(e => e.ToEntryInfo(this));
+            .Select(e => e.ToEntryInfo(path));
     }
 
     IEnumerable<DirectoryEntry> EnumerateDirectoryEntries()

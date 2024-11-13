@@ -118,7 +118,7 @@ public sealed class RootStorage : Storage, IDisposable
             if (Context.BaseStream is MemoryStream)
                 destinationStream = new MemoryStream((int)Context.BaseStream.Length);
             else if (Context.BaseStream is FileStream)
-                destinationStream = File.Create(Path.GetTempFileName());
+                destinationStream = File.Create(System.IO.Path.GetTempFileName());
             else
                 throw new NotSupportedException("Unsupported stream type for consolidation.");
 
