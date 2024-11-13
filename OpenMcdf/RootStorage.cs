@@ -95,6 +95,8 @@ public sealed class RootStorage : Storage, IDisposable
 
     public void Dispose() => Context.Dispose();
 
+    public Stream BaseStream => Context.BaseStream;
+
     public void Flush(bool consolidate = false)
     {
         this.ThrowIfDisposed(Context.IsDisposed);
