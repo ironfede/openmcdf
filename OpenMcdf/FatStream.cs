@@ -89,11 +89,11 @@ internal class FatStream : Stream
 
         uint chainIndex = GetFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!chain.MoveTo(chainIndex))
-            return 0;
+            throw new FormatException($"The FAT chain was shorter than the stream length.");
 
         int realCount = Math.Min(count, maxCount);
         int readCount = 0;
-        do
+        while (true)
         {
             Sector sector = chain.CurrentSector;
             int remaining = realCount - readCount;
@@ -108,9 +108,9 @@ internal class FatStream : Stream
             sectorOffset = 0;
             if (readCount >= realCount)
                 return readCount;
-        } while (chain.MoveNext());
-
-        return readCount;
+            if (!chain.MoveNext())
+                throw new FormatException($"The FAT chain was shorter than the stream length.");
+        };
     }
 
     /// <inheritdoc/>
@@ -173,7 +173,7 @@ internal class FatStream : Stream
         CfbBinaryWriter writer = Context.Writer;
         int writeCount = 0;
         uint lastIndex = 0;
-        for (; ; )
+        do
         {
             if (!chain.MoveTo(chainIndex))
                 lastIndex = chain.ExtendFrom(lastIndex);
@@ -187,19 +187,15 @@ internal class FatStream : Stream
             Context.ExtendStreamLength(sector.EndPosition);
             position += writeLength;
             writeCount += (int)writeLength;
-            if (position > Length)
-            {
-                DirectoryEntry.StreamLength = position;
-                isDirty = true;
-            }
             sectorOffset = 0;
-            if (writeCount >= count)
-                return;
-
             chainIndex++;
-        }
+        } while (writeCount < count);
 
-        throw new InvalidOperationException($"End of FAT chain was reached");
+        if (position > Length)
+        {
+            DirectoryEntry.StreamLength = position;
+            isDirty = true;
+        }
     }
 
 #if (!NETSTANDARD2_0 && !NETFRAMEWORK)
@@ -219,11 +215,11 @@ internal class FatStream : Stream
 
         uint chainIndex = GetFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!chain.MoveTo(chainIndex))
-            return 0;
+            throw new FormatException($"The FAT chain was shorter than the stream length.");
 
         int realCount = Math.Min(buffer.Length, maxCount);
         int readCount = 0;
-        do
+        while (true)
         {
             Sector sector = chain.CurrentSector;
             int remaining = realCount - readCount;
@@ -239,9 +235,9 @@ internal class FatStream : Stream
             sectorOffset = 0;
             if (readCount >= realCount)
                 return readCount;
-        } while (chain.MoveNext());
-
-        return readCount;
+            if (!chain.MoveNext())
+                throw new FormatException($"The FAT chain was shorter than the stream length.");
+        }
     }
 
     public override void WriteByte(byte value) => this.WriteByteCore(value);
@@ -258,7 +254,7 @@ internal class FatStream : Stream
         CfbBinaryWriter writer = Context.Writer;
         int writeCount = 0;
         uint lastIndex = 0;
-        for (; ; )
+        do
         {
             if (!chain.MoveTo(chainIndex))
                 lastIndex = chain.ExtendFrom(lastIndex);
@@ -273,16 +269,15 @@ internal class FatStream : Stream
             Context.ExtendStreamLength(sector.EndPosition);
             position += writeLength;
             writeCount += (int)writeLength;
-            if (position > Length)
-                DirectoryEntry.StreamLength = position;
             sectorOffset = 0;
-            if (writeCount >= buffer.Length)
-                return;
-
             chainIndex++;
-        }
+        } while (writeCount < buffer.Length);
 
-        throw new InvalidOperationException($"End of FAT chain was reached");
+        if (position > Length)
+        {
+            DirectoryEntry.StreamLength = position;
+            isDirty = true;
+        }
     }
 
 #endif

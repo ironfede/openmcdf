@@ -79,12 +79,12 @@ internal sealed class MiniFatStream : Stream
 
         uint chainIndex = GetMiniFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!miniChain.MoveTo(chainIndex))
-            return 0;
+            throw new FormatException($"The mini FAT chain was shorter than the stream length.");
 
         FatStream miniStream = Context.MiniStream;
         int realCount = Math.Min(count, maxCount);
         int readCount = 0;
-        do
+        while (true)
         {
             MiniSector miniSector = miniChain.CurrentSector;
             int remaining = realCount - readCount;
@@ -99,9 +99,9 @@ internal sealed class MiniFatStream : Stream
             sectorOffset = 0;
             if (readCount >= realCount)
                 return readCount;
-        } while (miniChain.MoveNext());
-
-        return readCount;
+            if (!miniChain.MoveNext())
+                throw new FormatException($"The mini FAT chain was shorter than the stream length.");
+        }
     }
 
     public override long Seek(long offset, SeekOrigin origin)
@@ -190,7 +190,8 @@ internal sealed class MiniFatStream : Stream
                 return;
         } while (miniChain.MoveNext());
 
-        throw new InvalidOperationException($"End of mini FAT chain was reached.");
+        // Should be impossible since the chain length was validated
+        throw new InvalidOperationException($"The end of mini FAT chain was reached.");
     }
 
 #if (!NETSTANDARD2_0 && !NETFRAMEWORK)
@@ -210,12 +211,12 @@ internal sealed class MiniFatStream : Stream
 
         uint chainIndex = GetMiniFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!miniChain.MoveTo(chainIndex))
-            return 0;
+            throw new FormatException($"The mini FAT chain was shorter than the stream length.");
 
         FatStream miniStream = Context.MiniStream;
         int realCount = Math.Min(buffer.Length, maxCount);
         int readCount = 0;
-        do
+        while (true)
         {
             MiniSector miniSector = miniChain.CurrentSector;
             int remaining = realCount - readCount;
@@ -231,9 +232,9 @@ internal sealed class MiniFatStream : Stream
             sectorOffset = 0;
             if (readCount >= realCount)
                 return readCount;
-        } while (miniChain.MoveNext());
-
-        return readCount;
+            if (!miniChain.MoveNext())
+                throw new FormatException($"The mini FAT chain was shorter than the stream length.");
+        }
     }
 
     public override void WriteByte(byte value) => this.WriteByteCore(value);
@@ -273,7 +274,8 @@ internal sealed class MiniFatStream : Stream
                 return;
         } while (miniChain.MoveNext());
 
-        throw new InvalidOperationException($"End of mini FAT chain was reached.");
+        // Should be impossible since the chain length was validated
+        throw new InvalidOperationException($"The end of mini FAT chain was reached.");
     }
 
 #endif

@@ -74,6 +74,13 @@ public sealed class CfbStream : Stream
         return stream.Seek(offset, origin);
     }
 
+    private void EnsureLengthToWrite(int count)
+    {
+        long newPosition = Position + count;
+        if (newPosition > stream.Length)
+            SetLength(newPosition);
+    }
+
     public override void SetLength(long value)
     {
         this.ThrowIfDisposed(isDisposed);
@@ -122,9 +129,7 @@ public sealed class CfbStream : Stream
         this.ThrowIfDisposed(isDisposed);
         this.ThrowIfNotWritable();
 
-        long newPosition = Position + count;
-        if (newPosition > stream.Length)
-            SetLength(newPosition);
+        EnsureLengthToWrite(count);
 
         stream.Write(buffer, offset, count);
     }
@@ -142,9 +147,7 @@ public sealed class CfbStream : Stream
         this.ThrowIfDisposed(isDisposed);
         this.ThrowIfNotWritable();
 
-        long newPosition = Position + buffer.Length;
-        if (newPosition > stream.Length)
-            SetLength(newPosition);
+        EnsureLengthToWrite(buffer.Length);
 
         stream.Write(buffer);
     }
