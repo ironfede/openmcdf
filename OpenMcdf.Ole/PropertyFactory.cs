@@ -16,6 +16,7 @@ internal abstract class PropertyFactory
             VTPropertyType.VT_I1 => new VT_I1_Property(vType, isVariant),
             VTPropertyType.VT_I2 => new VT_I2_Property(vType, isVariant),
             VTPropertyType.VT_I4 => new VT_I4_Property(vType, isVariant),
+            VTPropertyType.VT_I8 => new VT_I8_Property(vType, isVariant),
             VTPropertyType.VT_R4 => new VT_R4_Property(vType, isVariant),
             VTPropertyType.VT_R8 => new VT_R8_Property(vType, isVariant),
             VTPropertyType.VT_CY => new VT_CY_Property(vType, isVariant),
