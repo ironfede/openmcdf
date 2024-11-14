@@ -15,6 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.csproj.props = Directory.csproj.props
 		Directory.csproj.targets = Directory.csproj.targets
 		exclusion.dic = exclusion.dic
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Benchmarks", "OpenMcdf.Benchmarks\OpenMcdf.Benchmarks.csproj", "{44C718AD-F7FE-4733-80A8-636E5E7E63F3}"
