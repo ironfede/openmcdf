@@ -1,10 +1,26 @@
 
+ver: 2.4
+ADD: Various memory and performance optimizations
+ADD: Support VT_I8
+FIXED: DateTimes are UTC
+FIXED: Crash with buffered stream reads (#184)
+
+ver: 2.3.1
+FIXED: Stream integer stream writes
+FIXED: OLEPropertiesContainer out of range exception
+FIXED: OLE string termination
+
+ver: 2.3
+ADD: Support VT_CLSID
+FIXED: Writing VT_BLOB length
+FIXED: Various OLE LPWSTR issues
+
 ver 2.2
 ADD: NET Standard 2.0 platform support
 
-ver 2.1 
+ver 2.1
 FIXED: Issues with failed initialization to FREESECT (0xFFFFFFFF) of FAT sectors
-FIXED: Issues with file-corruption detection 
+FIXED: Issues with file-corruption detection
 
 MIGRATION TO GITHUB
 
