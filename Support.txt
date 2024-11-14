@@ -1,5 +1,0 @@
-Please, use github bug-tracker to get support at https://github.com/ironfede/openmcdf/issues
-
-Thank You in advance for bug reporting and for You interest in OpenMCDF !
-
-Federico Blaseotto

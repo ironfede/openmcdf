@@ -1,4 +1,0 @@
-<Project>
-  <!-- Project type specific settings -->
-  <Import Project="Directory$(MSBuildProjectExtension).props" Condition="Exists('Directory$(MSBuildProjectExtension).props')" />
-</Project>

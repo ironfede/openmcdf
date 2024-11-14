@@ -1,3 +1,0 @@
-<Project>
-  <Import Project="Directory$(MSBuildProjectExtension).targets" Condition="Exists('Directory$(MSBuildProjectExtension).targets')" />
-</Project>
