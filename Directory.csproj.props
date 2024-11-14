@@ -27,15 +27,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\README.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-
-    <None Include="icon.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
+    <None Include="$(MSBuildThisFileDirectory)icon.png" Pack="True" PackagePath="\" />
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="True" PackagePath="\" />
   </ItemGroup>
 
   <!-- Analysis and warnings-->
