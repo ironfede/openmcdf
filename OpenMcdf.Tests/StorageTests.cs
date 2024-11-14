@@ -8,6 +8,7 @@ public sealed class StorageTests
     [DataRow("MultipleStorage2.cfs", 1)]
     [DataRow("MultipleStorage3.cfs", 1)]
     [DataRow("MultipleStorage4.cfs", 1)]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0063:Use simple 'using' statement", Justification = "Conditional build")]
     public void Read(string fileName, long storageCount)
     {
         using (var rootStorage = RootStorage.OpenRead(fileName))

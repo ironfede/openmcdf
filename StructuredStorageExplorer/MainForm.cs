@@ -185,7 +185,7 @@ public partial class MainForm : Form
         }
     }
 
-    private void exportDataToolStripMenuItem_Click(object sender, EventArgs e)
+    private void ExportDataToolStripMenuItem_Click(object sender, EventArgs e)
     {
         // No export if storage
         if (treeView1.SelectedNode?.Tag is not NodeSelection selection || selection.EntryInfo.Type is not EntryType.Stream || selection.Parent is null)
@@ -211,7 +211,7 @@ public partial class MainForm : Form
         }
     }
 
-    private void removeToolStripMenuItem_Click(object sender, EventArgs e)
+    private void RemoveToolStripMenuItem_Click(object sender, EventArgs e)
     {
         if (treeView1.SelectedNode?.Tag is NodeSelection selection && selection.Parent is not null)
             selection.Parent.Delete(selection.EntryInfo.Name);
@@ -219,7 +219,7 @@ public partial class MainForm : Form
         RefreshTree();
     }
 
-    private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+    private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
     {
         saveFileDialog1.FilterIndex = 2;
         if (saveFileDialog1.ShowDialog() == DialogResult.OK)
@@ -228,7 +228,7 @@ public partial class MainForm : Form
         }
     }
 
-    private void updateCurrentFileToolStripMenuItem_Click(object sender, EventArgs e)
+    private void UpdateCurrentFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
         if (cf is null)
             return;
@@ -238,7 +238,7 @@ public partial class MainForm : Form
         cf.Commit();
     }
 
-    private void addStreamToolStripMenuItem_Click(object sender, EventArgs e)
+    private void AddStreamToolStripMenuItem_Click(object sender, EventArgs e)
     {
         string streamName = string.Empty;
 
@@ -258,7 +258,7 @@ public partial class MainForm : Form
         }
     }
 
-    private void addStorageStripMenuItem1_Click(object sender, EventArgs e)
+    private void AddStorageStripMenuItem1_Click(object sender, EventArgs e)
     {
         string storageName = string.Empty;
 
@@ -278,7 +278,7 @@ public partial class MainForm : Form
         }
     }
 
-    private void importDataStripMenuItem1_Click(object sender, EventArgs e)
+    private void ImportDataStripMenuItem1_Click(object sender, EventArgs e)
     {
         if (openDataFileDialog.ShowDialog() == DialogResult.OK
             && treeView1.SelectedNode.Tag is CfbStream stream)
@@ -295,16 +295,16 @@ public partial class MainForm : Form
         CloseCurrentFile();
     }
 
-    private void contextMenuStrip1_Opening(object sender, CancelEventArgs e)
+    private void ContextMenuStrip1_Opening(object sender, CancelEventArgs e)
     {
     }
 
-    private void newStripMenuItem1_Click(object sender, EventArgs e)
+    private void NewStripMenuItem1_Click(object sender, EventArgs e)
     {
         CreateNewFile();
     }
 
-    private void openFileMenuItem_Click(object sender, EventArgs e)
+    private void OpenFileMenuItem_Click(object sender, EventArgs e)
     {
         if (openFileDialog1.ShowDialog() == DialogResult.OK)
         {
@@ -319,7 +319,7 @@ public partial class MainForm : Form
         }
     }
 
-    private void treeView1_MouseUp(object sender, MouseEventArgs e)
+    private void TreeView1_MouseUp(object sender, MouseEventArgs e)
     {
         TreeNode? n = treeView1.GetNodeAt(e.X, e.Y);
         if (n?.Tag is not NodeSelection nodeSelection)
@@ -448,7 +448,7 @@ public partial class MainForm : Form
         }
     }
 
-    private void closeStripMenuItem1_Click(object sender, EventArgs e)
+    private void CloseStripMenuItem1_Click(object sender, EventArgs e)
     {
         if (hexEditor.ByteProvider is not null
             && hexEditor.ByteProvider.HasChanges()
@@ -460,7 +460,7 @@ public partial class MainForm : Form
         CloseCurrentFile();
     }
 
-    private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
+    private void PreferencesToolStripMenuItem_Click(object sender, EventArgs e)
     {
         using PreferencesForm pref = new();
         pref.ShowDialog();

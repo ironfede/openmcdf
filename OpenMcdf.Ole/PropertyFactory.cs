@@ -29,7 +29,7 @@ internal abstract class PropertyFactory
             VTPropertyType.VT_UI8 => new VT_UI8_Property(vType, isVariant),
             VTPropertyType.VT_BSTR => new VT_LPSTR_Property(vType, codePage, isVariant),
             VTPropertyType.VT_LPSTR => CreateLpstrProperty(vType, codePage, propertyIdentifier, isVariant),
-            VTPropertyType.VT_LPWSTR => new VT_LPWSTR_Property(vType, codePage, isVariant),
+            VTPropertyType.VT_LPWSTR => new VT_LPWSTR_Property(vType, isVariant),
             VTPropertyType.VT_FILETIME => new VT_FILETIME_Property(vType, isVariant),
             VTPropertyType.VT_DECIMAL => new VT_DECIMAL_Property(vType, isVariant),
             VTPropertyType.VT_BOOL => new VT_BOOL_Property(vType, isVariant),
@@ -349,8 +349,6 @@ internal abstract class PropertyFactory
                 //if (addNullTerminator)
                 dataLength += 1;            // null terminator \u+0000
 
-                uint mod = dataLength % 4;       // pad to multiple of 4 bytes
-
                 bw.Write(dataLength);           // data length of string + null char (unicode)
                 bw.Write(data);                 // string
 
@@ -375,11 +373,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_LPWSTR_Property : TypedPropertyValue<string>
     {
-        private readonly int codePage;
-
-        public VT_LPWSTR_Property(VTPropertyType vType, int codePage, bool isVariant) : base(vType, isVariant)
+        public VT_LPWSTR_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
         {
-            this.codePage = codePage;
         }
 
         public override string ReadScalarValue(BinaryReader br)
@@ -489,7 +484,7 @@ internal abstract class PropertyFactory
 
         public override bool ReadScalarValue(BinaryReader br)
         {
-            propertyValue = br.ReadUInt16() == 0xFFFF ? true : false;
+            propertyValue = br.ReadUInt16() == 0xFFFF;
             return (bool)propertyValue;
             //br.ReadUInt16();//padding
         }
@@ -587,7 +582,7 @@ internal abstract class PropertyFactory
 
         public override object ReadScalarValue(BinaryReader br)
         {
-            VTPropertyType vType = (VTPropertyType)br.ReadUInt16();
+            var vType = (VTPropertyType)br.ReadUInt16();
             br.ReadUInt16(); // Ushort Padding
 
             ITypedPropertyValue p = factory.CreateProperty(vType, codePage, propertyIdentifier, true);
@@ -597,7 +592,7 @@ internal abstract class PropertyFactory
 
         public override void WriteScalarValue(BinaryWriter bw, object pValue)
         {
-            ITypedPropertyValue p = (ITypedPropertyValue)pValue;
+            var p = (ITypedPropertyValue)pValue;
 
             p.Write(bw);
         }

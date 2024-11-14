@@ -63,7 +63,7 @@
             this.btnSavePreferences.TabIndex = 2;
             this.btnSavePreferences.Text = "OK";
             this.btnSavePreferences.UseVisualStyleBackColor = true;
-            this.btnSavePreferences.Click += new System.EventHandler(this.btnSavePreferences_Click);
+            this.btnSavePreferences.Click += new System.EventHandler(this.BtnSavePreferences_Click);
             // 
             // btnCancelPreferences
             // 
@@ -73,7 +73,7 @@
             this.btnCancelPreferences.TabIndex = 3;
             this.btnCancelPreferences.Text = "Cancel";
             this.btnCancelPreferences.UseVisualStyleBackColor = true;
-            this.btnCancelPreferences.Click += new System.EventHandler(this.btnCancelPreferences_Click);
+            this.btnCancelPreferences.Click += new System.EventHandler(this.BtnCancelPreferences_Click);
             // 
             // PreferencesForm
             // 

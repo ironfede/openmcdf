@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace OpenMcdf.Ole;
+﻿namespace OpenMcdf.Ole;
 
 internal static class CodePages
 {

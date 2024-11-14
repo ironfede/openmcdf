@@ -143,7 +143,7 @@ public class OlePropertiesContainer
     /// </remarks>
     /// <param name="codePage">The code page to use for the user defined properties.</param>
     /// <returns>The UserDefinedProperties container.</returns>
-    /// <exception cref="CFInvalidOperation">If this container is a type that doesn't suppose user defined properties.</exception>
+    /// <exception cref="InvalidOperationException">If this container is a type that doesn't suppose user defined properties.</exception>
     public OlePropertiesContainer CreateUserDefinedProperties(int codePage)
     {
         // Only the DocumentSummaryInfo stream can contain a UserDefinedProperties

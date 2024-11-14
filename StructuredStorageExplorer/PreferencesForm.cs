@@ -9,7 +9,7 @@ public partial class PreferencesForm : Form
         InitializeComponent();
     }
 
-    private void btnSavePreferences_Click(object sender, EventArgs e)
+    private void BtnSavePreferences_Click(object sender, EventArgs e)
     {
         Settings.Default.EnableValidation = cbEnableValidation.Checked;
         Settings.Default.Save();
@@ -17,7 +17,7 @@ public partial class PreferencesForm : Form
         Close();
     }
 
-    private void btnCancelPreferences_Click(object sender, EventArgs e)
+    private void BtnCancelPreferences_Click(object sender, EventArgs e)
     {
         cbEnableValidation.Checked = Settings.Default.EnableValidation;
         DialogResult = DialogResult.Cancel;

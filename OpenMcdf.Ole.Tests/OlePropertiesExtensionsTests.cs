@@ -214,10 +214,13 @@ public class OlePropertiesExtensionsTests
         OlePropertiesContainer co = new(dsiStream);
         OlePropertiesContainer? userProps = co.UserDefinedProperties;
 
+        Assert.IsNotNull(userProps);
+
         // CodePage should be CP_WINUNICODE (1200)
         Assert.AreEqual(1200, userProps.Context.CodePage);
 
         // There should be 5 property names present, and 6 properties (the properties include the code page)
+        Assert.IsNotNull(userProps.PropertyNames);
         Assert.AreEqual(5, userProps.PropertyNames.Count);
         Assert.AreEqual(6, userProps.Properties.Count);
 
@@ -260,6 +263,8 @@ public class OlePropertiesExtensionsTests
             OlePropertiesContainer co = new(dsiStream);
             OlePropertiesContainer? userProperties = co.UserDefinedProperties;
 
+            Assert.IsNotNull(userProperties?.PropertyNames);
+
             userProperties.PropertyNames[2] = "StringProperty";
             userProperties.PropertyNames[3] = "BooleanProperty";
             userProperties.PropertyNames[4] = "IntegerProperty";
@@ -293,6 +298,8 @@ public class OlePropertiesExtensionsTests
         {
             using CfbStream stream = cf.OpenStream("\u0005DocumentSummaryInformation");
             OlePropertiesContainer co = new(stream);
+
+            Assert.IsNotNull(co.UserDefinedProperties);
             OleProperty[] propArray = co.UserDefinedProperties.Properties.ToArray();
             Assert.AreEqual(6, propArray.Length);
 
@@ -329,9 +336,12 @@ public class OlePropertiesExtensionsTests
         using CfbStream stream = cf.OpenStream("\u0005DocumentSummaryInformation");
         OlePropertiesContainer co = new(stream);
 
-        OleProperty docPartsProperty = co.Properties.FirstOrDefault(property => property.PropertyIdentifier == 13); //13 == PIDDSI_DOCPARTS
+        OleProperty? docPartsProperty = co.Properties.FirstOrDefault(property => property.PropertyIdentifier == 13); //13 == PIDDSI_DOCPARTS
+        Assert.IsNotNull(docPartsProperty);
 
         var docPartsValues = docPartsProperty.Value as IList<string>;
+        Assert.IsNotNull(docPartsValues);
+
         Assert.AreEqual(3, docPartsValues.Count);
         Assert.AreEqual("Sheet1", docPartsValues[0]);
         Assert.AreEqual("Sheet2", docPartsValues[1]);
@@ -367,6 +377,7 @@ public class OlePropertiesExtensionsTests
 
             OlePropertiesContainer newUserDefinedProperties = co.CreateUserDefinedProperties(65001); // 65001 - UTF-8
 
+            Assert.IsNotNull(newUserDefinedProperties.PropertyNames);
             newUserDefinedProperties.PropertyNames[2] = "MyCustomProperty";
 
             OleProperty CreateProperty = co.CreateProperty(VTPropertyType.VT_LPSTR, 2);
