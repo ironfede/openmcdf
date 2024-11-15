@@ -327,6 +327,88 @@ public class OlePropertiesExtensionsTests
         }
     }
 
+    /// As Test_DOCUMENT_SUMMARY_INFO_ADD_CUSTOM, but adding user defined properties with the AddUserDefinedProperty function
+    [TestMethod]
+    public void TestAddUserDefinedProperty()
+    {
+        using MemoryStream modifiedStream = new();
+        using (FileStream stream = File.OpenRead("english.presets.doc"))
+            stream.CopyTo(modifiedStream);
+
+        // Test value for a VT_FILETIME property
+        DateTime testNow = DateTime.UtcNow;
+
+        // english.presets.doc has a user defined property section, but no properties other than the codepage
+        using (var cf = RootStorage.Open(modifiedStream, StorageModeFlags.LeaveOpen))
+        {
+            CfbStream dsiStream = cf.OpenStream("\u0005DocumentSummaryInformation");
+            OlePropertiesContainer co = new(dsiStream);
+            OlePropertiesContainer userProperties = co.UserDefinedProperties!;
+            userProperties.AddUserDefinedProperty(VTPropertyType.VT_LPSTR, "StringProperty").Value = "Hello";
+            userProperties.AddUserDefinedProperty(VTPropertyType.VT_BOOL, "BooleanProperty").Value = true;
+            userProperties.AddUserDefinedProperty(VTPropertyType.VT_I4, "IntegerProperty").Value = 3456;
+            userProperties.AddUserDefinedProperty(VTPropertyType.VT_FILETIME, "DateProperty").Value = testNow;
+            userProperties.AddUserDefinedProperty(VTPropertyType.VT_R8, "DoubleProperty").Value = 1.234567d;
+
+            co.Save(dsiStream);
+        }
+
+        ValidateAddedUserDefinedProperties(modifiedStream, testNow);
+    }
+
+    // Validate that the user defined properties added by Test_DOCUMENT_SUMMARY_INFO_ADD_CUSTOM / Test_Add_User_Defined_Property are as expected
+    private static void ValidateAddedUserDefinedProperties(MemoryStream stream, DateTime testFileTimeValue)
+    {
+        using var cf = RootStorage.Open(stream);
+        using CfbStream cfbStream = cf.OpenStream("\u0005DocumentSummaryInformation");
+        OlePropertiesContainer co = new(cfbStream);
+        IList<OleProperty> propArray = co.UserDefinedProperties!.Properties;
+        Assert.AreEqual(6, propArray.Count);
+
+        // CodePage prop
+        Assert.AreEqual(1u, propArray[0].PropertyIdentifier);
+        Assert.AreEqual("0x00000001", propArray[0].PropertyName);
+        Assert.AreEqual((short)-535, propArray[0].Value);
+
+        // User properties
+        Assert.AreEqual("StringProperty", propArray[1].PropertyName);
+        Assert.AreEqual("Hello", propArray[1].Value);
+        Assert.AreEqual(VTPropertyType.VT_LPSTR, propArray[1].VTType);
+        Assert.AreEqual("BooleanProperty", propArray[2].PropertyName);
+        Assert.AreEqual(true, propArray[2].Value);
+        Assert.AreEqual(VTPropertyType.VT_BOOL, propArray[2].VTType);
+        Assert.AreEqual("IntegerProperty", propArray[3].PropertyName);
+        Assert.AreEqual(3456, propArray[3].Value);
+        Assert.AreEqual(VTPropertyType.VT_I4, propArray[3].VTType);
+        Assert.AreEqual("DateProperty", propArray[4].PropertyName);
+        Assert.AreEqual(testFileTimeValue, propArray[4].Value);
+        Assert.AreEqual(VTPropertyType.VT_FILETIME, propArray[4].VTType);
+        Assert.AreEqual("DoubleProperty", propArray[5].PropertyName);
+        Assert.AreEqual(1.234567d, propArray[5].Value);
+        Assert.AreEqual(VTPropertyType.VT_R8, propArray[5].VTType);
+    }
+
+    /// The names of user defined properties must be unique - adding a duplicate should throw.
+    [TestMethod]
+    public void TestAddUserDefinedPropertyShouldPreventDuplicates()
+    {
+        using MemoryStream modifiedStream = new();
+        using (FileStream stream = File.OpenRead("english.presets.doc"))
+            stream.CopyTo(modifiedStream);
+
+        using var cf = RootStorage.Open(modifiedStream);
+        CfbStream dsiStream = cf.OpenStream("\u0005DocumentSummaryInformation");
+        OlePropertiesContainer co = new(dsiStream);
+        OlePropertiesContainer userProperties = co.UserDefinedProperties!;
+
+        userProperties.AddUserDefinedProperty(VTPropertyType.VT_LPSTR, "StringProperty");
+
+        ArgumentException exception = Assert.ThrowsException<ArgumentException>(
+            () => userProperties.AddUserDefinedProperty(VTPropertyType.VT_LPSTR, "stringproperty"));
+
+        Assert.AreEqual("name", exception.ParamName);
+    }
+
     // Try to read a document which contains Vector/String properties
     // refs https://github.com/ironfede/openmcdf/issues/98
     [TestMethod]
