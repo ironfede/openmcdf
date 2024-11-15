@@ -55,7 +55,7 @@ If you need to compress a compound file, you can purge its unused space:
 root.Flush(consolidate: true);
 ```
 
-[OLE Properties](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-oleps/bf7aeae8-c47a-4939-9f45-700158dac3bc) handling for DocumentSummaryInfo`` and SummaryInfo streams  
+[OLE Properties](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-oleps/bf7aeae8-c47a-4939-9f45-700158dac3bc) handling for DocumentSummaryInfo and SummaryInfo streams  
 is available via extension methods ***(experimental - API subjected to changes)***
 
 ```C#
