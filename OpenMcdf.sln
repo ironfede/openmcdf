@@ -1,69 +1,36 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.5.33530.505
+VisualStudioVersion = 17.11.35327.3
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6C619B4F-100F-4D60-BEF1-60B770D24E5E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf", "OpenMcdf\OpenMcdf.csproj", "{B90DDE7E-803A-4890-82F0-09DAD0FF66D8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Tests", "OpenMcdf.Tests\OpenMcdf.Tests.csproj", "{96A9DA9C-E4C2-4531-A2E4-154F1FBF7532}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{34030FA7-0A06-43D1-85DD-ADD39D502C3C}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
-		azure-pipelines.yml = azure-pipelines.yml
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
 		Directory.csproj.props = Directory.csproj.props
 		Directory.csproj.targets = Directory.csproj.targets
 		exclusion.dic = exclusion.dic
-		OpenMcdf.snk = OpenMcdf.snk
-		sources\SharedAssemblyInfo.cs = sources\SharedAssemblyInfo.cs
+		License.txt = License.txt
+		README.md = README.md
+		ReleaseNotes.md = ReleaseNotes.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestFiles", "TestFiles", "{8DC8730A-F254-4848-B272-BDFFCB5FDC00}"
-	ProjectSection(SolutionItems) = preProject
-		sources\Test\TestFiles\2custom.doc = sources\Test\TestFiles\2custom.doc
-		sources\TestFiles\2_MB-W.ppt = sources\TestFiles\2_MB-W.ppt
-		sources\Test\TestFiles\64-67.numberOfMiniFATSectors.docx = sources\Test\TestFiles\64-67.numberOfMiniFATSectors.docx
-		sources\TestFiles\BUG_16_.xls = sources\TestFiles\BUG_16_.xls
-		sources\Test\TestFiles\corrupted-sector-chain-2.doc = sources\Test\TestFiles\corrupted-sector-chain-2.doc
-		sources\Test\TestFiles\corrupted-sector-chain.cfs = sources\Test\TestFiles\corrupted-sector-chain.cfs
-		sources\Test\TestFiles\corrupted-sector-chain.doc = sources\Test\TestFiles\corrupted-sector-chain.doc
-		sources\TestFiles\CorruptedDoc_bug3547815.doc = sources\TestFiles\CorruptedDoc_bug3547815.doc
-		sources\TestFiles\CorruptedDoc_bug3547815_B.doc = sources\TestFiles\CorruptedDoc_bug3547815_B.doc
-		sources\Test\TestFiles\CorruptedDoc_bug36.doc = sources\Test\TestFiles\CorruptedDoc_bug36.doc
-		sources\TestFiles\CyclicFAT.cfs = sources\TestFiles\CyclicFAT.cfs
-		sources\Test\TestFiles\empty_directory_chain.doc = sources\Test\TestFiles\empty_directory_chain.doc
-		sources\Test\TestFiles\english.presets.doc = sources\Test\TestFiles\english.presets.doc
-		sources\Test\TestFiles\mediationform.doc = sources\Test\TestFiles\mediationform.doc
-		sources\TestFiles\MultipleStorage.cfs = sources\TestFiles\MultipleStorage.cfs
-		sources\TestFiles\MultipleStorage2.cfs = sources\TestFiles\MultipleStorage2.cfs
-		sources\TestFiles\MultipleStorage3.cfs = sources\TestFiles\MultipleStorage3.cfs
-		sources\TestFiles\MultipleStorage4.cfs = sources\TestFiles\MultipleStorage4.cfs
-		sources\Test\TestFiles\no_sectors.doc = sources\Test\TestFiles\no_sectors.doc
-		sources\TestFiles\report.xls = sources\TestFiles\report.xls
-		sources\TestFiles\reportREAD.xls = sources\TestFiles\reportREAD.xls
-		sources\TestFiles\report_name_fix.xls = sources\TestFiles\report_name_fix.xls
-		sources\Test\TestFiles\SampleWorkBook_bug98.xls = sources\Test\TestFiles\SampleWorkBook_bug98.xls
-		sources\TestFiles\testbad.ole = sources\TestFiles\testbad.ole
-		sources\Test\TestFiles\winUnicodeDictionary.doc = sources\Test\TestFiles\winUnicodeDictionary.doc
-		sources\Test\TestFiles\wstr_presets.doc = sources\Test\TestFiles\wstr_presets.doc
-		sources\TestFiles\_thumbs_bug_24.db = sources\TestFiles\_thumbs_bug_24.db
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Benchmarks", "OpenMcdf.Benchmarks\OpenMcdf.Benchmarks.csproj", "{44C718AD-F7FE-4733-80A8-636E5E7E63F3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf", "sources\OpenMcdf\OpenMcdf.csproj", "{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Perf", "OpenMcdf.Perf\OpenMcdf.Perf.csproj", "{8167F453-A244-4FE2-9B33-A7B80B1B7AB1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Extensions", "sources\OpenMcdf.Extensions\OpenMcdf.Extensions.csproj", "{DB748C1D-D71C-442B-832D-2E33BE816CBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StructuredStorage", "StructuredStorage\StructuredStorage.csproj", "{D7861D73-B42C-403E-9B9E-F921BC70F0D3}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StructuredStorageExplorer", "sources\Structured Storage Explorer\StructuredStorageExplorer.csproj", "{4F6323A8-9C06-4D94-808F-EBD69B8370D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Ole", "OpenMcdf.Ole\OpenMcdf.Ole.csproj", "{06FFA945-128E-43FA-B541-38987BC1E0D5}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{73814657-FC73-4066-AABD-86062F2A132E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StructuredStorageExplorer", "StructuredStorageExplorer\StructuredStorageExplorer.csproj", "{D5DDCC19-80C4-40D2-AEBF-2DA1CCB1D543}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Extensions.Test", "sources\Test\OpenMcdf.Extensions.Test\OpenMcdf.Extensions.Test.csproj", "{B9CB103F-0AA3-486D-9C9C-672924B6169C}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.MemTest", "sources\Test\OpenMcdf.MemTest\OpenMcdf.MemTest.csproj", "{E2BAD82D-3040-462B-BAA2-6E608A9054F4}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.PerfTest", "sources\Test\OpenMcdf.PerfTest\OpenMcdf.PerfTest.csproj", "{7077508F-B313-4DF6-8855-4764911BE161}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Test", "sources\Test\OpenMcdf.Test\OpenMcdf.Test.csproj", "{FD339266-8842-40B4-9230-F8E84FC42AC2}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Benchmark", "sources\Test\OpenMcdf.Benchmark\OpenMcdf.Benchmark.csproj", "{B3645D34-1E22-4BCC-8956-A8A56FA9F114}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenMcdf.Ole.Tests", "OpenMcdf.Ole.Tests\OpenMcdf.Ole.Tests.csproj", "{34F153C4-3EFA-4D6E-B860-AEE300CCCF98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -71,54 +38,43 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4F6323A8-9C06-4D94-808F-EBD69B8370D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4F6323A8-9C06-4D94-808F-EBD69B8370D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4F6323A8-9C06-4D94-808F-EBD69B8370D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4F6323A8-9C06-4D94-808F-EBD69B8370D7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B9CB103F-0AA3-486D-9C9C-672924B6169C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B9CB103F-0AA3-486D-9C9C-672924B6169C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B9CB103F-0AA3-486D-9C9C-672924B6169C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B9CB103F-0AA3-486D-9C9C-672924B6169C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E2BAD82D-3040-462B-BAA2-6E608A9054F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E2BAD82D-3040-462B-BAA2-6E608A9054F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E2BAD82D-3040-462B-BAA2-6E608A9054F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E2BAD82D-3040-462B-BAA2-6E608A9054F4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7077508F-B313-4DF6-8855-4764911BE161}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7077508F-B313-4DF6-8855-4764911BE161}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7077508F-B313-4DF6-8855-4764911BE161}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7077508F-B313-4DF6-8855-4764911BE161}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FD339266-8842-40B4-9230-F8E84FC42AC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FD339266-8842-40B4-9230-F8E84FC42AC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FD339266-8842-40B4-9230-F8E84FC42AC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FD339266-8842-40B4-9230-F8E84FC42AC2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B3645D34-1E22-4BCC-8956-A8A56FA9F114}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B3645D34-1E22-4BCC-8956-A8A56FA9F114}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B3645D34-1E22-4BCC-8956-A8A56FA9F114}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B3645D34-1E22-4BCC-8956-A8A56FA9F114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B90DDE7E-803A-4890-82F0-09DAD0FF66D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B90DDE7E-803A-4890-82F0-09DAD0FF66D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B90DDE7E-803A-4890-82F0-09DAD0FF66D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B90DDE7E-803A-4890-82F0-09DAD0FF66D8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96A9DA9C-E4C2-4531-A2E4-154F1FBF7532}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96A9DA9C-E4C2-4531-A2E4-154F1FBF7532}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96A9DA9C-E4C2-4531-A2E4-154F1FBF7532}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96A9DA9C-E4C2-4531-A2E4-154F1FBF7532}.Release|Any CPU.Build.0 = Release|Any CPU
+		{44C718AD-F7FE-4733-80A8-636E5E7E63F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{44C718AD-F7FE-4733-80A8-636E5E7E63F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{44C718AD-F7FE-4733-80A8-636E5E7E63F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{44C718AD-F7FE-4733-80A8-636E5E7E63F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8167F453-A244-4FE2-9B33-A7B80B1B7AB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8167F453-A244-4FE2-9B33-A7B80B1B7AB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8167F453-A244-4FE2-9B33-A7B80B1B7AB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8167F453-A244-4FE2-9B33-A7B80B1B7AB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7861D73-B42C-403E-9B9E-F921BC70F0D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7861D73-B42C-403E-9B9E-F921BC70F0D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7861D73-B42C-403E-9B9E-F921BC70F0D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7861D73-B42C-403E-9B9E-F921BC70F0D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06FFA945-128E-43FA-B541-38987BC1E0D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06FFA945-128E-43FA-B541-38987BC1E0D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06FFA945-128E-43FA-B541-38987BC1E0D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06FFA945-128E-43FA-B541-38987BC1E0D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5DDCC19-80C4-40D2-AEBF-2DA1CCB1D543}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5DDCC19-80C4-40D2-AEBF-2DA1CCB1D543}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5DDCC19-80C4-40D2-AEBF-2DA1CCB1D543}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5DDCC19-80C4-40D2-AEBF-2DA1CCB1D543}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34F153C4-3EFA-4D6E-B860-AEE300CCCF98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34F153C4-3EFA-4D6E-B860-AEE300CCCF98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34F153C4-3EFA-4D6E-B860-AEE300CCCF98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34F153C4-3EFA-4D6E-B860-AEE300CCCF98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{8DC8730A-F254-4848-B272-BDFFCB5FDC00} = {73814657-FC73-4066-AABD-86062F2A132E}
-		{B9CB103F-0AA3-486D-9C9C-672924B6169C} = {73814657-FC73-4066-AABD-86062F2A132E}
-		{E2BAD82D-3040-462B-BAA2-6E608A9054F4} = {73814657-FC73-4066-AABD-86062F2A132E}
-		{7077508F-B313-4DF6-8855-4764911BE161} = {73814657-FC73-4066-AABD-86062F2A132E}
-		{FD339266-8842-40B4-9230-F8E84FC42AC2} = {73814657-FC73-4066-AABD-86062F2A132E}
-		{B3645D34-1E22-4BCC-8956-A8A56FA9F114} = {73814657-FC73-4066-AABD-86062F2A132E}
-	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {DEAA45F3-54F5-4F50-8402-9D89EB95A04C}
-	EndGlobalSection
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = OpenMcdf2.vsmdi
+		SolutionGuid = {927A4DA2-8926-4AC2-A48C-976978B5F2AA}
 	EndGlobalSection
 EndGlobal

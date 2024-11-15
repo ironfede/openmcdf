@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net8.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Title>OpenMcdf</Title>
+    <Description>
+      OpenMcdf is a 100% .NET / C# component that allows developers to manipulate Microsoft Compound Document File Format for OLE structured storage.
+      It supports read/write operations on streams and storages and traversal of directory trees.
+    </Description>
+    <PackageTags>MS-CFB Compound File Binary File Format Structured Storage</PackageTags>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="Microsoft.Bcl.HashCode" Version="6.0.0" />
+    <PackageReference Include="System.Memory" Version="4.5.5" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+    <Compile Remove="System/*.cs" />
+    <None Include="System/*.cs" />
+  </ItemGroup>
+
+</Project>
