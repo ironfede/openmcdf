@@ -1,5 +1,4 @@
-[![Build Status](https://fb8.visualstudio.com/Openmcdf/_apis/build/status/Openmcdf-CI?branchName=master)](https://fb8.visualstudio.com/Openmcdf/_build/latest?definitionId=1&branchName=master)
-![GitHub Actions](https://github.com/ironfede/openmcdf/actions/workflows/dotnet.yml/badge.svg)
+![GitHub Actions](https://github.com/ironfede/openmcdf/actions/workflows/dotnet-desktop.yml/badge.svg)
 
 # OpenMcdf
 
@@ -60,11 +59,11 @@ root.Flush(consolidate: true);
 is available via extension methods ***(experimental - API subjected to changes)***
 
 ```C#
-PropertySetStream mgr = ((CFStream)target).AsOLEProperties();
-for (int i = 0; i < mgr.PropertySet0.NumProperties; i++)
+OlePropertiesContainer co = new(stream);
+foreach (OleProperty prop in co.Properties)
 {
-  ITypedPropertyValue p = mgr.PropertySet0.Properties[i];
   ...
+}
 ```
 
 OpenMcdf runs happily on the [Mono](http://www.mono-project.com/) platform and multi-targets **netstandard2.0** and **net8.0** to allow maximum client compatibility.
