@@ -197,9 +197,9 @@ internal sealed class DirectoryTree
 
     public void WriteTrace(TextWriter writer)
     {
-        if (root is null)
+        if (root.ChildId == StreamId.NoStream)
         {
-            Trace.WriteLine("<empty tree>");
+            Trace.WriteLine("Empty tree");
             return;
         }
 
