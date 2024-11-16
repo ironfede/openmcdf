@@ -140,6 +140,8 @@ public class OlePropertiesContainer
         if (this.ContainerType != ContainerType.UserDefinedProperties)
             throw new InvalidOperationException();
 
+        PropertyNames ??= new();
+
         // As per https://learn.microsoft.com/en-us/openspecs/windows_protocols/MS-OLEPS/4177a4bc-5547-49fe-a4d9-4767350fd9cf
         // the property names have to be unique, and are case insensitive.
         if (PropertyNames.Any(property => property.Value.Equals(name, StringComparison.InvariantCultureIgnoreCase)))
