@@ -327,6 +327,21 @@ public sealed class StreamTests
     }
 
     [TestMethod]
+    [DataRow(Version.V3, 32)]
+    [DataRow(Version.V4, 256)]
+    public void CreateMultipleStreams(Version version, int streamCount)
+    {
+        using var rootStorage = RootStorage.CreateInMemory(version);
+        for (int i = 0; i < streamCount; i++)
+        {
+            Assert.AreEqual(i, rootStorage.EnumerateEntries().Count());
+
+            string streamName = $"TestStream{i}";
+            using Stream stream = rootStorage.CreateStream(streamName);
+        }
+    }
+
+    [TestMethod]
     [DataRow(Version.V3, 0)]
     [DataRow(Version.V3, 63)]
     [DataRow(Version.V3, 64)] // Mini-stream sector size

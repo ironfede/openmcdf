@@ -131,10 +131,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
     /// Extends the chain by one
     /// </summary>
     /// <returns>The ID of the new sector</returns>
-    public uint Extend()
-    {
-        return ExtendFrom(0);
-    }
+    public uint Extend() => ExtendFrom(0);
 
     /// <summary>
     /// Returns the ID of the first sector in the chain.
@@ -177,13 +174,15 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
             return startId;
         }
 
+        Reset();
+
         uint lastId = startId;
         while (MoveNext())
         {
             lastId = current;
         }
 
-        uint id = fat.Add(fatEnumerator, lastId);
+        uint id = fat.Add(fatEnumerator, hintId);
         fat[lastId] = id;
         return id;
     }
