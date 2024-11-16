@@ -136,7 +136,12 @@ public sealed class CfbStream : Stream
 
 #if (!NETSTANDARD2_0 && !NETFRAMEWORK)
 
-    public override int Read(Span<byte> buffer) => stream.Read(buffer);
+    public override int Read(Span<byte> buffer)
+    {
+        this.ThrowIfDisposed(isDisposed);
+
+        return stream.Read(buffer);
+    }
 
     public override int ReadByte() => this.ReadByteCore();
 
