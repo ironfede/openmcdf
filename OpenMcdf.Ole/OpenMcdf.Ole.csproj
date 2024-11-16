@@ -14,7 +14,7 @@
     <PackageTags>MS-CFB Compound File Binary File Format Structured Storage OLE Object Linking and Embedding Property Set Data Structures</PackageTags>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.Collections.Immutable" Version="8.0.0" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
   </ItemGroup>

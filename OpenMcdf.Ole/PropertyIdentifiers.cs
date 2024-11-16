@@ -1,10 +1,10 @@
-﻿using System.Collections.Immutable;
+﻿using System.Collections.Frozen;
 
 namespace OpenMcdf.Ole;
 
 public static class PropertyIdentifiers
 {
-    readonly static ImmutableDictionary<uint, string> SummaryInfo = new Dictionary<uint, string>()
+    readonly static FrozenDictionary<uint, string> SummaryInfo = new Dictionary<uint, string>()
     {
         {0x00000001, "CodePageString" },
         {0x00000002, "PIDSI_TITLE" },
@@ -24,9 +24,9 @@ public static class PropertyIdentifiers
         {0x00000010, "PIDSI_CHARCOUNT" },
         {0x00000012, "PIDSI_APPNAME" },
         {0x00000013, "PIDSI_DOC_SECURITY" }
-    }.ToImmutableDictionary();
+    }.ToFrozenDictionary();
 
-    readonly static ImmutableDictionary<uint, string> DocumentSummaryInfo = new Dictionary<uint, string>()
+    readonly static FrozenDictionary<uint, string> DocumentSummaryInfo = new Dictionary<uint, string>()
     {
         {0x00000001, "CodePageString" },
         {0x00000002, "PIDDSI_CATEGORY" },
@@ -44,7 +44,7 @@ public static class PropertyIdentifiers
         {0x0000000E, "PIDDSI_MANAGER" },
         {0x0000000F, "PIDDSI_COMPANY" },
         {0x00000010, "PIDDSI_LINKSDIRTY" }
-    }.ToImmutableDictionary();
+    }.ToFrozenDictionary();
 
     public static string GetDescription(uint identifier, ContainerType map, IDictionary<uint, string>? customDictionary = null)
     {
