@@ -123,8 +123,6 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
             && fatEnumerator.MoveNextFreeEntry();
         if (!movedToFreeEntry)
         {
-            Flush();
-
             uint newSectorId = fatSectorEnumerator.Add();
 
             // Next id must be free
@@ -133,8 +131,6 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
 
             ok = fatEnumerator.MoveNextFreeEntry();
             Debug.Assert(ok);
-
-            CacheCurrentSector();
         }
 
         FatEntry entry = fatEnumerator.Current;
