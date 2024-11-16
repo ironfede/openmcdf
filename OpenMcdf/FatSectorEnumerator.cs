@@ -52,8 +52,6 @@ internal sealed class FatSectorEnumerator : ContextBase, IEnumerator<Sector>
         return MoveTo(nextIndex);
     }
 
-    public bool IsAt(uint index) => !start && index == this.index;
-
     /// <summary>
     /// Moves the enumerator to the specified sector.
     /// </summary>
@@ -120,7 +118,6 @@ internal sealed class FatSectorEnumerator : ContextBase, IEnumerator<Sector>
     /// <returns>The ID of the new sector that was added</returns>
     public uint Add()
     {
-        // No FAT sectors are free, so add a new one
         Header header = Context.Header;
         uint nextIndex = Context.Header.FatSectorCount;
         Sector newFatSector = new(Context.SectorCount, Context.SectorSize);
