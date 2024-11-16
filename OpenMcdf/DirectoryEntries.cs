@@ -17,6 +17,7 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
 
     public void Dispose()
     {
+        directoryEntryEnumerator.Dispose();
         fatChainEnumerator.Dispose();
     }
 
