@@ -13,7 +13,7 @@ public class OlePropertiesExtensionsTests
     public void ReadSummaryInformation()
     {
         using var cf = RootStorage.OpenRead("_Test.ppt");
-        using CfbStream stream = cf.OpenStream("\u0005SummaryInformation");
+        using CfbStream stream = cf.OpenStream(PropertySetNames.SummaryInformation);
         OlePropertiesContainer co = new(stream);
 
         foreach (OleProperty p in co.Properties)
@@ -26,7 +26,7 @@ public class OlePropertiesExtensionsTests
     public void ReadDocumentSummaryInformation()
     {
         using var cf = RootStorage.OpenRead("_Test.ppt");
-        using CfbStream stream = cf.OpenStream("\u0005DocumentSummaryInformation");
+        using CfbStream stream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
         OlePropertiesContainer co = new(stream);
 
         foreach (OleProperty p in co.Properties)
@@ -39,11 +39,11 @@ public class OlePropertiesExtensionsTests
     public void ReadThenWriteDocumentSummaryInformation()
     {
         using var cf = RootStorage.OpenRead("_Test.ppt");
-        using CfbStream stream = cf.OpenStream("\u0005DocumentSummaryInformation");
+        using CfbStream stream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
         OlePropertiesContainer co = new(stream);
 
         using var cf2 = RootStorage.CreateInMemory();
-        using CfbStream stream2 = cf2.CreateStream("\u0005DocumentSummaryInformation");
+        using CfbStream stream2 = cf2.CreateStream(PropertySetNames.DocSummaryInformation);
         co.Save(stream2);
     }
 
@@ -58,7 +58,7 @@ public class OlePropertiesExtensionsTests
         // Verify initial properties, and then create a modified document
         using (var cf = RootStorage.Open(modifiedStream, StorageModeFlags.LeaveOpen))
         {
-            using CfbStream dsiStream = cf.OpenStream("\u0005DocumentSummaryInformation");
+            using CfbStream dsiStream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
             OlePropertiesContainer co = new(dsiStream);
 
             // The company property should exist but be empty
@@ -83,7 +83,7 @@ public class OlePropertiesExtensionsTests
 
         using (var cf = RootStorage.Open(modifiedStream))
         {
-            using CfbStream stream = cf.OpenStream("\u0005DocumentSummaryInformation");
+            using CfbStream stream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
             OlePropertiesContainer co = new(stream);
 
             OleProperty companyProperty = co.Properties.First(prop => prop.PropertyName == "PIDDSI_COMPANY");
@@ -102,7 +102,7 @@ public class OlePropertiesExtensionsTests
     {
         // Regression test for #33
         using var cf = RootStorage.Open("wstr_presets.doc", FileMode.Open);
-        using CfbStream stream = cf.OpenStream("\u0005SummaryInformation");
+        using CfbStream stream = cf.OpenStream(PropertySetNames.SummaryInformation);
         OlePropertiesContainer co = new(stream);
 
         foreach (OleProperty p in co.Properties)
@@ -110,7 +110,7 @@ public class OlePropertiesExtensionsTests
             Debug.WriteLine(p);
         }
 
-        using CfbStream stream2 = cf.OpenStream("\u0005DocumentSummaryInformation");
+        using CfbStream stream2 = cf.OpenStream(PropertySetNames.DocSummaryInformation);
         OlePropertiesContainer co2 = new(stream2);
 
         foreach (OleProperty p in co2.Properties)
@@ -124,7 +124,7 @@ public class OlePropertiesExtensionsTests
     {
         // Regression test for #34
         using var cf = RootStorage.OpenRead("2custom.doc");
-        using CfbStream stream = cf.OpenStream("\u0005SummaryInformation");
+        using CfbStream stream = cf.OpenStream(PropertySetNames.SummaryInformation);
         OlePropertiesContainer co = new(stream);
 
         foreach (OleProperty p in co.Properties)
@@ -132,7 +132,7 @@ public class OlePropertiesExtensionsTests
             Debug.WriteLine(p);
         }
 
-        using CfbStream stream2 = cf.OpenStream("\u0005DocumentSummaryInformation");
+        using CfbStream stream2 = cf.OpenStream(PropertySetNames.DocSummaryInformation);
         OlePropertiesContainer co2 = new(stream2);
 
         foreach (OleProperty p in co2.Properties)
@@ -153,7 +153,7 @@ public class OlePropertiesExtensionsTests
     public void SummaryInformationReadLpwstring()
     {
         using var cf = RootStorage.OpenRead("english.presets.doc");
-        using CfbStream stream = cf.OpenStream("\u0005SummaryInformation");
+        using CfbStream stream = cf.OpenStream(PropertySetNames.SummaryInformation);
         OlePropertiesContainer co = new(stream);
 
         foreach (OleProperty p in co.Properties)
@@ -173,7 +173,7 @@ public class OlePropertiesExtensionsTests
         // Modify some LPWSTR properties, and save to a new file
         using (var cf = RootStorage.Open(modifiedStream, StorageModeFlags.LeaveOpen))
         {
-            using CfbStream dsiStream = cf.OpenStream("\u0005SummaryInformation");
+            using CfbStream dsiStream = cf.OpenStream(PropertySetNames.SummaryInformation);
             OlePropertiesContainer co = new(dsiStream);
 
             OleProperty authorProperty = co.Properties.First(prop => prop.PropertyName == "PIDSI_AUTHOR");
@@ -192,7 +192,7 @@ public class OlePropertiesExtensionsTests
         // Open the new file and check for the expected values
         using (var cf = RootStorage.Open(modifiedStream))
         {
-            using CfbStream stream = cf.OpenStream("\u0005SummaryInformation");
+            using CfbStream stream = cf.OpenStream(PropertySetNames.SummaryInformation);
             OlePropertiesContainer co = new(stream);
 
             OleProperty authorProperty = co.Properties.First(prop => prop.PropertyName == "PIDSI_AUTHOR");
@@ -210,7 +210,7 @@ public class OlePropertiesExtensionsTests
     public void TestReadUnicodeUserPropertiesDictionary()
     {
         using var cf = RootStorage.OpenRead("winUnicodeDictionary.doc");
-        CfbStream dsiStream = cf.OpenStream("\u0005DocumentSummaryInformation");
+        CfbStream dsiStream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
         OlePropertiesContainer co = new(dsiStream);
         OlePropertiesContainer? userProps = co.UserDefinedProperties;
 
@@ -259,7 +259,7 @@ public class OlePropertiesExtensionsTests
         // english.presets.doc has a user defined property section, but no properties other than the codepage
         using (var cf = RootStorage.Open(modifiedStream, StorageModeFlags.LeaveOpen))
         {
-            using CfbStream dsiStream = cf.OpenStream("\u0005DocumentSummaryInformation");
+            using CfbStream dsiStream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
             OlePropertiesContainer co = new(dsiStream);
             OlePropertiesContainer? userProperties = co.UserDefinedProperties;
 
@@ -296,7 +296,7 @@ public class OlePropertiesExtensionsTests
 
         using (var cf = RootStorage.Open(modifiedStream))
         {
-            using CfbStream stream = cf.OpenStream("\u0005DocumentSummaryInformation");
+            using CfbStream stream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
             OlePropertiesContainer co = new(stream);
 
             Assert.IsNotNull(co.UserDefinedProperties);
@@ -341,7 +341,7 @@ public class OlePropertiesExtensionsTests
         // english.presets.doc has a user defined property section, but no properties other than the codepage
         using (var cf = RootStorage.Open(modifiedStream, StorageModeFlags.LeaveOpen))
         {
-            CfbStream dsiStream = cf.OpenStream("\u0005DocumentSummaryInformation");
+            CfbStream dsiStream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
             OlePropertiesContainer co = new(dsiStream);
             OlePropertiesContainer userProperties = co.UserDefinedProperties!;
             userProperties.AddUserDefinedProperty(VTPropertyType.VT_LPSTR, "StringProperty").Value = "Hello";
@@ -360,7 +360,7 @@ public class OlePropertiesExtensionsTests
     private static void ValidateAddedUserDefinedProperties(MemoryStream stream, DateTime testFileTimeValue)
     {
         using var cf = RootStorage.Open(stream);
-        using CfbStream cfbStream = cf.OpenStream("\u0005DocumentSummaryInformation");
+        using CfbStream cfbStream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
         OlePropertiesContainer co = new(cfbStream);
         IList<OleProperty> propArray = co.UserDefinedProperties!.Properties;
         Assert.AreEqual(6, propArray.Count);
@@ -397,7 +397,7 @@ public class OlePropertiesExtensionsTests
             stream.CopyTo(modifiedStream);
 
         using var cf = RootStorage.Open(modifiedStream);
-        CfbStream dsiStream = cf.OpenStream("\u0005DocumentSummaryInformation");
+        CfbStream dsiStream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
         OlePropertiesContainer co = new(dsiStream);
         OlePropertiesContainer userProperties = co.UserDefinedProperties!;
 
@@ -415,7 +415,7 @@ public class OlePropertiesExtensionsTests
     public void ReadLpwstringVector()
     {
         using var cf = RootStorage.OpenRead("SampleWorkBook_bug98.xls");
-        using CfbStream stream = cf.OpenStream("\u0005DocumentSummaryInformation");
+        using CfbStream stream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
         OlePropertiesContainer co = new(stream);
 
         OleProperty? docPartsProperty = co.Properties.FirstOrDefault(property => property.PropertyIdentifier == 13); //13 == PIDDSI_DOCPARTS
@@ -452,7 +452,7 @@ public class OlePropertiesExtensionsTests
 
         using (var cf = RootStorage.Open(modifiedStream, StorageModeFlags.LeaveOpen))
         {
-            using CfbStream dsiStream = cf.OpenStream("\u0005DocumentSummaryInformation");
+            using CfbStream dsiStream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
             OlePropertiesContainer co = new(dsiStream);
 
             Assert.IsNull(co.UserDefinedProperties);
@@ -471,7 +471,7 @@ public class OlePropertiesExtensionsTests
 
         using (var cf = RootStorage.Open(modifiedStream))
         {
-            using CfbStream stream = cf.OpenStream("\u0005DocumentSummaryInformation");
+            using CfbStream stream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
             OlePropertiesContainer co = new(stream);
 
             // User defined properties should be present now
