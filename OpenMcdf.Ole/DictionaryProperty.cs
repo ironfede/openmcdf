@@ -2,7 +2,7 @@
 
 namespace OpenMcdf.Ole;
 
-public class DictionaryProperty : IProperty
+public sealed class DictionaryProperty : IProperty
 {
     private readonly int codePage;
     private Dictionary<uint, string>? entries = new();
@@ -28,10 +28,7 @@ public class DictionaryProperty : IProperty
 
         for (uint i = 0; i < numEntries; i++)
         {
-            DictionaryEntry de = new(codePage);
-
-            de.Read(br);
-            entries!.Add(de.PropertyIdentifier, de.Name);
+            ReadEntry(br);
         }
 
         int m = (int)(br.BaseStream.Position - curPos) % 4;
@@ -43,6 +40,31 @@ public class DictionaryProperty : IProperty
                 br.ReadByte();
             }
         }
+    }
+
+    // Read a single dictionary entry
+    private void ReadEntry(BinaryReader br)
+    {
+        uint propertyIdentifier = br.ReadUInt32();
+        int length = br.ReadInt32();
+
+        byte[] nameBytes;
+
+        if (codePage == CodePages.WinUnicode)
+        {
+            nameBytes = br.ReadBytes(length << 1);
+
+            int m = length * 2 % 4;
+            if (m > 0)
+                br.ReadBytes(m);
+        }
+        else
+        {
+            nameBytes = br.ReadBytes(length);
+        }
+
+        string entryName = Encoding.GetEncoding(codePage).GetString(nameBytes).Trim('\0');
+        entries!.Add(propertyIdentifier, entryName);
     }
 
     /// <summary>
