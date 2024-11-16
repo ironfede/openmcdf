@@ -38,6 +38,6 @@ jobs:
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
-      run: dotnet build -c $env:Configuration
+      run: dotnet build -c $env:Configuration /p:ContinuousIntegrationBuild=true
       env:
         Configuration: ${{ matrix.configuration }}
