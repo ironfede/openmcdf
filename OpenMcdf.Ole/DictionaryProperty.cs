@@ -104,36 +104,23 @@ public sealed class DictionaryProperty : IProperty
         // In either case, the string must be null terminated
         if (codePage == CodePages.WinUnicode)
         {
-            bool addNullTerminator =
-                byteLength == 0 || nameBytes[byteLength - 1] != '\0' || nameBytes[byteLength - 2] != '\0';
-
-            if (addNullTerminator)
-                byteLength += 2;
+            // Two bytes padding for Unicode strings
+            byteLength += 2;
 
             bw.Write(byteLength / 2);
             bw.Write(nameBytes);
-
-            if (addNullTerminator)
-            {
-                bw.Write((byte)0);
-                bw.Write((byte)0);
-            }
+            bw.Write((byte)0);
+            bw.Write((byte)0);
 
             WritePaddingIfNeeded(bw, (int)byteLength);
         }
         else
         {
-            bool addNullTerminator =
-                byteLength == 0 || nameBytes[byteLength - 1] != '\0';
-
-            if (addNullTerminator)
-                byteLength += 1;
+            byteLength += 1;
 
             bw.Write(byteLength);
             bw.Write(nameBytes);
-
-            if (addNullTerminator)
-                bw.Write((byte)0);
+            bw.Write((byte)0);
         }
     }
 
