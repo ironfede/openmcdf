@@ -1,4 +1,6 @@
-﻿namespace OpenMcdf;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace OpenMcdf;
 
 /// <summary>
 /// An object in a compound file that is analogous to a file system directory.
@@ -114,28 +116,46 @@ public class Storage : ContextBase
     }
 
     public Storage OpenStorage(string name)
+        => TryOpenStorage(name, out Storage? storage)
+            ? storage!
+            : throw new DirectoryNotFoundException($"Storage not found: {name}.");
+
+    public bool TryOpenStorage(string name, [MaybeNullWhen(false)] out Storage? storage)
     {
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
         this.ThrowIfDisposed(Context.IsDisposed);
 
-        directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? entry);
+        directoryTree.TryGetDirectoryEntry(name,  out DirectoryEntry? entry);
         if (entry is null || entry.Type is not StorageType.Storage)
-            throw new DirectoryNotFoundException($"Storage not found: {name}.");
-        return new Storage(ContextSite, entry, this);
+        {
+            storage = null;
+            return false;
+        }
+
+        storage = new Storage(ContextSite, entry, this);
+        return true;
     }
 
     public CfbStream OpenStream(string name)
+         => TryOpenStream(name, out CfbStream? stream)
+            ? stream!
+            : throw new FileNotFoundException($"Stream not found: {name}.", name);
+
+    public bool TryOpenStream(string name, [MaybeNullWhen(false)] out CfbStream? stream)
     {
         ThrowHelper.ThrowIfNameIsInvalid(name);
-
         this.ThrowIfDisposed(Context.IsDisposed);
-
         directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? entry);
-        if (entry is null || entry.Type is not StorageType.Stream)
-            throw new FileNotFoundException($"Stream not found: {name}.", name);
 
-        return new CfbStream(ContextSite, entry, this);
+        if (entry is null || entry.Type is not StorageType.Stream)
+        {
+            stream = null;
+            return false;
+        }
+
+        stream = new CfbStream(ContextSite, entry, this);
+        return true;
     }
 
     public void CopyTo(Storage destination)

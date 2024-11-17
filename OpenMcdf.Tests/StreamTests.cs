@@ -4,6 +4,20 @@
 public sealed class StreamTests
 {
     [TestMethod]
+    [DataRow("TestStream_v3_0.cfs")]
+    public void OpenStream(string fileName)
+    {
+        using var rootStorage = RootStorage.OpenRead(fileName);
+        Assert.IsTrue(rootStorage.TryOpenStream("TestStream", out CfbStream? _));
+        Assert.IsFalse(rootStorage.TryOpenStream("", out CfbStream? _));
+
+        Assert.ThrowsException<FileNotFoundException>(() => rootStorage.OpenStream(""));
+
+        CfbStream stream = rootStorage.OpenStream("TestStream");
+        Assert.AreEqual("TestStream", stream.EntryInfo.Name);
+    }
+
+    [TestMethod]
     [DataRow(Version.V3, 0)]
     [DataRow(Version.V3, 63)]
     [DataRow(Version.V3, 64)]
