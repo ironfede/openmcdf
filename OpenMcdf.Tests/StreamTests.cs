@@ -1,4 +1,6 @@
-﻿namespace OpenMcdf.Tests;
+﻿using System;
+
+namespace OpenMcdf.Tests;
 
 [TestClass]
 public sealed class StreamTests
@@ -102,6 +104,22 @@ public sealed class StreamTests
         }
 
         StreamAssert.AreEqual(expectedStream, actualStream);
+    }
+
+    [TestMethod]
+    [DataRow(Version.V3, 64)] // Mini-stream
+    [DataRow(Version.V4, 4096)] // Regular stream
+    public void Seek(Version version, int length)
+    {
+        string fileName = $"TestStream_v{(int)version}_{length}.cfs";
+        using var rootStorage = RootStorage.OpenRead(fileName);
+        using Stream stream = rootStorage.OpenStream("TestStream");
+
+        stream.Seek(0, SeekOrigin.Begin);
+        Assert.ThrowsException<IOException>(() => stream.Seek(-1, SeekOrigin.Begin));
+        Assert.ThrowsException<IOException>(() => stream.Seek(-1, SeekOrigin.Current));
+        Assert.ThrowsException<IOException>(() => stream.Seek(length + 1, SeekOrigin.End));
+        Assert.ThrowsException<ArgumentException>(() => stream.Seek(length, (SeekOrigin)3));
     }
 
     [TestMethod]
