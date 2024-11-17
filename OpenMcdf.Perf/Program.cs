@@ -7,31 +7,79 @@ internal sealed class Program
     static void Main(string[] args)
     {
         var stopwatch = Stopwatch.StartNew();
-        Write(Version.V3, StorageModeFlags.Transacted, 1024 * 1024, 1024 * 1024, 100);
+        int bufferLength = 1024 * 1024;
+        int streamLength = 8 * 1024 * 1024;
+        Write(Version.V3, StorageModeFlags.None, bufferLength, streamLength, 100);
         Console.WriteLine($"Elapsed: {stopwatch.Elapsed}");
     }
 
-    static void Write(Version version, StorageModeFlags storageModeFlags, int bufferLength, int streamLength, int iterations)
+    public static void Write(Version version, StorageModeFlags storageModeFlags, int bufferLength, int streamLength, int iterations)
     {
-        // Fill with bytes equal to their position modulo 256
-        byte[] expectedBuffer = new byte[bufferLength];
-        for (int i = 0; i < bufferLength; i++)
-            expectedBuffer[i] = (byte)i;
+        byte[] buffer = new byte[bufferLength];
 
-        //byte[] actualBuffer = new byte[length];
-
-        //using MemoryStream memoryStream = new(2 * length * iterations);
-        using FileStream baseStream = File.Create(Path.GetTempFileName());
+        //using FileStream baseStream = File.Create(Path.GetTempFileName());
+        using MemoryStream baseStream = new(streamLength * iterations * 2);
         for (int i = 0; i < iterations; i++)
         {
-            using var rootStorage = RootStorage.Create(baseStream, version, storageModeFlags);
+            using var rootStorage = RootStorage.Create(baseStream, version, storageModeFlags | StorageModeFlags.LeaveOpen);
             using Stream stream = rootStorage.CreateStream("TestStream");
 
             for (int j = 0; j < streamLength / bufferLength; j++)
-                stream.Write(expectedBuffer, 0, expectedBuffer.Length);
+                stream.Write(buffer, 0, buffer.Length);
 
             if (storageModeFlags.HasFlag(StorageModeFlags.Transacted))
                 rootStorage.Commit();
+        }
+    }
+
+    public static void MultiStorageAndStreamWrite()
+    {
+        int storageCount = 8;
+        int streamCount = 8;
+        int writeCount = 1024;
+        byte[] buffer = new byte[32 * 512];
+
+        Microsoft.IO.RecyclableMemoryStreamManager manager = new ();
+        Microsoft.IO.RecyclableMemoryStream baseStream = new(manager);
+        baseStream.Capacity = 2 * (storageCount * buffer.Length * writeCount + storageCount * (streamCount - 1) * buffer.Length);
+
+        using var rootStorage = RootStorage.Create(baseStream, Version.V4);
+        for (int k = 0; k < storageCount; k++)
+        {
+            Console.WriteLine($"Creating Storage {k}");
+            Storage storage = rootStorage.CreateStorage($"TestStorage{k}");
+            for (int i = 0; i < streamCount; i++)
+            {
+                using CfbStream stream = storage.CreateStream($"TestStream{i}");
+
+                int to = i == 0 ? writeCount : 1;
+                for (int j = 0; j < to; j++)
+                    stream.Write(buffer, 0, buffer.Length);
+            }
+        }
+    }
+
+    public static void MultiStorageAndStreamWriteBaseline()
+    {
+        int storageCount = 8;
+        int streamCount = 8;
+        int writeCount = 1024;
+        byte[] buffer = new byte[32 * 512];
+        int capacity = 2 * (storageCount * buffer.Length * writeCount + storageCount * (streamCount - 1) * buffer.Length);
+
+        using var rootStorage = StructuredStorage.Storage.CreateInMemory(capacity);
+        for (int k = 0; k < storageCount; k++)
+        {
+            Console.WriteLine($"Creating Storage {k}");
+            var storage = rootStorage.CreateStorage($"TestStorage{k}");
+            for (int i = 0; i < streamCount; i++)
+            {
+                using var stream = storage.CreateStream($"TestStream{i}");
+
+                int to = i == 0 ? writeCount : 1;
+                for (int j = 0; j < to; j++)
+                    stream.Write(buffer, 0, buffer.Length);
+            }
         }
     }
 }
