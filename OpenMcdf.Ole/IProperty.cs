@@ -1,12 +1,12 @@
 ﻿namespace OpenMcdf.Ole;
 
-public enum PropertyType
+internal enum PropertyType
 {
     TypedPropertyValue = 0,
     DictionaryProperty = 1
 }
 
-public interface IProperty : IBinarySerializable
+internal interface IProperty : IBinarySerializable
 {
     object? Value { get; set; }
 

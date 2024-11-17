@@ -7,7 +7,7 @@ public enum PropertyDimensions
     IsArray
 }
 
-public interface ITypedPropertyValue : IProperty
+internal interface ITypedPropertyValue : IProperty
 {
     VTPropertyType VTType { get; }
 

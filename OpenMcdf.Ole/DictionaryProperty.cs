@@ -2,7 +2,7 @@
 
 namespace OpenMcdf.Ole;
 
-public sealed class DictionaryProperty : IProperty
+internal sealed class DictionaryProperty : IProperty
 {
     private readonly int codePage;
     private Dictionary<uint, string>? entries = new();
