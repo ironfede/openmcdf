@@ -8,9 +8,8 @@ namespace OpenMcdf;
 public class Storage : ContextBase
 {
     readonly DirectoryTree directoryTree;
+    readonly DirectoryEntry directoryEntry;
     readonly string path;
-
-    internal DirectoryEntry DirectoryEntry { get; }
 
     public Storage? Parent { get; }
 
@@ -21,50 +20,50 @@ public class Storage : ContextBase
             throw new ArgumentException("DirectoryEntry must be a Storage or Root.", nameof(directoryEntry));
 
         directoryTree = new(Context.DirectoryEntries, directoryEntry);
-        DirectoryEntry = directoryEntry;
+        this.directoryEntry = directoryEntry;
         Parent = parent;
         path = parent is null ? $"/" : $"{parent.path}{parent.EntryInfo.Name}/";
     }
 
-    public EntryInfo EntryInfo => DirectoryEntry.ToEntryInfo(path);
+    public EntryInfo EntryInfo => directoryEntry.ToEntryInfo(path);
 
     public Guid CLISD
     {
-        get => DirectoryEntry.CLSID;
+        get => directoryEntry.CLSID;
         set
         {
-            DirectoryEntry.CLSID = value;
-            Context.DirectoryEntries.Write(DirectoryEntry);
+            directoryEntry.CLSID = value;
+            Context.DirectoryEntries.Write(directoryEntry);
         }
     }
 
     public DateTime CreationTime
     {
-        get => DirectoryEntry.CreationTime;
+        get => directoryEntry.CreationTime;
         set
         {
-            DirectoryEntry.CreationTime = value;
-            Context.DirectoryEntries.Write(DirectoryEntry);
+            directoryEntry.CreationTime = value;
+            Context.DirectoryEntries.Write(directoryEntry);
         }
     }
 
     public DateTime ModifiedTime
     {
-        get => DirectoryEntry.ModifiedTime;
+        get => directoryEntry.ModifiedTime;
         set
         {
-            DirectoryEntry.ModifiedTime = value;
-            Context.DirectoryEntries.Write(DirectoryEntry);
+            directoryEntry.ModifiedTime = value;
+            Context.DirectoryEntries.Write(directoryEntry);
         }
     }
 
     public uint StateBits
     {
-        get => DirectoryEntry.StateBits;
+        get => directoryEntry.StateBits;
         set
         {
-            DirectoryEntry.StateBits = value;
-            Context.DirectoryEntries.Write(DirectoryEntry);
+            directoryEntry.StateBits = value;
+            Context.DirectoryEntries.Write(directoryEntry);
         }
     }
 
@@ -80,7 +79,7 @@ public class Storage : ContextBase
 
     IEnumerable<DirectoryEntry> EnumerateDirectoryEntries()
     {
-        using DirectoryTreeEnumerator treeEnumerator = new(Context.DirectoryEntries, DirectoryEntry);
+        using DirectoryTreeEnumerator treeEnumerator = new(Context.DirectoryEntries, directoryEntry);
         while (treeEnumerator.MoveNext())
         {
             yield return treeEnumerator.Current;
