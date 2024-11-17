@@ -8,22 +8,25 @@ public sealed class StorageTests
     [DataRow("MultipleStorage2.cfs", 1)]
     [DataRow("MultipleStorage3.cfs", 1)]
     [DataRow("MultipleStorage4.cfs", 1)]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0063:Use simple 'using' statement", Justification = "Conditional build")]
-    public void Read(string fileName, long storageCount)
+    public void EnumerateEntries(string fileName, long storageCount)
     {
-        using (var rootStorage = RootStorage.OpenRead(fileName))
-        {
-            IEnumerable<EntryInfo> storageEntries = rootStorage.EnumerateEntries();
-            Assert.AreEqual(storageCount, storageEntries.Count());
-        }
+        using var rootStorage = RootStorage.OpenRead(fileName);
+        IEnumerable<EntryInfo> storageEntries = rootStorage.EnumerateEntries();
+        Assert.AreEqual(storageCount, storageEntries.Count());
+    }
 
-#if WINDOWS
-        using (var rootStorage = StructuredStorage.Storage.Open(fileName))
-        {
-            IEnumerable<string> entries = rootStorage.EnumerateEntries();
-            Assert.AreEqual(storageCount, entries.Count());
-        }
-#endif
+    [TestMethod]
+    [DataRow("MultipleStorage.cfs")]
+    public void OpenStorage(string fileName)
+    {
+        using var rootStorage = RootStorage.OpenRead(fileName);
+        Assert.IsTrue(rootStorage.TryOpenStorage("MyStorage", out Storage? _));
+        Assert.IsFalse(rootStorage.TryOpenStorage("", out Storage? _));
+
+        Assert.ThrowsException<DirectoryNotFoundException>(() => rootStorage.OpenStorage(""));
+
+        Storage storage = rootStorage.OpenStorage("MyStorage");
+        Assert.AreEqual("MyStorage", storage.EntryInfo.Name);
     }
 
     [TestMethod]
