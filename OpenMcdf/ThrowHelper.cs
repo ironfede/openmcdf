@@ -37,7 +37,7 @@ internal static class ThrowHelper
             throw new NotSupportedException("Stream does not support writing.");
     }
 
-    public static void ThrowSeekBeforeOrigin() => throw new IOException("Seek before origin.");
+    public static void ThrowSeekBeforeOrigin() => throw new IOException("An attempt was made to move the position before the beginning of the stream.");
 
     public static void ThrowIfNameIsInvalid(string value)
     {
