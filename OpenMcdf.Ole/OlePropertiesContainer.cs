@@ -19,14 +19,26 @@ public class OlePropertiesContainer
 
     public OlePropertiesContainer? UserDefinedProperties { get; private set; }
 
+    /// <summary>
+    /// Gets the type of the container.
+    /// </summary>
     public ContainerType ContainerType { get; }
-    private Guid? FmtID0 { get; }
+
+    /// <summary>
+    /// Gets the FMTID of the properties container.
+    /// </summary>
+    public Guid FMTID0 { get; }
 
     public PropertyContext Context { get; }
 
     private readonly List<OleProperty> properties = new();
     internal Stream? cfStream;
 
+    /// <summary>
+    /// Create a new instance of <see cref="OlePropertiesContainer"/> with the specified code page and container type.
+    /// </summary>
+    /// <param name="codePage">The code page to use for the new container.</param>
+    /// <param name="containerType">The type of the new container.</param>
     public OlePropertiesContainer(int codePage, ContainerType containerType)
     {
         Context = new PropertyContext
@@ -36,6 +48,7 @@ public class OlePropertiesContainer
         };
 
         ContainerType = containerType;
+        FMTID0 = FmtIdFromContainerType(containerType);
     }
 
     public OlePropertiesContainer(CfbStream cfStream)
@@ -47,13 +60,8 @@ public class OlePropertiesContainer
         using BinaryReader reader = new(cfStream, Encoding.Unicode, true);
         pStream.Read(reader);
 
-        if (pStream.FMTID0 == FormatIdentifiers.SummaryInformation)
-            ContainerType = ContainerType.SummaryInfo;
-        else if (pStream.FMTID0 == FormatIdentifiers.DocSummaryInformation)
-            ContainerType = ContainerType.DocumentSummaryInfo;
-        else
-            ContainerType = ContainerType.AppSpecific;
-        FmtID0 = pStream.FMTID0;
+        FMTID0 = pStream.FMTID0;
+        ContainerType = ContainerTypeFromFmtId(pStream.FMTID0);
 
         PropertyNames = (Dictionary<uint, string>?)pStream.PropertySet0!.Properties
             .FirstOrDefault(p => p.PropertyType == PropertyType.DictionaryProperty)?.Value;
@@ -217,8 +225,6 @@ public class OlePropertiesContainer
     {
         using BinaryWriter bw = new(cfStream);
 
-        Guid fmtId0 = FmtID0 ?? (ContainerType == ContainerType.SummaryInfo ? FormatIdentifiers.SummaryInformation : FormatIdentifiers.DocSummaryInformation);
-
         PropertySetStream ps = new()
         {
             ByteOrder = 0xFFFE,
@@ -228,7 +234,7 @@ public class OlePropertiesContainer
 
             NumPropertySets = 1,
 
-            FMTID0 = fmtId0,
+            FMTID0 = this.FMTID0,
             Offset0 = 0,
 
             FMTID1 = Guid.Empty,
@@ -283,5 +289,36 @@ public class OlePropertiesContainer
         }
 
         ps.Write(bw);
+    }
+
+    // Determine the type of the container from the FMTID0 property.
+    private static ContainerType ContainerTypeFromFmtId(Guid fmtId0)
+    {
+        if (fmtId0 == FormatIdentifiers.SummaryInformation)
+            return ContainerType.SummaryInfo;
+        else if (fmtId0 == FormatIdentifiers.DocSummaryInformation)
+            return ContainerType.DocumentSummaryInfo;
+        else if (fmtId0 == FormatIdentifiers.GlobalInfo)
+            return ContainerType.GlobalInfo;
+        else if (fmtId0 == FormatIdentifiers.ImageInfo)
+            return ContainerType.ImageInfo;
+        else if (fmtId0 == FormatIdentifiers.ImageContents)
+            return ContainerType.ImageContents;
+
+        return ContainerType.AppSpecific;
+    }
+
+    // Determine the FMTID property from the container type.
+    // Note: Uses FMTID_DocSummaryInformation by default to match the previous behavior.
+    private static Guid FmtIdFromContainerType(ContainerType containerType)
+    {
+        return containerType switch
+        {
+            ContainerType.SummaryInfo => FormatIdentifiers.SummaryInformation,
+            ContainerType.GlobalInfo => FormatIdentifiers.GlobalInfo,
+            ContainerType.ImageContents => FormatIdentifiers.ImageContents,
+            ContainerType.ImageInfo => FormatIdentifiers.ImageInfo,
+            _ => FormatIdentifiers.DocSummaryInformation,
+        };
     }
 }
