@@ -59,5 +59,13 @@ internal static class StreamExtensions
     }
 
 #endif
-}
 
+    public static void CopyAllTo(this Stream source, Stream destination)
+    {
+        source.Position = 0;
+        destination.Position = 0;
+        destination.SetLength(source.Length);
+        source.CopyTo(destination);
+        destination.Position = 0;
+    }
+}
