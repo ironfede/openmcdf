@@ -41,6 +41,8 @@ public sealed class StorageTests
     public void CreateStorage(Version version, int subStorageCount)
     {
         using MemoryStream memoryStream = new();
+
+        // Test adding right sibling
         using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
             for (int i = 0; i < subStorageCount; i++)
@@ -56,6 +58,22 @@ public sealed class StorageTests
                 rootStorage.OpenStorage($"Test{i}");
         }
 
+        // Test adding left sibling
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
+        {
+            for (int i = 0; i < subStorageCount; i++)
+                rootStorage.CreateStorage($"Test{subStorageCount - i}");
+        }
+
+        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen))
+        {
+            IEnumerable<EntryInfo> entries = rootStorage.EnumerateEntries();
+            Assert.AreEqual(subStorageCount, entries.Count());
+
+            for (int i = 0; i < subStorageCount; i++)
+                rootStorage.OpenStorage($"Test{subStorageCount - i}");
+        }
+
 #if WINDOWS
         using (var rootStorage = StructuredStorage.Storage.Open(memoryStream))
         {
@@ -64,7 +82,7 @@ public sealed class StorageTests
 
             for (int i = 0; i < subStorageCount; i++)
             {
-                using StructuredStorage.Storage storage = rootStorage.OpenStorage($"Test{i}");
+                using StructuredStorage.Storage storage = rootStorage.OpenStorage($"Test{subStorageCount - i}");
             }
         }
 #endif
