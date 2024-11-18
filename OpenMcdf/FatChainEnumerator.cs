@@ -66,12 +66,8 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
             return true;
         }
 
-        if (SectorType.IsFreeOrEndOfChain(current))
-        {
-            index = uint.MaxValue;
-            current = uint.MaxValue;
+        if (index == uint.MaxValue)
             return false;
-        }
 
         uint value = fat[current];
         if (value is SectorType.EndOfChain)
@@ -199,7 +195,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
         uint lastId = current;
         while (MoveNext())
         {
-            if (lastId is not SectorType.EndOfChain and not SectorType.Free)
+            if (!SectorType.IsFreeOrEndOfChain(lastId))
             {
                 if (index == requiredChainLength)
                     fat[lastId] = SectorType.EndOfChain;
