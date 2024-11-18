@@ -129,6 +129,8 @@ public sealed class StorageTests
         {
             rootStorage.Delete("Test");
             Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
+
+            rootStorage.Delete("NonExistentEntry");
         }
 
         using (var rootStorage = RootStorage.Open(memoryStream))
@@ -221,15 +223,17 @@ public sealed class StorageTests
         using MemoryStream memoryStream = new();
         using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
-            Storage storage = rootStorage.CreateStorage("Test");
+            Storage storage = rootStorage.CreateStorage("Storage");
             Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
 
-            using CfbStream stream = storage.CreateStream("Test");
+            Storage subStorage = storage.CreateStorage("SubStorage");
+            using CfbStream subStream = subStorage.CreateStream("SubStream");
+            Assert.AreEqual(1, storage.EnumerateEntries().Count());
         }
 
         using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen))
         {
-            rootStorage.Delete("Test");
+            rootStorage.Delete("Storage");
             Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
         }
 
