@@ -7,11 +7,7 @@
 /// <param name="Length">The sector length</param>
 internal record struct MiniSector(uint Id, int Length)
 {
-    public static readonly MiniSector EndOfChain = new(SectorType.EndOfChain, int.MaxValue);
-
     public readonly bool IsValid => Id <= SectorType.Maximum;
-
-    public readonly bool IsEndOfChain => Id is SectorType.EndOfChain or SectorType.Free;
 
     /// <summary>
     /// The position of the mini sector in the mini FAT stream.
