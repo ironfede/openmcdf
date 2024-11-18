@@ -1,4 +1,6 @@
-﻿namespace OpenMcdf;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace OpenMcdf;
 
 public enum Version : ushort
 {
@@ -174,13 +176,15 @@ public sealed class RootStorage : Storage, IDisposable
         _ = new RootContext(ContextSite, stream, Version.Unknown, contextFlags);
     }
 
+    [ExcludeFromCodeCoverage]
     internal void Trace(TextWriter writer)
     {
         writer.WriteLine(Context.Header);
         Context.Fat.WriteTrace(writer);
-        Context.MiniFat.Trace(writer);
+        Context.MiniFat.WriteTrace(writer);
     }
 
+    [ExcludeFromCodeCoverage]
     internal void Validate()
     {
         Context.Fat.Validate();

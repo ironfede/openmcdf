@@ -1,4 +1,6 @@
-﻿namespace OpenMcdf;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace OpenMcdf;
 
 /// <summary>
 /// Encapsulates information about a sector in a compound file.
@@ -47,5 +49,6 @@ internal record struct Sector(uint Id, int Length)
             throw new InvalidOperationException($"Invalid FAT sector ID: {Id}.");
     }
 
+    [ExcludeFromCodeCoverage]
     public override readonly string ToString() => $"{Id}";
 }

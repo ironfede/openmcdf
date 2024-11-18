@@ -1,6 +1,7 @@
 ﻿using System.Buffers.Binary;
 using System.Collections;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenMcdf;
 
@@ -140,7 +141,8 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
         return entry.Index;
     }
 
-    internal void Trace(TextWriter writer)
+    [ExcludeFromCodeCoverage]
+    internal void WriteTrace(TextWriter writer)
     {
         using MiniFatEnumerator miniFatEnumerator = new(ContextSite);
 
@@ -150,6 +152,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
         writer.WriteLine("End of Mini FAT ==============");
     }
 
+    [ExcludeFromCodeCoverage]
     internal void Validate()
     {
         using MiniFatEnumerator miniFatEnumerator = new(ContextSite);

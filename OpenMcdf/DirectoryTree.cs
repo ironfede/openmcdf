@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenMcdf;
 
@@ -195,7 +196,8 @@ internal sealed class DirectoryTree
         }
     }
 
-    public void WriteTrace(TextWriter writer)
+    [ExcludeFromCodeCoverage]
+    internal void WriteTrace(TextWriter writer)
     {
         if (root.ChildId == StreamId.NoStream)
         {

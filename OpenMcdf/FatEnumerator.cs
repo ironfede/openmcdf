@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenMcdf;
 
@@ -89,5 +90,6 @@ internal class FatEnumerator : IEnumerator<FatEntry>
         value = uint.MaxValue;
     }
 
+    [ExcludeFromCodeCoverage]
     public override string ToString() => $"{Current}";
 }
