@@ -184,7 +184,7 @@ internal sealed class DirectoryTree
                 for (; ; )
                 {
                     newRightChildParentEntry = directories.GetDictionaryEntry(newRightChildParent);
-                    if (newRightChildParentEntry.RightSiblingId != StreamId.NoStream)
+                    if (newRightChildParentEntry.RightSiblingId == StreamId.NoStream)
                     {
                         break;
                     }
@@ -205,30 +205,22 @@ internal sealed class DirectoryTree
             return;
         }
 
-        Stack<(DirectoryEntry node, int indentLevel)> stack = new Stack<(DirectoryEntry, int)>();
-        directories.TryGetDictionaryEntry(root.ChildId, out DirectoryEntry? current);
-        int currentIndentLevel = 0;
+        DirectoryEntry current = directories.GetDictionaryEntry(root.ChildId);
+        WriteTrace(writer, current, 0);
+    }
 
-        while (stack.Count > 0 || current is not null)
-        {
-            if (current != null)
-            {
-                stack.Push((current, currentIndentLevel));
-                directories.TryGetDictionaryEntry(current.RightSiblingId, out current);
-                currentIndentLevel++;
-            }
-            else
-            {
-                (DirectoryEntry node, int indentLevel) = stack.Pop();
-                currentIndentLevel = indentLevel;
+    void WriteTrace(TextWriter writer, DirectoryEntry entry, int indent)
+    {
+        directories.TryGetDictionaryEntry(entry.RightSiblingId, out DirectoryEntry? rightSibling);
+        if (rightSibling is not null)
+            WriteTrace(writer, rightSibling, indent + 1);
 
-                for (int i = 0; i < indentLevel; i++)
-                    writer.Write("  ");
-                writer.WriteLine(node.Color == NodeColor.Black ? $" {node} " : $"<{node}>");
+        for (int i = 0; i < indent; i++)
+            writer.Write("  ");
+        writer.WriteLine(entry);
 
-                directories.TryGetDictionaryEntry(node.LeftSiblingId, out current);
-                currentIndentLevel++;
-            }
-        }
+        directories.TryGetDictionaryEntry(entry.LeftSiblingId, out DirectoryEntry? leftSibling);
+        if (leftSibling is not null)
+            WriteTrace(writer, leftSibling, indent + 1);
     }
 }

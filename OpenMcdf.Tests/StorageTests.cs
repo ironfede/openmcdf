@@ -142,106 +142,73 @@ public sealed class StorageTests
         Assert.ThrowsException<IOException>(() => rootStorage.CreateStorage("Test"));
     }
 
-    [TestMethod]
-    [DataRow(Version.V3)]
-    [DataRow(Version.V4)]
-    public void DeleteSingleStorage(Version version)
+    private static void CreateDeleteTest(Version version, MemoryStream memoryStream)
     {
-        using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
-        {
-            rootStorage.CreateStorage("Test");
-            Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
-        }
-
-        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen))
-        {
-            rootStorage.Delete("Test");
-            Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
-
-            rootStorage.Delete("NonExistentEntry");
-        }
-
-        using (var rootStorage = RootStorage.Open(memoryStream))
-        {
-            Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
-        }
+        using var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen);
+        rootStorage.CreateStorage("Test2");
+        rootStorage.CreateStorage("Test1");
+        rootStorage.CreateStorage("Test3");
     }
 
     [TestMethod]
     [DataRow(Version.V3)]
     [DataRow(Version.V4)]
-    public void DeleteRedBlackTreeChildLeaf(Version version)
+    public void DeleteStorageLeft(Version version)
     {
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
-        {
-            rootStorage.CreateStorage("Test1");
-            rootStorage.CreateStorage("Test2");
-            Assert.AreEqual(2, rootStorage.EnumerateEntries().Count());
-        }
 
-        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen))
-        {
-            rootStorage.Delete("Test1");
-            Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
-        }
+        CreateDeleteTest(version, memoryStream);
 
-        using (var rootStorage = RootStorage.Open(memoryStream))
-        {
-            Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
-        }
+        using var rootStorage = RootStorage.Open(memoryStream);
+        rootStorage.Delete("NonExistentEntry");
+        Assert.AreEqual(3, rootStorage.EnumerateEntries().Count());
+
+        rootStorage.Delete("Test1");
+        Assert.AreEqual(2, rootStorage.EnumerateEntries().Count());
     }
 
     [TestMethod]
     [DataRow(Version.V3)]
     [DataRow(Version.V4)]
-    public void DeleteRedBlackTreeSiblingLeaf(Version version)
+    public void DeleteStorageRoot(Version version)
     {
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
-        {
-            rootStorage.CreateStorage("Test1");
-            rootStorage.CreateStorage("Test2");
-            Assert.AreEqual(2, rootStorage.EnumerateEntries().Count());
-        }
 
-        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen))
-        {
-            rootStorage.Delete("Test2");
-            Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
-        }
+        CreateDeleteTest(version, memoryStream);
 
-        using (var rootStorage = RootStorage.Open(memoryStream))
-        {
-            Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
-        }
+        using var rootStorage = RootStorage.Open(memoryStream);
+        rootStorage.Delete("Test2");
+        Assert.AreEqual(2, rootStorage.EnumerateEntries().Count());
     }
 
     [TestMethod]
     [DataRow(Version.V3)]
     [DataRow(Version.V4)]
-    public void DeleteRedBlackTreeSibling(Version version)
+    public void DeleteStorageRight(Version version)
     {
         using MemoryStream memoryStream = new();
-        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
-        {
-            rootStorage.CreateStorage("Test1");
-            rootStorage.CreateStorage("Test2");
-            rootStorage.CreateStorage("Test3");
-            Assert.AreEqual(3, rootStorage.EnumerateEntries().Count());
-        }
 
-        using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen))
-        {
-            rootStorage.Delete("Test2");
-            Assert.AreEqual(2, rootStorage.EnumerateEntries().Count());
-        }
+        CreateDeleteTest(version, memoryStream);
 
-        using (var rootStorage = RootStorage.Open(memoryStream))
-        {
-            Assert.AreEqual(2, rootStorage.EnumerateEntries().Count());
-        }
+        using var rootStorage = RootStorage.Open(memoryStream);
+        rootStorage.Delete("Test3");
+        Assert.AreEqual(2, rootStorage.EnumerateEntries().Count());
+    }
+
+    [TestMethod]
+    [DataRow(Version.V3)]
+    [DataRow(Version.V4)]
+    public void DeleteStorageAll(Version version)
+    {
+        using MemoryStream memoryStream = new();
+
+        CreateDeleteTest(version, memoryStream);
+
+        using var rootStorage = RootStorage.Open(memoryStream);
+        rootStorage.Delete("Test1");
+        rootStorage.Delete("Test2");
+        rootStorage.Delete("Test3");
+        Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
     }
 
     [TestMethod]
