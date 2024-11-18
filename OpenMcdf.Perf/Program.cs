@@ -39,7 +39,7 @@ internal sealed class Program
         int writeCount = 1024;
         byte[] buffer = new byte[32 * 512];
 
-        Microsoft.IO.RecyclableMemoryStreamManager manager = new ();
+        Microsoft.IO.RecyclableMemoryStreamManager manager = new();
         Microsoft.IO.RecyclableMemoryStream baseStream = new(manager);
         baseStream.Capacity = 2 * (storageCount * buffer.Length * writeCount + storageCount * (streamCount - 1) * buffer.Length);
 

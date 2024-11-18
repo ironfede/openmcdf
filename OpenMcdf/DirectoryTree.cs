@@ -107,15 +107,15 @@ internal sealed class DirectoryTree
             return;
         }
 
-        uint previous = currentEntry!.LeftSiblingId;
-        uint next = currentEntry.RightSiblingId;
-
         while (true)
         {
-            int compare = DirectoryEntryComparer.Compare(entry.NameCharSpan, currentEntry!.NameCharSpan);
+            uint leftId = currentEntry!.LeftSiblingId;
+            uint rightId = currentEntry.RightSiblingId;
+
+            int compare = DirectoryEntryComparer.Compare(entry.NameCharSpan, currentEntry.NameCharSpan);
             if (compare < 0)
             {
-                if (previous == StreamId.NoStream)
+                if (leftId == StreamId.NoStream)
                 {
                     currentEntry.LeftSiblingId = entry.Id;
                     directories.Write(currentEntry);
@@ -123,11 +123,11 @@ internal sealed class DirectoryTree
                     return;
                 }
 
-                currentEntry = directories.GetDictionaryEntry(previous);
+                currentEntry = directories.GetDictionaryEntry(leftId);
             }
             else if (compare > 0)
             {
-                if (next == StreamId.NoStream)
+                if (rightId == StreamId.NoStream)
                 {
                     currentEntry.RightSiblingId = entry.Id;
                     directories.Write(currentEntry);
@@ -135,15 +135,12 @@ internal sealed class DirectoryTree
                     return;
                 }
 
-                currentEntry = directories.GetDictionaryEntry(next);
+                currentEntry = directories.GetDictionaryEntry(rightId);
             }
             else
             {
                 throw new IOException($"{entry.Type} \"{entry.NameString}\" already exists.");
             }
-
-            previous = currentEntry!.LeftSiblingId;
-            next = currentEntry!.RightSiblingId;
         }
     }
 
@@ -209,6 +206,7 @@ internal sealed class DirectoryTree
         WriteTrace(writer, current, 0);
     }
 
+    [ExcludeFromCodeCoverage]
     void WriteTrace(TextWriter writer, DirectoryEntry entry, int indent)
     {
         directories.TryGetDictionaryEntry(entry.RightSiblingId, out DirectoryEntry? rightSibling);

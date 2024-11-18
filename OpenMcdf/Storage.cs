@@ -125,7 +125,7 @@ public class Storage : ContextBase
 
         this.ThrowIfDisposed(Context.IsDisposed);
 
-        directoryTree.TryGetDirectoryEntry(name,  out DirectoryEntry? entry);
+        directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? entry);
         if (entry is null || entry.Type is not StorageType.Storage)
         {
             storage = null;
