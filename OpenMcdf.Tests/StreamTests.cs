@@ -1,5 +1,12 @@
 ﻿namespace OpenMcdf.Tests;
 
+enum WriteMode
+{
+    SingleByte,
+    Array,
+    Span
+}
+
 [TestClass]
 public sealed class StreamTests
 {
@@ -18,27 +25,7 @@ public sealed class StreamTests
     }
 
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)]
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)]
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V3, 65536)]
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)]
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)]
-    [DataRow(Version.V4, 4097)]
+    [DynamicData(nameof(TestData.ShortVersionsAndSizes), typeof(TestData))]
     public void ReadViaCopyTo(Version version, int length)
     {
         // Test files are filled with bytes equal to their position modulo 256
@@ -60,33 +47,11 @@ public sealed class StreamTests
 
 #if (!NETSTANDARD2_0 && !NETFRAMEWORK)
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)]
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)]
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V3, 65536)]
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)]
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)]
-    [DataRow(Version.V4, 4097)]
+    [DynamicData(nameof(TestData.ShortVersionsAndSizes), typeof(TestData))]
     public void ReadSpan(Version version, int length)
     {
         // Test files are filled with bytes equal to their position modulo 256
-        byte[] expectedBuffer = new byte[length];
-        for (int i = 0; i < length; i++)
-            expectedBuffer[i] = ((byte)i);
+        byte[] expectedBuffer = TestData.CreateByteArray(length);
 
         string fileName = $"TestStream_v{(int)version}_{length}.cfs";
         using var rootStorage = RootStorage.OpenRead(fileName);
@@ -102,27 +67,7 @@ public sealed class StreamTests
 #endif
 
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)]
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)]
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V3, 65536)]
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)]
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)]
-    [DataRow(Version.V4, 4097)]
+    [DynamicData(nameof(TestData.ShortVersionsAndSizes), typeof(TestData))]
     public void ReadSingleByte(Version version, int length)
     {
         string fileName = $"TestStream_v{(int)version}_{length}.cfs";
@@ -163,88 +108,28 @@ public sealed class StreamTests
     }
 
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)] // Mini-stream sector size
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)] // Multiple stream sectors
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V3, 128 * 512)] // Multiple FAT sectors
-    [DataRow(Version.V3, 1024 * 4096)] // Multiple FAT sectors
-    [DataRow(Version.V3, 7087616)] // First DIFAT chain
-    [DataRow(Version.V3, 2 * 7087616)] // Long DIFAT chain
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)] // Mini-stream sector size
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)] // Multiple stream sectors
-    [DataRow(Version.V4, 4097)]
-    [DataRow(Version.V4, 1024 * 4096)] // Multiple FAT sectors (1024 * 4096)
-    [DataRow(Version.V4, 7087616 * 4)] // First DIFAT chain
-    [DataRow(Version.V4, 2 * 7087616 * 4)] // Long DIFAT chain
-    public void Write(Version version, int length) => WriteCore(version, length, false);
+    [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
+    public void WriteArray(Version version, int length) => WriteCore(version, length, WriteMode.Array);
 
 #if (!NETSTANDARD2_0 && !NETFRAMEWORK)
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)] // Mini-stream sector size
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)] // Multiple stream sectors
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V3, 128 * 512)] // Multiple FAT sectors
-    [DataRow(Version.V3, 1024 * 4096)] // Multiple FAT sectors
-    [DataRow(Version.V3, 7087616)] // First DIFAT chain
-    [DataRow(Version.V3, 2 * 7087616)] // Long DIFAT chain
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)] // Mini-stream sector size
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)] // Multiple stream sectors
-    [DataRow(Version.V4, 4097)]
-    [DataRow(Version.V4, 1024 * 4096)] // Multiple FAT sectors (1024 * 4096)
-    [DataRow(Version.V4, 7087616 * 4)] // First DIFAT chain
-    [DataRow(Version.V4, 2 * 7087616 * 4)] // Long DIFAT chain
-    public void WriteSpan(Version version, int length) => WriteCore(version, length, true);
+    [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
+    public void WriteSpan(Version version, int length) => WriteCore(version, length, WriteMode.Span);
+
+    [TestMethod]
+    [DynamicData(nameof(TestData.ShortVersionsAndSizes), typeof(TestData))]
+    public void WriteSingleByte(Version version, int length) => WriteCore(version, length, WriteMode.SingleByte);
 #endif
 
-    static void WriteCore(Version version, int length, bool preferSpan)
+    static void WriteCore(Version version, int length, WriteMode mode)
     {
         using MemoryStream memoryStream = new();
         using var rootStorage = RootStorage.Create(memoryStream, version);
         using CfbStream stream = rootStorage.CreateStream("TestStream");
         Assert.AreEqual(0, stream.Length);
 
-        // Fill with bytes equal to their position modulo 256
-        byte[] expectedBuffer = new byte[length];
-        for (int i = 0; i < length; i++)
-            expectedBuffer[i] = (byte)i;
-
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
-        if (preferSpan)
-            stream.Write(expectedBuffer);
-        else
-            stream.Write(expectedBuffer, 0, expectedBuffer.Length);
-#else
-        stream.Write(expectedBuffer, 0, expectedBuffer.Length);
-#endif
-
+        byte[] expectedBuffer = TestData.CreateByteArray(length);
+        stream.Write(expectedBuffer, mode);
         Assert.AreEqual(length, stream.Length);
         Assert.AreEqual(length, stream.Position);
 
@@ -258,39 +143,10 @@ public sealed class StreamTests
     }
 
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)] // Mini-stream sector size
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)] // Multiple stream sectors
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V3, 128 * 512)] // Multiple FAT sectors
-    [DataRow(Version.V3, 1024 * 4096)] // Multiple FAT sectors
-    [DataRow(Version.V3, 7087616)] // First DIFAT chain
-    [DataRow(Version.V3, 2 * 7087616)] // Long DIFAT chain
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)] // Mini-stream sector size
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)] // Multiple stream sectors
-    [DataRow(Version.V4, 4097)]
-    [DataRow(Version.V4, 1024 * 4096)] // Multiple FAT sectors (1024 * 4096)
-    [DataRow(Version.V4, 7087616 * 4)] // First DIFAT chain
-    [DataRow(Version.V4, 2 * 7087616 * 4)] // Long DIFAT chain
+    [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void WriteThenRead(Version version, int length)
     {
-        // Fill with bytes equal to their position modulo 256
-        byte[] expectedBuffer = new byte[length];
-        for (int i = 0; i < length; i++)
-            expectedBuffer[i] = (byte)i;
+        byte[] expectedBuffer = TestData.CreateByteArray(length);
 
         using MemoryStream memoryStream = new();
         using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
@@ -327,39 +183,10 @@ public sealed class StreamTests
 
 #if WINDOWS
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)] // Mini-stream sector size
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)] // Multiple stream sectors
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V3, 128 * 512)] // Multiple FAT sectors
-    [DataRow(Version.V3, 1024 * 4096)] // Multiple FAT sectors
-    [DataRow(Version.V3, 7087616)] // First DIFAT chain
-    [DataRow(Version.V3, 2 * 7087616)] // Long DIFAT chain
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)] // Mini-stream sector size
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)] // Multiple stream sectors
-    [DataRow(Version.V4, 4097)]
-    [DataRow(Version.V4, 1024 * 4096)] // Multiple FAT sectors (1024 * 4096)
-    [DataRow(Version.V4, 7087616 * 4)] // First DIFAT chain
-    [DataRow(Version.V4, 2 * 7087616 * 4)] // Long DIFAT chain
+    [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void StructuredStorageWriteThenRead(Version version, int length)
     {
-        // Fill with bytes equal to their position modulo 256
-        byte[] expectedBuffer = new byte[length];
-        for (int i = 0; i < length; i++)
-            expectedBuffer[i] = (byte)i;
+        byte[] expectedBuffer = TestData.CreateByteArray(length);
 
         using MemoryStream memoryStream = new();
         string fileName = Path.GetTempFileName();
@@ -388,27 +215,7 @@ public sealed class StreamTests
 #endif
 
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 256)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)]
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)]
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)]
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)]
-    [DataRow(Version.V4, 4097)]
+    [DynamicData(nameof(TestData.ShortVersionsAndSizes), typeof(TestData))]
     public void WriteMultiple(Version version, int length)
     {
         const int IterationCount = 2048;
@@ -417,10 +224,7 @@ public sealed class StreamTests
         using CfbStream stream = rootStorage.CreateStream("TestStream");
         Assert.AreEqual(0, stream.Length);
 
-        // Fill with bytes equal to their position modulo 256
-        byte[] expectedBuffer = new byte[length];
-        for (int i = 0; i < length; i++)
-            expectedBuffer[i] = (byte)i;
+        byte[] expectedBuffer = TestData.CreateByteArray(length);
 
         for (int i = 0; i < IterationCount; i++)
         {
@@ -456,39 +260,10 @@ public sealed class StreamTests
     }
 
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)] // Mini-stream sector size
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)] // Multiple stream sectors
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V3, 128 * 512)] // Multiple FAT sectors
-    [DataRow(Version.V3, 1024 * 4096)] // Multiple FAT sectors
-    [DataRow(Version.V3, 7087616)] // First DIFAT chain
-    [DataRow(Version.V3, 2 * 7087616)] // Long DIFAT chain
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)] // Mini-stream sector size
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)] // Multiple stream sectors
-    [DataRow(Version.V4, 4097)]
-    [DataRow(Version.V4, 1024 * 4096)] // Multiple FAT sectors (1024 * 4096)
-    [DataRow(Version.V4, 7087616 * 4)] // First DIFAT chain
-    [DataRow(Version.V4, 2 * 7087616 * 4)] // Long DIFAT chain
+    [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void Modify(Version version, int length)
     {
-        // Fill with bytes equal to their position modulo 256
-        byte[] expectedBuffer = new byte[length];
-        for (int i = 0; i < length; i++)
-            expectedBuffer[i] = (byte)i;
+        byte[] expectedBuffer = TestData.CreateByteArray(length);
 
         using MemoryStream memoryStream = new();
         using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
@@ -532,73 +307,25 @@ public sealed class StreamTests
     }
 
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)] // Mini-stream sector size
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)] // Multiple stream sectors
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V3, 128 * 512)] // Multiple FAT sectors
-    [DataRow(Version.V3, 1024 * 4096)] // Multiple FAT sectors
-    [DataRow(Version.V3, 7087616)] // First DIFAT chain
-    [DataRow(Version.V3, 2 * 7087616)] // Long DIFAT chain
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)] // Mini-stream sector size
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)] // Multiple stream sectors
-    [DataRow(Version.V4, 4097)]
-    [DataRow(Version.V4, 1024 * 4096)] // Multiple FAT sectors (1024 * 4096)
-    [DataRow(Version.V4, 7087616 * 4)] // First DIFAT chain
-    [DataRow(Version.V4, 2 * 7087616 * 4)] // Long DIFAT chain
-    public void ModifyCommit(Version version, int length) => ModifyCommit(version, length, false);
+    [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
+    public void ModifyCommitArray(Version version, int length) => ModifyCommit(version, length, WriteMode.Array);
 
 #if (!NETSTANDARD2_0 && !NETFRAMEWORK)
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)] // Mini-stream sector size
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)] // Multiple stream sectors
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V3, 128 * 512)] // Multiple FAT sectors
-    [DataRow(Version.V3, 1024 * 4096)] // Multiple FAT sectors
-    [DataRow(Version.V3, 7087616)] // First DIFAT chain
-    [DataRow(Version.V3, 2 * 7087616)] // Long DIFAT chain
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)] // Mini-stream sector size
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)] // Multiple stream sectors
-    [DataRow(Version.V4, 4097)]
-    [DataRow(Version.V4, 1024 * 4096)] // Multiple FAT sectors (1024 * 4096)
-    [DataRow(Version.V4, 7087616 * 4)] // First DIFAT chain
-    [DataRow(Version.V4, 2 * 7087616 * 4)] // Long DIFAT chain
-    public void ModifyCommitSpan(Version version, int length) => ModifyCommit(version, length, true);
+    [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
+    public void ModifyCommitSpan(Version version, int length) => ModifyCommit(version, length, WriteMode.Span);
 #endif
 
-    void ModifyCommit(Version version, int length, bool preferSpan)
+#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+    [TestMethod]
+    [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
+    public void ModifyCommitSingleByte(Version version, int length) => ModifyCommit(version, length, WriteMode.SingleByte);
+#endif
+
+    void ModifyCommit(Version version, int length, WriteMode writeMode)
     {
         // Fill with bytes equal to their position modulo 256
-        byte[] expectedBuffer = new byte[length];
-        for (int i = 0; i < length; i++)
-            expectedBuffer[i] = (byte)i;
+        byte[] expectedBuffer = TestData.CreateByteArray(length);
 
         using MemoryStream memoryStream = new();
         using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
@@ -615,14 +342,7 @@ public sealed class StreamTests
             {
                 Assert.AreEqual(0, stream.Length);
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
-                if (preferSpan)
-                    stream.Write(expectedBuffer);
-                else
-                    stream.Write(expectedBuffer, 0, expectedBuffer.Length);
-#else
-                stream.Write(expectedBuffer, 0, expectedBuffer.Length);
-#endif
+                stream.Write(expectedBuffer, writeMode);
             }
 
             rootStorage.Commit();
@@ -653,39 +373,10 @@ public sealed class StreamTests
     }
 
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)] // Mini-stream sector size
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)] // Multiple stream sectors
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V3, 128 * 512)] // Multiple FAT sectors
-    [DataRow(Version.V3, 1024 * 4096)] // Multiple FAT sectors
-    [DataRow(Version.V3, 7087616)] // First DIFAT chain
-    [DataRow(Version.V3, 2 * 7087616)] // Long DIFAT chain
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)] // Mini-stream sector size
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)] // Multiple stream sectors
-    [DataRow(Version.V4, 4097)]
-    [DataRow(Version.V4, 1024 * 4096)] // Multiple FAT sectors (1024 * 4096)
-    [DataRow(Version.V4, 7087616 * 4)] // First DIFAT chain
-    [DataRow(Version.V4, 2 * 7087616 * 4)] // Long DIFAT chain
+    [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void TransactedRead(Version version, int length)
     {
-        // Fill with bytes equal to their position modulo 256
-        byte[] expectedBuffer = new byte[length];
-        for (int i = 0; i < length; i++)
-            expectedBuffer[i] = (byte)i;
+        byte[] expectedBuffer = TestData.CreateByteArray(length);
 
         using MemoryStream memoryStream = new();
         using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
@@ -706,39 +397,10 @@ public sealed class StreamTests
     }
 
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)] // Mini-stream sector size
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)] // Multiple stream sectors
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V3, 128 * 512)] // Multiple FAT sectors
-    [DataRow(Version.V3, 1024 * 4096)] // Multiple FAT sectors
-    [DataRow(Version.V3, 7087616)] // First DIFAT chain
-    [DataRow(Version.V3, 2 * 7087616)] // Long DIFAT chain
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)] // Mini-stream sector size
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)] // Multiple stream sectors
-    [DataRow(Version.V4, 4097)]
-    [DataRow(Version.V4, 1024 * 4096)] // Multiple FAT sectors (1024 * 4096)
-    [DataRow(Version.V4, 7087616 * 4)] // First DIFAT chain
-    [DataRow(Version.V4, 2 * 7087616 * 4)] // Long DIFAT chain
+    [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void ModifyRevert(Version version, int length)
     {
-        // Fill with bytes equal to their position modulo 256
-        byte[] expectedBuffer = new byte[length];
-        for (int i = 0; i < length; i++)
-            expectedBuffer[i] = (byte)i;
+        byte[] expectedBuffer = TestData.CreateByteArray(length);
 
         using MemoryStream memoryStream = new();
         using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
@@ -776,46 +438,14 @@ public sealed class StreamTests
     }
 
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)] // Mini-stream sector size
-    [DataRow(Version.V3, 2 * 64)] // Simplest case (1 sector => 2)
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)] // Multiple stream sectors
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V3, 128 * 512)] // Multiple FAT sectors
-    [DataRow(Version.V3, 1024 * 4096)] // Multiple FAT sectors
-    [DataRow(Version.V3, 7087616)] // First DIFAT chain
-    [DataRow(Version.V3, 2 * 7087616)] // Long DIFAT chain
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)] // Mini-stream sector size
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)] // Multiple stream sectors
-    [DataRow(Version.V4, 2 * 4096)] // Simplest case (1 sector => 2)
-    [DataRow(Version.V4, 4097)]
-    [DataRow(Version.V4, 1024 * 4096)] // Multiple FAT sectors (1024 * 4096)
-    [DataRow(Version.V4, 7087616 * 4)] // First DIFAT chain
-    [DataRow(Version.V4, 2 * 7087616 * 4)] // Long DIFAT chain
+    [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void Shrink(Version version, int length)
     {
         using MemoryStream memoryStream = new();
         using var rootStorage = RootStorage.Create(memoryStream, version);
         using CfbStream stream = rootStorage.CreateStream("Test");
 
-        // Fill with bytes equal to their position modulo 256
-        byte[] expectedBuffer = new byte[length];
-        for (int i = 0; i < length; i++)
-            expectedBuffer[i] = (byte)i;
-
+        byte[] expectedBuffer = TestData.CreateByteArray(length);
         stream.Write(expectedBuffer, 0, expectedBuffer.Length);
         Assert.AreEqual(length, stream.Length);
 
@@ -846,10 +476,7 @@ public sealed class StreamTests
         using CfbStream stream = rootStorage.CreateStream("Test");
 
         int length = 256;
-        // Fill with bytes equal to their position modulo 256
-        byte[] expectedBuffer = new byte[length];
-        for (int i = 0; i < length; i++)
-            expectedBuffer[i] = (byte)i;
+        byte[] expectedBuffer = TestData.CreateByteArray(length);
 
         int iterations = (int)Header.MiniStreamCutoffSize / length;
         for (int i = 0; i < iterations; i++)
@@ -878,11 +505,7 @@ public sealed class StreamTests
         using var rootStorage = RootStorage.Create(memoryStream, version);
         using CfbStream stream = rootStorage.CreateStream("Test");
 
-        // Fill with bytes equal to their position modulo 256
-        byte[] expectedBuffer = new byte[length];
-        for (int i = 0; i < length; i++)
-            expectedBuffer[i] = (byte)i;
-
+        byte[] expectedBuffer = TestData.CreateByteArray(length);
         int iterations = (int)Header.MiniStreamCutoffSize / length;
         for (int i = 0; i < iterations; i++)
             stream.Write(expectedBuffer, 0, expectedBuffer.Length);
@@ -909,26 +532,7 @@ public sealed class StreamTests
     }
 
     [TestMethod]
-    [DataRow(Version.V3, 0)]
-    [DataRow(Version.V3, 63)]
-    [DataRow(Version.V3, 64)]
-    [DataRow(Version.V3, 65)]
-    [DataRow(Version.V3, 511)]
-    [DataRow(Version.V3, 512)]
-    [DataRow(Version.V3, 513)]
-    [DataRow(Version.V3, 4095)]
-    [DataRow(Version.V3, 4096)]
-    [DataRow(Version.V3, 4097)]
-    [DataRow(Version.V4, 0)]
-    [DataRow(Version.V4, 63)]
-    [DataRow(Version.V4, 64)]
-    [DataRow(Version.V4, 65)]
-    [DataRow(Version.V4, 511)]
-    [DataRow(Version.V4, 512)]
-    [DataRow(Version.V4, 513)]
-    [DataRow(Version.V4, 4095)]
-    [DataRow(Version.V4, 4096)]
-    [DataRow(Version.V4, 4097)]
+    [DynamicData(nameof(TestData.ShortVersionsAndSizes), typeof(TestData))]
     public void CopyFromStream(Version version, int length)
     {
         using MemoryStream memoryStream = new();
