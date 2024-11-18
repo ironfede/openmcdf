@@ -129,7 +129,7 @@ internal sealed class MiniFatStream : Stream
                 break;
 
             default:
-                throw new ArgumentException(nameof(origin), "Invalid seek origin.");
+                throw new ArgumentException("Invalid seek origin.", nameof(origin));
         }
 
         return position;
