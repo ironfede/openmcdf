@@ -45,10 +45,8 @@ public sealed class StorageTests
         {
             for (int i = 0; i < subStorageCount; i++)
                 rootStorage.CreateStorage($"Test{i}");
-            rootStorage.TraceDirectoryEntries(DebugWriter.Default);
         }
 
-        memoryStream.Position = 0;
         using (var rootStorage = RootStorage.Open(memoryStream, StorageModeFlags.LeaveOpen))
         {
             IEnumerable<EntryInfo> entries = rootStorage.EnumerateEntries();
@@ -70,6 +68,38 @@ public sealed class StorageTests
             }
         }
 #endif
+    }
+
+    [TestMethod]
+    [DataRow(Version.V3, 0)]
+    [DataRow(Version.V3, 1)]
+    [DataRow(Version.V4, 0)]
+    [DataRow(Version.V4, 1)]
+    public void CreateStorageFile(Version version, int subStorageCount)
+    {
+        string fileName = Path.GetTempFileName();
+
+        try
+        {
+            using (var rootStorage = RootStorage.Create(fileName, version))
+            {
+                for (int i = 0; i < subStorageCount; i++)
+                    rootStorage.CreateStorage($"Test{i}");
+            }
+
+            using (var rootStorage = RootStorage.OpenRead(fileName))
+            {
+                IEnumerable<EntryInfo> entries = rootStorage.EnumerateEntries();
+                Assert.AreEqual(subStorageCount, entries.Count());
+
+                for (int i = 0; i < subStorageCount; i++)
+                    rootStorage.OpenStorage($"Test{i}");
+            }
+        }
+        finally
+        {
+            File.Delete(fileName);
+        }
     }
 
     [TestMethod]
