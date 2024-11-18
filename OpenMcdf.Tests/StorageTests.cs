@@ -71,6 +71,17 @@ public sealed class StorageTests
     }
 
     [TestMethod]
+    public void CreateInvalidStorageName()
+    {
+        using MemoryStream memoryStream = new();
+        using var rootStorage = RootStorage.Create(memoryStream);
+        Assert.ThrowsException<ArgumentException>(() => rootStorage.CreateStorage("!"));
+        Assert.ThrowsException<ArgumentException>(() => rootStorage.CreateStorage("/"));
+        Assert.ThrowsException<ArgumentException>(() => rootStorage.CreateStorage(":"));
+        Assert.ThrowsException<ArgumentException>(() => rootStorage.CreateStorage("\\"));
+    }
+
+    [TestMethod]
     [DataRow(Version.V3, 0)]
     [DataRow(Version.V3, 1)]
     [DataRow(Version.V4, 0)]
