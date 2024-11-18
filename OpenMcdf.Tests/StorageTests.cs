@@ -280,22 +280,31 @@ public sealed class StorageTests
     {
         byte[] buffer = new byte[4096];
 
-        using MemoryStream memoryStream = new();
-        using var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen);
-        using (CfbStream stream = rootStorage.CreateStream("Test"))
-            stream.Write(buffer, 0, buffer.Length);
+        string fileName = Path.GetTempFileName();
 
-        Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
+        try
+        {
+            using MemoryStream memoryStream = new();
+            using var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen);
+            using (CfbStream stream = rootStorage.CreateStream("Test"))
+                stream.Write(buffer, 0, buffer.Length);
 
-        rootStorage.Flush(true);
+            Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
 
-        int originalMemoryStreamLength = (int)memoryStream.Length;
+            rootStorage.Flush(true);
 
-        rootStorage.Delete("Test");
+            int originalMemoryStreamLength = (int)memoryStream.Length;
 
-        rootStorage.Flush(true);
+            rootStorage.Delete("Test");
 
-        Assert.IsTrue(originalMemoryStreamLength > memoryStream.Length);
+            rootStorage.Flush(true);
+
+            Assert.IsTrue(originalMemoryStreamLength > memoryStream.Length);
+        }
+        finally
+        {
+            File.Delete(fileName);
+        }
     }
 
     [TestMethod]
