@@ -271,11 +271,12 @@ public sealed class StorageTests
 
         using MemoryStream memoryStream = new();
         using var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen);
-        CfbStream stream = rootStorage.CreateStream("Test");
+        using (CfbStream stream = rootStorage.CreateStream("Test"))
+            stream.Write(buffer, 0, buffer.Length);
+
         Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
 
-        stream.Write(buffer, 0, buffer.Length);
-        rootStorage.Flush();
+        rootStorage.Flush(true);
 
         int originalMemoryStreamLength = (int)memoryStream.Length;
 

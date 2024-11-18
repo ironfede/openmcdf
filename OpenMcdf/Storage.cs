@@ -169,8 +169,8 @@ public class Storage : ContextBase
             }
             else if (entry.Type is StorageType.Stream)
             {
-                CfbStream stream = new(ContextSite, entry, this);
-                CfbStream destinationStream = destination.CreateStream(entry.NameString);
+                using CfbStream stream = new(ContextSite, entry, this);
+                using CfbStream destinationStream = destination.CreateStream(entry.NameString);
                 stream.CopyTo(destinationStream);
             }
         }
