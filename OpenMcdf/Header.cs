@@ -1,4 +1,6 @@
-﻿namespace OpenMcdf;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace OpenMcdf;
 
 /// <summary>
 /// The structure at the beginning of a compound file.
@@ -180,5 +182,6 @@ internal sealed class Header : IEquatable<Header?>
             && Difat.SequenceEqual(other.Difat);
     }
 
+    [ExcludeFromCodeCoverage]
     public override string ToString() => $"MajorVersion: {MajorVersion}, MinorVersion: {MinorVersion}, FirstDirectorySectorId: {FirstDirectorySectorId}, FirstMiniFatSectorId: {FirstMiniFatSectorId}";
 }

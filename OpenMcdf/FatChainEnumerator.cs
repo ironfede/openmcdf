@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenMcdf;
 
@@ -237,5 +238,6 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
         current = uint.MaxValue;
     }
 
+    [ExcludeFromCodeCoverage]
     public override string ToString() => $"Index: {index} Current: {current}";
 }

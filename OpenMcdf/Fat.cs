@@ -1,6 +1,7 @@
 ﻿using System.Buffers.Binary;
 using System.Collections;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenMcdf;
 
@@ -144,6 +145,7 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+    [ExcludeFromCodeCoverage]
     internal void WriteTrace(TextWriter writer)
     {
         byte[] data = new byte[Context.SectorSize];
@@ -179,6 +181,7 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
         writer.WriteLine($"Used sectors: {usedCount}");
     }
 
+    [ExcludeFromCodeCoverage]
     internal void Validate()
     {
         long fatSectorCount = 0;
@@ -200,5 +203,6 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
             throw new FormatException($"DIFAT sector count mismatch: Expected: {Context.Header.DifatSectorCount} Actual: {difatSectorCount}.");
     }
 
+    [ExcludeFromCodeCoverage]
     internal long GetFreeSectorCount() => this.Count(entry => entry.IsFree);
 }

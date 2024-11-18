@@ -1,4 +1,5 @@
-﻿using System.Runtime.InteropServices;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace OpenMcdf;
@@ -228,6 +229,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
 
     public EntryInfo ToEntryInfo(string path) => new(EntryType, path, NameString, StreamLength, CLSID, CreationTime, ModifiedTime);
 
+    [ExcludeFromCodeCoverage]
     public override string ToString() => $"{Id}: \"{NameString}\"";
 
     public DirectoryEntry Clone()
