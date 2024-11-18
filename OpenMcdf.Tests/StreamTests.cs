@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace OpenMcdf.Tests;
+﻿namespace OpenMcdf.Tests;
 
 [TestClass]
 public sealed class StreamTests
