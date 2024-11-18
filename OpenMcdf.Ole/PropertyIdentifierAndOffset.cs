@@ -1,6 +1,6 @@
 ﻿namespace OpenMcdf.Ole;
 
-public class PropertyIdentifierAndOffset : IBinarySerializable
+internal sealed class PropertyIdentifierAndOffset : IBinarySerializable
 {
     public uint PropertyIdentifier { get; set; }
     public uint Offset { get; set; }
