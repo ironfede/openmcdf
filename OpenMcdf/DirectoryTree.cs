@@ -38,11 +38,27 @@ internal sealed class DirectoryTree
             int compare = DirectoryEntryComparer.Compare(nameSpan, child.NameCharSpan);
             if (compare < 0)
             {
-                directories.TryGetDictionaryEntry(child.LeftSiblingId, out child);
+                directories.TryGetDictionaryEntry(child.LeftSiblingId, out DirectoryEntry? leftChild);
+                if (leftChild is not null)
+                {
+                    compare = DirectoryEntryComparer.Compare(leftChild.NameCharSpan, child.NameCharSpan);
+                    if (compare >= 0)
+                        throw new FormatException("Directory tree is not sorted.");
+                }
+
+                child = leftChild;
             }
             else if (compare > 0)
             {
-                directories.TryGetDictionaryEntry(child.RightSiblingId, out child);
+                directories.TryGetDictionaryEntry(child.RightSiblingId, out DirectoryEntry? rightChild);
+                if (rightChild is not null)
+                {
+                    compare = DirectoryEntryComparer.Compare(rightChild.NameCharSpan, child.NameCharSpan);
+                    if (compare <= 0)
+                        throw new FormatException("Directory tree is not sorted.");
+                }
+
+                child = rightChild;
             }
             else
             {
