@@ -86,6 +86,32 @@ public class Storage : ContextBase
         }
     }
 
+    public bool ContainsEntry(string name)
+    {
+        ThrowHelper.ThrowIfNameIsInvalid(name);
+
+        this.ThrowIfDisposed(Context.IsDisposed);
+
+        return directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? _);
+    }
+
+    public bool TryGetEntryInfo(string name, out EntryInfo entryInfo)
+    {
+        ThrowHelper.ThrowIfNameIsInvalid(name);
+
+        this.ThrowIfDisposed(Context.IsDisposed);
+
+        if (!directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? entry))
+        {
+            entryInfo = default;
+            return false;
+        }
+
+        string path = $"{EntryInfo.Path}{EntryInfo.Name}";
+        entryInfo = entry.ToEntryInfo(path);
+        return true;
+    }
+
     DirectoryEntry AddDirectoryEntry(StorageType storageType, string name)
     {
         DirectoryEntry entry = Context.DirectoryEntries.CreateOrRecycleDirectoryEntry();
