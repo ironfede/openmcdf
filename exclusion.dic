@@ -5,6 +5,7 @@ codepage
 defragmentation
 depersist
 DIFAT
+dotnet
 endian
 enqueuing
 enum
