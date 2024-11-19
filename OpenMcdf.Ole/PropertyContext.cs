@@ -6,7 +6,7 @@ public enum Behavior
     CaseInsensitive
 }
 
-public class PropertyContext
+public sealed class PropertyContext
 {
     public int CodePage { get; set; }
     public Behavior Behavior { get; set; }
