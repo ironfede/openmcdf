@@ -79,7 +79,7 @@ internal sealed class MiniFatStream : Stream
 
         uint chainIndex = GetMiniFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!miniChain.MoveTo(chainIndex))
-            throw new FormatException($"The mini FAT chain was shorter than the stream length.");
+            throw new FileFormatException($"The mini FAT chain was shorter than the stream length.");
 
         FatStream miniStream = Context.MiniStream;
         int realCount = Math.Min(count, maxCount);
@@ -100,7 +100,7 @@ internal sealed class MiniFatStream : Stream
             if (readCount >= realCount)
                 return readCount;
             if (!miniChain.MoveNext())
-                throw new FormatException($"The mini FAT chain was shorter than the stream length.");
+                throw new FileFormatException($"The mini FAT chain was shorter than the stream length.");
         }
     }
 
@@ -165,7 +165,7 @@ internal sealed class MiniFatStream : Stream
 
         uint chainIndex = GetMiniFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!miniChain.MoveTo(chainIndex))
-            throw new InvalidOperationException($"Failed to move to mini FAT chain index: {chainIndex}.");
+            throw new FileFormatException($"Failed to move to mini FAT chain index: {chainIndex}.");
 
         FatStream miniStream = Context.MiniStream;
         int writeCount = 0;
@@ -211,7 +211,7 @@ internal sealed class MiniFatStream : Stream
 
         uint chainIndex = GetMiniFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!miniChain.MoveTo(chainIndex))
-            throw new FormatException($"The mini FAT chain was shorter than the stream length.");
+            throw new FileFormatException($"The mini FAT chain was shorter than the stream length.");
 
         FatStream miniStream = Context.MiniStream;
         int realCount = Math.Min(buffer.Length, maxCount);
@@ -233,7 +233,7 @@ internal sealed class MiniFatStream : Stream
             if (readCount >= realCount)
                 return readCount;
             if (!miniChain.MoveNext())
-                throw new FormatException($"The mini FAT chain was shorter than the stream length.");
+                throw new FileFormatException($"The mini FAT chain was shorter than the stream length.");
         }
     }
 
@@ -251,7 +251,7 @@ internal sealed class MiniFatStream : Stream
 
         uint chainIndex = GetMiniFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!miniChain.MoveTo(chainIndex))
-            throw new InvalidOperationException($"Failed to move to mini FAT chain index: {chainIndex}.");
+            throw new FileFormatException($"Failed to move to mini FAT chain index: {chainIndex}.");
 
         FatStream miniStream = Context.MiniStream;
         int writeCount = 0;

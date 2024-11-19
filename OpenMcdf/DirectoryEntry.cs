@@ -224,7 +224,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
         StorageType.Stream => EntryType.Stream,
         StorageType.Storage => EntryType.Storage,
         StorageType.Root => EntryType.Storage,
-        _ => throw new InvalidOperationException("Invalid storage type.")
+        _ => throw new FileFormatException($"Invalid storage type: {Type}.")
     };
 
     public EntryInfo ToEntryInfo(string path) => new(EntryType, path, NameString, StreamLength, CLSID, CreationTime, ModifiedTime);

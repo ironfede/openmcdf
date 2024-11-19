@@ -105,7 +105,7 @@ internal class DifatSectorEnumerator : ContextBase, IEnumerator<Sector>
         {
             bool ok = MoveTo(header.DifatSectorCount - 1);
             if (!ok)
-                throw new InvalidOperationException("Failed to move to last DIFAT sector.");
+                throw new FileFormatException("The DIFAT sector count is invalid.");
 
             writer.Position = current.EndPosition - sizeof(uint);
             writer.Write(newDifatSector.Id);

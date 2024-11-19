@@ -89,7 +89,7 @@ internal class FatStream : Stream
 
         uint chainIndex = GetFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!chain.MoveTo(chainIndex))
-            throw new FormatException($"The FAT chain was shorter than the stream length.");
+            throw new FileFormatException($"The FAT chain was shorter than the stream length.");
 
         int realCount = Math.Min(count, maxCount);
         int readCount = 0;
@@ -109,7 +109,7 @@ internal class FatStream : Stream
             if (readCount >= realCount)
                 return readCount;
             if (!chain.MoveNext())
-                throw new FormatException($"The FAT chain was shorter than the stream length.");
+                throw new FileFormatException($"The FAT chain was shorter than the stream length.");
         };
     }
 
@@ -215,7 +215,7 @@ internal class FatStream : Stream
 
         uint chainIndex = GetFatChainIndexAndSectorOffset(position, out long sectorOffset);
         if (!chain.MoveTo(chainIndex))
-            throw new FormatException($"The FAT chain was shorter than the stream length.");
+            throw new FileFormatException($"The FAT chain was shorter than the stream length.");
 
         int realCount = Math.Min(buffer.Length, maxCount);
         int readCount = 0;
@@ -236,7 +236,7 @@ internal class FatStream : Stream
             if (readCount >= realCount)
                 return readCount;
             if (!chain.MoveNext())
-                throw new FormatException($"The FAT chain was shorter than the stream length.");
+                throw new FileFormatException($"The FAT chain was shorter than the stream length.");
         }
     }
 

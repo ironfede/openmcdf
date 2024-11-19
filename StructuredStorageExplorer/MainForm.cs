@@ -7,6 +7,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Data;
 using System.Globalization;
+using FileFormatException = OpenMcdf.FileFormatException;
 
 // Author Federico Blaseotto
 
@@ -110,7 +111,7 @@ public partial class MainForm : Form
 
             RefreshTree();
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
             CloseCurrentFile();
 
@@ -149,7 +150,7 @@ public partial class MainForm : Form
 
             RefreshTree();
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
             CloseCurrentFile();
 
@@ -372,7 +373,7 @@ public partial class MainForm : Form
 
             propertyGrid1.SelectedObject = nodeSelection.EntryInfo;
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FormatException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
             CloseCurrentFile();
 

@@ -43,7 +43,7 @@ internal sealed class DirectoryTree
                 {
                     compare = DirectoryEntryComparer.Compare(leftChild.NameCharSpan, child.NameCharSpan);
                     if (compare >= 0)
-                        throw new FormatException("Directory tree is not sorted.");
+                        throw new FileFormatException("Directory tree is not sorted.");
                 }
 
                 child = leftChild;
@@ -55,7 +55,7 @@ internal sealed class DirectoryTree
                 {
                     compare = DirectoryEntryComparer.Compare(rightChild.NameCharSpan, child.NameCharSpan);
                     if (compare <= 0)
-                        throw new FormatException("Directory tree is not sorted.");
+                        throw new FileFormatException("Directory tree is not sorted.");
                 }
 
                 child = rightChild;

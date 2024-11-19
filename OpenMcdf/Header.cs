@@ -44,7 +44,7 @@ internal sealed class Header : IEquatable<Header?>
         get => majorVersion; set
         {
             if (value is not 3 and not 4)
-                throw new FormatException($"Unsupported major version: {value}. Only 3 and 4 are supported");
+                throw new FileFormatException($"Unsupported major version: {value}. Only 3 and 4 are supported");
             majorVersion = value;
         }
     }
@@ -57,9 +57,9 @@ internal sealed class Header : IEquatable<Header?>
         get => sectorShift; set
         {
             if (MajorVersion == 3 && value != SectorShiftV3)
-                throw new FormatException($"Unsupported sector shift {value:X4}. Only {SectorShiftV3:X4} is supported for Major Version 3.");
+                throw new FileFormatException($"Unsupported sector shift {value:X4}. Only {SectorShiftV3:X4} is supported for Major Version 3.");
             if (MajorVersion == 4 && value != SectorShiftV4)
-                throw new FormatException($"Unsupported sector shift {value:X4}. Only {SectorShiftV4:X4} is supported for Major Version 4.");
+                throw new FileFormatException($"Unsupported sector shift {value:X4}. Only {SectorShiftV4:X4} is supported for Major Version 4.");
 
             sectorShift = value;
         }
@@ -71,7 +71,7 @@ internal sealed class Header : IEquatable<Header?>
         set
         {
             if (value != ExpectedMiniSectorShift)
-                throw new FormatException($"Unsupported sector shift {value:X4}. Only {ExpectedMiniSectorShift:X4} is supported.");
+                throw new FileFormatException($"Unsupported sector shift {value:X4}. Only {ExpectedMiniSectorShift:X4} is supported.");
 
             miniSectorShift = value;
         }
@@ -130,7 +130,7 @@ internal sealed class Header : IEquatable<Header?>
         {
             Version.V3 => SectorShiftV3,
             Version.V4 => SectorShiftV4,
-            _ => throw new FormatException($"Unsupported version: {version}.")
+            _ => throw new FileFormatException($"Unsupported version: {version}.")
         };
         FirstDirectorySectorId = SectorType.EndOfChain;
         DirectorySectorCount = 0; // Not used in v3
