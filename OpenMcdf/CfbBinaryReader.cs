@@ -73,19 +73,19 @@ internal sealed class CfbBinaryReader : BinaryReader
         ReadExactly(buffer, 0, Header.Signature.Length);
         Span<byte> signature = buffer.AsSpan(0, Header.Signature.Length);
         if (!signature.SequenceEqual(Header.Signature))
-            throw new FormatException("Invalid header signature.");
+            throw new FileFormatException("Invalid header signature.");
         header.CLSID = ReadGuid();
         if (header.CLSID != Guid.Empty)
-            throw new FormatException($"Invalid header CLSID: {header.CLSID}.");
+            throw new FileFormatException($"Invalid header CLSID: {header.CLSID}.");
         header.MinorVersion = ReadUInt16();
         header.MajorVersion = ReadUInt16();
         if (header.MajorVersion is not (ushort)Version.V3 and not (ushort)Version.V4)
-            throw new FormatException($"Unsupported major version: {header.MajorVersion}.");
+            throw new FileFormatException($"Unsupported major version: {header.MajorVersion}.");
         else if (header.MinorVersion is not Header.ExpectedMinorVersion)
             Trace.WriteLine($"Unexpected minor version: {header.MinorVersion}.");
         ushort byteOrder = ReadUInt16();
         if (byteOrder != Header.LittleEndian)
-            throw new FormatException($"Unsupported byte order: {byteOrder:X4}. Only little-endian is supported ({Header.LittleEndian:X4}).");
+            throw new FileFormatException($"Unsupported byte order: {byteOrder:X4}. Only little-endian is supported ({Header.LittleEndian:X4}).");
         header.SectorShift = ReadUInt16();
         header.MiniSectorShift = ReadUInt16();
         FillBuffer(6);
@@ -95,7 +95,7 @@ internal sealed class CfbBinaryReader : BinaryReader
         FillBuffer(4);
         uint miniStreamCutoffSize = ReadUInt32();
         if (miniStreamCutoffSize != Header.MiniStreamCutoffSize)
-            throw new FormatException($"Mini stream cutoff size must be {Header.MiniStreamCutoffSize} bytes.");
+            throw new FileFormatException($"Mini stream cutoff size must be {Header.MiniStreamCutoffSize} bytes.");
         header.FirstMiniFatSectorId = ReadUInt32();
         header.MiniFatSectorCount = ReadUInt32();
         header.FirstDifatSectorId = ReadUInt32();
@@ -113,7 +113,7 @@ internal sealed class CfbBinaryReader : BinaryReader
     {
         var type = (StorageType)ReadByte();
         if (type is not StorageType.Storage and not StorageType.Stream and not StorageType.Root and not StorageType.Unallocated)
-            throw new FormatException($"Invalid storage type: {type}.");
+            throw new FileFormatException($"Invalid storage type: {type}.");
         return type;
     }
 
@@ -121,7 +121,7 @@ internal sealed class CfbBinaryReader : BinaryReader
     {
         var color = (NodeColor)ReadByte();
         if (color is not NodeColor.Black and not NodeColor.Red)
-            throw new FormatException($"Invalid node color: {color}.");
+            throw new FileFormatException($"Invalid node color: {color}.");
         return color;
     }
 
@@ -154,7 +154,7 @@ internal sealed class CfbBinaryReader : BinaryReader
         {
             entry.StreamLength = ReadUInt32();
             if (entry.StreamLength > DirectoryEntry.MaxV3StreamLength)
-                throw new FormatException($"Stream length {entry.StreamLength} exceeds maximum value {DirectoryEntry.MaxV3StreamLength}.");
+                throw new FileFormatException($"Stream length {entry.StreamLength} exceeds maximum value {DirectoryEntry.MaxV3StreamLength}.");
             ReadUInt32(); // Skip unused 4 bytes
         }
         else if (version == Version.V4)

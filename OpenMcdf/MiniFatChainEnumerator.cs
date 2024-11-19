@@ -70,7 +70,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
 
             uint nextIndex = index + 1;
             if (nextIndex > SectorType.Maximum)
-                throw new FormatException("Mini FAT chain is corrupt.");
+                throw new FileFormatException("Mini FAT chain is corrupt.");
 
             index = nextIndex;
             current = sectorId;

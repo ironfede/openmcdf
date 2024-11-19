@@ -190,7 +190,7 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
         {
             Sector sector = new(entry.Index, Context.SectorSize);
             if (entry.Value <= SectorType.Maximum && sector.EndPosition > Context.Length)
-                throw new FormatException($"FAT entry {entry} is beyond the end of the stream.");
+                throw new FileFormatException($"FAT entry {entry} is beyond the end of the stream.");
             if (entry.Value == SectorType.Fat)
                 fatSectorCount++;
             if (entry.Value == SectorType.Difat)
@@ -198,9 +198,9 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
         }
 
         if (Context.Header.FatSectorCount != fatSectorCount)
-            throw new FormatException($"FAT sector count mismatch. Expected: {Context.Header.FatSectorCount} Actual: {fatSectorCount}.");
+            throw new FileFormatException($"FAT sector count mismatch. Expected: {Context.Header.FatSectorCount} Actual: {fatSectorCount}.");
         if (Context.Header.DifatSectorCount != difatSectorCount)
-            throw new FormatException($"DIFAT sector count mismatch: Expected: {Context.Header.DifatSectorCount} Actual: {difatSectorCount}.");
+            throw new FileFormatException($"DIFAT sector count mismatch: Expected: {Context.Header.DifatSectorCount} Actual: {difatSectorCount}.");
     }
 
     [ExcludeFromCodeCoverage]

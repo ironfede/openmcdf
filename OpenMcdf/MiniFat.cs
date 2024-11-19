@@ -162,7 +162,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
             FatEntry current = miniFatEnumerator.Current;
             if (current.Value <= SectorType.Maximum && miniFatEnumerator.CurrentSector.EndPosition > Context.MiniStream.Length)
             {
-                throw new FormatException($"Mini FAT entry {current} is beyond the end of the mini stream.");
+                throw new FileFormatException($"Mini FAT entry {current} is beyond the end of the mini stream.");
             }
         }
     }
