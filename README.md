@@ -14,9 +14,9 @@ Compound files include multiple streams of information (document summary, user d
 - Advanced Authoring Format (.aaf)
 
 OpenMcdf v3 has a rewritten API and supports:
-- And idiomatic dotnet API and exception hierarchy
+- An idiomatic dotnet API and exception hierarchy
 - Fast and efficient enumeration and manipulation of storages and streams
-- Files sizes up to 16 TB (using major format version 4 with 4096 byte sectors)
+- File sizes up to 16 TB (using major format version 4 with 4096 byte sectors)
 - Transactions (i.e. commit and/or revert)
 - Consolidation (i.e. reclamation of space by removing free sectors)
 - Nullable attributes
