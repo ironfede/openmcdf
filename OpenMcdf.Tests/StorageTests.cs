@@ -25,6 +25,14 @@ public sealed class StorageTests
 
         Assert.ThrowsException<DirectoryNotFoundException>(() => rootStorage.OpenStorage(""));
 
+        Assert.IsTrue(rootStorage.ContainsEntry("MyStorage"));
+        Assert.IsFalse(rootStorage.ContainsEntry("NonExistentStorage"));
+
+        bool found = rootStorage.TryGetEntryInfo("MyStorage", out EntryInfo entryInfo);
+        Assert.IsTrue(found);
+        Assert.IsNotNull(entryInfo);
+        Assert.AreEqual("MyStorage", entryInfo.Name);
+
         Storage storage = rootStorage.OpenStorage("MyStorage");
         Assert.AreEqual("MyStorage", storage.EntryInfo.Name);
     }
