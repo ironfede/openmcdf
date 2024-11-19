@@ -1,6 +1,6 @@
 ﻿namespace OpenMcdf.Ole;
 
-public interface IBinarySerializable
+internal interface IBinarySerializable
 {
     void Write(BinaryWriter bw);
     void Read(BinaryReader br);
