@@ -24,7 +24,7 @@ internal sealed class DirectoryTree
         this.root = root;
     }
 
-    public bool TryGetDirectoryEntry(string name, out DirectoryEntry? entry)
+    public bool TryGetDirectoryEntry(string name, [MaybeNullWhen(false)] out DirectoryEntry entry)
     {
         if (!directories.TryGetDictionaryEntry(root.ChildId, out DirectoryEntry? child))
         {
@@ -78,7 +78,7 @@ internal sealed class DirectoryTree
         return parent!;
     }
 
-    public bool TryGetParent(DirectoryEntry entry, out DirectoryEntry? parent, out RelationType relation)
+    public bool TryGetParent(DirectoryEntry entry, [MaybeNullWhen(false)] out DirectoryEntry parent, out RelationType relation)
     {
         if (!directories.TryGetDictionaryEntry(root.ChildId, out DirectoryEntry? child))
         {
@@ -125,7 +125,7 @@ internal sealed class DirectoryTree
 
         while (true)
         {
-            uint leftId = currentEntry!.LeftSiblingId;
+            uint leftId = currentEntry.LeftSiblingId;
             uint rightId = currentEntry.RightSiblingId;
 
             int compare = DirectoryEntryComparer.Compare(entry.NameCharSpan, currentEntry.NameCharSpan);

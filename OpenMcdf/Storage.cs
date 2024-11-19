@@ -119,7 +119,7 @@ public class Storage : ContextBase
             ? storage!
             : throw new DirectoryNotFoundException($"Storage not found: {name}.");
 
-    public bool TryOpenStorage(string name, [MaybeNullWhen(false)] out Storage? storage)
+    public bool TryOpenStorage(string name, [MaybeNullWhen(false)] out Storage storage)
     {
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
@@ -141,7 +141,7 @@ public class Storage : ContextBase
             ? stream!
             : throw new FileNotFoundException($"Stream not found: {name}.", name);
 
-    public bool TryOpenStream(string name, [MaybeNullWhen(false)] out CfbStream? stream)
+    public bool TryOpenStream(string name, [MaybeNullWhen(false)] out CfbStream stream)
     {
         ThrowHelper.ThrowIfNameIsInvalid(name);
         this.ThrowIfDisposed(Context.IsDisposed);

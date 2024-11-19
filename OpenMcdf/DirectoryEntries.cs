@@ -1,4 +1,6 @@
-﻿namespace OpenMcdf;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace OpenMcdf;
 
 /// <summary>
 /// Encapsulates getting and adding <see cref="DirectoryEntry"/> objects."
@@ -31,7 +33,7 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
         return entry!;
     }
 
-    public bool TryGetDictionaryEntry(uint streamId, out DirectoryEntry? entry)
+    public bool TryGetDictionaryEntry(uint streamId, [MaybeNullWhen(false)] out DirectoryEntry entry)
     {
         if (streamId == StreamId.NoStream)
         {
