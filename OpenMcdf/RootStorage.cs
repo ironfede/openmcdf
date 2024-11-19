@@ -158,7 +158,7 @@ public sealed class RootStorage : Storage, IDisposable
         Context.Revert();
     }
 
-    public void SwitchTo(Stream stream)
+    private void SwitchToCore(Stream stream, bool allowLeaveOpen)
     {
         Flush();
 
@@ -173,7 +173,20 @@ public sealed class RootStorage : Storage, IDisposable
         Context.Dispose();
 
         IOContextFlags contextFlags = ToIOContextFlags(storageModeFlags);
+        if (!allowLeaveOpen)
+            contextFlags &= ~IOContextFlags.LeaveOpen;
         _ = new RootContext(ContextSite, stream, Version.Unknown, contextFlags);
+    }
+
+    public void SwitchTo(Stream stream)
+    {
+        SwitchToCore(stream, true);
+    }
+
+    public void SwitchTo(string fileName)
+    {
+        FileStream stream = File.Create(fileName);
+        SwitchToCore(stream, false);
     }
 
     [ExcludeFromCodeCoverage]
