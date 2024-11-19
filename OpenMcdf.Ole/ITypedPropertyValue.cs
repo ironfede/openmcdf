@@ -1,6 +1,6 @@
 ﻿namespace OpenMcdf.Ole;
 
-public enum PropertyDimensions
+internal enum PropertyDimensions
 {
     IsScalar,
     IsVector,
