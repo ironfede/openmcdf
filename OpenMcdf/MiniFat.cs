@@ -12,7 +12,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
 {
     private readonly FatChainEnumerator fatChainEnumerator;
     private readonly int ElementsPerSector;
-    private readonly byte[] sector;
+    private readonly byte[] cachedSectorBuffer;
     private bool isDirty;
 
     public MiniFat(RootContextSite rootContextSite)
@@ -20,7 +20,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
     {
         ElementsPerSector = Context.SectorSize / sizeof(uint);
         fatChainEnumerator = new(Context.Fat, Context.Header.FirstMiniFatSectorId);
-        sector = new byte[Context.SectorSize];
+        cachedSectorBuffer = new byte[Context.SectorSize];
     }
 
     public void Dispose()
@@ -36,7 +36,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
         {
             CfbBinaryWriter writer = Context.Writer;
             writer.Position = fatChainEnumerator.CurrentSector.Position;
-            writer.Write(sector);
+            writer.Write(cachedSectorBuffer);
             isDirty = false;
         }
     }
@@ -74,7 +74,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
 
         CfbBinaryReader reader = Context.Reader;
         reader.Position = fatChainEnumerator.CurrentSector.Position;
-        reader.Read(sector);
+        reader.Read(cachedSectorBuffer, 0, cachedSectorBuffer.Length);
         return true;
     }
 
@@ -88,7 +88,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
             return false;
         }
 
-        Span<byte> slice = sector.AsSpan((int)elementIndex * sizeof(uint));
+        Span<byte> slice = cachedSectorBuffer.AsSpan((int)elementIndex * sizeof(uint));
         value = BinaryPrimitives.ReadUInt32LittleEndian(slice);
         return true;
     }
@@ -100,7 +100,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
         if (!TryMoveToSectorForKey(key, out long elementIndex))
             return false;
 
-        Span<byte> slice = sector.AsSpan((int)elementIndex * sizeof(uint));
+        Span<byte> slice = cachedSectorBuffer.AsSpan((int)elementIndex * sizeof(uint));
         BinaryPrimitives.WriteUInt32LittleEndian(slice, value);
         isDirty = true;
         return true;

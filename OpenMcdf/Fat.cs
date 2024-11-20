@@ -57,7 +57,7 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
 
         CfbBinaryReader reader = Context.Reader;
         reader.Position = current.Position;
-        reader.Read(cachedSectorBuffer);
+        reader.Read(cachedSectorBuffer, 0, cachedSectorBuffer.Length);
         cachedSector = current;
     }
 

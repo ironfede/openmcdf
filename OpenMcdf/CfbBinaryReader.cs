@@ -1,10 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Text;
 
-#if NETSTANDARD2_0
-using System.Buffers;
-#endif
-
 namespace OpenMcdf;
 
 /// <summary>
@@ -26,37 +22,11 @@ internal sealed class CfbBinaryReader : BinaryReader
         set => BaseStream.Position = value;
     }
 
-#if NETSTANDARD2_0
-
-    public int Read(Span<byte> buffer)
-    {
-        byte[] array = ArrayPool<byte>.Shared.Rent(buffer.Length);
-        try
-        {
-            int bytesRead = BaseStream.Read(array, 0, buffer.Length);
-            array.AsSpan(0, bytesRead).CopyTo(buffer);
-            return bytesRead;
-        }
-        finally
-        {
-            ArrayPool<byte>.Shared.Return(array);
-        }
-    }
-
-#endif
-
     void ReadExactly(byte[] buffer, int offset, int count) => BaseStream.ReadExactly(buffer, offset, count);
 
     public Guid ReadGuid()
     {
-        int bytesRead = 0;
-        do
-        {
-            int n = Read(guidBuffer, bytesRead, guidBuffer.Length - bytesRead);
-            if (n == 0)
-                throw new EndOfStreamException();
-            bytesRead += n;
-        } while (bytesRead < guidBuffer.Length);
+        BaseStream.ReadExactly(guidBuffer, 0, guidBuffer.Length);
 
         return new Guid(guidBuffer);
     }
