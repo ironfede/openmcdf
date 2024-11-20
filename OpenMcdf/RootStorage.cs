@@ -70,14 +70,6 @@ public sealed class RootStorage : Storage, IDisposable
         return Open(stream, flags);
     }
 
-    public static RootStorage OpenRead(string fileName, StorageModeFlags flags = StorageModeFlags.None)
-    {
-        ThrowIfLeaveOpen(flags);
-
-        FileStream stream = File.OpenRead(fileName);
-        return Open(stream, flags);
-    }
-
     public static RootStorage Open(Stream stream, StorageModeFlags flags = StorageModeFlags.None)
     {
         stream.ThrowIfNotSeekable();
@@ -87,6 +79,22 @@ public sealed class RootStorage : Storage, IDisposable
         RootContextSite rootContextSite = new();
         _ = new RootContext(rootContextSite, stream, Version.Unknown, contextFlags);
         return new RootStorage(rootContextSite, flags);
+    }
+
+    public static RootStorage OpenRead(string fileName, StorageModeFlags flags = StorageModeFlags.None)
+    {
+        ThrowIfLeaveOpen(flags);
+
+        FileStream stream = File.OpenRead(fileName);
+        return Open(stream, flags);
+    }
+
+    public static RootStorage OpenWrite(string fileName, StorageModeFlags flags = StorageModeFlags.None)
+    {
+        ThrowIfLeaveOpen(flags);
+
+        FileStream stream = File.OpenWrite(fileName);
+        return Open(stream, flags);
     }
 
     RootStorage(RootContextSite rootContextSite, StorageModeFlags storageModeFlags)

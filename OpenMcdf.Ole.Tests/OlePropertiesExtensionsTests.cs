@@ -101,7 +101,7 @@ public class OlePropertiesExtensionsTests
     public void ReadSummaryInformationUtf8()
     {
         // Regression test for #33
-        using var cf = RootStorage.Open("wstr_presets.doc", FileMode.Open);
+        using var cf = RootStorage.OpenRead("wstr_presets.doc");
         using CfbStream stream = cf.OpenStream(PropertySetNames.SummaryInformation);
         OlePropertiesContainer co = new(stream);
 

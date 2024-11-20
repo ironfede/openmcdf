@@ -4,6 +4,18 @@
 public sealed class RootStorageTests
 {
     [TestMethod]
+    [DoNotParallelize] // Test sharing
+    [DataRow("MultipleStorage.cfs")]
+    public void Open(string fileName)
+    {
+        using var rootStorage = RootStorage.OpenRead(fileName);
+        using var rootStorage2 = RootStorage.OpenRead(fileName);
+
+        Assert.ThrowsException<IOException>(() => RootStorage.Open(fileName, FileMode.Open));
+        Assert.ThrowsException<IOException>(() => RootStorage.OpenWrite(fileName));
+    }
+
+    [TestMethod]
     [DataRow(Version.V3, 0)]
     [DataRow(Version.V3, 1)]
     [DataRow(Version.V3, 2)]

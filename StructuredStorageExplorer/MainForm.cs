@@ -142,7 +142,7 @@ public partial class MainForm : Form
             cf = null;
 
             // Load file
-            cf = RootStorage.Open(fileName, FileMode.Open);
+            cf = RootStorage.OpenWrite(fileName);
 
             fileNameLabel.Text = fileName;
             saveAsToolStripMenuItem.Enabled = true;
