@@ -34,7 +34,7 @@ public class FileStreamRead : IDisposable
 
         buffer = new byte[BufferSize];
 
-        using var storage = RootStorage.Create(readFileName, Version, StorageModeFlags.LeaveOpen);
+        using var storage = RootStorage.Create(readFileName, Version);
         using CfbStream stream = storage.CreateStream("Test");
 
         int iterationCount = StreamLength / BufferSize;
