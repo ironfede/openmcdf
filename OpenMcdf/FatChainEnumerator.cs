@@ -78,7 +78,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
         }
 
         index++;
-        if (index > SectorType.Maximum)
+        if (index >= fat.Context.SectorCount)
         {
             // If the index is greater than the maximum, then the chain must contain a loop
             index = uint.MaxValue;
