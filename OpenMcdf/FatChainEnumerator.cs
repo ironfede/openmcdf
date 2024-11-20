@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Numerics;
 
 namespace OpenMcdf;
 
@@ -11,6 +12,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
 {
     private readonly Fat fat;
     private readonly FatEnumerator fatEnumerator;
+    readonly HashSet<uint> visited = new();
     private uint startId;
     private bool start = true;
     private uint index = uint.MaxValue;
@@ -63,6 +65,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
             index = 0;
             current = startId;
             start = false;
+            visited.Add(current);
             return true;
         }
 
@@ -83,8 +86,19 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
             // If the index is greater than the maximum, then the chain must contain a loop
             index = uint.MaxValue;
             current = uint.MaxValue;
-            throw new FileFormatException("FAT sector chain is corrupt.");
+            throw new FileFormatException("FAT chain index is greater than the sector count.");
         }
+
+        if (visited.Contains(value))
+        {
+            // If the sector has already been visited, then the chain must contain a loop
+            index = uint.MaxValue;
+            current = uint.MaxValue;
+            throw new FileFormatException("FAT chain contains a loop.");
+        }
+
+        if (BitOperations.IsPow2(index))
+            visited.Add(value);
 
         current = value;
         return true;
@@ -232,6 +246,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
         start = true;
         index = uint.MaxValue;
         current = uint.MaxValue;
+        visited.Clear();
     }
 
     [ExcludeFromCodeCoverage]
