@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.Numerics;
 
 namespace OpenMcdf;
 
@@ -12,12 +11,12 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
 {
     private readonly Fat fat;
     private readonly FatEnumerator fatEnumerator;
-    readonly HashSet<uint> visited = new();
     private uint startId;
     private bool start = true;
     private uint index = uint.MaxValue;
     private uint current = uint.MaxValue;
     private long length = -1;
+    private uint slow = uint.MaxValue; // Floyd's cycle-finding algorithm
 
     public FatChainEnumerator(Fat fat, uint startSectorId)
     {
@@ -65,7 +64,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
             index = 0;
             current = startId;
             start = false;
-            visited.Add(current);
+            slow = startId;
             return true;
         }
 
@@ -83,22 +82,18 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
         index++;
         if (index >= fat.Context.SectorCount)
         {
-            // If the index is greater than the maximum, then the chain must contain a loop
             index = uint.MaxValue;
             current = uint.MaxValue;
             throw new FileFormatException("FAT chain index is greater than the sector count.");
         }
 
-        if (visited.Contains(value))
+        if (index % 2 == 0 && !SectorType.IsFreeOrEndOfChain(slow))
         {
-            // If the sector has already been visited, then the chain must contain a loop
-            index = uint.MaxValue;
-            current = uint.MaxValue;
-            throw new FileFormatException("FAT chain contains a loop.");
+            // Slow might become free or end of chain while shrinking
+            slow = fat[slow];
+            if (slow == value)
+                throw new FileFormatException("FAT chain contains a loop.");
         }
-
-        if (BitOperations.IsPow2(index))
-            visited.Add(value);
 
         current = value;
         return true;
@@ -246,7 +241,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
         start = true;
         index = uint.MaxValue;
         current = uint.MaxValue;
-        visited.Clear();
+        slow = uint.MaxValue;
     }
 
     [ExcludeFromCodeCoverage]
