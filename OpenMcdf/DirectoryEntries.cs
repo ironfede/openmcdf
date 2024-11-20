@@ -29,7 +29,7 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
     public DirectoryEntry GetDictionaryEntry(uint streamId)
     {
         if (!TryGetDictionaryEntry(streamId, out DirectoryEntry? entry))
-            throw new KeyNotFoundException($"Directory entry {streamId} was not found.");
+            throw new FileFormatException($"Directory entry {streamId} was not found.");
         return entry!;
     }
 
@@ -100,7 +100,7 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
     {
         uint chainIndex = GetChainIndexAndEntryIndex(entry.Id, out long entryIndex);
         if (!fatChainEnumerator.MoveTo(chainIndex))
-            throw new KeyNotFoundException($"Directory entry {entry.Id} was not found.");
+            throw new FileFormatException($"Directory entry {entry.Id} was not found.");
 
         CfbBinaryWriter writer = Context.Writer;
         writer.Position = fatChainEnumerator.CurrentSector.Position + (entryIndex * DirectoryEntry.Length);
