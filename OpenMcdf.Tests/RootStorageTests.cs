@@ -12,6 +12,7 @@ public sealed class RootStorageTests
         using var rootStorage2 = RootStorage.OpenRead(fileName);
 
         Assert.ThrowsException<IOException>(() => RootStorage.Open(fileName, FileMode.Open));
+        Assert.ThrowsException<IOException>(() => RootStorage.Open(fileName, FileMode.Open, FileAccess.ReadWrite));
         Assert.ThrowsException<IOException>(() => RootStorage.OpenWrite(fileName));
     }
 
