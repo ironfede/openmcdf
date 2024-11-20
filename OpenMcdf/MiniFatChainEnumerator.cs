@@ -15,6 +15,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
     uint index = uint.MaxValue;
     private uint current = uint.MaxValue;
     private long length = -1;
+    private uint slow = uint.MaxValue; // Floyd's cycle-finding algorithm
 
     public MiniFatChainEnumerator(RootContextSite rootContextSite, uint startSectorId)
         : base(rootContextSite)
@@ -60,8 +61,8 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
         }
         else if (!SectorType.IsFreeOrEndOfChain(current))
         {
-            uint sectorId = Context.MiniFat[current];
-            if (sectorId == SectorType.EndOfChain)
+            uint value = Context.MiniFat[current];
+            if (value == SectorType.EndOfChain)
             {
                 index = uint.MaxValue;
                 current = uint.MaxValue;
@@ -70,10 +71,18 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
 
             uint nextIndex = index + 1;
             if (nextIndex > SectorType.Maximum)
-                throw new FileFormatException("Mini FAT chain is corrupt.");
+                throw new FileFormatException("Mini FAT chain length is greater than the maximum.");
+
+            if (nextIndex % 2 == 0 && !SectorType.IsFreeOrEndOfChain(slow))
+            {
+                // Slow might become free or end of chain while shrinking
+                slow = Context.MiniFat[slow];
+                if (slow == value)
+                    throw new FileFormatException("Mini FAT chain contains a loop.");
+            }
 
             index = nextIndex;
-            current = sectorId;
+            current = value;
             return true;
         }
 
@@ -203,6 +212,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
         start = true;
         index = uint.MaxValue;
         current = uint.MaxValue;
+        slow = uint.MaxValue;
     }
 
     [ExcludeFromCodeCoverage]
