@@ -104,7 +104,7 @@ internal class TransactedStream : Stream
         {
             // Copy the existing sector data
             originalStream.Position = originalPosition - sectorOffset;
-            originalStream.ReadExactly(this.buffer);
+            originalStream.ReadExactly(this.buffer, 0, this.buffer.Length);
 
             OverlayStream.Position = overlayPosition;
             OverlayStream.Write(this.buffer, 0, this.buffer.Length);
@@ -122,7 +122,7 @@ internal class TransactedStream : Stream
         foreach (KeyValuePair<uint, long> entry in dirtySectorPositions)
         {
             OverlayStream.Position = entry.Value;
-            OverlayStream.ReadExactly(buffer);
+            OverlayStream.ReadExactly(buffer, 0, buffer.Length);
 
             originalStream.Position = entry.Key * Context.SectorSize;
             originalStream.Write(buffer, 0, buffer.Length);
