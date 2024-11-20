@@ -83,7 +83,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
             // If the index is greater than the maximum, then the chain must contain a loop
             index = uint.MaxValue;
             current = uint.MaxValue;
-            throw new IOException("FAT sector chain is corrupt.");
+            throw new FileFormatException("FAT sector chain is corrupt.");
         }
 
         current = value;

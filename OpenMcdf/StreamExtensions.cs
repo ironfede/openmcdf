@@ -1,8 +1,4 @@
-﻿#if !NET7_0_OR_GREATER
-using System.Buffers;
-#endif
-
-namespace OpenMcdf;
+﻿namespace OpenMcdf;
 
 /// <summary>
 /// Adds modern extension methods to the <see cref="Stream"/> class for netstandard2.0.

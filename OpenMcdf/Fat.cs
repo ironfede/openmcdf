@@ -34,14 +34,14 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
         get
         {
             if (!TryGetValue(key, out uint value))
-                throw new KeyNotFoundException($"FAT index not found: {key}.");
+                throw new FileFormatException($"FAT index not found: {key}.");
             return value;
 
         }
         set
         {
             if (!TrySetValue(key, value))
-                throw new KeyNotFoundException($"FAT index not found: {key}.");
+                throw new FileFormatException($"FAT index not found: {key}.");
         }
     }
 

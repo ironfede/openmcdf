@@ -74,7 +74,7 @@ internal sealed class DirectoryTree
     public DirectoryEntry GetParent(DirectoryEntry entry, out RelationType relation)
     {
         if (!TryGetParent(entry, out DirectoryEntry? parent, out relation))
-            throw new KeyNotFoundException($"DirectoryEntry {entry} has no parent.");
+            throw new FileFormatException($"DirectoryEntry {entry} has no parent.");
         return parent!;
     }
 
