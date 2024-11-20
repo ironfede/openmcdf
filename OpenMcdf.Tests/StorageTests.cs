@@ -38,6 +38,14 @@ public sealed class StorageTests
     }
 
     [TestMethod]
+    [DataRow("FatChainLoop_v3.cfs")]
+    public void FatChainLoop(string fileName)
+    {
+        using var rootStorage = RootStorage.OpenRead(fileName);
+        Assert.ThrowsException<FileFormatException>(() => rootStorage.OpenStorage("Anything"));
+    }
+
+    [TestMethod]
     [DataRow(Version.V3, 0)]
     [DataRow(Version.V3, 1)]
     [DataRow(Version.V3, 2)]
