@@ -70,6 +70,14 @@ public sealed class RootStorage : Storage, IDisposable
         return Open(stream, flags);
     }
 
+    public static RootStorage Open(string fileName, FileMode mode, FileAccess access, StorageModeFlags flags = StorageModeFlags.None)
+    {
+        ThrowIfLeaveOpen(flags);
+
+        FileStream stream = File.Open(fileName, mode, access);
+        return Open(stream, flags);
+    }
+
     public static RootStorage Open(Stream stream, StorageModeFlags flags = StorageModeFlags.None)
     {
         stream.ThrowIfNotSeekable();
