@@ -62,6 +62,8 @@ public sealed class CfbStream : Stream
 
     public override int Read(byte[] buffer, int offset, int count)
     {
+        ThrowHelper.ThrowIfStreamArgumentsAreInvalid(buffer, offset, count);
+
         this.ThrowIfDisposed(isDisposed);
 
         return stream.Read(buffer, offset, count);
@@ -83,6 +85,9 @@ public sealed class CfbStream : Stream
 
     public override void SetLength(long value)
     {
+        if (value < 0)
+            throw new ArgumentOutOfRangeException(nameof(value));
+
         this.ThrowIfDisposed(isDisposed);
         this.ThrowIfNotWritable();
 

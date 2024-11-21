@@ -96,6 +96,9 @@ public class Storage : ContextBase
 
     public bool ContainsEntry(string name)
     {
+        if (name is null)
+            throw new ArgumentNullException(nameof(name));
+
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
         this.ThrowIfDisposed(Context.IsDisposed);
@@ -105,6 +108,9 @@ public class Storage : ContextBase
 
     public bool TryGetEntryInfo(string name, out EntryInfo entryInfo)
     {
+        if (name is null)
+            throw new ArgumentNullException(nameof(name));
+
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
         this.ThrowIfDisposed(Context.IsDisposed);
@@ -130,6 +136,9 @@ public class Storage : ContextBase
 
     public Storage CreateStorage(string name)
     {
+        if (name is null)
+            throw new ArgumentNullException(nameof(name));
+
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
         this.ThrowIfDisposed(Context.IsDisposed);
@@ -141,6 +150,9 @@ public class Storage : ContextBase
 
     public CfbStream CreateStream(string name)
     {
+        if (name is null)
+            throw new ArgumentNullException(nameof(name));
+
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
         this.ThrowIfDisposed(Context.IsDisposed);
@@ -157,6 +169,9 @@ public class Storage : ContextBase
 
     public bool TryOpenStorage(string name, [MaybeNullWhen(false)] out Storage storage)
     {
+        if (name is null)
+            throw new ArgumentNullException(nameof(name));
+
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
         this.ThrowIfDisposed(Context.IsDisposed);
@@ -179,10 +194,14 @@ public class Storage : ContextBase
 
     public bool TryOpenStream(string name, [MaybeNullWhen(false)] out CfbStream stream)
     {
-        ThrowHelper.ThrowIfNameIsInvalid(name);
-        this.ThrowIfDisposed(Context.IsDisposed);
-        directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? entry);
+        if (name is null)
+            throw new ArgumentNullException(nameof(name));
 
+        ThrowHelper.ThrowIfNameIsInvalid(name);
+
+        this.ThrowIfDisposed(Context.IsDisposed);
+
+        directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? entry);
         if (entry is null || entry.Type is not StorageType.Stream)
         {
             stream = null;
@@ -195,6 +214,12 @@ public class Storage : ContextBase
 
     public void CopyTo(Storage destination)
     {
+        if (destination is null)
+            throw new ArgumentNullException(nameof(destination));
+
+        if (destination == this)
+            throw new ArgumentException("A storage cannot be copied to itself.", nameof(destination));
+
         foreach (DirectoryEntry entry in EnumerateDirectoryEntries())
         {
             if (entry.Type is StorageType.Storage)
@@ -214,6 +239,9 @@ public class Storage : ContextBase
 
     public void Delete(string name)
     {
+        if (name is null)
+            throw new ArgumentNullException(nameof(name));
+
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
         this.ThrowIfDisposed(Context.IsDisposed);
