@@ -1,4 +1,6 @@
-﻿namespace OpenMcdf;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace OpenMcdf;
 
 enum IOContextFlags
 {
@@ -152,6 +154,20 @@ internal sealed class RootContext : ContextBase, IDisposable
         }
     }
 
+    [MemberNotNull(nameof(writer))]
+    public void ThrowIfNotWritable()
+    {
+        if (writer is null)
+            throw new NotSupportedException("Root storage is not writable.");
+    }
+
+    [MemberNotNull(nameof(transactedStream))]
+    public void ThrowIfNotTransacted()
+    {
+        if (transactedStream is null)
+            throw new NotSupportedException("Cannot commit non-transacted storage.");
+    }
+
     public void Flush()
     {
         Fat.Flush();
@@ -181,8 +197,8 @@ internal sealed class RootContext : ContextBase, IDisposable
 
     public void Commit()
     {
-        if (writer is null || transactedStream is null)
-            throw new InvalidOperationException("Cannot commit non-transacted storage.");
+        ThrowIfNotWritable();
+        ThrowIfNotTransacted();
 
         miniStream?.Flush();
         miniFat?.Flush();
@@ -194,8 +210,7 @@ internal sealed class RootContext : ContextBase, IDisposable
 
     public void Revert()
     {
-        if (writer is null || transactedStream is null)
-            throw new InvalidOperationException("Cannot revert non-transacted storage.");
+        ThrowIfNotTransacted();
 
         transactedStream.Revert();
     }

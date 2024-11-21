@@ -20,7 +20,7 @@ public sealed class StreamTests
 
         Assert.ThrowsException<FileNotFoundException>(() => rootStorage.OpenStream(""));
 
-        CfbStream stream = rootStorage.OpenStream("TestStream");
+        using CfbStream stream = rootStorage.OpenStream("TestStream");
         Assert.AreEqual("TestStream", stream.EntryInfo.Name);
     }
 
