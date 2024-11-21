@@ -54,6 +54,9 @@ public sealed class RootStorage : Storage, IDisposable
 
     public static RootStorage Create(string fileName, Version version = Version.V3, StorageModeFlags flags = StorageModeFlags.None)
     {
+        if (fileName is null)
+            throw new ArgumentNullException(nameof(fileName));
+
         ThrowIfLeaveOpen(flags);
 
         FileStream stream = File.Create(fileName);
@@ -62,6 +65,9 @@ public sealed class RootStorage : Storage, IDisposable
 
     public static RootStorage Create(Stream stream, Version version = Version.V3, StorageModeFlags flags = StorageModeFlags.None)
     {
+        if (stream is null)
+            throw new ArgumentNullException(nameof(stream));
+
         stream.ThrowIfNotSeekable();
         stream.SetLength(0);
         stream.Position = 0;
@@ -76,6 +82,9 @@ public sealed class RootStorage : Storage, IDisposable
 
     public static RootStorage Open(string fileName, FileMode mode, StorageModeFlags flags = StorageModeFlags.None)
     {
+        if (fileName is null)
+            throw new ArgumentNullException(nameof(fileName));
+
         ThrowIfInvalid(mode);
         ThrowIfLeaveOpen(flags);
 
@@ -85,6 +94,9 @@ public sealed class RootStorage : Storage, IDisposable
 
     public static RootStorage Open(string fileName, FileMode mode, FileAccess access, StorageModeFlags flags = StorageModeFlags.None)
     {
+        if (fileName is null)
+            throw new ArgumentNullException(nameof(fileName));
+
         ThrowIfInvalid(mode);
         ThrowIfInvalid(access);
         ThrowIfLeaveOpen(flags);
@@ -95,6 +107,9 @@ public sealed class RootStorage : Storage, IDisposable
 
     public static RootStorage Open(Stream stream, StorageModeFlags flags = StorageModeFlags.None)
     {
+        if (stream is null)
+            throw new ArgumentNullException(nameof(stream));
+
         stream.ThrowIfNotSeekable();
         stream.Position = 0;
 
@@ -106,6 +121,9 @@ public sealed class RootStorage : Storage, IDisposable
 
     public static RootStorage OpenRead(string fileName, StorageModeFlags flags = StorageModeFlags.None)
     {
+        if (fileName is null)
+            throw new ArgumentNullException(nameof(fileName));
+
         ThrowIfLeaveOpen(flags);
 
         FileStream stream = File.OpenRead(fileName);
@@ -203,11 +221,17 @@ public sealed class RootStorage : Storage, IDisposable
 
     public void SwitchTo(Stream stream)
     {
+        if (stream is null)
+            throw new ArgumentNullException(nameof(stream));
+
         SwitchToCore(stream, true);
     }
 
     public void SwitchTo(string fileName)
     {
+        if (fileName is null)
+            throw new ArgumentNullException(nameof(fileName));
+
         FileStream stream = File.Create(fileName);
         SwitchToCore(stream, false);
     }
