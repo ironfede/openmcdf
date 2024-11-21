@@ -32,6 +32,8 @@ public class Storage : ContextBase
         get => directoryEntry.CLSID;
         set
         {
+            Context.ThrowIfNotWritable();
+
             directoryEntry.CLSID = value;
             Context.DirectoryEntries.Write(directoryEntry);
         }
@@ -42,6 +44,8 @@ public class Storage : ContextBase
         get => directoryEntry.CreationTime;
         set
         {
+            Context.ThrowIfNotWritable();
+
             directoryEntry.CreationTime = value;
             Context.DirectoryEntries.Write(directoryEntry);
         }
@@ -52,6 +56,8 @@ public class Storage : ContextBase
         get => directoryEntry.ModifiedTime;
         set
         {
+            Context.ThrowIfNotWritable();
+
             directoryEntry.ModifiedTime = value;
             Context.DirectoryEntries.Write(directoryEntry);
         }
@@ -62,6 +68,8 @@ public class Storage : ContextBase
         get => directoryEntry.StateBits;
         set
         {
+            Context.ThrowIfNotWritable();
+
             directoryEntry.StateBits = value;
             Context.DirectoryEntries.Write(directoryEntry);
         }
@@ -125,6 +133,7 @@ public class Storage : ContextBase
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
         this.ThrowIfDisposed(Context.IsDisposed);
+        Context.ThrowIfNotWritable();
 
         DirectoryEntry entry = AddDirectoryEntry(StorageType.Storage, name);
         return new Storage(ContextSite, entry, this);
@@ -135,6 +144,7 @@ public class Storage : ContextBase
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
         this.ThrowIfDisposed(Context.IsDisposed);
+        Context.ThrowIfNotWritable();
 
         DirectoryEntry entry = AddDirectoryEntry(StorageType.Stream, name);
         return new CfbStream(ContextSite, entry, this);
@@ -207,6 +217,7 @@ public class Storage : ContextBase
         ThrowHelper.ThrowIfNameIsInvalid(name);
 
         this.ThrowIfDisposed(Context.IsDisposed);
+        Context.ThrowIfNotWritable();
 
         directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? entry);
         if (entry is null)

@@ -36,7 +36,9 @@ internal static class StreamExtensions
 
     public static void WriteByteCore(this Stream stream, byte value)
     {
-        ReadOnlySpan<byte> bytes = stackalloc byte[] { value };
+        stream.ThrowIfNotWritable();
+
+        ReadOnlySpan<byte> bytes = [value];
         stream.Write(bytes);
     }
 

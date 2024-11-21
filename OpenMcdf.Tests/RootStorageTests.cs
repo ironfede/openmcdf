@@ -5,7 +5,7 @@ public sealed class RootStorageTests
 {
     [TestMethod]
     [DoNotParallelize] // Test sharing
-    [DataRow("MultipleStorage.cfs")]
+    [DataRow("TestStream_v3_0.cfs")]
     public void Open(string fileName)
     {
         using var rootStorage = RootStorage.OpenRead(fileName);
@@ -13,7 +13,19 @@ public sealed class RootStorageTests
 
         Assert.ThrowsException<IOException>(() => RootStorage.Open(fileName, FileMode.Open));
         Assert.ThrowsException<IOException>(() => RootStorage.Open(fileName, FileMode.Open, FileAccess.ReadWrite));
-        Assert.ThrowsException<IOException>(() => RootStorage.OpenWrite(fileName));
+
+        using CfbStream stream = rootStorage.OpenStream("TestStream");
+        Assert.ThrowsException<NotSupportedException>(() => stream.WriteByte(0));
+
+        Assert.ThrowsException<NotSupportedException>(() => rootStorage.CreateStream("TestStream2"));
+        Assert.ThrowsException<NotSupportedException>(() => rootStorage.CreateStorage("TestStream2"));
+        Assert.ThrowsException<NotSupportedException>(() => rootStorage.Delete("TestStream"));
+        Assert.ThrowsException<NotSupportedException>(() => rootStorage.Commit());
+        Assert.ThrowsException<NotSupportedException>(() => rootStorage.Revert());
+        Assert.ThrowsException<NotSupportedException>(() => rootStorage.CreationTime = DateTime.MinValue);
+        Assert.ThrowsException<NotSupportedException>(() => rootStorage.ModifiedTime = DateTime.MinValue);
+        Assert.ThrowsException<NotSupportedException>(() => rootStorage.CLISD = Guid.Empty);
+        Assert.ThrowsException<NotSupportedException>(() => rootStorage.StateBits = 0);
     }
 
     [TestMethod]

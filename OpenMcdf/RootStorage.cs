@@ -24,6 +24,18 @@ public sealed class RootStorage : Storage, IDisposable
 {
     readonly StorageModeFlags storageModeFlags;
 
+    private static void ThrowIfInvalid(FileMode mode)
+    {
+        if (mode is FileMode.Append)
+            throw new ArgumentException("Append mode is not valid for compound files.", nameof(mode));
+    }
+
+    private static void ThrowIfInvalid(FileAccess access)
+    {
+        if (access is FileAccess.Write)
+            throw new ArgumentException("Write-only access is not valid for compound files.", nameof(access));
+    }
+
     private static void ThrowIfLeaveOpen(StorageModeFlags flags)
     {
         if (flags.HasFlag(StorageModeFlags.LeaveOpen))
@@ -64,6 +76,7 @@ public sealed class RootStorage : Storage, IDisposable
 
     public static RootStorage Open(string fileName, FileMode mode, StorageModeFlags flags = StorageModeFlags.None)
     {
+        ThrowIfInvalid(mode);
         ThrowIfLeaveOpen(flags);
 
         FileStream stream = File.Open(fileName, mode);
@@ -72,6 +85,8 @@ public sealed class RootStorage : Storage, IDisposable
 
     public static RootStorage Open(string fileName, FileMode mode, FileAccess access, StorageModeFlags flags = StorageModeFlags.None)
     {
+        ThrowIfInvalid(mode);
+        ThrowIfInvalid(access);
         ThrowIfLeaveOpen(flags);
 
         FileStream stream = File.Open(fileName, mode, access);
@@ -94,14 +109,6 @@ public sealed class RootStorage : Storage, IDisposable
         ThrowIfLeaveOpen(flags);
 
         FileStream stream = File.OpenRead(fileName);
-        return Open(stream, flags);
-    }
-
-    public static RootStorage OpenWrite(string fileName, StorageModeFlags flags = StorageModeFlags.None)
-    {
-        ThrowIfLeaveOpen(flags);
-
-        FileStream stream = File.OpenWrite(fileName);
         return Open(stream, flags);
     }
 
