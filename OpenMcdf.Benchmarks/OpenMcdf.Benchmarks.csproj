@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0-windows</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows')) == 'false'">net8.0</TargetFrameworks>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">net8.0-windows</TargetFrameworks>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
 
@@ -9,9 +10,14 @@
     <PackageReference Include="BenchmarkDotNet" />
   </ItemGroup>
 
+  <ItemGroup Condition="$([MSBuild]::IsOSPlatform('windows')) == 'false'">
+    <Compile Remove="StructuredStorageBenchmarks.cs" />
+    <None Include="StructuredStorageBenchmarks.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj" />
-    <ProjectReference Include="..\StructuredStorage\StructuredStorage.csproj" />
+    <ProjectReference Include="..\StructuredStorage\StructuredStorage.csproj" Condition="$([MSBuild]::IsOSPlatform('windows'))" />
   </ItemGroup>
 
 </Project>
