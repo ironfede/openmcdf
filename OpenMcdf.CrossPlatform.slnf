@@ -1,0 +1,13 @@
+﻿{
+  "solution": {
+    "path": "OpenMcdf.sln",
+    "projects": [
+      "OpenMcdf/OpenMcdf.csproj",
+      "OpenMcdf.Benchmarks/OpenMcdf.Benchmarks.csproj",
+      "OpenMcdf.Ole/OpenMcdf.Ole.csproj",
+      "OpenMcdf.Ole.Tests/OpenMcdf.Ole.Tests.csproj",
+      "OpenMcdf.Perf/OpenMcdf.Perf.csproj",
+      "OpenMcdf.Tests/OpenMcdf.Tests.csproj"
+    ]
+  }
+}

@@ -34,10 +34,10 @@ jobs:
 
     # Execute all unit tests in the solution
     - name: Execute unit tests
-      run: dotnet test --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true"
+      run: dotnet test --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true" $env:Solution_Name
 
     # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
-      run: dotnet build -c $env:Configuration /p:ContinuousIntegrationBuild=true
+      run: dotnet build -c $env:Configuration /p:ContinuousIntegrationBuild=true $env:Solution_Name
       env:
         Configuration: ${{ matrix.configuration }}
