@@ -277,16 +277,13 @@ public sealed class StorageTests
     [TestMethod]
     [DataRow(Version.V3)]
     [DataRow(Version.V4)]
-    public void Consolidate(Version version)
+    public void ConsolidateMemoryStream(Version version)
     {
         byte[] buffer = new byte[4096];
 
-        string fileName = Path.GetTempFileName();
-
-        try
+        using MemoryStream memoryStream = new();
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
         {
-            using MemoryStream memoryStream = new();
-            using var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen);
             using (CfbStream stream = rootStorage.CreateStream("Test"))
                 stream.Write(buffer, 0, buffer.Length);
 
@@ -301,6 +298,48 @@ public sealed class StorageTests
             rootStorage.Flush(true);
 
             Assert.IsTrue(originalMemoryStreamLength > memoryStream.Length);
+        }
+
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
+        {
+            Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
+        }
+    }
+
+    [TestMethod]
+    [DataRow(Version.V3)]
+    [DataRow(Version.V4)]
+    public void ConsolidateFile(Version version)
+    {
+        byte[] buffer = new byte[4096];
+
+        string fileName = Path.GetTempFileName();
+
+        try
+        {
+            using (var rootStorage = RootStorage.Create(fileName, version))
+            {
+                using (CfbStream stream = rootStorage.CreateStream("Test"))
+                    stream.Write(buffer, 0, buffer.Length);
+
+                Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
+
+                rootStorage.Flush(true);
+
+                long originalLength = new FileInfo(fileName).Length;
+
+                rootStorage.Delete("Test");
+
+                rootStorage.Flush(true);
+
+                long consolidatedLength = new FileInfo(fileName).Length;
+                Assert.IsTrue(originalLength > consolidatedLength);
+            }
+
+            using (var rootStorage = RootStorage.OpenRead(fileName))
+            {
+                Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
+            }
         }
         finally
         {

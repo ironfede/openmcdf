@@ -188,6 +188,12 @@ internal sealed class RootContext : ContextBase, IDisposable
         isDirty = true;
     }
 
+    public void Consolidate(long length)
+    {
+        BaseStream.SetLength(length);
+        Length = length;
+    }
+
     public void WriteHeader()
     {
         CfbBinaryWriter writer = Writer;
