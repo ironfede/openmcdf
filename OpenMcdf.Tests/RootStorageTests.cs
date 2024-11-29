@@ -29,6 +29,83 @@ public sealed class RootStorageTests
     }
 
     [TestMethod]
+    [DataRow(Version.V3)]
+    [DataRow(Version.V4)]
+    public void ConsolidateMemoryStream(Version version)
+    {
+        byte[] buffer = new byte[4096];
+
+        using MemoryStream memoryStream = new();
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
+        {
+            using (CfbStream stream = rootStorage.CreateStream("Test"))
+                stream.Write(buffer, 0, buffer.Length);
+
+            Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
+
+            rootStorage.Flush(true);
+
+            int originalMemoryStreamLength = (int)memoryStream.Length;
+
+            rootStorage.Delete("Test");
+
+            rootStorage.Flush(true);
+
+            Assert.IsTrue(originalMemoryStreamLength > memoryStream.Length);
+        }
+
+        using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
+        {
+            Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
+        }
+    }
+
+    [TestMethod]
+    [DataRow(Version.V3, StorageModeFlags.None)]
+    [DataRow(Version.V4, StorageModeFlags.Transacted)]
+    public void ConsolidateFile(Version version, StorageModeFlags flags)
+    {
+        byte[] buffer = new byte[4096];
+
+        string fileName = Path.GetTempFileName();
+
+        try
+        {
+            using (var rootStorage = RootStorage.Create(fileName, version, flags))
+            {
+                using (CfbStream stream = rootStorage.CreateStream("Test"))
+                    stream.Write(buffer, 0, buffer.Length);
+
+                Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
+
+                if (flags.HasFlag(StorageModeFlags.Transacted))
+                    rootStorage.Commit();
+                rootStorage.Flush(true);
+
+                long originalLength = new FileInfo(fileName).Length;
+
+                rootStorage.Delete("Test");
+
+                if (flags.HasFlag(StorageModeFlags.Transacted))
+                    rootStorage.Commit();
+                rootStorage.Flush(true);
+
+                long consolidatedLength = new FileInfo(fileName).Length;
+                Assert.IsTrue(originalLength > consolidatedLength);
+            }
+
+            using (var rootStorage = RootStorage.OpenRead(fileName))
+            {
+                Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
+            }
+        }
+        finally
+        {
+            File.Delete(fileName);
+        }
+    }
+
+    [TestMethod]
     [DataRow(Version.V3, 0)]
     [DataRow(Version.V3, 1)]
     [DataRow(Version.V3, 2)]
