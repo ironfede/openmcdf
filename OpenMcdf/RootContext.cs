@@ -2,6 +2,7 @@
 
 namespace OpenMcdf;
 
+[Flags]
 enum IOContextFlags
 {
     None = 0,
@@ -186,12 +187,6 @@ internal sealed class RootContext : ContextBase, IDisposable
         if (Length < length)
             Length = length;
         isDirty = true;
-    }
-
-    public void Consolidate(long length)
-    {
-        BaseStream.SetLength(length);
-        Length = length;
     }
 
     public void WriteHeader()

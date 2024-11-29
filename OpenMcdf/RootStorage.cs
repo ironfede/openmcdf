@@ -154,25 +154,25 @@ public sealed class RootStorage : Storage, IDisposable
     {
         // TODO: Consolidate by defragmentation instead of copy
 
+        Stream baseStream = Context.BaseStream;
         Stream? destinationStream = null;
 
         try
         {
-            if (Context.BaseStream is MemoryStream)
-                destinationStream = new MemoryStream((int)Context.BaseStream.Length);
-            else if (Context.BaseStream is FileStream)
+            if (baseStream is MemoryStream)
+                destinationStream = new MemoryStream((int)baseStream.Length);
+            else if (baseStream is FileStream)
                 destinationStream = File.Create(Path.GetTempFileName());
             else
                 throw new NotSupportedException("Unsupported stream type for consolidation.");
 
-            using (RootStorage destinationStorage = Create(destinationStream, Context.Version, storageModeFlags | StorageModeFlags.LeaveOpen))
+            using (RootStorage destinationStorage = Create(destinationStream, Context.Version, StorageModeFlags.LeaveOpen))
                 CopyTo(destinationStorage);
 
-            Context.BaseStream.Position = 0;
-            destinationStream.Position = 0;
+            destinationStream.CopyAllTo(baseStream);
 
-            destinationStream.CopyTo(Context.BaseStream);
-            Context.Consolidate(destinationStream.Length);
+            IOContextFlags contextFlags = ToIOContextFlags(storageModeFlags);
+            _ = new RootContext(ContextSite, baseStream, Version.Unknown, contextFlags);
         }
         catch
         {
