@@ -32,7 +32,6 @@ public class OlePropertiesContainer
     public PropertyContext Context { get; }
 
     private readonly List<OleProperty> properties = new();
-    internal Stream? cfStream;
 
     /// <summary>
     /// Create a new instance of <see cref="OlePropertiesContainer"/> with the specified code page and container type.
@@ -54,8 +53,6 @@ public class OlePropertiesContainer
     public OlePropertiesContainer(CfbStream cfStream)
     {
         PropertySetStream pStream = new();
-
-        this.cfStream = cfStream;
 
         using BinaryReader reader = new(cfStream, Encoding.Unicode, true);
         pStream.Read(reader);
