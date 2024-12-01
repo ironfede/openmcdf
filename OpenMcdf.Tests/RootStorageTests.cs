@@ -207,4 +207,28 @@ public sealed class RootStorageTests
                 rootStorage.OpenStorage($"Test{i}");
         }
     }
+
+    [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public void DeleteTrimsBaseStream(bool consolidate)
+    {
+        using var rootStorage = RootStorage.CreateInMemory(Version.V3);
+        using (CfbStream stream = rootStorage.CreateStream("Test"))
+        {
+            byte[] buffer = TestData.CreateByteArray(4096);
+            stream.Write(buffer, 0, buffer.Length);
+        }
+
+        rootStorage.Flush(consolidate);
+
+        long originalLength = rootStorage.BaseStream.Length;
+
+        rootStorage.Delete("Test");
+        rootStorage.Flush(consolidate);
+
+        long newLength = rootStorage.BaseStream.Length;
+
+        Assert.IsTrue(originalLength > newLength);
+    }
 }

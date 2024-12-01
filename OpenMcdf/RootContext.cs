@@ -87,8 +87,6 @@ internal sealed class RootContext : ContextBase, IDisposable
 
     public uint SectorCount => (uint)Math.Max(0, (Length - SectorSize) / SectorSize); // TODO: Check
 
-    bool isDirty;
-
     public RootContext(RootContextSite rootContextSite, Stream stream, Version version, IOContextFlags contextFlags = IOContextFlags.None)
         : base(rootContextSite)
     {
@@ -178,12 +176,10 @@ internal sealed class RootContext : ContextBase, IDisposable
     {
         Fat.Flush();
 
-        if (isDirty && writer is not null && transactedStream is null)
+        if (writer is not null && transactedStream is null)
         {
-            // Ensure the stream is as long as expected
-            BaseStream.SetLength(Length);
+            TrimBaseStream();
             WriteHeader();
-            isDirty = false;
         }
     }
 
@@ -191,7 +187,16 @@ internal sealed class RootContext : ContextBase, IDisposable
     {
         if (Length < length)
             Length = length;
-        isDirty = true;
+    }
+
+    void TrimBaseStream()
+    {
+        Sector lastUsedSector = Fat.GetLastUsedSector();
+        if (!lastUsedSector.IsValid)
+            throw new FileFormatException("Last used sector is invalid");
+
+        Length = lastUsedSector.EndPosition;
+        BaseStream.SetLength(Length);
     }
 
     public void WriteHeader()
