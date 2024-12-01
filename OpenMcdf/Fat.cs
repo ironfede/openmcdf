@@ -141,6 +141,18 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
         return entry.Index;
     }
 
+    public Sector GetLastUsedSector()
+    {
+        uint lastUsedSectorIndex = uint.MaxValue;
+        foreach (FatEntry entry in this)
+        {
+            if (!entry.IsFree)
+                lastUsedSectorIndex = entry.Index;
+        }
+
+        return new(lastUsedSectorIndex, Context.SectorSize);
+    }
+
     public IEnumerator<FatEntry> GetEnumerator() => new FatEnumerator(Context.Fat);
 
     IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
