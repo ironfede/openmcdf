@@ -65,7 +65,8 @@ public class OlePropertiesContainer
 
         Context = new PropertyContext()
         {
-            CodePage = pStream.PropertySet0.PropertyContext.CodePage
+            CodePage = pStream.PropertySet0.PropertyContext.CodePage,
+            Locale = pStream.PropertySet0.PropertyContext.Locale
         };
 
         for (int i = 0; i < pStream.PropertySet0.Properties.Count; i++)
