@@ -32,6 +32,10 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
+    # Check formatting
+    - name: Check formatting
+      run: dotnet format --verify-no-changes $env:Solution_Name
+
     # Execute all unit tests in the solution
     - name: Execute unit tests
       run: dotnet test --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true" $env:Solution_Name
