@@ -1047,5 +1047,38 @@ namespace OpenMcdf.Test
                 cf.Commit();
             }
         }
+
+        /// <summary>
+        /// Resize without transition to smaller chain has a wrong behavior
+        /// </summary>
+        [TestMethod]
+        public void TEST_ADD_STREAM_BUG_256()
+        {
+            string tempFile = @"OpenMCDFCrash.dat";
+
+            // create big MCDF file
+            CFSVersion version = CFSVersion.Ver_3;
+            CFSConfiguration configuration = CFSConfiguration.Default;
+            CFSUpdateMode updateMode = CFSUpdateMode.Update;
+
+            using (CompoundFile compoundFile = new CompoundFile(version, configuration))
+            {
+                compoundFile.SaveAs(tempFile);
+                compoundFile.Close();
+            }
+
+            using (var compoundFile = new CompoundFile(tempFile, updateMode, configuration))
+            {
+                byte[] data = new byte[6617123];
+
+                for (int i = 0; i < 100; i++)
+                {
+                    var cfStream = compoundFile.RootStorage.AddStream($"Stream {i}.dat");
+                    cfStream.SetData(data);
+                }
+
+                compoundFile.Commit();
+            }
+        }
     }
 }

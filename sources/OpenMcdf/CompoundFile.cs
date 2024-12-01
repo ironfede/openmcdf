@@ -1042,8 +1042,9 @@ namespace OpenMcdf
                 nDIFATSectors = LowSaturation(nDIFATSectors - (int)header.DIFATSectorsNumber); //required DIFAT
             }
 
-
-            for (int i = 0; i < (nDIFATSectors - difatSectors.Count); i++)
+            //for (int i = 0; i < (nDIFATSectors - difatSectors.Count); i++)
+            
+            for (int i = 0; i < nDIFATSectors; i++)
             {
                 Sector s = new Sector(SectorSize, sourceStream);
                 sectors.Add(s);
