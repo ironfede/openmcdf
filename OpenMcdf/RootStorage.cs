@@ -92,7 +92,8 @@ public sealed class RootStorage : Storage, IDisposable
         return Open(stream, flags);
     }
 
-    public static RootStorage Open(string fileName, FileMode mode, FileAccess access, StorageModeFlags flags = StorageModeFlags.None)
+    public static RootStorage Open(string fileName, FileMode mode, FileAccess access, FileShare share = FileShare.ReadWrite,
+                                   StorageModeFlags flags = StorageModeFlags.None)
     {
         if (fileName is null)
             throw new ArgumentNullException(nameof(fileName));
@@ -101,7 +102,7 @@ public sealed class RootStorage : Storage, IDisposable
         ThrowIfInvalid(access);
         ThrowIfLeaveOpen(flags);
 
-        FileStream stream = File.Open(fileName, mode, access);
+        FileStream stream = File.Open(fileName, mode, access, share);
         return Open(stream, flags);
     }
 
@@ -119,14 +120,14 @@ public sealed class RootStorage : Storage, IDisposable
         return new RootStorage(rootContextSite, flags);
     }
 
-    public static RootStorage OpenRead(string fileName, StorageModeFlags flags = StorageModeFlags.None)
+    public static RootStorage OpenRead(string fileName, FileShare share = FileShare.ReadWrite, StorageModeFlags flags = StorageModeFlags.None)
     {
         if (fileName is null)
             throw new ArgumentNullException(nameof(fileName));
 
         ThrowIfLeaveOpen(flags);
 
-        FileStream stream = File.OpenRead(fileName);
+        FileStream stream = File.Open(fileName, FileMode.Open, FileAccess.Read, share);
         return Open(stream, flags);
     }
 

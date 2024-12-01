@@ -309,4 +309,19 @@ public sealed class StorageTests
             Assert.AreEqual(1U, storage.StateBits);
         }
     }
+
+    [TestMethod]
+    [DataRow("MultipleStorage.cfs")]
+    public void OpenReadOnlyWithSharing(string fileName)
+    {
+        using (var rootStorage = RootStorage.Open(fileName, FileMode.Open, FileAccess.ReadWrite, share: FileShare.ReadWrite))
+        {
+            Assert.IsTrue(rootStorage.ContainsEntry("MyStorage"));
+
+            using (var rootStorage2 = RootStorage.OpenRead(fileName, share: FileShare.ReadWrite))
+            {
+                Assert.IsTrue(rootStorage2.ContainsEntry("MyStorage"));
+            }
+        }
+    }
 }
