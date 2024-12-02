@@ -1,4 +1,5 @@
 ![GitHub Actions](https://github.com/ironfede/openmcdf/actions/workflows/dotnet-desktop.yml/badge.svg)
+![CodeQL](https://github.com/ironfede/openmcdf/actions/workflows/codeql.yml/badge.svg)
 [![NuGet Version](https://img.shields.io/nuget/vpre/OpenMcdf)](https://www.nuget.org/packages/OpenMcdf)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/OpenMcdf)](https://www.nuget.org/packages/OpenMcdf)
 
