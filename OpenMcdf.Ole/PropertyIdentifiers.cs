@@ -6,7 +6,7 @@ public static class PropertyIdentifiers
 {
     readonly static FrozenDictionary<uint, string> SummaryInfo = new Dictionary<uint, string>()
     {
-        {0x00000001, "CodePageString" },
+        {0x00000001, "PIDSI_CODEPAGE" },
         {0x00000002, "PIDSI_TITLE" },
         {0x00000003, "PIDSI_SUBJECT" },
         {0x00000004, "PIDSI_AUTHOR" },
@@ -28,7 +28,7 @@ public static class PropertyIdentifiers
 
     readonly static FrozenDictionary<uint, string> DocumentSummaryInfo = new Dictionary<uint, string>()
     {
-        {0x00000001, "CodePageString" },
+        {0x00000001, "PIDDSI_CODEPAGE" },
         {0x00000002, "PIDDSI_CATEGORY" },
         {0x00000003, "PIDDSI_PRESFORMAT" },
         {0x00000004, "PIDDSI_BYTECOUNT" },
@@ -43,7 +43,18 @@ public static class PropertyIdentifiers
         {0x0000000D, "PIDDSI_DOCPARTS" },
         {0x0000000E, "PIDDSI_MANAGER" },
         {0x0000000F, "PIDDSI_COMPANY" },
-        {0x00000010, "PIDDSI_LINKSDIRTY" }
+        {0x00000010, "PIDDSI_LINKSDIRTY" },
+        {0x00000011, "PIDDSI_CCHWITHSPACES" },
+        {0x00000013, "PIDDSI_SHAREDDOC" },
+        {0x00000014, "PIDDSI_LINKBASE" },
+        {0x00000015, "PIDDSI_HLINKS" },
+        {0x00000016, "PIDDSI_HYPERLINKSCHANGED" },
+        {0x00000017, "PIDDSI_VERSION" },
+        {0x00000018, "PIDDSI_DIGSIG" },
+        {0x0000001A, "PIDDSI_CONTENTTYPE" },
+        {0x0000001B, "PIDDSI_CONTENTSTATUS" },
+        {0x0000001C, "PIDDSI_LANGUAGE" },
+        {0x0000001D, "PIDDSI_DOCVERSION" }
     }.ToFrozenDictionary();
 
     public static string GetDescription(uint identifier, ContainerType map, IDictionary<uint, string>? customDictionary = null)
