@@ -13,7 +13,7 @@ internal sealed class PropertySet
     public void LoadContext(int propertySetOffset, BinaryReader br)
     {
         long currPos = br.BaseStream.Position;
-        int codePageOffset = (int)(propertySetOffset + PropertyIdentifierAndOffsets.First(pio => pio.PropertyIdentifier == 1).Offset);
+        int codePageOffset = (int)(propertySetOffset + PropertyIdentifierAndOffsets.First(pio => pio.PropertyIdentifier == SpecialPropertyIdentifiers.CodePage).Offset);
         br.BaseStream.Seek(codePageOffset, SeekOrigin.Begin);
 
         var vType = (VTPropertyType)br.ReadUInt16();
@@ -30,6 +30,6 @@ internal sealed class PropertySet
             Value = propertyNames
         };
         Properties.Add(dictionaryProperty);
-        PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = 0, Offset = 0 });
+        PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = SpecialPropertyIdentifiers.Dictionary, Offset = 0 });
     }
 }

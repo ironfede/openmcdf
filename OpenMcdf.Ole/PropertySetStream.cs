@@ -214,7 +214,7 @@ internal sealed class PropertySetStream
 
     private static IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br, PropertyFactory factory)
     {
-        if (propertyIdentifier == 0)
+        if (propertyIdentifier == SpecialPropertyIdentifiers.Dictionary)
         {
             DictionaryProperty dictionaryProperty = new(codePage);
             dictionaryProperty.Read(br);
