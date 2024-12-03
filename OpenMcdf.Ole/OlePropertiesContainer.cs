@@ -71,7 +71,7 @@ public class OlePropertiesContainer
         for (int i = 0; i < pStream.PropertySet0.Properties.Count; i++)
         {
             PropertyIdentifierAndOffset propertyIdentifierAndOffset = pStream.PropertySet0.PropertyIdentifierAndOffsets[i];
-            if (propertyIdentifierAndOffset.PropertyIdentifier == 0) continue;
+            if (propertyIdentifierAndOffset.PropertyIdentifier == SpecialPropertyIdentifiers.Dictionary) continue;
             //if (propertyIdentifierAndOffset.PropertyIdentifier == 1) continue;
             //if (propertyIdentifierAndOffset.PropertyIdentifier == 0x80000000) continue;
 
@@ -95,7 +95,7 @@ public class OlePropertiesContainer
             for (int i = 0; i < propertySet1.Properties.Count; i++)
             {
                 PropertyIdentifierAndOffset propertyIdentifierAndOffset = propertySet1.PropertyIdentifierAndOffsets[i];
-                if (propertyIdentifierAndOffset.PropertyIdentifier is 0 or 0x80000000)
+                if (propertyIdentifierAndOffset.PropertyIdentifier is SpecialPropertyIdentifiers.Dictionary or SpecialPropertyIdentifiers.Locale)
                     continue;
 
                 var p = (ITypedPropertyValue)propertySet1.Properties[i];
