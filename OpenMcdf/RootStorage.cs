@@ -244,10 +244,11 @@ public sealed class RootStorage : Storage, IDisposable
         Context.MiniFat.WriteTrace(writer);
     }
 
+    // TODO: Move checks to Tests project as Asserts
     [ExcludeFromCodeCoverage]
-    internal void Validate()
+    internal bool Validate()
     {
-        Context.Fat.Validate();
-        Context.MiniFat.Validate();
+        return Context.Fat.Validate()
+            && Context.MiniFat.Validate();
     }
 }

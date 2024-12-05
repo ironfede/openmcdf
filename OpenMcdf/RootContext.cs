@@ -16,7 +16,9 @@ enum IOContextFlags
 /// </summary>
 internal sealed class RootContext : ContextBase, IDisposable
 {
-    const long MaximumV3StreamLength = 2147483648;
+    internal const long MaximumV3StreamLength = 2147483648;
+    internal const uint RangeLockSectorOffset = 0x7FFFFF00;
+    internal const uint RangeLockSectorId = RangeLockSectorOffset / (1 << Header.SectorShiftV4) - 1;
 
     readonly IOContextFlags contextFlags;
     readonly CfbBinaryWriter? writer;
@@ -187,11 +189,14 @@ internal sealed class RootContext : ContextBase, IDisposable
 
     public void ExtendStreamLength(long length)
     {
+        if (Length >= length)
+            return;
+
         if (Version is Version.V3 && length > MaximumV3StreamLength)
             throw new IOException("V3 compound files are limited to 2 GB.");
-
-        if (Length < length)
-            Length = length;
+        else if (Version is Version.V4 && Length < RangeLockSectorOffset && length >= RangeLockSectorOffset)
+            Fat[RangeLockSectorId] = SectorType.EndOfChain;
+        Length = length;
     }
 
     void TrimBaseStream()
@@ -199,6 +204,9 @@ internal sealed class RootContext : ContextBase, IDisposable
         Sector lastUsedSector = Fat.GetLastUsedSector();
         if (!lastUsedSector.IsValid)
             throw new FileFormatException("Last used sector is invalid");
+
+        if (Version is Version.V4 && lastUsedSector.EndPosition < RangeLockSectorOffset)
+            Fat.TrySetValue(RangeLockSectorId, SectorType.Free);
 
         Length = lastUsedSector.EndPosition;
         BaseStream.SetLength(Length);

@@ -1,4 +1,6 @@
-﻿namespace OpenMcdf;
+﻿using System.Diagnostics;
+
+namespace OpenMcdf;
 
 /// <summary>
 /// Provides a <inheritdoc cref="Stream"/> for a stream object in a compound file./>
@@ -185,6 +187,7 @@ internal class FatStream : Stream
             long writeLength = Math.Min(remaining, sector.Length - sectorOffset);
             writer.Write(buffer, localOffset, (int)writeLength);
             Context.ExtendStreamLength(sector.EndPosition);
+            Debug.Assert(Context.Length >= Context.Stream.Length);
             position += writeLength;
             writeCount += (int)writeLength;
             sectorOffset = 0;

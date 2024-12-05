@@ -7,8 +7,6 @@ namespace OpenMcdf;
 /// </summary>
 internal record struct FatEntry(uint Index, uint Value)
 {
-    public readonly bool IsFree => Value == SectorType.Free;
-
     [ExcludeFromCodeCoverage]
     public override readonly string ToString() => $"#{Index}: {Value}";
 }

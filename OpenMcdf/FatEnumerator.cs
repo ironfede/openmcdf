@@ -77,7 +77,7 @@ internal class FatEnumerator : IEnumerator<FatEntry>
     {
         while (MoveNext())
         {
-            if (value == SectorType.Free)
+            if (value is SectorType.Free)
                 return true;
         }
 
