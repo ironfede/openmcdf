@@ -10,7 +10,11 @@ namespace OpenMcdf;
 /// </summary>
 internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
 {
+    const uint RangeLockSectorOffset = 0x7FFFFF00;
+    const uint RangeLockSectorId = RangeLockSectorOffset / (uint)(1 << Header.SectorShiftV4);
+
     private readonly FatSectorEnumerator fatSectorEnumerator;
+    private readonly Func<uint, bool> isFree;
     private readonly byte[] cachedSectorBuffer;
     Sector cachedSector = Sector.EndOfChain;
     private bool isDirty;
@@ -20,6 +24,13 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
     {
         fatSectorEnumerator = new(rootContextSite);
         cachedSectorBuffer = new byte[Context.SectorSize];
+
+        if (Context.Version == Version.V3)
+            isFree = value => value == SectorType.Free;
+        else if (Context.Version == Version.V4)
+            isFree = value => value == SectorType.Free && value != RangeLockSectorId;
+        else
+            throw new NotSupportedException($"Unsupported major version: {Context.Version}.");
     }
 
     public void Dispose()
@@ -28,6 +39,8 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
 
         fatSectorEnumerator.Dispose();
     }
+
+    public bool IsFree(uint key) => isFree(key);
 
     public uint this[uint key]
     {
