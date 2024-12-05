@@ -211,6 +211,8 @@ public sealed class StreamTests
             stream.ReadExactly(actualBuffer);
             CollectionAssert.AreEqual(expectedBuffer, actualBuffer);
         }
+
+        try { File.Delete(fileName); } catch { }
     }
 #endif
 
