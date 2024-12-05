@@ -39,7 +39,7 @@ public sealed class RootStorage : Storage, IDisposable
     private static void ThrowIfLeaveOpen(StorageModeFlags flags)
     {
         if (flags.HasFlag(StorageModeFlags.LeaveOpen))
-            throw new ArgumentException($"{StorageModeFlags.LeaveOpen} is not valid for files");
+            throw new ArgumentException($"{StorageModeFlags.LeaveOpen} is only valid for injected streams.");
     }
 
     private static IOContextFlags ToIOContextFlags(StorageModeFlags flags)
@@ -78,7 +78,12 @@ public sealed class RootStorage : Storage, IDisposable
         return new RootStorage(rootContextSite, flags);
     }
 
-    public static RootStorage CreateInMemory(Version version = Version.V3, StorageModeFlags flags = StorageModeFlags.None) => Create(new MemoryStream(), version, flags);
+    public static RootStorage CreateInMemory(Version version = Version.V3, StorageModeFlags flags = StorageModeFlags.None)
+    {
+        ThrowIfLeaveOpen(flags);
+
+        return Create(new MemoryStream(), version, flags);
+    }
 
     public static RootStorage Open(string fileName, FileMode mode, StorageModeFlags flags = StorageModeFlags.None)
     {
