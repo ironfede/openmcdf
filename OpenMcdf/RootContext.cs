@@ -16,6 +16,8 @@ enum IOContextFlags
 /// </summary>
 internal sealed class RootContext : ContextBase, IDisposable
 {
+    const long MaximumV3StreamLength = 2147483648;
+
     readonly IOContextFlags contextFlags;
     readonly CfbBinaryWriter? writer;
     readonly TransactedStream? transactedStream;
@@ -185,6 +187,9 @@ internal sealed class RootContext : ContextBase, IDisposable
 
     public void ExtendStreamLength(long length)
     {
+        if (Version is Version.V3 && length > MaximumV3StreamLength)
+            throw new IOException("V3 compound files are limited to 2 GB.");
+
         if (Length < length)
             Length = length;
     }

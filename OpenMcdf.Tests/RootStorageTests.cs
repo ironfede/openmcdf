@@ -1,4 +1,6 @@
-﻿namespace OpenMcdf.Tests;
+﻿using Microsoft.IO;
+
+namespace OpenMcdf.Tests;
 
 [TestClass]
 public sealed class RootStorageTests
@@ -230,5 +232,24 @@ public sealed class RootStorageTests
         long newLength = rootStorage.BaseStream.Length;
 
         Assert.IsTrue(originalLength > newLength);
+    }
+
+    [TestMethod]
+    [DoNotParallelize] // High memory usage
+    public void V3ThrowsIOExceptionAt2GB()
+    {
+        const long MaxStreamLength = 2L * 1024 * 1024 * 1024;
+
+        RecyclableMemoryStreamManager manager = new();
+        using RecyclableMemoryStream baseStream = new(manager);
+        baseStream.Capacity64 = MaxStreamLength;
+
+        using var rootStorage = RootStorage.Create(baseStream, Version.V3);
+        using CfbStream stream = rootStorage.CreateStream("Test");
+        byte[] buffer = TestData.CreateByteArray(1024 * 1024);
+        while (baseStream.Length + buffer.Length <= MaxStreamLength)
+            stream.Write(buffer, 0, buffer.Length);
+
+        Assert.ThrowsException<IOException>(() => stream.Write(buffer, 0, buffer.Length));
     }
 }
