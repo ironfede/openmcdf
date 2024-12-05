@@ -78,7 +78,7 @@ public sealed class RootStorage : Storage, IDisposable
         return new RootStorage(rootContextSite, flags);
     }
 
-    public static RootStorage CreateInMemory(Version version = Version.V3) => Create(new MemoryStream(), version);
+    public static RootStorage CreateInMemory(Version version = Version.V3, StorageModeFlags flags = StorageModeFlags.None) => Create(new MemoryStream(), version, flags);
 
     public static RootStorage Open(string fileName, FileMode mode, StorageModeFlags flags = StorageModeFlags.None)
     {
@@ -205,15 +205,7 @@ public sealed class RootStorage : Storage, IDisposable
     private void SwitchToCore(Stream stream, bool allowLeaveOpen)
     {
         Flush();
-
-        stream.SetLength(Context.BaseStream.Length);
-
-        stream.Position = 0;
-        Context.BaseStream.Position = 0;
-
-        Context.BaseStream.CopyTo(stream);
-        stream.Position = 0;
-
+        Context.Stream.CopyAllTo(stream);
         Context.Dispose();
 
         IOContextFlags contextFlags = ToIOContextFlags(storageModeFlags);

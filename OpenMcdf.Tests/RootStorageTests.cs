@@ -174,4 +174,37 @@ public sealed class RootStorageTests
             try { File.Delete(fileName); } catch { }
         }
     }
+
+    [TestMethod]
+    [DataRow(Version.V3, 0)]
+    [DataRow(Version.V3, 1)]
+    [DataRow(Version.V3, 2)]
+    [DataRow(Version.V3, 4)] // Required 2 sectors including root
+    [DataRow(Version.V4, 0)]
+    [DataRow(Version.V4, 1)]
+    [DataRow(Version.V4, 2)]
+    [DataRow(Version.V4, 32)] // Required 2 sectors including root
+    public void SwitchTransactedStream(Version version, int subStorageCount)
+    {
+        using MemoryStream originalMemoryStream = new();
+        using MemoryStream switchedMemoryStream = new();
+
+        using (var rootStorage = RootStorage.Create(originalMemoryStream, version, StorageModeFlags.Transacted | StorageModeFlags.LeaveOpen))
+        {
+            for (int i = 0; i < subStorageCount; i++)
+                rootStorage.CreateStorage($"Test{i}");
+
+            rootStorage.SwitchTo(switchedMemoryStream);
+            rootStorage.Commit();
+        }
+
+        using (var rootStorage = RootStorage.Open(switchedMemoryStream))
+        {
+            IEnumerable<EntryInfo> entries = rootStorage.EnumerateEntries();
+            Assert.AreEqual(subStorageCount, entries.Count());
+
+            for (int i = 0; i < subStorageCount; i++)
+                rootStorage.OpenStorage($"Test{i}");
+        }
+    }
 }

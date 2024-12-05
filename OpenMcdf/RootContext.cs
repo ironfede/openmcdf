@@ -26,6 +26,8 @@ internal sealed class RootContext : ContextBase, IDisposable
 
     public Stream BaseStream { get; }
 
+    public Stream Stream { get; }
+
     public CfbBinaryReader Reader { get; }
 
     public CfbBinaryWriter Writer
@@ -104,17 +106,20 @@ internal sealed class RootContext : ContextBase, IDisposable
         DirectoryEntriesPerSector = SectorSize / DirectoryEntry.Length;
         Length = stream.Length;
 
-        Stream actualStream = stream;
         if (contextFlags.HasFlag(IOContextFlags.Transacted))
         {
             Stream overlayStream = stream is MemoryStream ? new MemoryStream() : File.Create(Path.GetTempFileName());
             transactedStream = new TransactedStream(ContextSite, stream, overlayStream);
-            actualStream = new BufferedStream(transactedStream, SectorSize);
+            Stream = new BufferedStream(transactedStream, SectorSize);
+        }
+        else
+        {
+            Stream = stream;
         }
 
-        Reader = new(actualStream);
+        Reader = new(Stream);
         if (stream.CanWrite)
-            writer = new(actualStream);
+            writer = new(Stream);
 
         Fat = new(ContextSite);
         DirectoryEntries = new(ContextSite);
