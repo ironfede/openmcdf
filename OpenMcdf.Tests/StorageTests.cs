@@ -143,7 +143,7 @@ public sealed class StorageTests
         }
         finally
         {
-            File.Delete(fileName);
+            try { File.Delete(fileName); } catch { }
         }
     }
 

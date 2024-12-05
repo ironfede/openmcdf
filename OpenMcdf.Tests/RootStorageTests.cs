@@ -101,7 +101,7 @@ public sealed class RootStorageTests
         }
         finally
         {
-            File.Delete(fileName);
+            try { File.Delete(fileName); } catch { }
         }
     }
 
@@ -171,7 +171,7 @@ public sealed class RootStorageTests
         }
         finally
         {
-            File.Delete(fileName);
+            try { File.Delete(fileName); } catch { }
         }
     }
 }
