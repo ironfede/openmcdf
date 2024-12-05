@@ -133,7 +133,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
         FatEntry entry = miniFatEnumerator.Current;
         this[entry.Index] = SectorType.EndOfChain;
 
-        Debug.Assert(entry.IsFree);
+        Debug.Assert(entry.Value is SectorType.Free);
         MiniSector miniSector = new(entry.Index, Context.MiniSectorSize);
         if (Context.MiniStream.Length < miniSector.EndPosition)
             Context.MiniStream.SetLength(miniSector.EndPosition);
@@ -153,7 +153,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
     }
 
     [ExcludeFromCodeCoverage]
-    internal void Validate()
+    internal bool Validate()
     {
         using MiniFatEnumerator miniFatEnumerator = new(ContextSite);
 
@@ -165,5 +165,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
                 throw new FileFormatException($"Mini FAT entry {current} is beyond the end of the mini stream.");
             }
         }
+
+        return true;
     }
 }

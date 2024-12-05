@@ -252,4 +252,28 @@ public sealed class RootStorageTests
 
         Assert.ThrowsException<IOException>(() => stream.Write(buffer, 0, buffer.Length));
     }
+
+    [TestMethod]
+    [DoNotParallelize] // High memory usage
+    public void ValidateRangeLockSector()
+    {
+        RecyclableMemoryStreamManager manager = new();
+        using RecyclableMemoryStream baseStream = new(manager);
+        baseStream.Capacity64 = RootContext.RangeLockSectorOffset;
+
+        using var rootStorage = RootStorage.Create(baseStream, Version.V4);
+        using (CfbStream stream = rootStorage.CreateStream("Test"))
+        {
+            byte[] buffer = TestData.CreateByteArray(4096);
+            while (baseStream.Length <= RootContext.RangeLockSectorOffset)
+                stream.Write(buffer, 0, buffer.Length);
+        }
+
+        Assert.IsTrue(rootStorage.Validate());
+
+        rootStorage.Delete("Test");
+        rootStorage.Flush();
+
+        Assert.IsTrue(rootStorage.Validate());
+    }
 }
