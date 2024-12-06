@@ -11,7 +11,7 @@
   <!-- Packaging -->
   <PropertyGroup>
     <Version>3.0.0.0</Version>
-    <PackageVersion>$(Version)-preview.4</PackageVersion>
+    <PackageVersion>$(Version)-preview.5</PackageVersion>
     <Authors>ironfede,jeremy-visionaid</Authors>
     <Copyright>Copyright © 2010-2024, Federico Blaseotto, Jeremy Powell</Copyright>
     <PackageProjectUrl>https://github.com/ironfede/openmcdf</PackageProjectUrl>
