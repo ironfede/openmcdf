@@ -63,11 +63,7 @@ public class OlePropertiesContainer
         PropertyNames = (Dictionary<uint, string>?)pStream.PropertySet0!.Properties
             .FirstOrDefault(p => p.PropertyType == PropertyType.DictionaryProperty)?.Value;
 
-        Context = new PropertyContext()
-        {
-            CodePage = pStream.PropertySet0.PropertyContext.CodePage,
-            Locale = pStream.PropertySet0.PropertyContext.Locale
-        };
+        Context = pStream.PropertySet0.PropertyContext;
 
         for (int i = 0; i < pStream.PropertySet0.Properties.Count; i++)
         {
