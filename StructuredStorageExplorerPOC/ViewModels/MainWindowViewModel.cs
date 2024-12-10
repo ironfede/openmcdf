@@ -35,7 +35,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
     [ObservableProperty]
     private bool documentLoaded;
 
-    public ObservableCollection<Node> Nodes { get; }
+    public ObservableCollection<Node> Nodes { get; set; }
 
     public MainWindowViewModel()
     {
@@ -44,17 +44,7 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         SaveFile = new CommandHandler(() => SaveFileAction(), true);
         DocumentLoaded = false;
         FilePath = string.Empty;
-
-        Nodes = new ObservableCollection<Node>
-            {
-                new Node("Animals", new ObservableCollection<Node>
-                {
-                    new Node("Mammals", new ObservableCollection<Node>
-                    {
-                        new Node("Lion"), new Node("Cat"), new Node("Zebra")
-                    })
-                })
-            };
+        Nodes = new ObservableCollection<Node>();
     }
 
     private void CloseCurrentFileAction()
@@ -66,14 +56,14 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
 
     private void NewFileAction()
     {
-        PopulateRootStorage();
+        LoadData();
    }
     public void OpenFile(string filePath)
     {
-        PopulateRootStorage(filePath);
+        LoadData(filePath);
     }
 
-    private void PopulateRootStorage(string filePath = null)
+    private void LoadData(string filePath = null)
     {
         CloseCurrentFileAction();
         if (filePath == null)
@@ -83,11 +73,35 @@ public partial class MainWindowViewModel : ViewModelBase, IDisposable
         _rootStorage = RootStorage.Open(filePath, FileMode.OpenOrCreate);
         FilePath = filePath;
         DocumentLoaded = true;
+
+        Nodes.Clear();
+        Node root = new Node(_rootStorage.EntryInfo.Name);
+        Nodes.Add(root);
+
+        AddNodes(root, _rootStorage);
+
     }
     private void SaveFileAction(string filePath = null)
     {
     }
 
+    private static void AddNodes(Node node, Storage storage)
+    {
+        foreach (EntryInfo item in storage.EnumerateEntries())
+        {
+            Node childNode = new Node(item.Name);
+            node.SubNodes.Add(childNode);
+
+            if (item.Type is EntryType.Storage)
+            {
+                Storage subStorage = storage.OpenStorage(item.Name);
+                AddNodes(childNode, subStorage);
+            }
+            else
+            {
+            }
+        }
+    }
     public void Dispose()
     {
         _rootStorage?.Dispose();

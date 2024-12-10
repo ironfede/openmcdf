@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace StructuredStorageExplorerPOC.Models;
 public class Node
 {
-    public ObservableCollection<Node>? SubNodes { get; }
+    public ObservableCollection<Node>? SubNodes { get; } = new ObservableCollection<Node>();
     public string Title { get; }
 
     public Node(string title)
