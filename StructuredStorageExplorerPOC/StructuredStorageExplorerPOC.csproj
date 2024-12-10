@@ -28,6 +28,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <AvaloniaResource Update="Assets\page_white.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </AvaloniaResource>

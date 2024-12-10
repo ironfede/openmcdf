@@ -80,7 +80,7 @@ public partial class MainForm : Form
     {
         cf?.Dispose();
         cf = null;
-
+    
         treeView1.Nodes.Clear();
         fileNameLabel.Text = string.Empty;
         saveAsToolStripMenuItem.Enabled = false;

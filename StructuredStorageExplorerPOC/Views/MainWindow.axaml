@@ -7,7 +7,7 @@
         x:Class="StructuredStorageExplorerPOC.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="StructuredStorageExplorerPOC">
+        Title="Structured Storage eXplorer">
 
     <Design.DataContext>
         <!-- This only sets the DataContext for the previewer in an IDE,
@@ -27,7 +27,7 @@
             <Image Width="16" Height="16" Source="avares://StructuredStorageExplorerPOC/Assets/page_white.png" />
           </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="Close File"/>
+        <MenuItem Header="Close File" Command="{Binding CloseCurrentFile}"  IsEnabled="{Binding DocumentLoaded}"/>
         <Separator/>
         <MenuItem Header="Save">
           <MenuItem.Icon>
@@ -37,7 +37,7 @@
           <MenuItem Header="Save As..."/>
         </MenuItem>
       <MenuItem Header="_Edit">
-        <MenuItem Header="Preferences"/>
+        <MenuItem Header="Preferences" Command="{Binding ShowPreferences}" />
       </MenuItem>
     </Menu>
     <TextBlock/>
