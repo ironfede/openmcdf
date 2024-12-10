@@ -14,7 +14,34 @@
              to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
-
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+  <DockPanel>
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Header="_File">
+        <MenuItem Header="Open...">
+          <MenuItem.Icon>
+            <Image Width="16" Height="16" Source="avares://StructuredStorageExplorerPOC/Assets/folder.png" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Header="New Compound File">
+          <MenuItem.Icon>
+            <Image Width="16" Height="16" Source="avares://StructuredStorageExplorerPOC/Assets/page_white.png" />
+          </MenuItem.Icon>
+        </MenuItem>
+        <MenuItem Header="Close File"/>
+        <Separator/>
+        <MenuItem Header="Save">
+          <MenuItem.Icon>
+            <Image Width="16" Height="16" Source="avares://StructuredStorageExplorerPOC/Assets/disk.png" />
+          </MenuItem.Icon>
+        </MenuItem>
+          <MenuItem Header="Save As..."/>
+        </MenuItem>
+      <MenuItem Header="_Edit">
+        <MenuItem Header="Preferences"/>
+      </MenuItem>
+    </Menu>
+    <TextBlock/>
+  </DockPanel>
+  
 
 </Window>
