@@ -9,6 +9,7 @@ using System.Data;
 using System.Globalization;
 using FileFormatException = OpenMcdf.FileFormatException;
 
+
 // Author Federico Blaseotto
 
 namespace StructuredStorageExplorer;

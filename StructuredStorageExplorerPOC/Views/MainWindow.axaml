@@ -17,12 +17,12 @@
   <DockPanel>
     <Menu DockPanel.Dock="Top">
       <MenuItem Header="_File">
-        <MenuItem Header="Open...">
+        <MenuItem Header="Open..." Click="FileOpen">
           <MenuItem.Icon>
             <Image Width="16" Height="16" Source="avares://StructuredStorageExplorerPOC/Assets/folder.png" />
           </MenuItem.Icon>
         </MenuItem>
-        <MenuItem Header="New Compound File">
+        <MenuItem Header="New Compound File" Command="{Binding NewFile}">
           <MenuItem.Icon>
             <Image Width="16" Height="16" Source="avares://StructuredStorageExplorerPOC/Assets/page_white.png" />
           </MenuItem.Icon>
@@ -37,11 +37,23 @@
           <MenuItem Header="Save As..."/>
         </MenuItem>
       <MenuItem Header="_Edit">
-        <MenuItem Header="Preferences" Command="{Binding ShowPreferences}" />
+        <MenuItem Header="Preferences" Click="ShowPreferences" />
       </MenuItem>
     </Menu>
-    <TextBlock/>
+    <Grid ColumnDefinitions="*, 1, *">
+      <Grid Grid.Column="0" ColumnDefinitions="*" RowDefinitions="*, 1, *">
+        <TreeView Grid.Row="0" ItemsSource="{Binding Nodes}">
+          <TreeView.ItemTemplate>
+            <TreeDataTemplate ItemsSource="{Binding SubNodes}">
+              <TextBlock Text="{Binding Title}"/>
+            </TreeDataTemplate>
+          </TreeView.ItemTemplate>
+        </TreeView>
+        <GridSplitter Grid.Row="1" Background="Black"  ResizeDirection="Rows"/>
+        <TextBlock Grid.Row="2" >TODO: PropertyGrid</TextBlock>
+      </Grid>
+      <GridSplitter Grid.Column="1" Background="Black" Width="1" ResizeDirection="Columns"/>
+      <TextBlock Grid.Column="2">TODO: Tabs</TextBlock>
+    </Grid>
   </DockPanel>
-  
-
 </Window>
