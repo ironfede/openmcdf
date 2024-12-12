@@ -40,6 +40,9 @@
         <MenuItem Header="Preferences" Click="ShowPreferences" />
       </MenuItem>
     </Menu>
+    <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom">
+      <TextBlock Text="{Binding FilePath}"/>
+    </StackPanel>
     <Grid ColumnDefinitions="*, 1, *">
       <Grid Grid.Column="0" ColumnDefinitions="*" RowDefinitions="*, 1, *">
         <TreeView Grid.Row="0" ItemsSource="{Binding Nodes}">
