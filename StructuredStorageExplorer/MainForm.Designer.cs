@@ -86,7 +86,7 @@
             // openFileDialog1
             // 
             this.openFileDialog1.Filter = "Office files (*.xls *.doc *.ppt)|*.xls;*.doc;*.ppt|Thumbs db files (Thumbs.db)|*." +
-    "db|MSI Setup files (*.msi)|*.msi|Advanced Authoring Format  (*.aaf)|*.aaf|All fi" +
+    "db|MSI Setup files (*.msi)|*.msi|Advanced Authoring Format (*.aaf)|*.aaf|Outlook messages (*.msg)|*.msg|All fi" +
     "les (*.*)|*.*";
             this.openFileDialog1.Title = "Open OLE Structured Storage file";
             // 
