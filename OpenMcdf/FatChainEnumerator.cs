@@ -16,7 +16,11 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
     private uint index = uint.MaxValue;
     private uint current = uint.MaxValue;
     private long length = -1;
-    private uint slow = uint.MaxValue; // Floyd's cycle-finding algorithm
+
+    // Brent's cycle detection algorithm
+    private uint cycleLength = 1;
+    private uint power = 1;
+    private uint slow = uint.MaxValue;
 
     public FatChainEnumerator(Fat fat, uint startSectorId)
     {
@@ -64,7 +68,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
             index = 0;
             current = startId;
             start = false;
-            slow = startId;
+            slow = uint.MaxValue;
             return true;
         }
 
@@ -87,15 +91,18 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
             throw new FileFormatException("FAT chain index is greater than the sector count.");
         }
 
-        if (index % 2 == 0 && !SectorType.IsFreeOrEndOfChain(slow))
+        if (value == slow)
+            throw new FileFormatException("FAT chain contains a loop.");
+
+        if (cycleLength == power)
         {
-            // Slow might become free or end of chain while shrinking
-            slow = fat[slow];
-            if (slow == value)
-                throw new FileFormatException("FAT chain contains a loop.");
+            cycleLength = 0;
+            power *= 2;
+            slow = value;
         }
 
         current = value;
+        cycleLength++;
         return true;
     }
 
@@ -242,6 +249,8 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
         index = uint.MaxValue;
         current = uint.MaxValue;
         slow = uint.MaxValue;
+        cycleLength = 1;
+        power = 1;
     }
 
     [ExcludeFromCodeCoverage]
