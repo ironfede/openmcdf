@@ -288,12 +288,12 @@ public sealed class StorageTests
         {
             Storage storage = rootStorage.CreateStorage("Storage");
 
-            Assert.AreEqual(Guid.Empty, storage.CLISD);
+            Assert.AreEqual(Guid.Empty, storage.CLSID);
             Assert.AreNotEqual(DirectoryEntry.ZeroFileTime, storage.CreationTime);
             Assert.AreNotEqual(DirectoryEntry.ZeroFileTime, storage.ModifiedTime);
             Assert.AreEqual(0U, storage.StateBits);
 
-            storage.CLISD = guid;
+            storage.CLSID = guid;
             storage.CreationTime = now;
             storage.ModifiedTime = now;
             storage.StateBits = 1U;
@@ -303,7 +303,7 @@ public sealed class StorageTests
         {
             Storage storage = rootStorage.OpenStorage("Storage");
 
-            Assert.AreEqual(guid, storage.CLISD);
+            Assert.AreEqual(guid, storage.CLSID);
             Assert.AreEqual(now, storage.CreationTime);
             Assert.AreEqual(now, storage.ModifiedTime);
             Assert.AreEqual(1U, storage.StateBits);

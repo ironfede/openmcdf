@@ -27,7 +27,14 @@ public class Storage : ContextBase
 
     public EntryInfo EntryInfo => directoryEntry.ToEntryInfo(path);
 
+    [Obsolete("Use CLSID instead.")]
     public Guid CLISD
+    {
+        get => CLSID;
+        set => CLSID = value;
+    }
+
+    public Guid CLSID
     {
         get => directoryEntry.CLSID;
         set
