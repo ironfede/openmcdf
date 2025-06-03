@@ -15,7 +15,11 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
     uint index = uint.MaxValue;
     private uint current = uint.MaxValue;
     private long length = -1;
-    private uint slow = uint.MaxValue; // Floyd's cycle-finding algorithm
+
+    // Brent's cycle-finding algorithm
+    private uint cycleLength = 1;
+    private uint power = 1;
+    private uint slow = uint.MaxValue;
 
     public MiniFatChainEnumerator(RootContextSite rootContextSite, uint startSectorId)
         : base(rootContextSite)
@@ -66,6 +70,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
             {
                 index = uint.MaxValue;
                 current = uint.MaxValue;
+                slow = uint.MaxValue;
                 return false;
             }
 
@@ -73,16 +78,19 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
             if (nextIndex > SectorType.Maximum)
                 throw new FileFormatException("Mini FAT chain length is greater than the maximum.");
 
-            if (nextIndex % 2 == 0 && !SectorType.IsFreeOrEndOfChain(slow))
+            if (value == slow)
+                throw new FileFormatException("Mini FAT chain contains a loop.");
+
+            if (cycleLength == power)
             {
-                // Slow might become free or end of chain while shrinking
-                slow = Context.MiniFat[slow];
-                if (slow == value)
-                    throw new FileFormatException("Mini FAT chain contains a loop.");
+                cycleLength = 0;
+                power *= 2;
+                slow = value;
             }
 
             index = nextIndex;
             current = value;
+            cycleLength++;
             return true;
         }
 
@@ -213,6 +221,8 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
         index = uint.MaxValue;
         current = uint.MaxValue;
         slow = uint.MaxValue;
+        cycleLength = 1;
+        power = 1;
     }
 
     [ExcludeFromCodeCoverage]
