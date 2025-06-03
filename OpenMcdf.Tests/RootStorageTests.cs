@@ -26,7 +26,7 @@ public sealed class RootStorageTests
         Assert.ThrowsException<NotSupportedException>(() => rootStorage.Revert());
         Assert.ThrowsException<NotSupportedException>(() => rootStorage.CreationTime = DateTime.MinValue);
         Assert.ThrowsException<NotSupportedException>(() => rootStorage.ModifiedTime = DateTime.MinValue);
-        Assert.ThrowsException<NotSupportedException>(() => rootStorage.CLISD = Guid.Empty);
+        Assert.ThrowsException<NotSupportedException>(() => rootStorage.CLSID = Guid.Empty);
         Assert.ThrowsException<NotSupportedException>(() => rootStorage.StateBits = 0);
     }
 
