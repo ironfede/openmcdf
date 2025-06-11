@@ -125,7 +125,7 @@ public partial class MainForm : Form
 
         if (cf is not null)
         {
-            TreeNode root = treeView1.Nodes.Add(cf.EntryInfo.Name);
+            TreeNode root = treeView1.Nodes.Add(cf.EntryInfo.Name.WithEscaped());
             root.ImageIndex = 0;
             root.Tag = new NodeSelection(null, cf.EntryInfo);
 
@@ -167,7 +167,7 @@ public partial class MainForm : Form
     {
         foreach (EntryInfo item in storage.EnumerateEntries())
         {
-            TreeNode childNode = node.Nodes.Add(item.Name);
+            TreeNode childNode = node.Nodes.Add(item.Name.WithEscaped());
             childNode.Tag = new NodeSelection(storage, item);
 
             if (item.Type is EntryType.Storage)
@@ -371,7 +371,7 @@ public partial class MainForm : Form
                 hexEditor.ByteProvider = null;
             }
 
-            propertyGrid1.SelectedObject = nodeSelection.EntryInfo;
+            propertyGrid1.SelectedObject = nodeSelection.EntryInfo.WithEscaped();
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
