@@ -1,4 +1,6 @@
-﻿namespace StructuredStorageExplorer;
+﻿using OpenMcdf;
+
+namespace StructuredStorageExplorer;
 
 static class Utils
 {
@@ -42,5 +44,23 @@ static class Utils
         DialogResult dialogResult = form.ShowDialog();
         value = textBox.Text;
         return dialogResult;
+    }
+
+    public static EntryInfo WithEscaped(this EntryInfo entry) => entry with { Name = EscapedControl(entry.Name), Path = EscapedControl(entry.Path) };
+
+    public static string WithEscaped(this string entry) => EscapedControl(entry);
+
+    private static string EscapedControl(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return s;
+        var sb = new System.Text.StringBuilder();
+        foreach (char c in s)
+        {
+            if (char.IsControl(c))
+                sb.Append($"\\u{((int)c):x4}");
+            else
+                sb.Append(c);
+        }
+        return sb.ToString();
     }
 }
