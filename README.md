@@ -72,7 +72,7 @@ root.Flush(consolidate: true);
 
 ## Object Linking and Embedding (OLE) Property Set Data Structures
 
-Support for reading and writing [OLE Properties](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-oleps/bf7aeae8-c47a-4939-9f45-700158dac3bc) is available via the OpenMcdf.Ole package. However, ***the API is experimental and subject to change***
+Support for reading and writing [OLE Properties](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-oleps/bf7aeae8-c47a-4939-9f45-700158dac3bc) is available via the [OpenMcdf.Ole](https://www.nuget.org/packages/OpenMcdf.Ole) package. However, ***the API is experimental and subject to change***.
 
 ```C#
 OlePropertiesContainer co = new(stream);
