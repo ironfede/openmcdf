@@ -272,12 +272,12 @@ public class Storage : ContextBase
             if (entry.StreamLength < Header.MiniStreamCutoffSize)
             {
                 using MiniFatChainEnumerator miniFatChainEnumerator = new(ContextSite, entry.StartSectorId);
-                miniFatChainEnumerator.Shrink(0);
+                miniFatChainEnumerator.Truncate();
             }
             else
             {
                 using FatChainEnumerator fatChainEnumerator = new(Context.Fat, entry.StartSectorId);
-                fatChainEnumerator.Shrink(0);
+                fatChainEnumerator.Truncate();
             }
         }
 

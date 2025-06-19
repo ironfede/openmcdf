@@ -214,6 +214,13 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
         return startId;
     }
 
+    public void Truncate()
+    {
+        uint chainLength = (uint)GetLength();
+        if (chainLength > 0)
+            Shrink(0);
+    }
+
     /// <inheritdoc/>
     public void Reset()
     {
