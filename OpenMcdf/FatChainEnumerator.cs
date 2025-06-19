@@ -91,7 +91,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
             throw new FileFormatException("FAT chain index is greater than the sector count.");
         }
 
-        if (value == slow)
+        if (value == slow && slow != uint.MaxValue)
             throw new FileFormatException("FAT chain contains a loop.");
 
         if (cycleLength == power)

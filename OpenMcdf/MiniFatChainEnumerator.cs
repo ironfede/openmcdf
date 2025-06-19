@@ -78,7 +78,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
             if (nextIndex > SectorType.Maximum)
                 throw new FileFormatException("Mini FAT chain length is greater than the maximum.");
 
-            if (value == slow)
+            if (value == slow && slow != uint.MaxValue)
                 throw new FileFormatException("Mini FAT chain contains a loop.");
 
             if (cycleLength == power)
