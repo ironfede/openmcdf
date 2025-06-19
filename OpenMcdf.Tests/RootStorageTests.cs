@@ -148,7 +148,7 @@ public sealed class RootStorageTests
     [DataRow(Version.V4, 1)]
     [DataRow(Version.V4, 2)]
     [DataRow(Version.V4, 32)] // Required 2 sectors including root
-    public void SwitchFile(Version version, int subStorageCount)
+    public void SwitchToFile(Version version, int subStorageCount)
     {
         string fileName = Path.GetTempFileName();
 
@@ -169,6 +169,52 @@ public sealed class RootStorageTests
 
                 for (int i = 0; i < subStorageCount; i++)
                     rootStorage.OpenStorage($"Test{i}");
+            }
+        }
+        finally
+        {
+            try { File.Delete(fileName); } catch { }
+        }
+    }
+
+    [TestMethod]
+    [DataRow(Version.V3, 0)]
+    [DataRow(Version.V3, 1)]
+    [DataRow(Version.V3, 2)]
+    [DataRow(Version.V3, 4)]
+    [DataRow(Version.V4, 0)]
+    [DataRow(Version.V4, 1)]
+    [DataRow(Version.V4, 2)]
+    [DataRow(Version.V4, 4)]
+    public void SwitchToWritableStream(Version version, int streamCount)
+    {
+        string fileName = Path.GetTempFileName();
+
+        var data = TestData.CreateByteArray(1024);
+
+        try
+        {
+            using (var rootStorage = RootStorage.CreateInMemory(version))
+            {
+                for (int i = 0; i < streamCount; i++)
+                {
+                    using CfbStream stream = rootStorage.CreateStream($"Test{i}");
+                    stream.Write(data, 0, data.Length);
+                }
+
+                rootStorage.SwitchTo(fileName);
+            }
+
+            using MemoryStream memoryStream = new();
+            using (var rootStorage = RootStorage.OpenRead(fileName))
+            {
+                rootStorage.SwitchTo(memoryStream);
+
+                IEnumerable<EntryInfo> entries = rootStorage.EnumerateEntries();
+                Assert.AreEqual(streamCount, entries.Count());
+
+                for (int i = 0; i < streamCount; i++)
+                    rootStorage.Delete($"Test{i}");
             }
         }
         finally
