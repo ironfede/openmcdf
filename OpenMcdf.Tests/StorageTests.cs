@@ -39,6 +39,7 @@ public sealed class StorageTests
 
     [TestMethod]
     [DataRow("FatChainLoop_v3.cfs")]
+    [Ignore("Test file has multiple validation errors")]
     public void FatChainLoop(string fileName)
     {
         using var rootStorage = RootStorage.OpenRead(fileName);

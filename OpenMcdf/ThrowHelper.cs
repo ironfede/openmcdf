@@ -56,4 +56,16 @@ internal static class ThrowHelper
         if (value > SectorType.Maximum)
             throw new ArgumentOutOfRangeException(nameof(value), $"Invalid sector ID: {value:X8}.");
     }
+
+    public static void ThrowIfStreamIdIsInvalid(uint value)
+    {
+        if (!StreamId.IsValid(value))
+            throw new FileFormatException($"Invalid stream ID: {value:X8}.");
+    }
+
+    public static void ThrowIfStreamIdIsInvalidInPractice(uint value)
+    {
+        if (!StreamId.IsValidInPractice(value))
+            throw new FileFormatException($"Invalid stream ID: {value:X8}.");
+    }
 }

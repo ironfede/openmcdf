@@ -267,7 +267,7 @@ public class Storage : ContextBase
             };
         }
 
-        if (entry.Type is StorageType.Stream && entry.StartSectorId is not StreamId.NoStream)
+        if (entry.Type is StorageType.Stream && !SectorType.IsFreeOrEndOfChain(entry.StartSectorId))
         {
             if (entry.StreamLength < Header.MiniStreamCutoffSize)
             {

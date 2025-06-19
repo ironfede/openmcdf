@@ -25,15 +25,6 @@ enum NodeColor
 }
 
 /// <summary>
-/// Stream ID constants for <see cref="DirectoryEntry"/>.
-/// </summary>
-internal static class StreamId
-{
-    public const uint Maximum = 0xFFFFFFFA;
-    public const uint NoStream = 0xFFFFFFFF;
-}
-
-/// <summary>
 /// Encapsulates data about a <see cref="Storage"/> or Stream.
 /// </summary>
 internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
