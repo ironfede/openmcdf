@@ -118,6 +118,30 @@ internal sealed class CfbBinaryReader : BinaryReader
             StartSectorId = ReadUInt32()
         };
 
+        // TODO: Allow strict validation.
+        // Name length is clamped and validated when reading or creating new entries.
+#if false
+        if (entry.NameLength > DirectoryEntry.NameFieldLength)
+            throw new FileFormatException($"Name length {entry.NameLength} exceeds maximum value {DirectoryEntry.NameFieldLength}.");
+#endif
+
+        ThrowHelper.ThrowIfStreamIdIsInvalid(entry.LeftSiblingId);
+        ThrowHelper.ThrowIfStreamIdIsInvalid(entry.RightSiblingId);
+        ThrowHelper.ThrowIfStreamIdIsInvalid(entry.ChildId);
+
+        if (entry.Type is StorageType.Stream or StorageType.Root)
+        {
+            // Root storage may be the mini stream
+            ThrowHelper.ThrowIfStreamIdIsInvalidInPractice(entry.StartSectorId);
+        }
+        else if (entry.Type is StorageType.Storage)
+        {
+            // TODO: Allow strict validation.
+            // NoStream is not valid, but was written by v3.0.0
+            if (entry.StartSectorId is not 0 and not StreamId.NoStream)
+                throw new FileFormatException($"Invalid stream ID: {entry.StartSectorId:X8}.");
+        }
+
         Buffer.BlockCopy(buffer, 0, entry.Name, 0, DirectoryEntry.NameFieldLength);
 
         if (version == Version.V3)
