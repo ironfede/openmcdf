@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace OpenMcdf.Tests;
+﻿namespace OpenMcdf.Tests;
 
 [TestClass]
 public sealed class BinaryWriterTests
@@ -46,21 +44,20 @@ public sealed class BinaryWriterTests
     {
         DirectoryEntry expected = new()
         {
-            Type = StorageType.Storage,
+            Type = StorageType.Stream,
             Color = NodeColor.Red,
             LeftSiblingId = 2,
             RightSiblingId = 3,
             ChildId = 4,
-            CLSID = Guid.NewGuid(),
+            CLSID = new("D295800C-F486-497A-9C29-A049227E7CB1"),
             StateBits = 5,
-            CreationTime = DateTime.UtcNow,
-            ModifiedTime = DateTime.UtcNow,
+            CreationTime = DirectoryEntry.ZeroFileTime,
+            ModifiedTime = DirectoryEntry.ZeroFileTime,
             StartSectorId = 6,
             StreamLength = 7
         };
 
-        string name = "Root Entry";
-        expected.NameLength = (ushort)Encoding.Unicode.GetBytes(name, 0, name.Length, expected.Name, 0);
+        expected.NameString = "Root Entry";
 
         using MemoryStream stream = new();
         using CfbBinaryWriter writer = new(stream);
