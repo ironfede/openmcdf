@@ -10,6 +10,24 @@ enum WriteMode
 [TestClass]
 public sealed class StreamTests
 {
+#if WINDOWS && false
+    [TestMethod]
+    [DynamicData(nameof(TestData.ShortVersionsAndSizes), typeof(TestData))]
+    public void CreateTestStreamFiles(Version version, int length)
+    {
+        string directory = "Reference";
+        Directory.CreateDirectory(directory);
+
+        string fileName = Path.Combine(directory, $"TestStream_v{(int)version}_{length}.cfs");
+        using var rootStorage = StructuredStorage.Storage.Create(fileName, StructuredStorage.StorageModes.AccessReadWrite | StructuredStorage.StorageModes.ShareExclusive, version == Version.V4);
+        using StructuredStorage.Stream stream = rootStorage.CreateStream("TestStream");
+
+        // Test files are filled with bytes equal to their position modulo 256
+        for (int i = 0; i < length; i++)
+            stream.WriteByte((byte)i);
+    }
+#endif
+
     [TestMethod]
     [DataRow("TestStream_v3_0.cfs")]
     public void OpenStream(string fileName)
