@@ -7,6 +7,8 @@ namespace OpenMcdf;
 /// </summary>
 internal static class ThrowHelper
 {
+    static readonly char[] InvalidNameChars = ['\\', '/', ':', '!'];
+
     public static void ThrowIfDisposed(this object instance, bool disposed)
     {
         if (disposed)
@@ -44,7 +46,7 @@ internal static class ThrowHelper
         if (value is null)
             throw new ArgumentNullException(nameof(value));
 
-        if (value.Contains(@"\") || value.Contains(@"/") || value.Contains(@":") || value.Contains(@"!"))
+        if (value.AsSpan().ContainsAny(InvalidNameChars))
             throw new ArgumentException("Name cannot contain any of the following characters: '\\', '/', ':', '!'.", nameof(value));
 
         if (Encoding.Unicode.GetByteCount(value) > DirectoryEntry.NameFieldLength - 2)
