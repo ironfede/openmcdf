@@ -23,7 +23,7 @@ public sealed class StorageTests
         Assert.IsTrue(rootStorage.TryOpenStorage("MyStorage", out Storage? _));
         Assert.IsFalse(rootStorage.TryOpenStorage("", out Storage? _));
 
-        Assert.ThrowsException<DirectoryNotFoundException>(() => rootStorage.OpenStorage(""));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => rootStorage.OpenStorage(""));
 
         Assert.IsTrue(rootStorage.ContainsEntry("MyStorage"));
         Assert.IsFalse(rootStorage.ContainsEntry("NonExistentStorage"));
@@ -43,7 +43,7 @@ public sealed class StorageTests
     public void FatChainLoop(string fileName)
     {
         using var rootStorage = RootStorage.OpenRead(fileName);
-        Assert.ThrowsException<FileFormatException>(() => rootStorage.OpenStorage("Anything"));
+        Assert.ThrowsExactly<FileFormatException>(() => rootStorage.OpenStorage("Anything"));
     }
 
     [TestMethod]
@@ -110,10 +110,10 @@ public sealed class StorageTests
     {
         using MemoryStream memoryStream = new();
         using var rootStorage = RootStorage.Create(memoryStream);
-        Assert.ThrowsException<ArgumentException>(() => rootStorage.CreateStorage("!"));
-        Assert.ThrowsException<ArgumentException>(() => rootStorage.CreateStorage("/"));
-        Assert.ThrowsException<ArgumentException>(() => rootStorage.CreateStorage(":"));
-        Assert.ThrowsException<ArgumentException>(() => rootStorage.CreateStorage("\\"));
+        Assert.ThrowsExactly<ArgumentException>(() => rootStorage.CreateStorage("!"));
+        Assert.ThrowsExactly<ArgumentException>(() => rootStorage.CreateStorage("/"));
+        Assert.ThrowsExactly<ArgumentException>(() => rootStorage.CreateStorage(":"));
+        Assert.ThrowsExactly<ArgumentException>(() => rootStorage.CreateStorage("\\"));
     }
 
     [TestMethod]
@@ -156,7 +156,7 @@ public sealed class StorageTests
         using MemoryStream memoryStream = new();
         using var rootStorage = RootStorage.Create(memoryStream, version);
         rootStorage.CreateStorage("Test");
-        Assert.ThrowsException<IOException>(() => rootStorage.CreateStorage("Test"));
+        Assert.ThrowsExactly<IOException>(() => rootStorage.CreateStorage("Test"));
     }
 
     private static void CreateDeleteTest(Version version, MemoryStream memoryStream)

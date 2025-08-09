@@ -36,7 +36,7 @@ public sealed class StreamTests
         Assert.IsTrue(rootStorage.TryOpenStream("TestStream", out CfbStream? _));
         Assert.IsFalse(rootStorage.TryOpenStream("", out CfbStream? _));
 
-        Assert.ThrowsException<FileNotFoundException>(() => rootStorage.OpenStream(""));
+        Assert.ThrowsExactly<FileNotFoundException>(() => rootStorage.OpenStream(""));
 
         using CfbStream stream = rootStorage.OpenStream("TestStream");
         Assert.AreEqual("TestStream", stream.EntryInfo.Name);
@@ -119,10 +119,10 @@ public sealed class StreamTests
         using Stream stream = rootStorage.OpenStream("TestStream");
 
         stream.Seek(0, SeekOrigin.Begin);
-        Assert.ThrowsException<IOException>(() => stream.Seek(-1, SeekOrigin.Begin));
-        Assert.ThrowsException<IOException>(() => stream.Seek(-1, SeekOrigin.Current));
-        Assert.ThrowsException<IOException>(() => stream.Seek(length + 1, SeekOrigin.End));
-        Assert.ThrowsException<ArgumentException>(() => stream.Seek(length, (SeekOrigin)3));
+        Assert.ThrowsExactly<IOException>(() => stream.Seek(-1, SeekOrigin.Begin));
+        Assert.ThrowsExactly<IOException>(() => stream.Seek(-1, SeekOrigin.Current));
+        Assert.ThrowsExactly<IOException>(() => stream.Seek(length + 1, SeekOrigin.End));
+        Assert.ThrowsExactly<ArgumentException>(() => stream.Seek(length, (SeekOrigin)3));
     }
 
     [TestMethod]
@@ -453,7 +453,7 @@ public sealed class StreamTests
                 CollectionAssert.AreEqual(expectedBuffer, actualBuffer);
             }
 
-            Assert.ThrowsException<FileNotFoundException>(() => rootStorage.OpenStream("TestStream2"));
+            Assert.ThrowsExactly<FileNotFoundException>(() => rootStorage.OpenStream("TestStream2"));
         }
     }
 
@@ -584,6 +584,6 @@ public sealed class StreamTests
         using MemoryStream memoryStream = new();
         using var rootStorage = RootStorage.Create(memoryStream, version);
         using CfbStream stream = rootStorage.CreateStream("Test");
-        Assert.ThrowsException<IOException>(() => rootStorage.CreateStream("Test"));
+        Assert.ThrowsExactly<IOException>(() => rootStorage.CreateStream("Test"));
     }
 }

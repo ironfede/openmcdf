@@ -1,4 +1,3 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Diagnostics;
 
 namespace OpenMcdf.Ole.Tests;
@@ -403,7 +402,7 @@ public class OlePropertiesExtensionsTests
 
         userProperties.AddUserDefinedProperty(VTPropertyType.VT_LPSTR, "StringProperty");
 
-        ArgumentException exception = Assert.ThrowsException<ArgumentException>(
+        ArgumentException exception = Assert.ThrowsExactly<ArgumentException>(
             () => userProperties.AddUserDefinedProperty(VTPropertyType.VT_LPSTR, "stringproperty"));
 
         Assert.AreEqual("name", exception.ParamName);
