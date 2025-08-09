@@ -36,6 +36,12 @@ public sealed class RootStorage : Storage, IDisposable
             throw new ArgumentException("Write-only access is not valid for compound files.", nameof(access));
     }
 
+    private static void ThrowIfInvalid(Version version)
+    {
+        if (version is Version.Unknown)
+            throw new ArgumentException("Cannot create compound files with an unknown version.", nameof(version));
+    }
+
     private static void ThrowIfLeaveOpen(StorageModeFlags flags)
     {
         if (flags.HasFlag(StorageModeFlags.LeaveOpen))
@@ -57,6 +63,7 @@ public sealed class RootStorage : Storage, IDisposable
         if (fileName is null)
             throw new ArgumentNullException(nameof(fileName));
 
+        ThrowIfInvalid(version);
         ThrowIfLeaveOpen(flags);
 
         FileStream stream = File.Create(fileName);
@@ -69,6 +76,8 @@ public sealed class RootStorage : Storage, IDisposable
             throw new ArgumentNullException(nameof(stream));
 
         stream.ThrowIfNotSeekable();
+        ThrowIfInvalid(version);
+
         stream.SetLength(0);
         stream.Position = 0;
 
@@ -80,6 +89,7 @@ public sealed class RootStorage : Storage, IDisposable
 
     public static RootStorage CreateInMemory(Version version = Version.V3, StorageModeFlags flags = StorageModeFlags.None)
     {
+        ThrowIfInvalid(version);
         ThrowIfLeaveOpen(flags);
 
         return Create(new MemoryStream(), version, flags);
