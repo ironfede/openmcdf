@@ -153,7 +153,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
         code.Add(NameLength);
         foreach (byte b in Name)
             code.Add(b);
-        return code.GetHashCode();
+        return code.ToHashCode();
     }
 
     public override bool Equals(object? obj) => Equals(obj as DirectoryEntry);
