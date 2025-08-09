@@ -12,7 +12,7 @@ public sealed class BinaryReaderTests
         Guid guid = reader.ReadGuid();
         Assert.AreEqual(new Guid(bytes), guid);
 
-        Assert.ThrowsException<EndOfStreamException>(() => reader.ReadGuid());
+        Assert.ThrowsExactly<EndOfStreamException>(() => reader.ReadGuid());
     }
 
     [TestMethod]
@@ -39,26 +39,26 @@ public sealed class BinaryReaderTests
 
         stream.CopyAllTo(memoryStream);
         memoryStream.WriteByte(1); // Corrupt signature
-        Assert.ThrowsException<FileFormatException>(() => reader.ReadHeader());
+        Assert.ThrowsExactly<FileFormatException>(() => reader.ReadHeader());
 
         stream.CopyAllTo(memoryStream);
         memoryStream.Position = 24;
         memoryStream.WriteByte(1); // Corrupt CLSID
-        Assert.ThrowsException<FileFormatException>(() => reader.ReadHeader());
+        Assert.ThrowsExactly<FileFormatException>(() => reader.ReadHeader());
 
         stream.CopyAllTo(memoryStream);
         memoryStream.Position = 26;
         memoryStream.WriteByte(1); // Corrupt Major version
-        Assert.ThrowsException<FileFormatException>(() => reader.ReadHeader());
+        Assert.ThrowsExactly<FileFormatException>(() => reader.ReadHeader());
 
         stream.CopyAllTo(memoryStream);
         memoryStream.Position = 28;
         memoryStream.WriteByte(1); // Corrupt byte order
-        Assert.ThrowsException<FileFormatException>(() => reader.ReadHeader());
+        Assert.ThrowsExactly<FileFormatException>(() => reader.ReadHeader());
 
         stream.CopyAllTo(memoryStream);
         memoryStream.Position = 32;
         memoryStream.WriteByte(1); // Corrupt mini sector shift
-        Assert.ThrowsException<FileFormatException>(() => reader.ReadHeader());
+        Assert.ThrowsExactly<FileFormatException>(() => reader.ReadHeader());
     }
 }

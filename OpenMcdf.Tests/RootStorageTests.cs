@@ -13,21 +13,21 @@ public sealed class RootStorageTests
         using var rootStorage = RootStorage.OpenRead(fileName);
         using var rootStorage2 = RootStorage.OpenRead(fileName);
 
-        Assert.ThrowsException<IOException>(() => RootStorage.Open(fileName, FileMode.Open));
-        Assert.ThrowsException<IOException>(() => RootStorage.Open(fileName, FileMode.Open, FileAccess.ReadWrite));
+        Assert.ThrowsExactly<IOException>(() => RootStorage.Open(fileName, FileMode.Open));
+        Assert.ThrowsExactly<IOException>(() => RootStorage.Open(fileName, FileMode.Open, FileAccess.ReadWrite));
 
         using CfbStream stream = rootStorage.OpenStream("TestStream");
-        Assert.ThrowsException<NotSupportedException>(() => stream.WriteByte(0));
+        Assert.ThrowsExactly<NotSupportedException>(() => stream.WriteByte(0));
 
-        Assert.ThrowsException<NotSupportedException>(() => rootStorage.CreateStream("TestStream2"));
-        Assert.ThrowsException<NotSupportedException>(() => rootStorage.CreateStorage("TestStream2"));
-        Assert.ThrowsException<NotSupportedException>(() => rootStorage.Delete("TestStream"));
-        Assert.ThrowsException<NotSupportedException>(() => rootStorage.Commit());
-        Assert.ThrowsException<NotSupportedException>(() => rootStorage.Revert());
-        Assert.ThrowsException<NotSupportedException>(() => rootStorage.CreationTime = DateTime.MinValue);
-        Assert.ThrowsException<NotSupportedException>(() => rootStorage.ModifiedTime = DateTime.MinValue);
-        Assert.ThrowsException<NotSupportedException>(() => rootStorage.CLSID = Guid.Empty);
-        Assert.ThrowsException<NotSupportedException>(() => rootStorage.StateBits = 0);
+        Assert.ThrowsExactly<NotSupportedException>(() => rootStorage.CreateStream("TestStream2"));
+        Assert.ThrowsExactly<NotSupportedException>(() => rootStorage.CreateStorage("TestStream2"));
+        Assert.ThrowsExactly<NotSupportedException>(() => rootStorage.Delete("TestStream"));
+        Assert.ThrowsExactly<NotSupportedException>(() => rootStorage.Commit());
+        Assert.ThrowsExactly<NotSupportedException>(() => rootStorage.Revert());
+        Assert.ThrowsExactly<NotSupportedException>(() => rootStorage.CreationTime = DateTime.MinValue);
+        Assert.ThrowsExactly<NotSupportedException>(() => rootStorage.ModifiedTime = DateTime.MinValue);
+        Assert.ThrowsExactly<NotSupportedException>(() => rootStorage.CLSID = Guid.Empty);
+        Assert.ThrowsExactly<NotSupportedException>(() => rootStorage.StateBits = 0);
     }
 
     [TestMethod]
@@ -296,7 +296,7 @@ public sealed class RootStorageTests
         while (baseStream.Length + buffer.Length <= MaxStreamLength)
             stream.Write(buffer, 0, buffer.Length);
 
-        Assert.ThrowsException<IOException>(() => stream.Write(buffer, 0, buffer.Length));
+        Assert.ThrowsExactly<IOException>(() => stream.Write(buffer, 0, buffer.Length));
     }
 
     [TestMethod]
