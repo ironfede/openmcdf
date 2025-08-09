@@ -33,12 +33,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
     internal const int NameFieldLength = 64;
     internal const uint MaxV3StreamLength = 0x80000000;
 
-    internal static readonly DateTime ZeroFileTime = DateTime.FromFileTimeUtc(0);
-
     internal static readonly byte[] Unallocated = new byte[128];
-
-    DateTime creationTime;
-    DateTime modifiedTime;
 
     public uint Id { get; set; }
 
@@ -81,32 +76,12 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
     /// <summary>
     /// The creation time of the storage object.
     /// </summary>
-    public DateTime CreationTime
-    {
-        get => creationTime;
-        set
-        {
-            if (Type is StorageType.Stream or StorageType.Root && value != ZeroFileTime)
-                throw new ArgumentException("Creation time must be zero for streams and root.", nameof(value));
-
-            creationTime = value;
-        }
-    }
+    public DateTime CreationTime { get; set; }
 
     /// <summary>
     /// The modified time of the storage object.
     /// </summary>
-    public DateTime ModifiedTime
-    {
-        get => modifiedTime;
-        set
-        {
-            if (Type is StorageType.Stream && value != ZeroFileTime)
-                throw new ArgumentException("Modified time must be zero for streams.", nameof(value));
-
-            modifiedTime = value;
-        }
-    }
+    public DateTime ModifiedTime { get; set; }
 
     /// <summary>
     /// The starting sector location for a stream or the first sector of the mini-stream for the root storage object.
@@ -194,7 +169,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
 
         if (storageType is StorageType.Root)
         {
-            CreationTime = ZeroFileTime;
+            CreationTime = FileTime.UtcZero;
             ModifiedTime = DateTime.UtcNow;
         }
         else if (storageType is StorageType.Storage)
@@ -205,8 +180,8 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
         }
         else
         {
-            CreationTime = ZeroFileTime;
-            ModifiedTime = ZeroFileTime;
+            CreationTime = FileTime.UtcZero;
+            ModifiedTime = FileTime.UtcZero;
         }
     }
 

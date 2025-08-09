@@ -51,8 +51,8 @@ public sealed class BinaryWriterTests
             ChildId = 4,
             CLSID = new("D295800C-F486-497A-9C29-A049227E7CB1"),
             StateBits = 5,
-            CreationTime = DirectoryEntry.ZeroFileTime,
-            ModifiedTime = DirectoryEntry.ZeroFileTime,
+            CreationTime = FileTime.UtcZero,
+            ModifiedTime = FileTime.UtcZero,
             StartSectorId = 6,
             StreamLength = 7
         };

@@ -53,6 +53,9 @@ public class Storage : ContextBase
         {
             Context.ThrowIfNotWritable();
 
+            if (directoryEntry.Type is StorageType.Root && value != FileTime.UtcZero)
+                throw new ArgumentException("Creation time must be zero for the root storage.", nameof(value));
+
             directoryEntry.CreationTime = value;
             Context.DirectoryEntries.Write(directoryEntry);
         }
