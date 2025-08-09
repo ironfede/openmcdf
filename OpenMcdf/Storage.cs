@@ -3,7 +3,7 @@
 namespace OpenMcdf;
 
 /// <summary>
-/// An object in a compound file that is analogous to a file system directory.
+/// An object in a compound file that is analogous to a file system directory. Provides methods to create, open, enumerate, and delete entries, as well as to manage metadata.
 /// </summary>
 public class Storage : ContextBase
 {
@@ -25,6 +25,9 @@ public class Storage : ContextBase
         path = parent is null ? $"/" : $"{parent.path}{parent.EntryInfo.Name}/";
     }
 
+    /// <summary>
+    /// Gets metadata about this storage entry.
+    /// </summary>
     public EntryInfo EntryInfo => directoryEntry.ToEntryInfo(path);
 
     [Obsolete("Use CLSID instead.")]
@@ -46,6 +49,9 @@ public class Storage : ContextBase
         }
     }
 
+    /// <summary>
+    /// Gets or sets the creation time for this storage.
+    /// </summary>
     public DateTime CreationTime
     {
         get => directoryEntry.CreationTime;
@@ -61,6 +67,9 @@ public class Storage : ContextBase
         }
     }
 
+    /// <summary>
+    /// Gets or sets the last modified time for this storage.
+    /// </summary>
     public DateTime ModifiedTime
     {
         get => directoryEntry.ModifiedTime;
@@ -73,6 +82,9 @@ public class Storage : ContextBase
         }
     }
 
+    /// <summary>
+    /// Gets or sets the state bits for this storage.
+    /// </summary>
     public uint StateBits
     {
         get => directoryEntry.StateBits;
@@ -85,6 +97,10 @@ public class Storage : ContextBase
         }
     }
 
+    /// <summary>
+    /// Enumerates all entries (storages and streams) contained in this storage.
+    /// </summary>
+    /// <returns>An enumerable of <see cref="EntryInfo"/> objects.</returns>
     public IEnumerable<EntryInfo> EnumerateEntries()
     {
         this.ThrowIfDisposed(Context.IsDisposed);
@@ -104,6 +120,11 @@ public class Storage : ContextBase
         }
     }
 
+    /// <summary>
+    /// Determines whether an entry with the specified name exists in this storage.
+    /// </summary>
+    /// <param name="name">The entry name.</param>
+    /// <returns>True if the entry exists; otherwise, false.</returns>
     public bool ContainsEntry(string name)
     {
         if (name is null)
@@ -116,6 +137,12 @@ public class Storage : ContextBase
         return directoryTree.TryGetDirectoryEntry(name, out DirectoryEntry? _);
     }
 
+    /// <summary>
+    /// Attempts to get metadata for an entry by name.
+    /// </summary>
+    /// <param name="name">The entry name.</param>
+    /// <param name="entryInfo">The entry info if found.</param>
+    /// <returns>True if found; otherwise, false.</returns>
     public bool TryGetEntryInfo(string name, out EntryInfo entryInfo)
     {
         if (name is null)
@@ -144,6 +171,11 @@ public class Storage : ContextBase
         return entry;
     }
 
+    /// <summary>
+    /// Creates a new storage entry with the specified name.
+    /// </summary>
+    /// <param name="name">The name of the new storage.</param>
+    /// <returns>The created <see cref="Storage"/>.</returns>
     public Storage CreateStorage(string name)
     {
         if (name is null)
@@ -158,6 +190,11 @@ public class Storage : ContextBase
         return new Storage(ContextSite, entry, this);
     }
 
+    /// <summary>
+    /// Creates a new stream entry with the specified name.
+    /// </summary>
+    /// <param name="name">The name of the new stream.</param>
+    /// <returns>The created <see cref="CfbStream"/>.</returns>
     public CfbStream CreateStream(string name)
     {
         if (name is null)
@@ -172,11 +209,22 @@ public class Storage : ContextBase
         return new CfbStream(ContextSite, entry, this);
     }
 
+    /// <summary>
+    /// Opens an existing storage entry by name.
+    /// </summary>
+    /// <param name="name">The name of the storage to open.</param>
+    /// <returns>The opened <see cref="Storage"/>.</returns>
     public Storage OpenStorage(string name)
         => TryOpenStorage(name, out Storage? storage)
             ? storage!
             : throw new DirectoryNotFoundException($"Storage not found: {name}.");
 
+    /// <summary>
+    /// Attempts to open a storage entry by name.
+    /// </summary>
+    /// <param name="name">The name of the storage.</param>
+    /// <param name="storage">The opened storage if found.</param>
+    /// <returns>True if found; otherwise, false.</returns>
     public bool TryOpenStorage(string name, [MaybeNullWhen(false)] out Storage storage)
     {
         if (name is null)
@@ -197,11 +245,22 @@ public class Storage : ContextBase
         return true;
     }
 
+    /// <summary>
+    /// Opens an existing stream entry by name.
+    /// </summary>
+    /// <param name="name">The name of the stream to open.</param>
+    /// <returns>The opened <see cref="CfbStream"/>.</returns>
     public CfbStream OpenStream(string name)
          => TryOpenStream(name, out CfbStream? stream)
             ? stream!
             : throw new FileNotFoundException($"Stream not found: {name}.", name);
 
+    /// <summary>
+    /// Attempts to open a stream entry by name.
+    /// </summary>
+    /// <param name="name">The name of the stream.</param>
+    /// <param name="stream">The opened stream if found.</param>
+    /// <returns>True if found; otherwise, false.</returns>
     public bool TryOpenStream(string name, [MaybeNullWhen(false)] out CfbStream stream)
     {
         if (name is null)
@@ -222,6 +281,10 @@ public class Storage : ContextBase
         return true;
     }
 
+    /// <summary>
+    /// Copies all entries from this storage to the specified destination storage.
+    /// </summary>
+    /// <param name="destination">The destination storage.</param>
     public void CopyTo(Storage destination)
     {
         if (destination is null)
@@ -247,6 +310,10 @@ public class Storage : ContextBase
         }
     }
 
+    /// <summary>
+    /// Deletes the entry with the specified name from this storage.
+    /// </summary>
+    /// <param name="name">The name of the entry to delete.</param>
     public void Delete(string name)
     {
         if (name is null)
