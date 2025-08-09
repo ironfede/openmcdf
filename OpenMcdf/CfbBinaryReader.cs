@@ -133,6 +133,9 @@ internal sealed class CfbBinaryReader : BinaryReader
         {
             // Root storage may be the mini stream
             ThrowHelper.ThrowIfStreamIdIsInvalidInPractice(entry.StartSectorId);
+
+            if (entry.CreationTime != FileTime.UtcZero)
+                throw new FileFormatException("Creation time must be zero for streams and root.");
         }
         else if (entry.Type is StorageType.Storage)
         {
@@ -141,6 +144,9 @@ internal sealed class CfbBinaryReader : BinaryReader
             if (entry.StartSectorId is not 0 and not StreamId.NoStream)
                 throw new FileFormatException($"Invalid stream ID: {entry.StartSectorId:X8}.");
         }
+
+        if (entry.Type is StorageType.Stream && entry.ModifiedTime != FileTime.UtcZero)
+            throw new FileFormatException("Modified time must be zero for streams.");
 
         Buffer.BlockCopy(buffer, 0, entry.Name, 0, DirectoryEntry.NameFieldLength);
 

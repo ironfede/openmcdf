@@ -22,7 +22,7 @@ public sealed class BinaryReaderTests
         using MemoryStream stream = new(bytes);
         using CfbBinaryReader reader = new(stream);
         DateTime actual = reader.ReadFileTime();
-        Assert.AreEqual(DirectoryEntry.ZeroFileTime, actual);
+        Assert.AreEqual(FileTime.UtcZero, actual);
     }
 
     [TestMethod]
