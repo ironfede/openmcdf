@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace OpenMcdf;
+﻿namespace OpenMcdf;
 
 /// <summary>
 /// Provides a <see cref="IComparer{T}"/> for <see cref="DirectoryEntry"/> objects.
@@ -33,9 +31,7 @@ internal class DirectoryEntryComparer : IComparer<DirectoryEntry>
 
     public int Compare(DirectoryEntry? x, DirectoryEntry? y)
     {
-        Debug.Assert(x is not null && y is not null);
-
-        if (x == null && y == null)
+        if (x is null && y is null)
             return 0;
 
         if (x is null)
