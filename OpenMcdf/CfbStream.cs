@@ -1,7 +1,7 @@
 ﻿namespace OpenMcdf;
 
 /// <summary>
-/// Represents a stream in a compound file.
+/// Represents a stream in a compound file. Provides read, write, seek, and length operations for compound file streams.
 /// </summary>
 public sealed class CfbStream : Stream
 {
@@ -31,8 +31,14 @@ public sealed class CfbStream : Stream
         base.Dispose(disposing);
     }
 
+    /// <summary>
+    /// Gets the parent storage containing this stream.
+    /// </summary>
     public Storage Parent { get; }
 
+    /// <summary>
+    /// Gets metadata about this stream entry.
+    /// </summary>
     public EntryInfo EntryInfo
     {
         get
@@ -43,16 +49,22 @@ public sealed class CfbStream : Stream
         }
     }
 
+    /// <inheritdoc/>
     public override bool CanRead => stream.CanRead;
 
+    /// <inheritdoc/>
     public override bool CanSeek => stream.CanSeek;
 
+    /// <inheritdoc/>
     public override bool CanWrite => stream.CanWrite;
 
+    /// <inheritdoc/>
     public override long Length => stream.Length;
 
+    /// <inheritdoc/>
     public override long Position { get => stream.Position; set => stream.Position = value; }
 
+    /// <inheritdoc/>
     public override void Flush()
     {
         this.ThrowIfDisposed(isDisposed);
@@ -60,6 +72,7 @@ public sealed class CfbStream : Stream
         stream.Flush();
     }
 
+    /// <inheritdoc/>
     public override int Read(byte[] buffer, int offset, int count)
     {
         ThrowHelper.ThrowIfStreamArgumentsAreInvalid(buffer, offset, count);
@@ -69,6 +82,7 @@ public sealed class CfbStream : Stream
         return stream.Read(buffer, offset, count);
     }
 
+    /// <inheritdoc/>
     public override long Seek(long offset, SeekOrigin origin)
     {
         this.ThrowIfDisposed(isDisposed);
@@ -83,6 +97,7 @@ public sealed class CfbStream : Stream
             SetLength(newPosition);
     }
 
+    /// <inheritdoc/>
     public override void SetLength(long value)
     {
         if (value < 0)
@@ -127,6 +142,7 @@ public sealed class CfbStream : Stream
         }
     }
 
+    /// <inheritdoc/>
     public override void Write(byte[] buffer, int offset, int count)
     {
         ThrowHelper.ThrowIfStreamArgumentsAreInvalid(buffer, offset, count);
@@ -141,6 +157,7 @@ public sealed class CfbStream : Stream
 
 #if (!NETSTANDARD2_0 && !NETFRAMEWORK)
 
+    /// <inheritdoc/>
     public override int Read(Span<byte> buffer)
     {
         this.ThrowIfDisposed(isDisposed);
@@ -148,10 +165,13 @@ public sealed class CfbStream : Stream
         return stream.Read(buffer);
     }
 
+    /// <inheritdoc/>
     public override int ReadByte() => this.ReadByteCore();
 
+    /// <inheritdoc/>
     public override void WriteByte(byte value) => this.WriteByteCore(value);
 
+    /// <inheritdoc/>
     public override void Write(ReadOnlySpan<byte> buffer)
     {
         this.ThrowIfDisposed(isDisposed);
