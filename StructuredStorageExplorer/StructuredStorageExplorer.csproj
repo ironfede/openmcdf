@@ -5,9 +5,11 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Be.Windows.Forms.HexBox.Net5" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\OpenMcdf.Ole\OpenMcdf.Ole.csproj" />
     <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj" />
