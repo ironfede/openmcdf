@@ -10,6 +10,11 @@
     <EnableMSTestRunner>true</EnableMSTestRunner>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net48'">
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\OpenMcdf.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="coverlet.collector">
       <PrivateAssets>all</PrivateAssets>
