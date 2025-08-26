@@ -1,0 +1,23 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Build.targets" />
+    <File Path="Directory.csproj.props" />
+    <File Path="Directory.csproj.targets" />
+    <File Path="Directory.Packages.props" />
+    <File Path="exclusion.dic" />
+    <File Path="global.json" />
+    <File Path="License.txt" />
+    <File Path="README.md" />
+    <File Path="ReleaseNotes.md" />
+  </Folder>
+  <Project Path="OpenMcdf.Benchmarks/OpenMcdf.Benchmarks.csproj" />
+  <Project Path="OpenMcdf.Ole.Tests/OpenMcdf.Ole.Tests.csproj" />
+  <Project Path="OpenMcdf.Ole/OpenMcdf.Ole.csproj" />
+  <Project Path="OpenMcdf.Perf/OpenMcdf.Perf.csproj" />
+  <Project Path="OpenMcdf.Tests/OpenMcdf.Tests.csproj" />
+  <Project Path="OpenMcdf/OpenMcdf.csproj" />
+  <Project Path="StructuredStorage/StructuredStorage.csproj" />
+  <Project Path="StructuredStorageExplorer/StructuredStorageExplorer.csproj" />
+</Solution>
