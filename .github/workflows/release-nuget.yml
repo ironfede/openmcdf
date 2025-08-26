@@ -3,7 +3,12 @@ name: Create a (Pre)release on NuGet
 on:
   push:
     tags:
-    - "v[0-9]+.[0-9]+.[0-9]+(-(alpha|beta|experimental|preview|rc).[0-9]+)?"
+    - "v[0-9]+.[0-9]+.[0-9]+"
+    - "v[0-9]+.[0-9]+.[0-9]+-alpha.[0-9]+"
+    - "v[0-9]+.[0-9]+.[0-9]+-beta.[0-9]+"
+    - "v[0-9]+.[0-9]+.[0-9]+-experimental.[0-9]+"
+    - "v[0-9]+.[0-9]+.[0-9]+-preview.[0-9]+"
+    - "v[0-9]+.[0-9]+.[0-9]+-rc.[0-9]+"
 
 jobs:
   release-nuget:
