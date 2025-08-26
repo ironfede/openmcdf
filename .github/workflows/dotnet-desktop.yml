@@ -18,7 +18,7 @@ jobs:
                              # https://help.github.com/en/actions/reference/workflow-syntax-for-github-actions#jobsjob_idruns-on
 
     env:
-      Solution_Name: OpenMcdf.sln
+      Solution_Name: OpenMcdf.slnx
 
     steps:
     - name: Checkout

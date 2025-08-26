@@ -1,6 +1,6 @@
 ﻿{
   "solution": {
-    "path": "OpenMcdf.sln",
+    "path": "OpenMcdf.slnx",
     "projects": [
       "OpenMcdf/OpenMcdf.csproj",
       "OpenMcdf.Benchmarks/OpenMcdf.Benchmarks.csproj",
