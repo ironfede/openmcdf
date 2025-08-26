@@ -120,7 +120,7 @@ internal sealed class CfbBinaryReader : BinaryReader
 
         // TODO: Allow strict validation.
         // Name length is clamped and validated when reading or creating new entries.
-#if false
+#if STRICT
         if (entry.NameLength > DirectoryEntry.NameFieldLength)
             throw new FileFormatException($"Name length {entry.NameLength} exceeds maximum value {DirectoryEntry.NameFieldLength}.");
 #endif
@@ -134,8 +134,10 @@ internal sealed class CfbBinaryReader : BinaryReader
             // Root storage may be the mini stream
             ThrowHelper.ThrowIfStreamIdIsInvalidInPractice(entry.StartSectorId);
 
+#if STRICT
             if (entry.CreationTime != FileTime.UtcZero)
                 throw new FileFormatException("Creation time must be zero for streams and root.");
+#endif
         }
         else if (entry.Type is StorageType.Storage)
         {
