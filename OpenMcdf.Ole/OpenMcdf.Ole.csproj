@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
     <Title>OpenMcdf OLE</Title>
     <Description>
       OpenMcdf is a 100% .NET / C# component that allows developers to manipulate Microsoft Compound Document File Format for OLE structured storage.
