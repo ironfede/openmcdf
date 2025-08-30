@@ -291,10 +291,11 @@ public partial class MainForm : Form
         }
     }
 
-    private void TreeView1_MouseUp(object sender, MouseEventArgs e)
+    private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
     {
-        TreeNode? n = treeView1.GetNodeAt(e.X, e.Y);
-        if (n?.Tag is not NodeSelection nodeSelection)
+        TreeNode? node = e.Node;
+
+        if (node?.Tag is not NodeSelection nodeSelection)
         {
             addStorageStripMenuItem1.Enabled = true;
             addStreamToolStripMenuItem.Enabled = true;
@@ -318,7 +319,7 @@ public partial class MainForm : Form
                 }
             }
 
-            treeView1.SelectedNode = n;
+            treeView1.SelectedNode = node;
 
             // The tag property contains the underlying CFItem.
             //CFItem target = (CFItem)n.Tag;

@@ -95,11 +95,11 @@
             treeView1.Dock = DockStyle.Fill;
             treeView1.HideSelection = false;
             treeView1.Location = new Point(0, 0);
-            treeView1.Margin = new Padding(4, 4, 4, 4);
+            treeView1.Margin = new Padding(4);
             treeView1.Name = "treeView1";
-            treeView1.Size = new Size(327, 235);
+            treeView1.Size = new Size(327, 234);
             treeView1.TabIndex = 4;
-            treeView1.MouseUp += TreeView1_MouseUp;
+            treeView1.AfterSelect += TreeView1_AfterSelect;
             // 
             // contextMenuStrip1
             // 
@@ -245,7 +245,7 @@
             splitContainer1.BorderStyle = BorderStyle.FixedSingle;
             splitContainer1.Dock = DockStyle.Fill;
             splitContainer1.Location = new Point(0, 0);
-            splitContainer1.Margin = new Padding(4, 4, 4, 4);
+            splitContainer1.Margin = new Padding(4);
             splitContainer1.Name = "splitContainer1";
             splitContainer1.Orientation = Orientation.Horizontal;
             // 
@@ -257,7 +257,7 @@
             // 
             splitContainer1.Panel2.Controls.Add(propertyGrid1);
             splitContainer1.Size = new Size(329, 483);
-            splitContainer1.SplitterDistance = 237;
+            splitContainer1.SplitterDistance = 236;
             splitContainer1.SplitterWidth = 5;
             splitContainer1.TabIndex = 5;
             // 
@@ -265,9 +265,9 @@
             // 
             propertyGrid1.Dock = DockStyle.Fill;
             propertyGrid1.Location = new Point(0, 0);
-            propertyGrid1.Margin = new Padding(4, 4, 4, 4);
+            propertyGrid1.Margin = new Padding(4);
             propertyGrid1.Name = "propertyGrid1";
-            propertyGrid1.Size = new Size(327, 239);
+            propertyGrid1.Size = new Size(327, 240);
             propertyGrid1.TabIndex = 0;
             propertyGrid1.ToolbarVisible = false;
             // 
@@ -275,7 +275,7 @@
             // 
             splitContainer2.Dock = DockStyle.Fill;
             splitContainer2.Location = new Point(0, 24);
-            splitContainer2.Margin = new Padding(4, 4, 4, 4);
+            splitContainer2.Margin = new Padding(4);
             splitContainer2.Name = "splitContainer2";
             // 
             // splitContainer2.Panel1
@@ -296,7 +296,7 @@
             tabControl1.Controls.Add(tabPage2);
             tabControl1.Dock = DockStyle.Fill;
             tabControl1.Location = new Point(0, 0);
-            tabControl1.Margin = new Padding(4, 4, 4, 4);
+            tabControl1.Margin = new Padding(4);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
             tabControl1.Size = new Size(661, 483);
@@ -306,9 +306,9 @@
             // 
             tabPage1.Controls.Add(hexEditor);
             tabPage1.Location = new Point(4, 24);
-            tabPage1.Margin = new Padding(4, 4, 4, 4);
+            tabPage1.Margin = new Padding(4);
             tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(4, 4, 4, 4);
+            tabPage1.Padding = new Padding(4);
             tabPage1.Size = new Size(653, 455);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Raw Data";
@@ -322,7 +322,7 @@
             hexEditor.InfoForeColor = Color.Empty;
             hexEditor.LineInfoVisible = true;
             hexEditor.Location = new Point(4, 4);
-            hexEditor.Margin = new Padding(4, 4, 4, 4);
+            hexEditor.Margin = new Padding(4);
             hexEditor.Name = "hexEditor";
             hexEditor.ShadowSelectionColor = Color.FromArgb(100, 60, 188, 255);
             hexEditor.Size = new Size(645, 447);
@@ -335,10 +335,10 @@
             // 
             tabPage2.Controls.Add(splitContainer3);
             tabPage2.Location = new Point(4, 24);
-            tabPage2.Margin = new Padding(4, 4, 4, 4);
+            tabPage2.Margin = new Padding(4);
             tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(4, 4, 4, 4);
-            tabPage2.Size = new Size(653, 468);
+            tabPage2.Padding = new Padding(4);
+            tabPage2.Size = new Size(653, 455);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "OLE Properties";
             tabPage2.UseVisualStyleBackColor = true;
@@ -358,8 +358,8 @@
             // splitContainer3.Panel2
             // 
             splitContainer3.Panel2.Controls.Add(dgvUserDefinedProperties);
-            splitContainer3.Size = new Size(645, 460);
-            splitContainer3.SplitterDistance = 230;
+            splitContainer3.Size = new Size(645, 447);
+            splitContainer3.SplitterDistance = 223;
             splitContainer3.TabIndex = 2;
             // 
             // dgvOLEProps
@@ -367,10 +367,10 @@
             dgvOLEProps.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvOLEProps.Dock = DockStyle.Fill;
             dgvOLEProps.Location = new Point(0, 0);
-            dgvOLEProps.Margin = new Padding(4, 4, 4, 4);
+            dgvOLEProps.Margin = new Padding(4);
             dgvOLEProps.Name = "dgvOLEProps";
             dgvOLEProps.RowHeadersWidth = 62;
-            dgvOLEProps.Size = new Size(645, 230);
+            dgvOLEProps.Size = new Size(645, 223);
             dgvOLEProps.TabIndex = 0;
             // 
             // dgvUserDefinedProperties
@@ -378,10 +378,10 @@
             dgvUserDefinedProperties.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dgvUserDefinedProperties.Dock = DockStyle.Fill;
             dgvUserDefinedProperties.Location = new Point(0, 0);
-            dgvUserDefinedProperties.Margin = new Padding(4, 4, 4, 4);
+            dgvUserDefinedProperties.Margin = new Padding(4);
             dgvUserDefinedProperties.Name = "dgvUserDefinedProperties";
             dgvUserDefinedProperties.RowHeadersWidth = 62;
-            dgvUserDefinedProperties.Size = new Size(645, 226);
+            dgvUserDefinedProperties.Size = new Size(645, 220);
             dgvUserDefinedProperties.TabIndex = 1;
             // 
             // MainForm
@@ -393,7 +393,7 @@
             Controls.Add(statusStrip1);
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
-            Margin = new Padding(4, 4, 4, 4);
+            Margin = new Padding(4);
             Name = "MainForm";
             Text = "Structured Storage eXplorer";
             FormClosing += MainForm_FormClosing;
