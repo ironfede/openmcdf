@@ -28,71 +28,77 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.cbEnableValidation = new System.Windows.Forms.CheckBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.btnSavePreferences = new System.Windows.Forms.Button();
-            this.btnCancelPreferences = new System.Windows.Forms.Button();
-            this.groupBox1.SuspendLayout();
-            this.SuspendLayout();
+            cbEnableValidation = new CheckBox();
+            groupBox1 = new GroupBox();
+            btnSavePreferences = new Button();
+            btnCancelPreferences = new Button();
+            groupBox1.SuspendLayout();
+            SuspendLayout();
             // 
             // cbEnableValidation
             // 
-            this.cbEnableValidation.AutoSize = true;
-            this.cbEnableValidation.Location = new System.Drawing.Point(6, 25);
-            this.cbEnableValidation.Name = "cbEnableValidation";
-            this.cbEnableValidation.Size = new System.Drawing.Size(277, 24);
-            this.cbEnableValidation.TabIndex = 0;
-            this.cbEnableValidation.Text = "File Validation Exceptions enabled";
-            this.cbEnableValidation.UseVisualStyleBackColor = true;
+            cbEnableValidation.AutoSize = true;
+            cbEnableValidation.Location = new Point(7, 31);
+            cbEnableValidation.Margin = new Padding(3, 4, 3, 4);
+            cbEnableValidation.Name = "cbEnableValidation";
+            cbEnableValidation.Size = new Size(304, 29);
+            cbEnableValidation.TabIndex = 0;
+            cbEnableValidation.Text = "File Validation Exceptions enabled";
+            cbEnableValidation.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.cbEnableValidation);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(555, 259);
-            this.groupBox1.TabIndex = 1;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Preferences";
+            groupBox1.Controls.Add(cbEnableValidation);
+            groupBox1.Location = new Point(13, 15);
+            groupBox1.Margin = new Padding(3, 4, 3, 4);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Padding = new Padding(3, 4, 3, 4);
+            groupBox1.Size = new Size(617, 324);
+            groupBox1.TabIndex = 1;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Preferences";
             // 
             // btnSavePreferences
             // 
-            this.btnSavePreferences.Location = new System.Drawing.Point(473, 298);
-            this.btnSavePreferences.Name = "btnSavePreferences";
-            this.btnSavePreferences.Size = new System.Drawing.Size(94, 30);
-            this.btnSavePreferences.TabIndex = 2;
-            this.btnSavePreferences.Text = "OK";
-            this.btnSavePreferences.UseVisualStyleBackColor = true;
-            this.btnSavePreferences.Click += new System.EventHandler(this.BtnSavePreferences_Click);
+            btnSavePreferences.Location = new Point(526, 372);
+            btnSavePreferences.Margin = new Padding(3, 4, 3, 4);
+            btnSavePreferences.Name = "btnSavePreferences";
+            btnSavePreferences.Size = new Size(104, 38);
+            btnSavePreferences.TabIndex = 2;
+            btnSavePreferences.Text = "OK";
+            btnSavePreferences.UseVisualStyleBackColor = true;
+            btnSavePreferences.Click += BtnSavePreferences_Click;
             // 
             // btnCancelPreferences
             // 
-            this.btnCancelPreferences.Location = new System.Drawing.Point(373, 298);
-            this.btnCancelPreferences.Name = "btnCancelPreferences";
-            this.btnCancelPreferences.Size = new System.Drawing.Size(94, 30);
-            this.btnCancelPreferences.TabIndex = 3;
-            this.btnCancelPreferences.Text = "Cancel";
-            this.btnCancelPreferences.UseVisualStyleBackColor = true;
-            this.btnCancelPreferences.Click += new System.EventHandler(this.BtnCancelPreferences_Click);
+            btnCancelPreferences.Location = new Point(414, 372);
+            btnCancelPreferences.Margin = new Padding(3, 4, 3, 4);
+            btnCancelPreferences.Name = "btnCancelPreferences";
+            btnCancelPreferences.Size = new Size(104, 38);
+            btnCancelPreferences.TabIndex = 3;
+            btnCancelPreferences.Text = "Cancel";
+            btnCancelPreferences.UseVisualStyleBackColor = true;
+            btnCancelPreferences.Click += BtnCancelPreferences_Click;
             // 
             // PreferencesForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(579, 340);
-            this.Controls.Add(this.btnCancelPreferences);
-            this.Controls.Add(this.btnSavePreferences);
-            this.Controls.Add(this.groupBox1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Name = "PreferencesForm";
-            this.ShowIcon = false;
-            this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Preferences";
-            this.Load += new System.EventHandler(this.PreferencesForm_Load);
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            this.ResumeLayout(false);
+            AutoScaleDimensions = new SizeF(10F, 25F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(643, 425);
+            Controls.Add(btnCancelPreferences);
+            Controls.Add(btnSavePreferences);
+            Controls.Add(groupBox1);
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            Margin = new Padding(3, 4, 3, 4);
+            Name = "PreferencesForm";
+            ShowIcon = false;
+            ShowInTaskbar = false;
+            StartPosition = FormStartPosition.CenterParent;
+            Text = "Preferences";
+            Load += PreferencesForm_Load;
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            ResumeLayout(false);
 
         }
 
