@@ -395,7 +395,7 @@
             MainMenuStrip = menuStrip1;
             Margin = new Padding(4);
             Name = "MainForm";
-            Text = "Structured Storage eXplorer";
+            Text = "Structured Storage Explorer";
             FormClosing += MainForm_FormClosing;
             contextMenuStrip1.ResumeLayout(false);
             menuStrip1.ResumeLayout(false);
