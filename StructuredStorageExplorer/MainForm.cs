@@ -18,7 +18,7 @@ namespace StructuredStorageExplorer;
 /// </summary>
 public partial class MainForm : Form
 {
-    private RootStorage? cf;
+    private RootStorage? rootStorage;
 
     public MainForm()
     {
@@ -49,8 +49,8 @@ public partial class MainForm : Form
 
     private void CloseCurrentFile()
     {
-        cf?.Dispose();
-        cf = null;
+        rootStorage?.Dispose();
+        rootStorage = null;
 
         treeView1.Nodes.Clear();
         fileNameLabel.Text = string.Empty;
@@ -74,7 +74,7 @@ public partial class MainForm : Form
         {
             string fileName = Path.GetTempFileName();
 
-            cf = RootStorage.Create(fileName);
+            rootStorage = RootStorage.Create(fileName);
 
             fileNameLabel.Text = fileName;
             saveAsToolStripMenuItem.Enabled = true;
@@ -94,14 +94,14 @@ public partial class MainForm : Form
     {
         treeView1.Nodes.Clear();
 
-        if (cf is not null)
+        if (rootStorage is not null)
         {
-            TreeNode root = treeView1.Nodes.Add(cf.EntryInfo.Name.WithEscaped());
+            TreeNode root = treeView1.Nodes.Add(rootStorage.EntryInfo.Name.EscapeControlChars());
             root.ImageIndex = 0;
-            root.Tag = new NodeSelection(null, cf.EntryInfo);
+            root.Tag = new NodeSelection(null, rootStorage.EntryInfo);
 
             // Recursive function to get all storage and streams
-            AddNodes(root, cf);
+            AddNodes(root, rootStorage);
         }
     }
 
@@ -109,11 +109,11 @@ public partial class MainForm : Form
     {
         try
         {
-            cf?.Dispose();
-            cf = null;
+            rootStorage?.Dispose();
+            rootStorage = null;
 
             // Load file
-            cf = RootStorage.Open(fileName, FileMode.Open);
+            rootStorage = RootStorage.Open(fileName, FileMode.Open);
 
             fileNameLabel.Text = fileName;
             saveAsToolStripMenuItem.Enabled = true;
@@ -138,7 +138,7 @@ public partial class MainForm : Form
     {
         foreach (EntryInfo item in storage.EnumerateEntries())
         {
-            TreeNode childNode = node.Nodes.Add(item.Name.WithEscaped());
+            TreeNode childNode = node.Nodes.Add(item.Name.EscapeControlChars());
             childNode.Tag = new NodeSelection(storage, item);
 
             if (item.Type is EntryType.Storage)
@@ -202,12 +202,12 @@ public partial class MainForm : Form
 
     private void UpdateCurrentFileToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        if (cf is null)
+        if (rootStorage is null)
             return;
 
         if (hexEditor.ByteProvider is not null && hexEditor.ByteProvider.HasChanges())
             hexEditor.ByteProvider.ApplyChanges();
-        cf.Commit();
+        rootStorage.Commit();
     }
 
     private void AddStreamToolStripMenuItem_Click(object sender, EventArgs e)
@@ -343,7 +343,7 @@ public partial class MainForm : Form
                 hexEditor.ByteProvider = null;
             }
 
-            propertyGrid1.SelectedObject = nodeSelection.EntryInfo.WithEscaped();
+            propertyGrid1.SelectedObject = nodeSelection.EntryInfo.WithEscapedControlChars();
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
