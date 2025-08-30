@@ -102,6 +102,9 @@ public partial class MainForm : Form
 
             // Recursive function to get all storage and streams
             AddNodes(root, rootStorage);
+
+            // Expand the root entry (which always exists)
+            treeView1.Nodes[0].Expand();
         }
     }
 
@@ -136,7 +139,9 @@ public partial class MainForm : Form
     /// <param name="storage">Current storage associated with node</param>
     private static void AddNodes(TreeNode node, Storage storage)
     {
-        foreach (EntryInfo item in storage.EnumerateEntries())
+        foreach (EntryInfo item in storage.EnumerateEntries()
+            .OrderBy(e => e.Type)
+            .ThenBy(e => e.Name))
         {
             TreeNode childNode = node.Nodes.Add(item.Name.EscapeControlChars());
             childNode.Tag = new NodeSelection(storage, item);
