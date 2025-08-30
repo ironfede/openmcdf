@@ -1,36 +1,27 @@
-﻿#define OLE_PROPERTY
-
-using OpenMcdf;
-using System.Globalization;
-
-// Author Federico Blaseotto
+﻿using OpenMcdf;
+using System.Text;
 
 namespace StructuredStorageExplorer;
 
 sealed record class NodeSelection(Storage? Parent, EntryInfo EntryInfo)
 {
+    /// <summary>
+    /// FileName derived from the EntryInfo.Name, with invalid filename chars replaces.
+    /// </summary>
     public string SanitizedFileName
     {
         get
         {
-            // A lot of stream and storage have only non-printable characters.
-            // We need to sanitize filename.
-
-            string sanitizedFileName = string.Empty;
-
+            StringBuilder builder = new(EntryInfo.Name.Length + 4);
+            char[] invalidChars = Path.GetInvalidFileNameChars();
             foreach (char c in EntryInfo.Name)
             {
-                UnicodeCategory category = char.GetUnicodeCategory(c);
-                if (category is UnicodeCategory.LetterNumber or UnicodeCategory.LowercaseLetter or UnicodeCategory.UppercaseLetter)
-                    sanitizedFileName += c;
+                char validChar = invalidChars.Contains(c) ? '_' : c;
+                builder.Append(validChar);
             }
 
-            if (string.IsNullOrEmpty(sanitizedFileName))
-            {
-                sanitizedFileName = "tempFileName";
-            }
-
-            return $"{sanitizedFileName}.bin";
+            builder.Append(".bin");
+            return builder.ToString();
         }
     }
 }
