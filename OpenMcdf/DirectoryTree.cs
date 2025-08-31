@@ -197,11 +197,12 @@ internal sealed class DirectoryTree
                 for (; ; )
                 {
                     newRightChildParentEntry = directories.GetDictionaryEntry(newRightChildParent);
+                    newRightChildParent = newRightChildParentEntry.RightSiblingId;
                     if (newRightChildParentEntry.RightSiblingId == StreamId.NoStream)
                     {
                         break;
                     }
-                };
+                }
 
                 newRightChildParentEntry.RightSiblingId = entry.RightSiblingId;
                 directories.Write(newRightChildParentEntry);
