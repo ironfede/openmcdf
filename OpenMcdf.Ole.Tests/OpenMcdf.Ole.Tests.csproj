@@ -26,7 +26,7 @@
     <None Update="2custom.doc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="CLSIDPropertyTest.file">
+    <None Update="CLSIDPropertyTest.cfs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="english.presets.doc">
