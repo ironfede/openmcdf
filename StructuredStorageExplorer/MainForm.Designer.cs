@@ -87,7 +87,8 @@
             // openFileDialog1
             // 
             openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
-            openFileDialog1.Title = "Open OLE Structured Storage file";
+            openFileDialog1.FilterIndex = 8;
+            openFileDialog1.Title = "Open Structured Storage file";
             // 
             // treeView1
             // 
