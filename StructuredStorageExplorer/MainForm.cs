@@ -89,24 +89,6 @@ public partial class MainForm : Form
         }
     }
 
-    private void RefreshTree()
-    {
-        treeView.Nodes.Clear();
-
-        if (rootStorage is not null)
-        {
-            TreeNode root = treeView.Nodes.Add(rootStorage.EntryInfo.Name.EscapeControlChars());
-            root.ImageIndex = 0;
-            root.Tag = new NodeSelection(null, rootStorage.EntryInfo);
-
-            // Recursive function to get all storage and streams
-            AddNodes(root, rootStorage);
-
-            // Expand the root entry (which always exists)
-            treeView.Nodes[0].Expand();
-        }
-    }
-
     private void LoadFile(string fileName)
     {
         try
@@ -128,6 +110,24 @@ public partial class MainForm : Form
             CloseCurrentFile();
 
             MessageBox.Show($"Error opening file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    private void RefreshTree()
+    {
+        treeView.Nodes.Clear();
+
+        if (rootStorage is not null)
+        {
+            TreeNode root = treeView.Nodes.Add(rootStorage.EntryInfo.Name.EscapeControlChars());
+            root.ImageIndex = 0;
+            root.Tag = new NodeSelection(null, rootStorage.EntryInfo);
+
+            // Recursive function to get all storage and streams
+            AddNodes(root, rootStorage);
+
+            // Expand the root entry (which always exists)
+            treeView.Nodes[0].Expand();
         }
     }
 
@@ -292,6 +292,12 @@ public partial class MainForm : Form
         }
     }
 
+    private void TreeView_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
+    {
+        // Ensure the node is selected on right click
+        treeView.SelectedNode = e.Node;
+    }
+
     private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
     {
         TreeNode? node = e.Node;
@@ -307,9 +313,6 @@ public partial class MainForm : Form
             return;
         }
 
-        // Get the node under the mouse cursor.
-        // We intercept both left and right mouse clicks
-        // and set the selected TreeNode according.
         try
         {
             if (hexEditor.ByteProvider is not null && hexEditor.ByteProvider.HasChanges())
@@ -319,8 +322,6 @@ public partial class MainForm : Form
                     hexEditor.ByteProvider.ApplyChanges();
                 }
             }
-
-            treeView.SelectedNode = node;
 
             // The tag property contains the underlying CFItem.
             //CFItem target = (CFItem)n.Tag;

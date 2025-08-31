@@ -101,6 +101,7 @@
             treeView.Size = new Size(327, 234);
             treeView.TabIndex = 4;
             treeView.AfterSelect += TreeView_AfterSelect;
+            treeView.NodeMouseClick += TreeView_NodeMouseClick;
             // 
             // contextMenuStrip
             // 
