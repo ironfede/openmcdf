@@ -38,7 +38,7 @@
             addStorageStripMenuItem = new ToolStripMenuItem();
             addStreamToolStripMenuItem = new ToolStripMenuItem();
             removeToolStripMenuItem = new ToolStripMenuItem();
-            saveFileDialog = new SaveFileDialog();
+            exportFileDialog = new SaveFileDialog();
             menuStrip = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             openFileMenuItem = new ToolStripMenuItem();
@@ -49,7 +49,7 @@
             saveAsToolStripMenuItem = new ToolStripMenuItem();
             editToolStripMenuItem = new ToolStripMenuItem();
             preferencesToolStripMenuItem = new ToolStripMenuItem();
-            openDataFileDialog = new OpenFileDialog();
+            importFileDialog = new OpenFileDialog();
             statusStrip = new StatusStrip();
             fileNameLabel = new ToolStripStatusLabel();
             leftSplitContainer = new SplitContainer();
@@ -145,10 +145,10 @@
             removeToolStripMenuItem.Text = "Remove";
             removeToolStripMenuItem.Click += RemoveToolStripMenuItem_Click;
             // 
-            // saveFileDialog
+            // exportFileDialog
             // 
-            saveFileDialog.DefaultExt = "*.bin";
-            saveFileDialog.Filter = "Exported data files (*.bin)|*.bin|All files (*.*)|*.*";
+            exportFileDialog.DefaultExt = "*.bin";
+            exportFileDialog.Filter = "Exported data files (*.bin)|*.bin|All files (*.*)|*.*";
             // 
             // menuStrip
             // 
@@ -431,7 +431,7 @@
         private System.Windows.Forms.TreeView treeView;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem exportDataToolStripMenuItem;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog;
+        private System.Windows.Forms.SaveFileDialog exportFileDialog;
         private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem;
         private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
@@ -439,7 +439,7 @@
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addStreamToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importDataStripMenuItem;
-        private System.Windows.Forms.OpenFileDialog openDataFileDialog;
+        private System.Windows.Forms.OpenFileDialog importFileDialog;
         private System.Windows.Forms.ToolStripMenuItem addStorageStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem newStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openFileMenuItem;
