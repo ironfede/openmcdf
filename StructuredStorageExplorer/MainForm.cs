@@ -36,33 +36,33 @@ public partial class MainForm : Form
         saveToolStripMenuItem.Enabled = false;
     }
 
-    private void OpenFile()
-    {
-        if (!string.IsNullOrEmpty(openFileDialog.FileName))
-        {
-            CloseCurrentFile();
-
-            LoadFile(openFileDialog.FileName);
-        }
-    }
-
     private void CloseCurrentFile()
     {
-        rootStorage?.Dispose();
-        rootStorage = null;
+        try
+        {
+            rootStorage?.Dispose();
+        }
+        catch (IOException ex)
+        {
+            MessageBox.Show($"Error closing file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+        finally
+        {
+            rootStorage = null;
 
-        treeView.Nodes.Clear();
-        fileNameLabel.Text = string.Empty;
-        saveAsToolStripMenuItem.Enabled = false;
-        saveToolStripMenuItem.Enabled = false;
+            treeView.Nodes.Clear();
+            fileNameLabel.Text = string.Empty;
+            saveAsToolStripMenuItem.Enabled = false;
+            saveToolStripMenuItem.Enabled = false;
 
-        entryInfoPropertyGrid.SelectedObject = null;
-        hexEditor.ByteProvider = null;
+            entryInfoPropertyGrid.SelectedObject = null;
+            hexEditor.ByteProvider = null;
 
 #if OLE_PROPERTY
-        dgvUserDefinedProperties.DataSource = null;
-        dgvOLEProps.DataSource = null;
+            dgvUserDefinedProperties.DataSource = null;
+            dgvOLEProps.DataSource = null;
 #endif
+        }
     }
 
     private void CreateNewFile()
@@ -81,21 +81,20 @@ public partial class MainForm : Form
 
             RefreshTree();
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            CloseCurrentFile();
-
             MessageBox.Show($"Error creating file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            CloseCurrentFile();
         }
     }
 
     private void LoadFile(string fileName)
     {
+        CloseCurrentFile();
+
         try
         {
-            rootStorage?.Dispose();
-            rootStorage = null;
-
             // Load file
             rootStorage = RootStorage.Open(fileName, FileMode.Open);
 
@@ -107,9 +106,9 @@ public partial class MainForm : Form
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
-            CloseCurrentFile();
-
             MessageBox.Show($"Error opening file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            CloseCurrentFile();
         }
     }
 
@@ -164,7 +163,12 @@ public partial class MainForm : Form
     private void ExportDataToolStripMenuItem_Click(object sender, EventArgs e)
     {
         // No export if storage
-        if (treeView.SelectedNode?.Tag is not NodeSelection selection || selection.EntryInfo.Type is not EntryType.Stream || selection.Parent is null)
+        if (treeView.SelectedNode?.Tag is not NodeSelection selection || selection.Parent is not { } parent)
+        {
+            return;
+        }
+
+        if (selection.EntryInfo.Type is not EntryType.Stream)
         {
             MessageBox.Show("Only stream data can be exported", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
@@ -177,7 +181,7 @@ public partial class MainForm : Form
             try
             {
                 using FileStream fs = new(saveFileDialog.FileName, FileMode.CreateNew, FileAccess.ReadWrite);
-                using CfbStream cfbStream = selection.Parent.OpenStream(selection.EntryInfo.Name);
+                using CfbStream cfbStream = parent.OpenStream(selection.EntryInfo.Name);
                 cfbStream.CopyTo(fs);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -189,10 +193,19 @@ public partial class MainForm : Form
 
     private void RemoveToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        if (treeView.SelectedNode?.Tag is NodeSelection selection && selection.Parent is not null)
+        if (treeView.SelectedNode?.Tag is not NodeSelection selection || selection.Parent is not { } parent)
         {
-            selection.Parent.Delete(selection.EntryInfo.Name);
+            return;
+        }
+
+        try
+        {
+            parent.Delete(selection.EntryInfo.Name);
             RefreshTree();
+        }
+        catch (IOException ex)
+        {
+            MessageBox.Show($"Error removing entry: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
 
@@ -210,9 +223,17 @@ public partial class MainForm : Form
         if (rootStorage is null)
             return;
 
-        if (hexEditor.ByteProvider is not null && hexEditor.ByteProvider.HasChanges())
-            hexEditor.ByteProvider.ApplyChanges();
-        rootStorage.Commit();
+        if (hexEditor.ByteProvider is { } provider && provider.HasChanges())
+            provider.ApplyChanges();
+
+        try
+        {
+            rootStorage.Commit();
+        }
+        catch (IOException ex)
+        {
+            MessageBox.Show($"Error saving file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
     }
 
     private void AddStreamToolStripMenuItem_Click(object sender, EventArgs e)
@@ -283,7 +304,7 @@ public partial class MainForm : Form
         {
             try
             {
-                OpenFile();
+                LoadFile(openFileDialog.FileName);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
@@ -315,11 +336,11 @@ public partial class MainForm : Form
 
         try
         {
-            if (hexEditor.ByteProvider is not null && hexEditor.ByteProvider.HasChanges())
+            if (hexEditor.ByteProvider is { } provider && provider.HasChanges())
             {
                 if (MessageBox.Show("Do you want to save pending changes?", "Save changes", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
                 {
-                    hexEditor.ByteProvider.ApplyChanges();
+                    provider.ApplyChanges();
                 }
             }
 
@@ -349,8 +370,6 @@ public partial class MainForm : Form
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
-            CloseCurrentFile();
-
             MessageBox.Show($"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }
@@ -437,7 +456,7 @@ public partial class MainForm : Form
 
     private void PreferencesToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        using PreferencesForm pref = new();
-        pref.ShowDialog();
+        using PreferencesForm preferencesDialog = new();
+        preferencesDialog.ShowDialog();
     }
 }
