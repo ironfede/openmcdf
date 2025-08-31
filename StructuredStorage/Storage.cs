@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Windows.Win32;
 using Windows.Win32.Foundation;
@@ -51,73 +50,6 @@ public enum StorageModes : uint
     DirectSWMR = STGM.STGM_DIRECT_SWMR,
     DeleteOnRelease = STGM.STGM_DELETEONRELEASE,
     ModeSimple = STGM.STGM_SIMPLE,
-}
-
-/// <summary>
-/// Enumerates <c>STATSTG</c> elements from a <c>Storage</c>.
-/// </summary>
-internal sealed class StatStgEnumerator : IEnumerator<STATSTG>
-{
-    readonly IEnumSTATSTG enumerator;
-    STATSTG stat;
-
-    public STATSTG Current => stat;
-
-    object IEnumerator.Current => stat;
-
-    public unsafe StatStgEnumerator(IStorage storage)
-    {
-        storage.EnumElements(0, null, 0, out enumerator);
-    }
-
-    public unsafe void Dispose()
-    {
-        FreeName();
-
-        Marshal.ReleaseComObject(enumerator);
-    }
-
-    private unsafe void FreeName()
-    {
-        Marshal.FreeCoTaskMem((nint)stat.pwcsName.Value);
-        stat.pwcsName = null;
-    }
-
-    public unsafe bool MoveNext()
-    {
-        FreeName();
-
-        fixed (STATSTG* statPtr = &stat)
-        {
-            uint fetched;
-            enumerator.Next(1, statPtr, &fetched);
-            return fetched > 0;
-        }
-    }
-
-    public void Reset()
-    {
-        FreeName();
-
-        enumerator.Reset();
-    }
-}
-
-/// <summary>
-/// Creates an enumerator for <c>STATSTG</c> elements from a <c>Storage</c>.
-/// </summary>
-internal sealed class StatStgCollection : IEnumerable<STATSTG>
-{
-    readonly IStorage storage;
-
-    public StatStgCollection(IStorage storage)
-    {
-        this.storage = storage;
-    }
-
-    public IEnumerator GetEnumerator() => new StatStgEnumerator(storage);
-
-    IEnumerator<STATSTG> IEnumerable<STATSTG>.GetEnumerator() => new StatStgEnumerator(storage);
 }
 
 /// <summary>
