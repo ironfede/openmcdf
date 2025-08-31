@@ -30,92 +30,91 @@
         {
             components = new System.ComponentModel.Container();
             var resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            openFileDialog1 = new OpenFileDialog();
-            treeView1 = new TreeView();
-            contextMenuStrip1 = new ContextMenuStrip(components);
-            importDataStripMenuItem1 = new ToolStripMenuItem();
+            openFileDialog = new OpenFileDialog();
+            treeView = new TreeView();
+            contextMenuStrip = new ContextMenuStrip(components);
+            importDataStripMenuItem = new ToolStripMenuItem();
             exportDataToolStripMenuItem = new ToolStripMenuItem();
-            addStorageStripMenuItem1 = new ToolStripMenuItem();
+            addStorageStripMenuItem = new ToolStripMenuItem();
             addStreamToolStripMenuItem = new ToolStripMenuItem();
             removeToolStripMenuItem = new ToolStripMenuItem();
-            saveFileDialog1 = new SaveFileDialog();
-            menuStrip1 = new MenuStrip();
+            saveFileDialog = new SaveFileDialog();
+            menuStrip = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             openFileMenuItem = new ToolStripMenuItem();
-            newStripMenuItem1 = new ToolStripMenuItem();
-            closeStripMenuItem1 = new ToolStripMenuItem();
+            newStripMenuItem = new ToolStripMenuItem();
+            closeStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
-            updateCurrentFileToolStripMenuItem = new ToolStripMenuItem();
+            saveToolStripMenuItem = new ToolStripMenuItem();
             saveAsToolStripMenuItem = new ToolStripMenuItem();
             editToolStripMenuItem = new ToolStripMenuItem();
             preferencesToolStripMenuItem = new ToolStripMenuItem();
             openDataFileDialog = new OpenFileDialog();
-            statusStrip1 = new StatusStrip();
+            statusStrip = new StatusStrip();
             fileNameLabel = new ToolStripStatusLabel();
-            splitContainer1 = new SplitContainer();
-            propertyGrid1 = new PropertyGrid();
+            leftSplitContainer = new SplitContainer();
+            entryInfoPropertyGrid = new PropertyGrid();
             splitContainer2 = new SplitContainer();
-            tabControl1 = new TabControl();
-            tabPage1 = new TabPage();
+            tabControl = new TabControl();
+            rawDataTabPage = new TabPage();
             hexEditor = new Be.Windows.Forms.HexBox();
-            tabPage2 = new TabPage();
-            splitContainer3 = new SplitContainer();
+            olePropertiesTabPage = new TabPage();
+            olePropertiesSplitContainer = new SplitContainer();
             dgvOLEProps = new DataGridView();
             dgvUserDefinedProperties = new DataGridView();
-            contextMenuStrip1.SuspendLayout();
-            menuStrip1.SuspendLayout();
-            statusStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
-            splitContainer1.Panel1.SuspendLayout();
-            splitContainer1.Panel2.SuspendLayout();
-            splitContainer1.SuspendLayout();
+            contextMenuStrip.SuspendLayout();
+            menuStrip.SuspendLayout();
+            statusStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)leftSplitContainer).BeginInit();
+            leftSplitContainer.Panel1.SuspendLayout();
+            leftSplitContainer.Panel2.SuspendLayout();
+            leftSplitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer2).BeginInit();
             splitContainer2.Panel1.SuspendLayout();
             splitContainer2.Panel2.SuspendLayout();
             splitContainer2.SuspendLayout();
-            tabControl1.SuspendLayout();
-            tabPage1.SuspendLayout();
-            tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)splitContainer3).BeginInit();
-            splitContainer3.Panel1.SuspendLayout();
-            splitContainer3.Panel2.SuspendLayout();
-            splitContainer3.SuspendLayout();
+            tabControl.SuspendLayout();
+            rawDataTabPage.SuspendLayout();
+            olePropertiesTabPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)olePropertiesSplitContainer).BeginInit();
+            olePropertiesSplitContainer.Panel1.SuspendLayout();
+            olePropertiesSplitContainer.Panel2.SuspendLayout();
+            olePropertiesSplitContainer.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)dgvOLEProps).BeginInit();
             ((System.ComponentModel.ISupportInitialize)dgvUserDefinedProperties).BeginInit();
             SuspendLayout();
             // 
-            // openFileDialog1
+            // openFileDialog
             // 
-            openFileDialog1.Filter = resources.GetString("openFileDialog1.Filter");
-            openFileDialog1.FilterIndex = 8;
-            openFileDialog1.Title = "Open Structured Storage file";
+            openFileDialog.Filter = resources.GetString("openFileDialog.Filter");
+            openFileDialog.FilterIndex = 8;
+            openFileDialog.Title = "Open Structured Storage file";
             // 
-            // treeView1
+            // treeView
             // 
-            treeView1.ContextMenuStrip = contextMenuStrip1;
-            treeView1.Dock = DockStyle.Fill;
-            treeView1.HideSelection = false;
-            treeView1.Location = new Point(0, 0);
-            treeView1.Margin = new Padding(4);
-            treeView1.Name = "treeView1";
-            treeView1.Size = new Size(327, 234);
-            treeView1.TabIndex = 4;
-            treeView1.AfterSelect += TreeView1_AfterSelect;
+            treeView.ContextMenuStrip = contextMenuStrip;
+            treeView.Dock = DockStyle.Fill;
+            treeView.HideSelection = false;
+            treeView.Location = new Point(0, 0);
+            treeView.Margin = new Padding(4);
+            treeView.Name = "treeView";
+            treeView.Size = new Size(327, 234);
+            treeView.TabIndex = 4;
+            treeView.AfterSelect += TreeView_AfterSelect;
             // 
-            // contextMenuStrip1
+            // contextMenuStrip
             // 
-            contextMenuStrip1.ImageScalingSize = new Size(20, 20);
-            contextMenuStrip1.Items.AddRange(new ToolStripItem[] { importDataStripMenuItem1, exportDataToolStripMenuItem, addStorageStripMenuItem1, addStreamToolStripMenuItem, removeToolStripMenuItem });
-            contextMenuStrip1.Name = "contextMenuStrip1";
-            contextMenuStrip1.Size = new Size(148, 114);
-            contextMenuStrip1.Opening += ContextMenuStrip1_Opening;
+            contextMenuStrip.ImageScalingSize = new Size(20, 20);
+            contextMenuStrip.Items.AddRange(new ToolStripItem[] { importDataStripMenuItem, exportDataToolStripMenuItem, addStorageStripMenuItem, addStreamToolStripMenuItem, removeToolStripMenuItem });
+            contextMenuStrip.Name = "contextMenuStrip1";
+            contextMenuStrip.Size = new Size(148, 114);
             // 
-            // importDataStripMenuItem1
+            // importDataStripMenuItem
             // 
-            importDataStripMenuItem1.Name = "importDataStripMenuItem1";
-            importDataStripMenuItem1.Size = new Size(147, 22);
-            importDataStripMenuItem1.Text = "Import data...";
-            importDataStripMenuItem1.Click += ImportDataStripMenuItem1_Click;
+            importDataStripMenuItem.Name = "importDataStripMenuItem";
+            importDataStripMenuItem.Size = new Size(147, 22);
+            importDataStripMenuItem.Text = "Import data...";
+            importDataStripMenuItem.Click += ImportDataStripMenuItem_Click;
             // 
             // exportDataToolStripMenuItem
             // 
@@ -124,12 +123,12 @@
             exportDataToolStripMenuItem.Text = "Export data...";
             exportDataToolStripMenuItem.Click += ExportDataToolStripMenuItem_Click;
             // 
-            // addStorageStripMenuItem1
+            // addStorageStripMenuItem
             // 
-            addStorageStripMenuItem1.Name = "addStorageStripMenuItem1";
-            addStorageStripMenuItem1.Size = new Size(147, 22);
-            addStorageStripMenuItem1.Text = "Add storage...";
-            addStorageStripMenuItem1.Click += AddStorageStripMenuItem1_Click;
+            addStorageStripMenuItem.Name = "addStorageStripMenuItem";
+            addStorageStripMenuItem.Size = new Size(147, 22);
+            addStorageStripMenuItem.Text = "Add storage...";
+            addStorageStripMenuItem.Click += AddStorageStripMenuItem_Click;
             // 
             // addStreamToolStripMenuItem
             // 
@@ -145,25 +144,25 @@
             removeToolStripMenuItem.Text = "Remove";
             removeToolStripMenuItem.Click += RemoveToolStripMenuItem_Click;
             // 
-            // saveFileDialog1
+            // saveFileDialog
             // 
-            saveFileDialog1.DefaultExt = "*.bin";
-            saveFileDialog1.Filter = "Exported data files (*.bin)|*.bin|All files (*.*)|*.*";
+            saveFileDialog.DefaultExt = "*.bin";
+            saveFileDialog.Filter = "Exported data files (*.bin)|*.bin|All files (*.*)|*.*";
             // 
-            // menuStrip1
+            // menuStrip
             // 
-            menuStrip1.ImageScalingSize = new Size(20, 20);
-            menuStrip1.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem });
-            menuStrip1.Location = new Point(0, 0);
-            menuStrip1.Name = "menuStrip1";
-            menuStrip1.Padding = new Padding(7, 1, 0, 1);
-            menuStrip1.Size = new Size(995, 24);
-            menuStrip1.TabIndex = 5;
-            menuStrip1.Text = "menuStrip1";
+            menuStrip.ImageScalingSize = new Size(20, 20);
+            menuStrip.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, editToolStripMenuItem });
+            menuStrip.Location = new Point(0, 0);
+            menuStrip.Name = "menuStrip";
+            menuStrip.Padding = new Padding(7, 1, 0, 1);
+            menuStrip.Size = new Size(995, 24);
+            menuStrip.TabIndex = 5;
+            menuStrip.Text = "menuStrip1";
             // 
             // fileToolStripMenuItem
             // 
-            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openFileMenuItem, newStripMenuItem1, closeStripMenuItem1, toolStripSeparator2, updateCurrentFileToolStripMenuItem, saveAsToolStripMenuItem });
+            fileToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { openFileMenuItem, newStripMenuItem, closeStripMenuItem, toolStripSeparator2, saveToolStripMenuItem, saveAsToolStripMenuItem });
             fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             fileToolStripMenuItem.Size = new Size(37, 22);
             fileToolStripMenuItem.Text = "File";
@@ -176,33 +175,33 @@
             openFileMenuItem.Text = "Open...";
             openFileMenuItem.Click += OpenFileMenuItem_Click;
             // 
-            // newStripMenuItem1
+            // newStripMenuItem
             // 
-            newStripMenuItem1.Image = Properties.Resources.page_white;
-            newStripMenuItem1.Name = "newStripMenuItem1";
-            newStripMenuItem1.Size = new Size(183, 22);
-            newStripMenuItem1.Text = "New Compound File";
-            newStripMenuItem1.Click += NewStripMenuItem1_Click;
+            newStripMenuItem.Image = Properties.Resources.page_white;
+            newStripMenuItem.Name = "newStripMenuItem";
+            newStripMenuItem.Size = new Size(183, 22);
+            newStripMenuItem.Text = "New Compound File";
+            newStripMenuItem.Click += NewStripMenuItem_Click;
             // 
-            // closeStripMenuItem1
+            // closeStripMenuItem
             // 
-            closeStripMenuItem1.Name = "closeStripMenuItem1";
-            closeStripMenuItem1.Size = new Size(183, 22);
-            closeStripMenuItem1.Text = "Close file";
-            closeStripMenuItem1.Click += CloseStripMenuItem1_Click;
+            closeStripMenuItem.Name = "closeStripMenuItem";
+            closeStripMenuItem.Size = new Size(183, 22);
+            closeStripMenuItem.Text = "Close file";
+            closeStripMenuItem.Click += CloseStripMenuItem_Click;
             // 
             // toolStripSeparator2
             // 
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new Size(180, 6);
             // 
-            // updateCurrentFileToolStripMenuItem
+            // saveToolStripMenuItem
             // 
-            updateCurrentFileToolStripMenuItem.Image = Properties.Resources.disk;
-            updateCurrentFileToolStripMenuItem.Name = "updateCurrentFileToolStripMenuItem";
-            updateCurrentFileToolStripMenuItem.Size = new Size(183, 22);
-            updateCurrentFileToolStripMenuItem.Text = "Save";
-            updateCurrentFileToolStripMenuItem.Click += UpdateCurrentFileToolStripMenuItem_Click;
+            saveToolStripMenuItem.Image = Properties.Resources.disk;
+            saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            saveToolStripMenuItem.Size = new Size(183, 22);
+            saveToolStripMenuItem.Text = "Save";
+            saveToolStripMenuItem.Click += UpdateCurrentFileToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
@@ -225,52 +224,52 @@
             preferencesToolStripMenuItem.Text = "Preferences";
             preferencesToolStripMenuItem.Click += PreferencesToolStripMenuItem_Click;
             // 
-            // statusStrip1
+            // statusStrip
             // 
-            statusStrip1.ImageScalingSize = new Size(20, 20);
-            statusStrip1.Items.AddRange(new ToolStripItem[] { fileNameLabel });
-            statusStrip1.Location = new Point(0, 507);
-            statusStrip1.Name = "statusStrip1";
-            statusStrip1.Padding = new Padding(1, 0, 16, 0);
-            statusStrip1.Size = new Size(995, 22);
-            statusStrip1.TabIndex = 6;
-            statusStrip1.Text = "statusStrip1";
+            statusStrip.ImageScalingSize = new Size(20, 20);
+            statusStrip.Items.AddRange(new ToolStripItem[] { fileNameLabel });
+            statusStrip.Location = new Point(0, 507);
+            statusStrip.Name = "statusStrip";
+            statusStrip.Padding = new Padding(1, 0, 16, 0);
+            statusStrip.Size = new Size(995, 22);
+            statusStrip.TabIndex = 6;
+            statusStrip.Text = "statusStrip1";
             // 
             // fileNameLabel
             // 
             fileNameLabel.Name = "fileNameLabel";
             fileNameLabel.Size = new Size(0, 17);
             // 
-            // splitContainer1
+            // leftSplitContainer
             // 
-            splitContainer1.BorderStyle = BorderStyle.FixedSingle;
-            splitContainer1.Dock = DockStyle.Fill;
-            splitContainer1.Location = new Point(0, 0);
-            splitContainer1.Margin = new Padding(4);
-            splitContainer1.Name = "splitContainer1";
-            splitContainer1.Orientation = Orientation.Horizontal;
+            leftSplitContainer.BorderStyle = BorderStyle.FixedSingle;
+            leftSplitContainer.Dock = DockStyle.Fill;
+            leftSplitContainer.Location = new Point(0, 0);
+            leftSplitContainer.Margin = new Padding(4);
+            leftSplitContainer.Name = "leftSplitContainer";
+            leftSplitContainer.Orientation = Orientation.Horizontal;
             // 
-            // splitContainer1.Panel1
+            // leftSplitContainer.Panel1
             // 
-            splitContainer1.Panel1.Controls.Add(treeView1);
+            leftSplitContainer.Panel1.Controls.Add(treeView);
             // 
-            // splitContainer1.Panel2
+            // leftSplitContainer.Panel2
             // 
-            splitContainer1.Panel2.Controls.Add(propertyGrid1);
-            splitContainer1.Size = new Size(329, 483);
-            splitContainer1.SplitterDistance = 236;
-            splitContainer1.SplitterWidth = 5;
-            splitContainer1.TabIndex = 5;
+            leftSplitContainer.Panel2.Controls.Add(entryInfoPropertyGrid);
+            leftSplitContainer.Size = new Size(329, 483);
+            leftSplitContainer.SplitterDistance = 236;
+            leftSplitContainer.SplitterWidth = 5;
+            leftSplitContainer.TabIndex = 5;
             // 
-            // propertyGrid1
+            // entryInfoPropertyGrid
             // 
-            propertyGrid1.Dock = DockStyle.Fill;
-            propertyGrid1.Location = new Point(0, 0);
-            propertyGrid1.Margin = new Padding(4);
-            propertyGrid1.Name = "propertyGrid1";
-            propertyGrid1.Size = new Size(327, 240);
-            propertyGrid1.TabIndex = 0;
-            propertyGrid1.ToolbarVisible = false;
+            entryInfoPropertyGrid.Dock = DockStyle.Fill;
+            entryInfoPropertyGrid.Location = new Point(0, 0);
+            entryInfoPropertyGrid.Margin = new Padding(4);
+            entryInfoPropertyGrid.Name = "entryInfoPropertyGrid";
+            entryInfoPropertyGrid.Size = new Size(327, 240);
+            entryInfoPropertyGrid.TabIndex = 0;
+            entryInfoPropertyGrid.ToolbarVisible = false;
             // 
             // splitContainer2
             // 
@@ -281,39 +280,39 @@
             // 
             // splitContainer2.Panel1
             // 
-            splitContainer2.Panel1.Controls.Add(splitContainer1);
+            splitContainer2.Panel1.Controls.Add(leftSplitContainer);
             // 
             // splitContainer2.Panel2
             // 
-            splitContainer2.Panel2.Controls.Add(tabControl1);
+            splitContainer2.Panel2.Controls.Add(tabControl);
             splitContainer2.Size = new Size(995, 483);
             splitContainer2.SplitterDistance = 329;
             splitContainer2.SplitterWidth = 5;
             splitContainer2.TabIndex = 7;
             // 
-            // tabControl1
+            // tabControl
             // 
-            tabControl1.Controls.Add(tabPage1);
-            tabControl1.Controls.Add(tabPage2);
-            tabControl1.Dock = DockStyle.Fill;
-            tabControl1.Location = new Point(0, 0);
-            tabControl1.Margin = new Padding(4);
-            tabControl1.Name = "tabControl1";
-            tabControl1.SelectedIndex = 0;
-            tabControl1.Size = new Size(661, 483);
-            tabControl1.TabIndex = 1;
+            tabControl.Controls.Add(rawDataTabPage);
+            tabControl.Controls.Add(olePropertiesTabPage);
+            tabControl.Dock = DockStyle.Fill;
+            tabControl.Location = new Point(0, 0);
+            tabControl.Margin = new Padding(4);
+            tabControl.Name = "tabControl";
+            tabControl.SelectedIndex = 0;
+            tabControl.Size = new Size(661, 483);
+            tabControl.TabIndex = 1;
             // 
-            // tabPage1
+            // rawDataTabPage
             // 
-            tabPage1.Controls.Add(hexEditor);
-            tabPage1.Location = new Point(4, 24);
-            tabPage1.Margin = new Padding(4);
-            tabPage1.Name = "tabPage1";
-            tabPage1.Padding = new Padding(4);
-            tabPage1.Size = new Size(653, 455);
-            tabPage1.TabIndex = 0;
-            tabPage1.Text = "Raw Data";
-            tabPage1.UseVisualStyleBackColor = true;
+            rawDataTabPage.Controls.Add(hexEditor);
+            rawDataTabPage.Location = new Point(4, 24);
+            rawDataTabPage.Margin = new Padding(4);
+            rawDataTabPage.Name = "rawDataTabPage";
+            rawDataTabPage.Padding = new Padding(4);
+            rawDataTabPage.Size = new Size(653, 455);
+            rawDataTabPage.TabIndex = 0;
+            rawDataTabPage.Text = "Raw Data";
+            rawDataTabPage.UseVisualStyleBackColor = true;
             // 
             // hexEditor
             // 
@@ -332,36 +331,36 @@
             hexEditor.UseFixedBytesPerLine = true;
             hexEditor.VScrollBarVisible = true;
             // 
-            // tabPage2
+            // olePropertiesTabPage
             // 
-            tabPage2.Controls.Add(splitContainer3);
-            tabPage2.Location = new Point(4, 24);
-            tabPage2.Margin = new Padding(4);
-            tabPage2.Name = "tabPage2";
-            tabPage2.Padding = new Padding(4);
-            tabPage2.Size = new Size(653, 455);
-            tabPage2.TabIndex = 1;
-            tabPage2.Text = "OLE Properties";
-            tabPage2.UseVisualStyleBackColor = true;
+            olePropertiesTabPage.Controls.Add(olePropertiesSplitContainer);
+            olePropertiesTabPage.Location = new Point(4, 24);
+            olePropertiesTabPage.Margin = new Padding(4);
+            olePropertiesTabPage.Name = "olePropertiesTabPage";
+            olePropertiesTabPage.Padding = new Padding(4);
+            olePropertiesTabPage.Size = new Size(653, 455);
+            olePropertiesTabPage.TabIndex = 1;
+            olePropertiesTabPage.Text = "OLE Properties";
+            olePropertiesTabPage.UseVisualStyleBackColor = true;
             // 
-            // splitContainer3
+            // olePropertiesSplitContainer
             // 
-            splitContainer3.Dock = DockStyle.Fill;
-            splitContainer3.Location = new Point(4, 4);
-            splitContainer3.Margin = new Padding(2, 4, 2, 4);
-            splitContainer3.Name = "splitContainer3";
-            splitContainer3.Orientation = Orientation.Horizontal;
+            olePropertiesSplitContainer.Dock = DockStyle.Fill;
+            olePropertiesSplitContainer.Location = new Point(4, 4);
+            olePropertiesSplitContainer.Margin = new Padding(2, 4, 2, 4);
+            olePropertiesSplitContainer.Name = "olePropertiesSplitContainer";
+            olePropertiesSplitContainer.Orientation = Orientation.Horizontal;
             // 
-            // splitContainer3.Panel1
+            // olePropertiesSplitContainer.Panel1
             // 
-            splitContainer3.Panel1.Controls.Add(dgvOLEProps);
+            olePropertiesSplitContainer.Panel1.Controls.Add(dgvOLEProps);
             // 
-            // splitContainer3.Panel2
+            // olePropertiesSplitContainer.Panel2
             // 
-            splitContainer3.Panel2.Controls.Add(dgvUserDefinedProperties);
-            splitContainer3.Size = new Size(645, 447);
-            splitContainer3.SplitterDistance = 223;
-            splitContainer3.TabIndex = 2;
+            olePropertiesSplitContainer.Panel2.Controls.Add(dgvUserDefinedProperties);
+            olePropertiesSplitContainer.Size = new Size(645, 447);
+            olePropertiesSplitContainer.SplitterDistance = 223;
+            olePropertiesSplitContainer.TabIndex = 2;
             // 
             // dgvOLEProps
             // 
@@ -391,33 +390,33 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(995, 529);
             Controls.Add(splitContainer2);
-            Controls.Add(statusStrip1);
-            Controls.Add(menuStrip1);
-            MainMenuStrip = menuStrip1;
+            Controls.Add(statusStrip);
+            Controls.Add(menuStrip);
+            MainMenuStrip = menuStrip;
             Margin = new Padding(4);
             Name = "MainForm";
             Text = "Structured Storage Explorer";
             FormClosing += MainForm_FormClosing;
-            contextMenuStrip1.ResumeLayout(false);
-            menuStrip1.ResumeLayout(false);
-            menuStrip1.PerformLayout();
-            statusStrip1.ResumeLayout(false);
-            statusStrip1.PerformLayout();
-            splitContainer1.Panel1.ResumeLayout(false);
-            splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
-            splitContainer1.ResumeLayout(false);
+            contextMenuStrip.ResumeLayout(false);
+            menuStrip.ResumeLayout(false);
+            menuStrip.PerformLayout();
+            statusStrip.ResumeLayout(false);
+            statusStrip.PerformLayout();
+            leftSplitContainer.Panel1.ResumeLayout(false);
+            leftSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)leftSplitContainer).EndInit();
+            leftSplitContainer.ResumeLayout(false);
             splitContainer2.Panel1.ResumeLayout(false);
             splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitContainer2).EndInit();
             splitContainer2.ResumeLayout(false);
-            tabControl1.ResumeLayout(false);
-            tabPage1.ResumeLayout(false);
-            tabPage2.ResumeLayout(false);
-            splitContainer3.Panel1.ResumeLayout(false);
-            splitContainer3.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)splitContainer3).EndInit();
-            splitContainer3.ResumeLayout(false);
+            tabControl.ResumeLayout(false);
+            rawDataTabPage.ResumeLayout(false);
+            olePropertiesTabPage.ResumeLayout(false);
+            olePropertiesSplitContainer.Panel1.ResumeLayout(false);
+            olePropertiesSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)olePropertiesSplitContainer).EndInit();
+            olePropertiesSplitContainer.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)dgvOLEProps).EndInit();
             ((System.ComponentModel.ISupportInitialize)dgvUserDefinedProperties).EndInit();
             ResumeLayout(false);
@@ -427,36 +426,36 @@
 
         #endregion
 
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
-        private System.Windows.Forms.TreeView treeView1;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.TreeView treeView;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem exportDataToolStripMenuItem;
-        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog;
         private System.Windows.Forms.ToolStripMenuItem removeToolStripMenuItem;
-        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.MenuStrip menuStrip;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem updateCurrentFileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem addStreamToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem importDataStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem importDataStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openDataFileDialog;
-        private System.Windows.Forms.ToolStripMenuItem addStorageStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem newStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem addStorageStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openFileMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel fileNameLabel;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.PropertyGrid propertyGrid1;
+        private System.Windows.Forms.SplitContainer leftSplitContainer;
+        private System.Windows.Forms.PropertyGrid entryInfoPropertyGrid;
         private System.Windows.Forms.SplitContainer splitContainer2;
         private Be.Windows.Forms.HexBox hexEditor;
-        private System.Windows.Forms.ToolStripMenuItem closeStripMenuItem1;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.ToolStripMenuItem closeStripMenuItem;
+        private System.Windows.Forms.TabControl tabControl;
+        private System.Windows.Forms.TabPage rawDataTabPage;
+        private System.Windows.Forms.TabPage olePropertiesTabPage;
         private System.Windows.Forms.DataGridView dgvOLEProps;
         private System.Windows.Forms.DataGridView dgvUserDefinedProperties;
-        private System.Windows.Forms.SplitContainer splitContainer3;
+        private System.Windows.Forms.SplitContainer olePropertiesSplitContainer;
         private System.Windows.Forms.ToolStripMenuItem editToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem preferencesToolStripMenuItem;
     }

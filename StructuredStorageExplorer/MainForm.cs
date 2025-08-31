@@ -4,7 +4,6 @@ using OpenMcdf;
 using OpenMcdf.Ole;
 using StructuredStorageExplorer.Properties;
 using System.Collections;
-using System.ComponentModel;
 using System.Data;
 using FileFormatException = OpenMcdf.FileFormatException;
 
@@ -25,25 +24,25 @@ public partial class MainForm : Form
         InitializeComponent();
 
 #if !OLE_PROPERTY
-        tabControl1.TabPages.Remove(tabPage2);
+        tabControl.TabPages.Remove(olePropertiesTabPage);
 #endif
 
         ImageList imageList = new();
         imageList.Images.Add(Resources.storage);
         imageList.Images.Add(Resources.stream);
-        treeView1.ImageList = imageList;
+        treeView.ImageList = imageList;
 
         saveAsToolStripMenuItem.Enabled = false;
-        updateCurrentFileToolStripMenuItem.Enabled = false;
+        saveToolStripMenuItem.Enabled = false;
     }
 
     private void OpenFile()
     {
-        if (!string.IsNullOrEmpty(openFileDialog1.FileName))
+        if (!string.IsNullOrEmpty(openFileDialog.FileName))
         {
             CloseCurrentFile();
 
-            LoadFile(openFileDialog1.FileName);
+            LoadFile(openFileDialog.FileName);
         }
     }
 
@@ -52,12 +51,12 @@ public partial class MainForm : Form
         rootStorage?.Dispose();
         rootStorage = null;
 
-        treeView1.Nodes.Clear();
+        treeView.Nodes.Clear();
         fileNameLabel.Text = string.Empty;
         saveAsToolStripMenuItem.Enabled = false;
-        updateCurrentFileToolStripMenuItem.Enabled = false;
+        saveToolStripMenuItem.Enabled = false;
 
-        propertyGrid1.SelectedObject = null;
+        entryInfoPropertyGrid.SelectedObject = null;
         hexEditor.ByteProvider = null;
 
 #if OLE_PROPERTY
@@ -78,7 +77,7 @@ public partial class MainForm : Form
 
             fileNameLabel.Text = fileName;
             saveAsToolStripMenuItem.Enabled = true;
-            updateCurrentFileToolStripMenuItem.Enabled = true;
+            saveToolStripMenuItem.Enabled = true;
 
             RefreshTree();
         }
@@ -92,11 +91,11 @@ public partial class MainForm : Form
 
     private void RefreshTree()
     {
-        treeView1.Nodes.Clear();
+        treeView.Nodes.Clear();
 
         if (rootStorage is not null)
         {
-            TreeNode root = treeView1.Nodes.Add(rootStorage.EntryInfo.Name.EscapeControlChars());
+            TreeNode root = treeView.Nodes.Add(rootStorage.EntryInfo.Name.EscapeControlChars());
             root.ImageIndex = 0;
             root.Tag = new NodeSelection(null, rootStorage.EntryInfo);
 
@@ -104,7 +103,7 @@ public partial class MainForm : Form
             AddNodes(root, rootStorage);
 
             // Expand the root entry (which always exists)
-            treeView1.Nodes[0].Expand();
+            treeView.Nodes[0].Expand();
         }
     }
 
@@ -120,7 +119,7 @@ public partial class MainForm : Form
 
             fileNameLabel.Text = fileName;
             saveAsToolStripMenuItem.Enabled = true;
-            updateCurrentFileToolStripMenuItem.Enabled = true;
+            saveToolStripMenuItem.Enabled = true;
 
             RefreshTree();
         }
@@ -165,19 +164,19 @@ public partial class MainForm : Form
     private void ExportDataToolStripMenuItem_Click(object sender, EventArgs e)
     {
         // No export if storage
-        if (treeView1.SelectedNode?.Tag is not NodeSelection selection || selection.EntryInfo.Type is not EntryType.Stream || selection.Parent is null)
+        if (treeView.SelectedNode?.Tag is not NodeSelection selection || selection.EntryInfo.Type is not EntryType.Stream || selection.Parent is null)
         {
             MessageBox.Show("Only stream data can be exported", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
 
-        saveFileDialog1.FileName = selection.SanitizedFileName;
+        saveFileDialog.FileName = selection.SanitizedFileName;
 
-        if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+        if (saveFileDialog.ShowDialog() == DialogResult.OK)
         {
             try
             {
-                using FileStream fs = new(saveFileDialog1.FileName, FileMode.CreateNew, FileAccess.ReadWrite);
+                using FileStream fs = new(saveFileDialog.FileName, FileMode.CreateNew, FileAccess.ReadWrite);
                 using CfbStream cfbStream = selection.Parent.OpenStream(selection.EntryInfo.Name);
                 cfbStream.CopyTo(fs);
             }
@@ -190,16 +189,17 @@ public partial class MainForm : Form
 
     private void RemoveToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        if (treeView1.SelectedNode?.Tag is NodeSelection selection && selection.Parent is not null)
+        if (treeView.SelectedNode?.Tag is NodeSelection selection && selection.Parent is not null)
+        {
             selection.Parent.Delete(selection.EntryInfo.Name);
-
-        RefreshTree();
+            RefreshTree();
+        }
     }
 
     private void SaveAsToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        saveFileDialog1.FilterIndex = 2;
-        if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+        saveFileDialog.FilterIndex = 2;
+        if (saveFileDialog.ShowDialog() == DialogResult.OK)
         {
             //cf.SaveAs(saveFileDialog1.FileName); // TODO
         }
@@ -220,7 +220,7 @@ public partial class MainForm : Form
         string streamName = string.Empty;
 
         if (Utils.InputBox("Add stream", "Insert stream name", ref streamName) == DialogResult.OK
-            && treeView1.SelectedNode.Tag is RootStorage storage)
+            && treeView.SelectedNode.Tag is RootStorage storage)
         {
             try
             {
@@ -235,12 +235,12 @@ public partial class MainForm : Form
         }
     }
 
-    private void AddStorageStripMenuItem1_Click(object sender, EventArgs e)
+    private void AddStorageStripMenuItem_Click(object sender, EventArgs e)
     {
         string storageName = string.Empty;
 
         if (Utils.InputBox("Add storage", "Insert storage name", ref storageName) == DialogResult.OK
-            && treeView1.SelectedNode.Tag is RootStorage storage)
+            && treeView.SelectedNode.Tag is RootStorage storage)
         {
             try
             {
@@ -255,10 +255,10 @@ public partial class MainForm : Form
         }
     }
 
-    private void ImportDataStripMenuItem1_Click(object sender, EventArgs e)
+    private void ImportDataStripMenuItem_Click(object sender, EventArgs e)
     {
         if (openDataFileDialog.ShowDialog() == DialogResult.OK
-            && treeView1.SelectedNode.Tag is CfbStream stream)
+            && treeView.SelectedNode.Tag is CfbStream stream)
         {
             using FileStream f = new(openDataFileDialog.FileName, FileMode.Open, FileAccess.Read, FileShare.Read);
             f.CopyTo(stream);
@@ -272,18 +272,14 @@ public partial class MainForm : Form
         CloseCurrentFile();
     }
 
-    private void ContextMenuStrip1_Opening(object sender, CancelEventArgs e)
-    {
-    }
-
-    private void NewStripMenuItem1_Click(object sender, EventArgs e)
+    private void NewStripMenuItem_Click(object sender, EventArgs e)
     {
         CreateNewFile();
     }
 
     private void OpenFileMenuItem_Click(object sender, EventArgs e)
     {
-        if (openFileDialog1.ShowDialog() == DialogResult.OK)
+        if (openFileDialog.ShowDialog() == DialogResult.OK)
         {
             try
             {
@@ -296,18 +292,18 @@ public partial class MainForm : Form
         }
     }
 
-    private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
+    private void TreeView_AfterSelect(object sender, TreeViewEventArgs e)
     {
         TreeNode? node = e.Node;
 
         if (node?.Tag is not NodeSelection nodeSelection)
         {
-            addStorageStripMenuItem1.Enabled = true;
+            addStorageStripMenuItem.Enabled = true;
             addStreamToolStripMenuItem.Enabled = true;
-            importDataStripMenuItem1.Enabled = false;
+            importDataStripMenuItem.Enabled = false;
             exportDataToolStripMenuItem.Enabled = false;
             removeToolStripMenuItem.Enabled = false;
-            propertyGrid1.SelectedObject = null;
+            entryInfoPropertyGrid.SelectedObject = null;
             return;
         }
 
@@ -324,7 +320,7 @@ public partial class MainForm : Form
                 }
             }
 
-            treeView1.SelectedNode = node;
+            treeView.SelectedNode = node;
 
             // The tag property contains the underlying CFItem.
             //CFItem target = (CFItem)n.Tag;
@@ -332,9 +328,9 @@ public partial class MainForm : Form
             if (nodeSelection.EntryInfo.Type is EntryType.Stream)
             {
                 using CfbStream stream = nodeSelection.Parent!.OpenStream(nodeSelection.EntryInfo.Name);
-                addStorageStripMenuItem1.Enabled = false;
+                addStorageStripMenuItem.Enabled = false;
                 addStreamToolStripMenuItem.Enabled = false;
-                importDataStripMenuItem1.Enabled = true;
+                importDataStripMenuItem.Enabled = true;
                 exportDataToolStripMenuItem.Enabled = true;
 
                 hexEditor.ByteProvider = new StreamDataProvider(stream);
@@ -348,7 +344,7 @@ public partial class MainForm : Form
                 hexEditor.ByteProvider = null;
             }
 
-            propertyGrid1.SelectedObject = nodeSelection.EntryInfo.WithEscapedControlChars();
+            entryInfoPropertyGrid.SelectedObject = nodeSelection.EntryInfo.WithEscapedControlChars();
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
@@ -426,7 +422,7 @@ public partial class MainForm : Form
         }
     }
 
-    private void CloseStripMenuItem1_Click(object sender, EventArgs e)
+    private void CloseStripMenuItem_Click(object sender, EventArgs e)
     {
         if (hexEditor.ByteProvider is not null
             && hexEditor.ByteProvider.HasChanges()
