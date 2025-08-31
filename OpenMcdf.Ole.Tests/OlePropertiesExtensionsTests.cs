@@ -433,7 +433,7 @@ public class OlePropertiesExtensionsTests
     public void ReadClsidProperty()
     {
         Guid guid = new("15891a95-bf6e-4409-b7d0-3a31c391fa31");
-        using var cf = RootStorage.OpenRead("CLSIDPropertyTest.file");
+        using var cf = RootStorage.OpenRead("CLSIDPropertyTest.cfs");
         using CfbStream stream = cf.OpenStream("\u0005C3teagxwOttdbfkuIaamtae3Ie");
         OlePropertiesContainer co = new(stream);
         OleProperty clsidProp = co.Properties.First(x => x.PropertyName == "DocumentID");
