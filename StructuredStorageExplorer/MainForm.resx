@@ -121,7 +121,7 @@
     <value>17, 17</value>
   </metadata>
   <data name="openFileDialog1.Filter" xml:space="preserve">
-    <value>Office files (*.xls *.doc *.ppt)|*.xls;*.doc;*.ppt|Advanced Authoring Format files (*.aaf)|*.aaf|MSI Setup files (*.msi)|*.msi|Outlook messages (*.msg)|*.msg|Thumbnail cache files (Thumbs.db)|Thumbs.db|Solution User Options files (*.suo)|*.suo|All files (*.*)|*.*</value>
+    <value>Advanced Authoring Format files (*.aaf)|*.aaf|MSI Setup files (*.msi)|*.msi|Office files (*.doc;*.ppt;*.pub;*.xls)|*.xls;*.doc;*.ppt|OpenMcdf Test files (*.cfs)|*.cfs|Outlook messages (*.msg)|*.msg|Thumbnail cache files (Thumbs.db)|Thumbs.db|Solution User Options files (*.suo)|*.suo|All Structured Storage files|Thumbs.db;*.aaf;*.cfs;*.doc;*.msg;*.msi;*.ppt;*.pub;*.suo;*.xls|All files (*.*)|*.*</value>
   </data>
   <metadata name="contextMenuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>147, 17</value>
