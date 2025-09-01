@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
+﻿using System.Diagnostics.CodeAnalysis;
 
 namespace OpenMcdf;
 
@@ -215,7 +214,7 @@ internal sealed class DirectoryTree
     {
         if (root.ChildId == StreamId.NoStream)
         {
-            Trace.WriteLine("Empty tree");
+            writer.WriteLine("Empty tree");
             return;
         }
 
