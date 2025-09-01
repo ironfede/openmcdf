@@ -153,7 +153,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
     }
 
     [ExcludeFromCodeCoverage]
-    internal bool Validate()
+    internal void Validate()
     {
         using MiniFatEnumerator miniFatEnumerator = new(ContextSite);
 
@@ -165,7 +165,5 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
                 throw new FileFormatException($"Mini FAT entry {current} is beyond the end of the mini stream.");
             }
         }
-
-        return true;
     }
 }

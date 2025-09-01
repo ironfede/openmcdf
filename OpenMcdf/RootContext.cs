@@ -48,8 +48,6 @@ internal sealed class RootContext : ContextBase, IDisposable
 
     public DirectoryEntries DirectoryEntries { get; }
 
-    public DirectoryEntry RootEntry { get; }
-
     public MiniFat MiniFat
     {
         get
@@ -63,7 +61,7 @@ internal sealed class RootContext : ContextBase, IDisposable
     {
         get
         {
-            miniStream ??= new(ContextSite, RootEntry);
+            miniStream ??= new(ContextSite, DirectoryEntries.RootEntry);
             return miniStream;
         }
     }
@@ -99,8 +97,10 @@ internal sealed class RootContext : ContextBase, IDisposable
         BaseStream = stream;
         this.contextFlags = contextFlags;
 
+        bool create = contextFlags.HasFlag(IOContextFlags.Create);
+
         using CfbBinaryReader reader = new(stream);
-        Header = contextFlags.HasFlag(IOContextFlags.Create) ? new(version) : reader.ReadHeader();
+        Header = create ? new(version) : reader.ReadHeader();
         SectorSize = 1 << Header.SectorShift;
         MiniSectorSize = 1 << Header.MiniSectorShift;
         FatEntriesPerSector = SectorSize / sizeof(uint);
@@ -124,19 +124,12 @@ internal sealed class RootContext : ContextBase, IDisposable
             writer = new(Stream);
 
         Fat = new(ContextSite);
-        DirectoryEntries = new(ContextSite);
+        DirectoryEntries = new(ContextSite, create);
 
-        if (contextFlags.HasFlag(IOContextFlags.Create))
+        if (create)
         {
-            RootEntry = DirectoryEntries.CreateOrRecycleDirectoryEntry();
-            RootEntry.RecycleRoot();
-
             WriteHeader();
-            DirectoryEntries.Write(RootEntry);
-        }
-        else
-        {
-            RootEntry = DirectoryEntries.GetDictionaryEntry(0);
+            DirectoryEntries.Write(DirectoryEntries.RootEntry);
         }
     }
 
@@ -237,5 +230,21 @@ internal sealed class RootContext : ContextBase, IDisposable
         ThrowIfNotTransacted();
 
         transactedStream.Revert();
+    }
+
+    [ExcludeFromCodeCoverage]
+    public void Validate()
+    {
+        Fat.Validate();
+        MiniFat.Validate();
+        DirectoryEntries.Validate();
+    }
+
+    [ExcludeFromCodeCoverage]
+    public void WriteTrace(TextWriter writer)
+    {
+        writer.WriteLine(Header);
+        Fat.WriteTrace(writer);
+        MiniFat.WriteTrace(writer);
     }
 }
