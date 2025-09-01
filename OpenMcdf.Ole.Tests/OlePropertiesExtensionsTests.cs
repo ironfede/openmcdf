@@ -1,3 +1,4 @@
+using OpenMcdf.Tests;
 using System.Diagnostics;
 
 namespace OpenMcdf.Ole.Tests;
@@ -50,9 +51,7 @@ public class OlePropertiesExtensionsTests
     [TestMethod]
     public void ModifyDocumentSummaryInformation()
     {
-        using MemoryStream modifiedStream = new();
-        using (FileStream stream = File.OpenRead("_Test.ppt"))
-            stream.CopyTo(modifiedStream);
+        using MemoryStream modifiedStream = TestData.CreateMemoryStreamFromFile("_Test.ppt");
 
         // Verify initial properties, and then create a modified document
         using (var cf = RootStorage.Open(modifiedStream, StorageModeFlags.LeaveOpen))
@@ -165,9 +164,7 @@ public class OlePropertiesExtensionsTests
     [TestMethod]
     public void SummaryInformationModifyLpwstring()
     {
-        using MemoryStream modifiedStream = new();
-        using (FileStream stream = File.OpenRead("wstr_presets.doc"))
-            stream.CopyTo(modifiedStream);
+        using MemoryStream modifiedStream = TestData.CreateMemoryStreamFromFile("wstr_presets.doc");
 
         // Modify some LPWSTR properties, and save to a new file
         using (var cf = RootStorage.Open(modifiedStream, StorageModeFlags.LeaveOpen))
@@ -248,9 +245,7 @@ public class OlePropertiesExtensionsTests
     [TestMethod]
     public void AddDocumentSummaryInformationCustomInfo()
     {
-        using MemoryStream modifiedStream = new();
-        using (FileStream stream = File.OpenRead("english.presets.doc"))
-            stream.CopyTo(modifiedStream);
+        using MemoryStream modifiedStream = TestData.CreateMemoryStreamFromFile("english.presets.doc");
 
         // Test value for a VT_FILETIME property
         DateTime testNow = DateTime.UtcNow;
@@ -330,9 +325,7 @@ public class OlePropertiesExtensionsTests
     [TestMethod]
     public void TestAddUserDefinedProperty()
     {
-        using MemoryStream modifiedStream = new();
-        using (FileStream stream = File.OpenRead("english.presets.doc"))
-            stream.CopyTo(modifiedStream);
+        using MemoryStream modifiedStream = TestData.CreateMemoryStreamFromFile("english.presets.doc");
 
         // Test value for a VT_FILETIME property
         DateTime testNow = DateTime.UtcNow;
@@ -391,10 +384,7 @@ public class OlePropertiesExtensionsTests
     [TestMethod]
     public void TestAddUserDefinedPropertyShouldPreventDuplicates()
     {
-        using MemoryStream modifiedStream = new();
-        using (FileStream stream = File.OpenRead("english.presets.doc"))
-            stream.CopyTo(modifiedStream);
-
+        using MemoryStream modifiedStream = TestData.CreateMemoryStreamFromFile("english.presets.doc");
         using var cf = RootStorage.Open(modifiedStream);
         CfbStream dsiStream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
         OlePropertiesContainer co = new(dsiStream);
@@ -445,9 +435,7 @@ public class OlePropertiesExtensionsTests
     [TestMethod]
     public void AddUserDefinedPropertiesSection()
     {
-        using MemoryStream modifiedStream = new();
-        using (FileStream stream = File.OpenRead("report.xls"))
-            stream.CopyTo(modifiedStream);
+        using MemoryStream modifiedStream = TestData.CreateMemoryStreamFromFile("report.xls");
 
         using (var cf = RootStorage.Open(modifiedStream, StorageModeFlags.LeaveOpen))
         {
@@ -498,9 +486,7 @@ public class OlePropertiesExtensionsTests
     [TestMethod]
     public void TestRetainDictionaryPropertyInAppSpecificStreams()
     {
-        using MemoryStream modifiedStream = new();
-        using (FileStream stream = File.OpenRead("Issue134.cfs"))
-            stream.CopyTo(modifiedStream);
+        using MemoryStream modifiedStream = TestData.CreateMemoryStreamFromFile("Issue134.cfs");
 
         Dictionary<uint, string> expectedPropertyNames = new()
         {
