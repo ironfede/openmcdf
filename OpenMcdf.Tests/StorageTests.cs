@@ -159,29 +159,48 @@ public sealed class StorageTests
         Assert.ThrowsExactly<IOException>(() => rootStorage.CreateStorage("Test"));
     }
 
-    private static void CreateDeleteTest(Version version, MemoryStream memoryStream)
+    private static MemoryStream CreateDeleteTest(Version version, int count)
     {
-        using var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen);
-        rootStorage.CreateStorage("Test2");
-        rootStorage.CreateStorage("Test1");
-        rootStorage.CreateStorage("Test3");
+        MemoryStream stream = new();
+        using var rootStorage = RootStorage.Create(stream, version, StorageModeFlags.LeaveOpen);
+
+        int mid = (count + 1) / 2;
+        rootStorage.CreateStorage($"{mid}");
+        for (int i = 0; i < count - 1; i++)
+        {
+            int name;
+            if (i % 2 == 0)
+                name = mid - i / 2 - 1;
+            else
+                name = mid + i / 2 + 1;
+            rootStorage.CreateStorage($"{name}");
+        }
+
+        return stream;
     }
 
     [TestMethod]
     [DataRow(Version.V3)]
     [DataRow(Version.V4)]
-    public void DeleteStorageLeft(Version version)
+    public void DeleteStorageLeaves(Version version)
     {
-        using MemoryStream memoryStream = new();
-
-        CreateDeleteTest(version, memoryStream);
-
+        using MemoryStream memoryStream = CreateDeleteTest(version, 3);
         using var rootStorage = RootStorage.Open(memoryStream);
+
         rootStorage.Delete("NonExistentEntry");
         Assert.AreEqual(3, rootStorage.EnumerateEntries().Count());
 
-        rootStorage.Delete("Test1");
+        // Left
+        rootStorage.Delete("1");
         Assert.AreEqual(2, rootStorage.EnumerateEntries().Count());
+
+        // Right
+        rootStorage.Delete("3");
+        Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
+
+        // Root
+        rootStorage.Delete("2");
+        Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
     }
 
     [TestMethod]
@@ -189,44 +208,73 @@ public sealed class StorageTests
     [DataRow(Version.V4)]
     public void DeleteStorageRoot(Version version)
     {
-        using MemoryStream memoryStream = new();
-
-        CreateDeleteTest(version, memoryStream);
-
+        using MemoryStream memoryStream = CreateDeleteTest(version, 3);
         using var rootStorage = RootStorage.Open(memoryStream);
-        rootStorage.Delete("Test2");
+
+        rootStorage.Delete("2");
         Assert.AreEqual(2, rootStorage.EnumerateEntries().Count());
-    }
 
-    [TestMethod]
-    [DataRow(Version.V3)]
-    [DataRow(Version.V4)]
-    public void DeleteStorageRight(Version version)
-    {
-        using MemoryStream memoryStream = new();
+        rootStorage.Delete("1");
+        Assert.AreEqual(1, rootStorage.EnumerateEntries().Count());
 
-        CreateDeleteTest(version, memoryStream);
-
-        using var rootStorage = RootStorage.Open(memoryStream);
-        rootStorage.Delete("Test3");
-        Assert.AreEqual(2, rootStorage.EnumerateEntries().Count());
-    }
-
-    [TestMethod]
-    [DataRow(Version.V3)]
-    [DataRow(Version.V4)]
-    public void DeleteStorageAll(Version version)
-    {
-        using MemoryStream memoryStream = new();
-
-        CreateDeleteTest(version, memoryStream);
-
-        using var rootStorage = RootStorage.Open(memoryStream);
-        rootStorage.Delete("Test1");
-        rootStorage.Delete("Test2");
-        rootStorage.Delete("Test3");
+        rootStorage.Delete("3");
         Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
     }
+
+    [TestMethod]
+    [DataRow(Version.V3)]
+    [DataRow(Version.V4)]
+    public void DeleteStorageBranch(Version version)
+    {
+        const int count = 15;
+
+        for (int i = 0; i < count; i++)
+        {
+            using MemoryStream memoryStream = CreateDeleteTest(version, count);
+            using var rootStorage = RootStorage.Open(memoryStream);
+
+            for (int j = 0; j < count; j++)
+            {
+                int name = (i + j) % count + 1;
+                rootStorage.Delete($"{name}");
+                Assert.AreEqual(count - 1 - j, rootStorage.EnumerateEntries().Count());
+            }
+        }
+    }
+
+#if WINDOWS
+    private static string CreateBalancedDeleteTest(int count)
+    {
+        string fileName = $"BalancedDelete_{count}.cfs";
+        File.Delete(fileName);
+        using var rootStorage = StructuredStorage.Storage.Create(fileName);
+        for (int i = 0; i < count; i++)
+        {
+            using StructuredStorage.Storage storage = rootStorage.CreateStorage($"{i + 1}");
+        }
+
+        return fileName;
+    }
+
+    [TestMethod]
+    public void DeleteBalancedStorageBranch()
+    {
+        const int count = 31;
+
+        for (int i = 0; i < count; i++)
+        {
+            string fileName = CreateBalancedDeleteTest(count);
+            using var rootStorage = RootStorage.Open(fileName, FileMode.Open);
+
+            for (int j = 0; j < count; j++)
+            {
+                int name = (i + j) % count + 1;
+                rootStorage.Delete($"{name}");
+                Assert.AreEqual(count - 1 - j, rootStorage.EnumerateEntries().Count());
+            }
+        }
+    }
+#endif
 
     [TestMethod]
     [DataRow(Version.V3)]
