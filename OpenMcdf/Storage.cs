@@ -354,6 +354,7 @@ public class Storage : ContextBase
         directoryTree.Remove(entry);
     }
 
+    [ExcludeFromCodeCoverage]
     internal void TraceDirectoryEntries(TextWriter writer)
     {
         directoryTree.WriteTrace(writer);

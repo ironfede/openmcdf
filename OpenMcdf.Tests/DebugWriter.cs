@@ -5,7 +5,9 @@ namespace OpenMcdf.Tests;
 
 internal sealed class DebugWriter : TextWriter
 {
-    public static DebugWriter Default { get; } = new();
+    static Lazy<DebugWriter> lazyDebugWriter = new();
+
+    public static DebugWriter Default => lazyDebugWriter.Value;
 
     public override Encoding Encoding => Encoding.Unicode;
 
