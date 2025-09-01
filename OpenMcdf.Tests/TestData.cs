@@ -1,6 +1,6 @@
 ﻿namespace OpenMcdf.Tests;
 
-internal static class TestData
+public static class TestData
 {
     /// <summary>
     /// Fill with bytes equal to their position modulo 256
@@ -11,6 +11,15 @@ internal static class TestData
         for (int i = 0; i < length; i++)
             expectedBuffer[i] = (byte)i;
         return expectedBuffer;
+    }
+
+    public static MemoryStream CreateMemoryStreamFromFile(string fileName)
+    {
+        using FileStream fs = File.OpenRead(fileName);
+        MemoryStream ms = new((int)fs.Length);
+        fs.CopyTo(ms);
+        ms.Position = 0;
+        return ms;
     }
 
     public static IEnumerable<object[]> ShortVersionsAndSizes { get; } = new[]

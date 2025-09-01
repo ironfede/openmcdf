@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OpenMcdf.Ole\OpenMcdf.Ole.csproj" />
+    <ProjectReference Include="..\OpenMcdf.Tests\OpenMcdf.Tests.csproj" />
   </ItemGroup>
 
   <ItemGroup>
