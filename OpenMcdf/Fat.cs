@@ -23,12 +23,12 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
         fatSectorEnumerator = new(rootContextSite);
         cachedSectorBuffer = new byte[Context.SectorSize];
 
-        if (Context.Version == Version.V3)
-            IsUsed = entry => entry.Value is not SectorType.Free;
-        else if (Context.Version == Version.V4)
-            IsUsed = entry => entry.Value is not SectorType.Free && entry.Index is not RootContext.RangeLockSectorId;
-        else
-            throw new NotSupportedException($"Unsupported major version: {Context.Version}.");
+        IsUsed = Context.Version switch
+        {
+            Version.V3 => entry => entry.Value is not SectorType.Free,
+            Version.V4 => entry => entry.Value is not SectorType.Free && entry.Index is not RootContext.RangeLockSectorId,
+            _ => throw new NotSupportedException($"Unsupported major version: {Context.Version}."),
+        };
     }
 
     public void Dispose()
