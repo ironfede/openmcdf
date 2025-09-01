@@ -203,7 +203,7 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
     }
 
     [ExcludeFromCodeCoverage]
-    internal bool Validate()
+    internal void Validate()
     {
         long fatSectorCount = 0;
         long difatSectorCount = 0;
@@ -233,8 +233,6 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
             if (this[RootContext.RangeLockSectorId] != SectorType.EndOfChain)
                 throw new FileFormatException($"Range lock sector is not at the end of the chain.");
         }
-
-        return true;
     }
 
     [ExcludeFromCodeCoverage]

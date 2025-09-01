@@ -218,7 +218,7 @@ public sealed class RootStorage : Storage, IDisposable
     }
 
     RootStorage(RootContextSite rootContextSite, StorageModeFlags storageModeFlags)
-        : base(rootContextSite, rootContextSite.Context.RootEntry, null)
+        : base(rootContextSite, rootContextSite.Context.DirectoryEntries.RootEntry, null)
     {
         this.storageModeFlags = storageModeFlags;
     }
@@ -342,19 +342,15 @@ public sealed class RootStorage : Storage, IDisposable
         SwitchToCore(stream, false);
     }
 
-    [ExcludeFromCodeCoverage]
-    internal void Trace(TextWriter writer)
-    {
-        writer.WriteLine(Context.Header);
-        Context.Fat.WriteTrace(writer);
-        Context.MiniFat.WriteTrace(writer);
-    }
-
     // TODO: Move checks to Tests project as Asserts
     [ExcludeFromCodeCoverage]
     internal bool Validate()
     {
-        return Context.Fat.Validate()
-            && Context.MiniFat.Validate();
+        // Validate will throw on error, return a bool for test purposes
+        Context.Validate();
+        return true;
     }
+
+    [ExcludeFromCodeCoverage]
+    internal void WriteTrace(TextWriter writer) => Context.WriteTrace(writer);
 }
