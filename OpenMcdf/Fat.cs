@@ -64,9 +64,9 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
 
         Flush();
 
-        CfbBinaryReader reader = Context.Reader;
-        reader.Position = current.Position;
-        reader.Read(cachedSectorBuffer, 0, cachedSectorBuffer.Length);
+        Stream stream = Context.Stream;
+        stream.Position = current.Position;
+        stream.ReadExactly(cachedSectorBuffer, 0, cachedSectorBuffer.Length);
         cachedSector = current;
     }
 
@@ -74,9 +74,9 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
     {
         if (isDirty)
         {
-            CfbBinaryWriter writer = Context.Writer;
-            writer.Position = cachedSector.Position;
-            writer.Write(cachedSectorBuffer);
+            Stream stream = Context.Stream;
+            stream.Position = cachedSector.Position;
+            stream.Write(cachedSectorBuffer, 0, cachedSectorBuffer.Length);
             isDirty = false;
         }
     }
