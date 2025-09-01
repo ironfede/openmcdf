@@ -10,9 +10,9 @@ internal sealed class DirectoryTree
 {
     internal enum RelationType
     {
-        Previous,
-        Next,
-        Directory,
+        LeftSibling,
+        RightSibling,
+        Root,
     }
 
     private readonly DirectoryEntries directories;
@@ -83,25 +83,25 @@ internal sealed class DirectoryTree
         if (!directories.TryGetDictionaryEntry(root.ChildId, out DirectoryEntry? child))
         {
             parent = null;
-            relation = RelationType.Directory;
+            relation = RelationType.Root;
             return false;
         }
 
         parent = root;
-        relation = RelationType.Directory;
+        relation = RelationType.Root;
         while (child is not null)
         {
             int compare = DirectoryEntryComparer.Compare(entry.NameCharSpan, child.NameCharSpan);
             if (compare < 0)
             {
                 parent = child;
-                relation = RelationType.Previous;
+                relation = RelationType.LeftSibling;
                 directories.TryGetDictionaryEntry(child.LeftSiblingId, out child);
             }
             else if (compare > 0)
             {
                 parent = child;
-                relation = RelationType.Next;
+                relation = RelationType.RightSibling;
                 directories.TryGetDictionaryEntry(child.RightSiblingId, out child);
             }
             else
@@ -164,13 +164,13 @@ internal sealed class DirectoryTree
     {
         switch (relation)
         {
-            case RelationType.Previous:
+            case RelationType.LeftSibling:
                 entry.LeftSiblingId = value;
                 break;
-            case RelationType.Next:
+            case RelationType.RightSibling:
                 entry.RightSiblingId = value;
                 break;
-            case RelationType.Directory:
+            case RelationType.Root:
                 root.ChildId = value;
                 break;
         }
@@ -192,20 +192,20 @@ internal sealed class DirectoryTree
 
             if (entry.RightSiblingId != StreamId.NoStream)
             {
-                uint newRightChildParent = entry.LeftSiblingId;
-                DirectoryEntry newRightChildParentEntry;
+                uint newRightChildParentId = entry.LeftSiblingId;
+                DirectoryEntry newRightChildParent;
                 for (; ; )
                 {
-                    newRightChildParentEntry = directories.GetDictionaryEntry(newRightChildParent);
-                    newRightChildParent = newRightChildParentEntry.RightSiblingId;
-                    if (newRightChildParentEntry.RightSiblingId == StreamId.NoStream)
+                    newRightChildParent = directories.GetDictionaryEntry(newRightChildParentId);
+                    newRightChildParentId = newRightChildParent.RightSiblingId;
+                    if (newRightChildParent.RightSiblingId == StreamId.NoStream)
                     {
                         break;
                     }
                 }
 
-                newRightChildParentEntry.RightSiblingId = entry.RightSiblingId;
-                directories.Write(newRightChildParentEntry);
+                newRightChildParent.RightSiblingId = entry.RightSiblingId;
+                directories.Write(newRightChildParent);
             }
         }
     }
