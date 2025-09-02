@@ -189,7 +189,17 @@ internal sealed class DirectoryTree
     }
 
     [ExcludeFromCodeCoverage]
-    internal void Validate() => Validate(root);
+    internal void Validate()
+    {
+        if (root.ChildId != StreamId.NoStream)
+        {
+            DirectoryEntry child = directories.GetDictionaryEntry(root.ChildId);
+            if (child.Color is not NodeColor.Black)
+                throw new FileFormatException("Root child is not black.");
+
+            Validate(child);
+        }
+    }
 
     [ExcludeFromCodeCoverage]
     void Validate(DirectoryEntry entry)
