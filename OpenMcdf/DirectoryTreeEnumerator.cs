@@ -25,15 +25,11 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
     }
 
     /// <inheritdoc/>
-    public DirectoryEntry Current
+    public DirectoryEntry Current => current switch
     {
-        get
-        {
-            if (current is null)
-                throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
-            return current;
-        }
-    }
+        null => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
+        _ => current
+    };
 
     /// <inheritdoc/>
     object IEnumerator.Current => Current;

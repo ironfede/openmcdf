@@ -23,15 +23,11 @@ internal class DifatSectorEnumerator : ContextBase, IEnumerator<Sector>
     }
 
     /// <inheritdoc/>
-    public Sector Current
+    public Sector Current => current.Id switch
     {
-        get
-        {
-            if (current.Id == SectorType.EndOfChain)
-                throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
-            return current;
-        }
-    }
+        SectorType.EndOfChain => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
+        _ => current
+    };
 
     /// <inheritdoc/>
     object IEnumerator.Current => Current;
