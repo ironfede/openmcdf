@@ -24,6 +24,7 @@ netstandard
 nullable
 OpenMcdf
 snupkg
+storages
 sublicense
 toolbar
 typelib
