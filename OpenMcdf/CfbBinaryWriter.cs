@@ -70,7 +70,7 @@ internal sealed class CfbBinaryWriter : BinaryWriter
         Write(entry.Name, 0, DirectoryEntry.NameFieldLength);
         Write(entry.NameLength);
         Write((byte)entry.Type);
-        Write((byte)entry.Color);
+        Write((byte)NodeColor.Black); // TODO: Support tree balancing
         Write(entry.LeftSiblingId);
         Write(entry.RightSiblingId);
         Write(entry.ChildId);
