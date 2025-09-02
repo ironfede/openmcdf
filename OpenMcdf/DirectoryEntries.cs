@@ -145,4 +145,10 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
         DirectoryTree tree = new(this, RootEntry);
         tree.Validate();
     }
+
+    public void WriteTrace(TextWriter writer)
+    {
+        DirectoryTree tree = new(this, RootEntry);
+        tree.WriteTrace(writer);
+    }
 }

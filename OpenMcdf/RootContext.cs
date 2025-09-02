@@ -244,7 +244,15 @@ internal sealed class RootContext : ContextBase, IDisposable
     public void WriteTrace(TextWriter writer)
     {
         writer.WriteLine(Header);
+        writer.WriteLine();
+
         Fat.WriteTrace(writer);
+        writer.WriteLine();
+
         MiniFat.WriteTrace(writer);
+        writer.WriteLine();
+
+        DirectoryEntries.WriteTrace(writer);
+        writer.WriteLine();
     }
 }
