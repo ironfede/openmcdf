@@ -210,13 +210,15 @@ internal sealed class DirectoryTree
     }
 
     [ExcludeFromCodeCoverage]
-    internal void WriteTrace(TextWriter writer) => WriteTrace(writer, root, 0);
+    internal void WriteTrace(TextWriter writer)
+    {
+        if (directories.TryGetDictionaryEntry(root.ChildId, out DirectoryEntry? child))
+            WriteTrace(writer, child, 0);
+    }
 
     [ExcludeFromCodeCoverage]
     void WriteTrace(TextWriter writer, DirectoryEntry entry, int indent)
     {
-        writer.WriteLine($"Entry: '{entry.NameString}'");
-
         DirectoryEntry? rightSibling = directories.TryGetSibling(entry, SiblingType.Right, false);
         if (rightSibling is not null)
             WriteTrace(writer, rightSibling, indent + 1);
@@ -228,13 +230,5 @@ internal sealed class DirectoryTree
         DirectoryEntry? leftSibling = directories.TryGetSibling(entry, SiblingType.Left, false);
         if (leftSibling is not null)
             WriteTrace(writer, leftSibling, indent + 1);
-
-        if (entry.ChildId != StreamId.NoStream)
-        {
-            writer.WriteLine();
-
-            DirectoryEntry child = directories.GetDictionaryEntry(entry.ChildId);
-            WriteTrace(writer, child, indent);
-        }
     }
 }

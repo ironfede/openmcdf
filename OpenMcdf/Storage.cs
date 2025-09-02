@@ -355,8 +355,5 @@ public class Storage : ContextBase
     }
 
     [ExcludeFromCodeCoverage]
-    internal void TraceDirectoryEntries(TextWriter writer)
-    {
-        directoryTree.WriteTrace(writer);
-    }
+    internal void TraceDirectoryEntries(TextWriter writer) => directoryTree.WriteTrace(writer);
 }
