@@ -118,7 +118,19 @@ internal sealed class CfbBinaryReader : BinaryReader
             StartSectorId = ReadUInt32()
         };
 
-        // TODO: Allow strict validation.
+        if (version == Version.V3)
+        {
+            entry.StreamLength = ReadUInt32();
+            BaseStream.Seek(4, SeekOrigin.Current); // Skip unused 4 bytes
+        }
+        else if (version == Version.V4)
+        {
+            entry.StreamLength = ReadInt64();
+        }
+
+        buffer.CopyTo(entry.Name, 0);
+
+        // TODO: Allow optional strict validation.
         // Name length is clamped and validated when reading or creating new entries.
 #if STRICT
         if (entry.NameLength > DirectoryEntry.NameFieldLength)
@@ -129,40 +141,29 @@ internal sealed class CfbBinaryReader : BinaryReader
         ThrowHelper.ThrowIfStreamIdIsInvalid(entry.RightSiblingId);
         ThrowHelper.ThrowIfStreamIdIsInvalid(entry.ChildId);
 
-        if (entry.Type is StorageType.Stream or StorageType.Root)
-        {
-            // Root storage may be the mini stream
-            ThrowHelper.ThrowIfStreamIdIsInvalidInPractice(entry.StartSectorId);
-
 #if STRICT
-            if (entry.CreationTime != FileTime.UtcZero)
+        if (entry.Type is StorageType.Stream or StorageType.Root && entry.CreationTime != FileTime.UtcZero)
                 throw new FileFormatException("Creation time must be zero for streams and root.");
 #endif
-        }
-        else if (entry.Type is StorageType.Storage)
-        {
-            // TODO: Allow strict validation.
-            // NoStream is not valid, but was written by v3.0.0
-            if (entry.StartSectorId is not 0 and not StreamId.NoStream)
-                throw new FileFormatException($"Invalid stream ID: {entry.StartSectorId:X8}.");
-        }
 
         if (entry.Type is StorageType.Stream && entry.ModifiedTime != FileTime.UtcZero)
             throw new FileFormatException("Modified time must be zero for streams.");
 
-        Buffer.BlockCopy(buffer, 0, entry.Name, 0, DirectoryEntry.NameFieldLength);
+        // TODO: Allow optional strict validation.
+        if (entry.Type is StorageType.Stream or StorageType.Root)
+        {
+            ThrowHelper.ThrowIfStreamIdIsInvalidInPractice(entry.StartSectorId);
+        }
+        else if (entry.Type is StorageType.Storage)
+        {
+            // Only 0 is valid for storage entries. However, NoStream and EndOfChain are used incorrectly in practice.
+            if (entry.StartSectorId is not 0 and not SectorType.EndOfChain and not StreamId.NoStream)
+                throw new FileFormatException($"Invalid stream ID: {entry.StartSectorId:X8}.");
 
-        if (version == Version.V3)
-        {
-            entry.StreamLength = ReadUInt32();
-            if (entry.StreamLength > DirectoryEntry.MaxV3StreamLength)
-                throw new FileFormatException($"Stream length {entry.StreamLength} exceeds maximum value {DirectoryEntry.MaxV3StreamLength}.");
-            ReadUInt32(); // Skip unused 4 bytes
         }
-        else if (version == Version.V4)
-        {
-            entry.StreamLength = ReadInt64();
-        }
+
+        if (version is Version.V3 && entry.StreamLength > DirectoryEntry.MaxV3StreamLength)
+            throw new FileFormatException($"Stream length {entry.StreamLength} exceeds maximum value {DirectoryEntry.MaxV3StreamLength}.");
 
         return entry;
     }
