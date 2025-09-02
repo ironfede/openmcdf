@@ -45,7 +45,7 @@ public sealed class BinaryWriterTests
         DirectoryEntry expected = new()
         {
             Type = StorageType.Stream,
-            Color = NodeColor.Red,
+            Color = NodeColor.Black,
             LeftSiblingId = 2,
             RightSiblingId = 3,
             ChildId = 4,
