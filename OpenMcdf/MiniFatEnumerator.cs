@@ -24,26 +24,18 @@ internal sealed class MiniFatEnumerator : ContextBase, IEnumerator<FatEntry>
         fatChainEnumerator.Dispose();
     }
 
-    public MiniSector CurrentSector
+    public MiniSector CurrentSector => index switch
     {
-        get
-        {
-            if (index == uint.MaxValue)
-                throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
-            return new(value, Context.MiniSectorSize);
-        }
-    }
+        uint.MaxValue => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
+        _ => new(value, Context.MiniSectorSize)
+    };
 
     /// <inheritdoc/>
-    public FatEntry Current
+    public FatEntry Current => index switch
     {
-        get
-        {
-            if (index == uint.MaxValue)
-                throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
-            return new(index, value);
-        }
-    }
+        uint.MaxValue => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
+        _ => new(index, value)
+    };
 
     /// <inheritdoc/>
     object IEnumerator.Current => Current;

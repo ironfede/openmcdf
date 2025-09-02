@@ -40,7 +40,11 @@ internal class TransactedStream : Stream
 
     public override long Length => OverlayStream.Length;
 
-    public override long Position { get => originalStream.Position; set => originalStream.Position = value; }
+    public override long Position
+    {
+        get => originalStream.Position;
+        set => originalStream.Position = value;
+    }
 
     public override void Flush() => OverlayStream.Flush();
 

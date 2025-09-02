@@ -41,15 +41,11 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
     public MiniSector CurrentSector => new(Current, Context.MiniSectorSize);
 
     /// <inheritdoc/>
-    public uint Current
+    public uint Current => index switch
     {
-        get
-        {
-            if (index == uint.MaxValue)
-                throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
-            return current;
-        }
-    }
+        uint.MaxValue => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
+        _ => current
+    };
 
     /// <inheritdoc/>
     object IEnumerator.Current => Current;

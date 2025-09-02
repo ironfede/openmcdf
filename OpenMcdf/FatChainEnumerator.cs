@@ -38,15 +38,11 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
     public Sector CurrentSector => new(current, fat.Context.SectorSize);
 
     /// <inheritdoc/>
-    public uint Current
+    public uint Current => index switch
     {
-        get
-        {
-            if (index == uint.MaxValue)
-                throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
-            return current;
-        }
-    }
+        uint.MaxValue => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
+        _ => current
+    };
 
     /// <inheritdoc/>
     object IEnumerator.Current => Current;
