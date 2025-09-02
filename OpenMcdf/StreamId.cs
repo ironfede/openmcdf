@@ -10,6 +10,7 @@ internal static class StreamId
 
     public static bool IsValid(uint value) => value is <= Maximum or NoStream;
 
-    // EndOfChain is not technically valid according to the CFB specification, but it is used in practice by the reference implementation for directory entry start sectors.
+    // EndOfChain is not technically valid according to the CFB specification, but it is used in practice by the
+    // reference implementation for directory entry start sectors and storage entries in Wine.
     public static bool IsValidInPractice(uint value) => value is <= Maximum or NoStream or SectorType.EndOfChain;
 }
