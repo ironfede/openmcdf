@@ -1,4 +1,33 @@
-## 3.0.0-preview1
+# OpenMcdf Changelog
+
+## 3.0.3
+
+* Fix deleting directory entries from balanced red-black trees
+* Relax start sector ID validation
+* Multiple improvements and fixes to Storage Explorer
+* Validate red-violations in unit tests
+* Validate tree root color in unit tests
+* Force writing directory entries as black
+
+## 3.0.2
+
+* Throw FileFormatException for invalid DateTimes
+* Add public API documentation
+* Validate version when creating compound files
+* Add strong name for netstandard2.0
+* Relax CreationTime validation
+
+## 3.0.1
+
+* Fix CLSID typo
+* Enhanced StructuredStorageExplorer Display
+* Add test for switching to writable stream
+* Improve truncation of empty streams
+* Remove unused IndexRange PacakgeReference
+* Fix writing storage directory entry start sector ID
+* Improve directory entry validation
+
+## 3.0.0
 * Multi-targeting for netstandard2.0 and net8.0
 * Improved performance
 * Reduced memory usage
@@ -19,10 +48,10 @@
 * FIXED: Issues with failed initialization to FREESECT (0xFFFFFFFF) of FAT sectors
 * FIXED: Issues with file-corruption detection 
 
-## 2.0 - Stable release.
+## 2.0 - Stable release
 * Last SourceForge release
 
-## 2.0 pre-release (NOT FOR PRODUCTION)
+## 2.0 pre-release
 * ADD: Red-Black tree full implementation to speed up large data structure read access (thousands of stream/storage objects)
 * ADD: Enhanced Stream resizing
 * ADD: Extensions to use native .net framework Stream object
@@ -45,7 +74,7 @@
 * FIXED: Saving twice caused OutOfMemoryException
 * FIXED: Error when using names of exactly 31 characters for streams or storages
 
-## 1.5.1.
+## 1.5.1
 * FIXED: Casting error when removing uncommitted-added Stream.
 * ADDED: CFDuplicatedItem exception thrown when trying to add duplicated items (previously item addition was silently failing).
 
