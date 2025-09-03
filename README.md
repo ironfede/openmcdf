@@ -6,14 +6,16 @@
 
 # OpenMcdf
 
-OpenMcdf is a fully .NET / C# library to manipulate [Compound File Binary File Format](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-cfb/53989ce4-7b05-4f8d-829b-d08d6148375b) files, also known as [Structured Storage](https://learn.microsoft.com/en-us/windows/win32/stg/structured-storage-start-page). 
+OpenMcdf is a fully .NET / C# library to manipulate [Compound File Binary File Format](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-cfb/53989ce4-7b05-4f8d-829b-d08d6148375b)
+files, also known as [Structured Storage](https://learn.microsoft.com/en-us/windows/win32/stg/structured-storage-start-page).
 
-Compound files include multiple streams of information (document summary, user data) in a single container, and is used as the bases for many different file formats:
-- Microsoft Office (.doc, .xls, .ppt)
-- Windows thumbnails cache files (thumbs.db) 
-- Outlook messages (.msg)
-- Visual Studio Solution Options (.suo) 
+Compound files include multiple streams of information (document summary, user data) in a single container, and is used
+as the bases for many different file formats:
 - Advanced Authoring Format (.aaf)
+- Microsoft Office (.doc, .xls, .ppt)
+- Outlook messages (.msg)
+- Visual Studio Solution Options (.suo)
+- Windows thumbnails cache files (Thumbs.db)
 
 OpenMcdf v3 has a rewritten API and supports:
 - An idiomatic dotnet API and exception hierarchy
@@ -23,9 +25,21 @@ OpenMcdf v3 has a rewritten API and supports:
 - Consolidation (i.e. reclamation of space by removing free sectors)
 - Nullable attributes
 
-Limitations:
-- No support for red-black tree balancing (directory entries are stored in a tree, but are not balanced. i.e. trees are "all-black")
+## Limitations
+
+- Limited error tolerance/recovery
 - No support for single writer, multiple readers
+- No support for red-black tree balancing
+
+Directory entries are stored in a perfect binary tree where the entries are sorted but the tree is not balanced. i.e.
+the tree is "all-black", which is a valid red-black tree but has suboptimal performance for traversing large trees
+(though still considerably faster than some other clients).
+
+Clients such as LibreOffice create trees with red-violations, which OpenMcdf is tolerant to reading and writing.
+Files with balanced red-black trees such as those created by Microsoft implementations will currently become unbalanced
+upon adding or removing directory entries. Fortunately, since other clients are also tolerant of trees that are either
+unbalanced or have red-violations, this should not be a major issue. The Wine implementation also has the same
+limitation.
 
 ## Getting started
 
@@ -82,4 +96,6 @@ foreach (OleProperty prop in co.Properties)
 }
 ```
 
-OpenMcdf runs happily on the [Mono](http://www.mono-project.com/) platform and multi-targets [**netstandard2.0**](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0) and **net8.0** to maximize client compatibility and support modern dotnet features.
+OpenMcdf runs happily on the [Mono](http://www.mono-project.com/) platform and multi-targets
+[**netstandard2.0**](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0) and
+**net8.0** to maximize client compatibility and support modern dotnet features.
