@@ -27,6 +27,6 @@ jobs:
         run: dotnet pack OpenMcdf.sln -c Release -p:ContinuousIntegrationBuild=true
 
       - name: Push
-        run: dotnet nuget push artifacts\package\release\*.nupkg artifacts\package\release\*.snupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push artifacts\package\release\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
         env:
           GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
