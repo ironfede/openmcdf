@@ -78,7 +78,7 @@ public sealed class StreamTests
         Assert.AreEqual(length, stream.Length);
 
         byte[] actualBuffer = new byte[length];
-        stream.Read(actualBuffer);
+        stream.ReadExactly(actualBuffer);
 
         CollectionAssert.AreEqual(expectedBuffer, actualBuffer);
     }
