@@ -244,7 +244,7 @@ public partial class MainForm : Form
 
     private void AddStreamToolStripMenuItem_Click(object sender, EventArgs e)
     {
-        if (rootStorage is null || treeView.SelectedNode.Tag is not NodeSelection selection || selection.EntryInfo.Type is not EntryType.Storage)
+        if (rootStorage is null || treeView.SelectedNode?.Tag is not NodeSelection selection || selection.EntryInfo.Type is not EntryType.Storage)
             return;
 
         using AddEntryDialog addEntryDialog = new();
@@ -266,7 +266,7 @@ public partial class MainForm : Form
 
     private void AddStorageStripMenuItem_Click(object sender, EventArgs e)
     {
-        if (rootStorage is null || treeView.SelectedNode.Tag is not NodeSelection selection || selection.EntryInfo.Type is not EntryType.Storage)
+        if (rootStorage is null || treeView.SelectedNode?.Tag is not NodeSelection selection || selection.EntryInfo.Type is not EntryType.Storage)
             return;
 
         using AddEntryDialog addEntryDialog = new();
