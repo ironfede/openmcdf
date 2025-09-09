@@ -97,5 +97,5 @@ foreach (OleProperty prop in co.Properties)
 ```
 
 OpenMcdf runs happily on the [Mono](http://www.mono-project.com/) platform and multi-targets
-[**netstandard2.0**](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0) and
-**net8.0** to maximize client compatibility and support modern dotnet features.
+[**netstandard2.0**](https://learn.microsoft.com/en-us/dotnet/standard/net-standard?tabs=net-standard-2-0),
+**net8.0**, and **net10.0** to maximize client compatibility and support modern dotnet features.
