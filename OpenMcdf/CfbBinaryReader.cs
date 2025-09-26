@@ -144,10 +144,10 @@ internal sealed class CfbBinaryReader : BinaryReader
 #if STRICT
         if (entry.Type is StorageType.Stream or StorageType.Root && entry.CreationTime != FileTime.UtcZero)
                 throw new FileFormatException("Creation time must be zero for streams and root.");
-#endif
 
         if (entry.Type is StorageType.Stream && entry.ModifiedTime != FileTime.UtcZero)
             throw new FileFormatException("Modified time must be zero for streams.");
+#endif
 
         // TODO: Allow optional strict validation.
         if (entry.Type is StorageType.Stream or StorageType.Root)
