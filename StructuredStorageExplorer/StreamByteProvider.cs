@@ -39,7 +39,7 @@ internal sealed class StreamByteProvider : IByteProvider, IDisposable
     public void CopyTo(Stream stream)
     {
         _stream.Position = 0;
-        stream.CopyTo(_stream);
+        _stream.CopyTo(stream);
     }
 
     void OnChanged(EventArgs e)
