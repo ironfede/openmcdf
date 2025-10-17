@@ -217,8 +217,8 @@ public class OlePropertiesExtensionsTests
 
         // There should be 5 property names present, and 6 properties (the properties include the code page)
         Assert.IsNotNull(userProps.PropertyNames);
-        Assert.AreEqual(5, userProps.PropertyNames.Count);
-        Assert.AreEqual(6, userProps.Properties.Count);
+        Assert.HasCount(5, userProps.PropertyNames);
+        Assert.HasCount(6, userProps.Properties);
 
         // Check for expected names and values
         OleProperty[] propArray = userProps.Properties.ToArray();
@@ -295,7 +295,7 @@ public class OlePropertiesExtensionsTests
 
             Assert.IsNotNull(co.UserDefinedProperties);
             OleProperty[] propArray = co.UserDefinedProperties.Properties.ToArray();
-            Assert.AreEqual(6, propArray.Length);
+            Assert.HasCount(6, propArray);
 
             // CodePage prop
             Assert.AreEqual(1u, propArray[0].PropertyIdentifier);
@@ -307,7 +307,7 @@ public class OlePropertiesExtensionsTests
             Assert.AreEqual("Hello", propArray[1].Value);
             Assert.AreEqual(VTPropertyType.VT_LPSTR, propArray[1].VTType);
             Assert.AreEqual("BooleanProperty", propArray[2].PropertyName);
-            Assert.AreEqual(true, propArray[2].Value);
+            Assert.IsTrue((bool?)propArray[2].Value);
             Assert.AreEqual(VTPropertyType.VT_BOOL, propArray[2].VTType);
             Assert.AreEqual("IntegerProperty", propArray[3].PropertyName);
             Assert.AreEqual(3456, propArray[3].Value);
@@ -355,7 +355,7 @@ public class OlePropertiesExtensionsTests
         using CfbStream cfbStream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
         OlePropertiesContainer co = new(cfbStream);
         IList<OleProperty> propArray = co.UserDefinedProperties!.Properties;
-        Assert.AreEqual(6, propArray.Count);
+        Assert.HasCount(6, propArray);
 
         // CodePage prop
         Assert.AreEqual(1u, propArray[0].PropertyIdentifier);
@@ -367,7 +367,7 @@ public class OlePropertiesExtensionsTests
         Assert.AreEqual("Hello", propArray[1].Value);
         Assert.AreEqual(VTPropertyType.VT_LPSTR, propArray[1].VTType);
         Assert.AreEqual("BooleanProperty", propArray[2].PropertyName);
-        Assert.AreEqual(true, propArray[2].Value);
+        Assert.IsTrue((bool?)propArray[2].Value);
         Assert.AreEqual(VTPropertyType.VT_BOOL, propArray[2].VTType);
         Assert.AreEqual("IntegerProperty", propArray[3].PropertyName);
         Assert.AreEqual(3456, propArray[3].Value);
@@ -413,7 +413,7 @@ public class OlePropertiesExtensionsTests
         var docPartsValues = docPartsProperty.Value as IList<string>;
         Assert.IsNotNull(docPartsValues);
 
-        Assert.AreEqual(3, docPartsValues.Count);
+        Assert.HasCount(3, docPartsValues);
         Assert.AreEqual("Sheet1", docPartsValues[0]);
         Assert.AreEqual("Sheet2", docPartsValues[1]);
         Assert.AreEqual("Sheet3", docPartsValues[2]);
@@ -467,7 +467,7 @@ public class OlePropertiesExtensionsTests
 
             // And the expected properties should the there
             OleProperty[] propArray = co.UserDefinedProperties.Properties.ToArray();
-            Assert.AreEqual(propArray.Length, 2);
+            Assert.HasCount(2, propArray);
 
             // CodePage prop
             Assert.AreEqual(1u, propArray[0].PropertyIdentifier);
