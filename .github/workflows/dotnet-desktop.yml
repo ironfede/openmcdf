@@ -35,7 +35,7 @@ jobs:
       run: dotnet format --verify-no-changes $env:Solution_Name
 
     - name: Execute unit tests
-      run: dotnet test $env:Solution_Name
+      run: dotnet test --solution $env:Solution_Name
 
     - name: Restore the application
       run: dotnet build -c $env:Configuration -p:ContinuousIntegrationBuild=true $env:Solution_Name
