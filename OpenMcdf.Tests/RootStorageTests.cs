@@ -53,7 +53,7 @@ public sealed class RootStorageTests
 
             rootStorage.Flush(true);
 
-            Assert.IsTrue(originalMemoryStreamLength > memoryStream.Length);
+            Assert.IsGreaterThan(memoryStream.Length, originalMemoryStreamLength);
         }
 
         using (var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen))
@@ -93,7 +93,7 @@ public sealed class RootStorageTests
                 rootStorage.Flush(true);
 
                 long consolidatedLength = new FileInfo(fileName).Length;
-                Assert.IsTrue(originalLength > consolidatedLength);
+                Assert.IsGreaterThan(consolidatedLength, originalLength);
             }
 
             using (var rootStorage = RootStorage.OpenRead(fileName))
@@ -277,7 +277,7 @@ public sealed class RootStorageTests
 
         long newLength = rootStorage.BaseStream.Length;
 
-        Assert.IsTrue(originalLength > newLength);
+        Assert.IsGreaterThan(newLength, originalLength);
     }
 
     [TestMethod]
