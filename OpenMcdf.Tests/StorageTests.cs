@@ -30,7 +30,6 @@ public sealed class StorageTests
 
         bool found = rootStorage.TryGetEntryInfo("MyStorage", out EntryInfo entryInfo);
         Assert.IsTrue(found);
-        Assert.IsNotNull(entryInfo);
         Assert.AreEqual("MyStorage", entryInfo.Name);
 
         Storage storage = rootStorage.OpenStorage("MyStorage");
