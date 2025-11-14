@@ -167,15 +167,16 @@ internal sealed class RootContext : ContextBase, IDisposable
 
     public void Flush()
     {
+        if (writer is null)
+            return;
+
         miniStream?.Flush();
         miniFat?.Flush();
         Fat.Flush();
-
-        if (writer is not null && transactedStream is null)
-        {
+        if (transactedStream is null)
             TrimBaseStream();
-            WriteHeader();
-        }
+        WriteHeader();
+        writer.BaseStream.Flush();
     }
 
     public void ExtendStreamLength(long length)
@@ -215,11 +216,8 @@ internal sealed class RootContext : ContextBase, IDisposable
         ThrowIfNotWritable();
         ThrowIfNotTransacted();
 
-        miniStream?.Flush();
-        miniFat?.Flush();
-        Fat.Flush();
-        WriteHeader();
-        writer.BaseStream.Flush();
+        Flush();
+
         transactedStream.Commit();
     }
 
