@@ -167,6 +167,8 @@ internal sealed class RootContext : ContextBase, IDisposable
 
     public void Flush()
     {
+        miniStream?.Flush();
+        miniFat?.Flush();
         Fat.Flush();
 
         if (writer is not null && transactedStream is null)
