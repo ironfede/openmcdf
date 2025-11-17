@@ -112,7 +112,7 @@ internal class FatStream : Stream
                 return readCount;
             if (!chain.MoveNext())
                 throw new FileFormatException($"The FAT chain was shorter than the stream length.");
-        };
+        }
     }
 
     /// <inheritdoc/>
