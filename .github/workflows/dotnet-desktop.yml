@@ -26,21 +26,17 @@ jobs:
       with:
         fetch-depth: 0
 
-    # Install the .NET Core workload
     - name: Install .NET Core
       uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 10.0.x
 
-    # Check formatting
     - name: Check formatting
       run: dotnet format --verify-no-changes $env:Solution_Name
 
-    # Execute all unit tests in the solution
     - name: Execute unit tests
-      run: dotnet test --logger "GitHubActions;summary.includePassedTests=true;summary.includeSkippedTests=true" $env:Solution_Name
+      run: dotnet test $env:Solution_Name
 
-    # Restore the application to populate the obj folder with RuntimeIdentifiers
     - name: Restore the application
       run: dotnet build -c $env:Configuration -p:ContinuousIntegrationBuild=true $env:Solution_Name
       env:
