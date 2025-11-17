@@ -48,7 +48,7 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
     {
         if (!TryGetDictionaryEntry(streamId, out DirectoryEntry? entry))
             throw new FileFormatException($"Directory entry {streamId} was not found.");
-        return entry!;
+        return entry;
     }
 
     public bool TryGetDictionaryEntry(uint streamId, [MaybeNullWhen(false)] out DirectoryEntry entry)

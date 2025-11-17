@@ -45,7 +45,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
 
         current = stack.Pop();
         if (directories.TryGetDictionaryEntry(current.RightSiblingId, out DirectoryEntry? rightSibling))
-            PushLeft(rightSibling!);
+            PushLeft(rightSibling);
 
         return true;
     }

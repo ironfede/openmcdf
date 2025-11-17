@@ -216,7 +216,7 @@ public class Storage : ContextBase
     /// <returns>The opened <see cref="Storage"/>.</returns>
     public Storage OpenStorage(string name)
         => TryOpenStorage(name, out Storage? storage)
-            ? storage!
+            ? storage
             : throw new DirectoryNotFoundException($"Storage not found: {name}.");
 
     /// <summary>
@@ -252,7 +252,7 @@ public class Storage : ContextBase
     /// <returns>The opened <see cref="CfbStream"/>.</returns>
     public CfbStream OpenStream(string name)
          => TryOpenStream(name, out CfbStream? stream)
-            ? stream!
+            ? stream
             : throw new FileNotFoundException($"Stream not found: {name}.", name);
 
     /// <summary>
