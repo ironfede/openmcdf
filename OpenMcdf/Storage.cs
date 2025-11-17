@@ -334,7 +334,7 @@ public class Storage : ContextBase
             foreach (EntryInfo childEntry in storage.EnumerateEntries())
             {
                 storage.Delete(childEntry.Name);
-            };
+            }
         }
 
         if (entry.Type is StorageType.Stream && !SectorType.IsFreeOrEndOfChain(entry.StartSectorId))
