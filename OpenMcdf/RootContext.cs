@@ -194,7 +194,7 @@ internal sealed class RootContext : ContextBase, IDisposable
     void TrimBaseStream()
     {
         Sector lastUsedSector = Fat.GetLastUsedSector();
-        if (!lastUsedSector.IsValid)
+        if (lastUsedSector.Id > SectorType.Maximum)
             throw new FileFormatException("Last used sector is invalid");
 
         if (Version is Version.V4 && lastUsedSector.EndPosition < RangeLockSectorOffset)

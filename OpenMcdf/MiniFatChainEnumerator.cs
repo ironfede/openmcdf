@@ -70,6 +70,9 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
                 return false;
             }
 
+            if (value > SectorType.Maximum)
+                throw new FileFormatException($"Invalid mini FAT sector ID: {value}.");
+
             uint nextIndex = index + 1;
             if (nextIndex > SectorType.Maximum)
                 throw new FileFormatException("Mini FAT chain length is greater than the maximum.");
