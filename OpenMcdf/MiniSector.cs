@@ -9,37 +9,15 @@ namespace OpenMcdf;
 /// <param name="Length">The sector length</param>
 internal record struct MiniSector(uint Id, int Length)
 {
-    public readonly bool IsValid => Id <= SectorType.Maximum;
-
     /// <summary>
     /// The position of the mini sector in the mini FAT stream.
     /// </summary>
-    public readonly long Position
-    {
-        get
-        {
-            ThrowIfInvalid();
-            return Id * Length;
-        }
-    }
+    public readonly long Position => Id * Length;
 
     /// <summary>
     /// The end position of the mini sector in the mini FAT stream.
     /// </summary>
-    public readonly long EndPosition
-    {
-        get
-        {
-            ThrowIfInvalid();
-            return (Id + 1) * Length;
-        }
-    }
-
-    readonly void ThrowIfInvalid()
-    {
-        if (!IsValid)
-            throw new InvalidOperationException($"Invalid mini FAT sector ID: {Id}.");
-    }
+    public readonly long EndPosition => (Id + 1) * Length;
 
     [ExcludeFromCodeCoverage]
     public override readonly string ToString() => $"{Id}";

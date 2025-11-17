@@ -79,6 +79,9 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
             return false;
         }
 
+        if (value > SectorType.Maximum)
+            throw new FileFormatException($"Invalid FAT sector ID: {value}.");
+
         index++;
         if (index >= fat.Context.SectorCount)
         {
