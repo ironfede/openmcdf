@@ -24,7 +24,7 @@ jobs:
           dotnet-version: '10.0.x'
 
       - name: Pack
-        run: dotnet pack OpenMcdf.sln -c Release -p:ContinuousIntegrationBuild=true
+        run: dotnet pack OpenMcdf.slnx -c Release -p:ContinuousIntegrationBuild=true
 
       - name: Push
         run: dotnet nuget push artifacts\package\release\*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
