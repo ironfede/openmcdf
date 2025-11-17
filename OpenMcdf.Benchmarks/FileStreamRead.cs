@@ -46,10 +46,10 @@ public class FileStreamRead : IDisposable
     public void GlobalCleanup() => Dispose();
 
     [Benchmark]
-    public void Read() => OpenMcdfBenchmarks.ReadStream(readFileName!, buffer);
+    public void Read() => OpenMcdfBenchmarks.ReadStream(readFileName, buffer);
 
 #if WINDOWS
     [Benchmark(Baseline = true)]
-    public void ReadStructuredStorage() => StructuredStorageBenchmarks.ReadStream(readFileName!, buffer);
+    public void ReadStructuredStorage() => StructuredStorageBenchmarks.ReadStream(readFileName, buffer);
 #endif
 }

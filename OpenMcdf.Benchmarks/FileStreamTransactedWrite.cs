@@ -39,7 +39,7 @@ public class FileStreamTransactedWrite : IDisposable
     public void GlobalCleanup() => Dispose();
 
     [Benchmark]
-    public void WriteTransacted() => OpenMcdfBenchmarks.WriteStream(writeFileName!, Version, StorageModeFlags.None | StorageModeFlags.Transacted, buffer, StreamLength);
+    public void WriteTransacted() => OpenMcdfBenchmarks.WriteStream(writeFileName, Version, StorageModeFlags.None | StorageModeFlags.Transacted, buffer, StreamLength);
 
 #if WINDOWS
 

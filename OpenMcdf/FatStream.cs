@@ -72,7 +72,7 @@ internal class FatStream : Stream
         }
 
         if (CanWrite)
-            Context.Writer!.Flush();
+            Context.Writer.Flush();
     }
 
     uint GetFatChainIndexAndSectorOffset(long offset, out long sectorOffset) => (uint)Math.DivRem(offset, Context.SectorSize, out sectorOffset);

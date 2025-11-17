@@ -39,7 +39,7 @@ public class FileStreamWrite : IDisposable
     public void GlobalCleanup() => Dispose();
 
     [Benchmark]
-    public void Write() => OpenMcdfBenchmarks.WriteStream(writeFileName!, Version, StorageModeFlags.None, buffer, StreamLength);
+    public void Write() => OpenMcdfBenchmarks.WriteStream(writeFileName, Version, StorageModeFlags.None, buffer, StreamLength);
 
 #if WINDOWS
     [Benchmark(Baseline = true)]
