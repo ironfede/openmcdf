@@ -143,7 +143,7 @@ internal sealed class Header : IEquatable<Header?>
 
     public override int GetHashCode()
     {
-        HashCode code = new();
+        HashCode code = default;
         code.Add(CLSID);
         code.Add(MinorVersion);
         code.Add(MajorVersion);

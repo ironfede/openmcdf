@@ -123,7 +123,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
 
     public override int GetHashCode()
     {
-        HashCode code = new();
+        HashCode code = default;
         code.Add(Id);
         code.Add(NameLength);
         foreach (byte b in Name)
