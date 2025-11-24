@@ -71,7 +71,7 @@ internal sealed class DictionaryProperty : IProperty
     /// Write the dictionary and all its values into the specified <see cref="BinaryWriter"/>.
     /// </summary>
     /// <remarks>
-    /// Based on the Microsoft specifications at https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-oleps/99127b7f-c440-4697-91a4-c853086d6b33
+    /// Based on the Microsoft specifications at https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-oleps/99127b7f-c440-4697-91a4-c853086d6b33.
     /// </remarks>
     /// <param name="bw">A writer to write the dictionary into.</param>
     public void Write(BinaryWriter bw)

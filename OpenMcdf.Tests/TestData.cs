@@ -3,7 +3,7 @@
 public static class TestData
 {
     /// <summary>
-    /// Fill with bytes equal to their position modulo 256
+    /// Fill with bytes equal to their position modulo 256.
     /// </summary>
     public static byte[] CreateByteArray(int length)
     {

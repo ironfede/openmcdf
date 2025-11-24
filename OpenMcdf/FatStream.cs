@@ -3,7 +3,7 @@
 namespace OpenMcdf;
 
 /// <summary>
-/// Provides a <inheritdoc cref="Stream"/> for a stream object in a compound file./>
+/// Provides a <inheritdoc cref="Stream"/> for a stream object in a compound file./>.
 /// </summary>
 internal class FatStream : Stream
 {

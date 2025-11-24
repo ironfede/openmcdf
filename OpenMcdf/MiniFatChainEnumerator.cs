@@ -107,7 +107,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
     /// Moves to the specified index within the mini FAT sector chain.
     /// </summary>
     /// <param name="index"></param>
-    /// <returns>true if the enumerator was successfully advanced to the given index</returns>
+    /// <returns>true if the enumerator was successfully advanced to the given index.</returns>
     public bool MoveTo(uint index)
     {
         if (index < this.index)

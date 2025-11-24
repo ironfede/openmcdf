@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace OpenMcdf.Ole.Tests;
 
 /// <summary>
-/// Summary description for UnitTest1
+/// Summary description for UnitTest1.
 /// </summary>
 [TestClass]
 public class OlePropertiesExtensionsTests

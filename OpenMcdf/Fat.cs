@@ -124,7 +124,7 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
     /// <summary>
     /// Adds a new entry to the FAT.
     /// </summary>
-    /// <returns>The index of the new entry in the FAT</returns>
+    /// <returns>The index of the new entry in the FAT.</returns>
     public uint Add(FatEnumerator fatEnumerator, uint startIndex)
     {
         ThrowHelper.ThrowIfSectorIdIsInvalid(startIndex);

@@ -13,7 +13,7 @@ namespace StructuredStorageExplorer;
 
 /// <summary>
 /// Sample Structured Storage viewer to
-/// demonstrate use of OpenMCDF
+/// demonstrate use of OpenMCDF.
 /// </summary>
 public partial class MainForm : Form
 {
@@ -142,10 +142,10 @@ public partial class MainForm : Form
     }
 
     /// <summary>
-    /// Recursive addition of tree nodes foreach child of current item in the storage
+    /// Recursive addition of tree nodes foreach child of current item in the storage.
     /// </summary>
-    /// <param name="node">Current TreeNode</param>
-    /// <param name="storage">Current storage associated with node</param>
+    /// <param name="node">Current TreeNode.</param>
+    /// <param name="storage">Current storage associated with node.</param>
     private static void AddNodes(TreeNode node, Storage storage)
     {
         foreach (EntryInfo item in storage.EnumerateEntries()

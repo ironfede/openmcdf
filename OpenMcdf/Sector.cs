@@ -5,8 +5,8 @@ namespace OpenMcdf;
 /// <summary>
 /// Encapsulates information about a sector in a compound file.
 /// </summary>
-/// <param name="Id">The sector ID</param>
-/// <param name="Length">The sector length</param>
+/// <param name="Id">The sector ID.</param>
+/// <param name="Length">The sector length.</param>
 internal record struct Sector(uint Id, int Length)
 {
     public static readonly Sector EndOfChain = new(SectorType.EndOfChain, 0);

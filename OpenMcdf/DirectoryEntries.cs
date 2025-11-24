@@ -9,7 +9,7 @@ internal enum SiblingType
 }
 
 /// <summary>
-/// Encapsulates getting and adding <see cref="DirectoryEntry"/> objects."
+/// Encapsulates getting and adding <see cref="DirectoryEntry"/> objects.".
 /// </summary>
 internal sealed class DirectoryEntries : ContextBase, IDisposable
 {

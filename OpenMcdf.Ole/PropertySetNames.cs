@@ -5,7 +5,7 @@
 /// Some well known property set names.
 /// </summary>
 /// <remarks>
-/// As defined at https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-oleps/e5484a83-3cc1-43a6-afcf-6558059fe36e
+/// As defined at https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-oleps/e5484a83-3cc1-43a6-afcf-6558059fe36e.
 /// </remarks>
 public static class PropertySetNames
 {

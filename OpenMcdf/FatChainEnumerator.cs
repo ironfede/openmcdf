@@ -109,7 +109,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
     /// Moves to the specified index within the FAT sector chain.
     /// </summary>
     /// <param name="index"></param>
-    /// <returns>true if the enumerator was successfully advanced to the given index</returns>
+    /// <returns>true if the enumerator was successfully advanced to the given index.</returns>
     public bool MoveTo(uint index)
     {
         if (index < this.index)
@@ -140,9 +140,9 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
     }
 
     /// <summary>
-    /// Extends the chain by one
+    /// Extends the chain by one.
     /// </summary>
-    /// <returns>The ID of the new sector</returns>
+    /// <returns>The ID of the new sector.</returns>
     public uint Extend() => ExtendFrom(0);
 
     /// <summary>

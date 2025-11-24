@@ -136,7 +136,7 @@ public class OlePropertiesContainer
     /// <param name="name">The name of the new property.</param>
     /// <returns>The new property.</returns>
     /// <exception cref="InvalidOperationException">If UserDefinedProperties aren't allowed for this container.</exception>
-    /// <exception cref="ArgumentException">If a property with the name <paramref name="name"/> already exists."/></exception>
+    /// <exception cref="ArgumentException">If a property with the name <paramref name="name"/> already exists."/>.</exception>
     public OleProperty AddUserDefinedProperty(VTPropertyType vtPropertyType, string name)
     {
         if (this.ContainerType != ContainerType.UserDefinedProperties)
