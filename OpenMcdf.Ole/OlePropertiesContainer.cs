@@ -236,7 +236,7 @@ public class OlePropertiesContainer
 
             PropertySet0 = new PropertySet
             {
-                PropertyContext = Context
+                PropertyContext = Context,
             },
         };
 
