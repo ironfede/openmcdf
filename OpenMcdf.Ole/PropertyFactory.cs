@@ -49,7 +49,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_EMPTY_Property : TypedPropertyValue<object>
     {
-        public VT_EMPTY_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_EMPTY_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -62,7 +63,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_I1_Property : TypedPropertyValue<sbyte>
     {
-        public VT_I1_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_I1_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -77,7 +79,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_UI1_Property : TypedPropertyValue<byte>
     {
-        public VT_UI1_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_UI1_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -92,7 +95,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_UI4_Property : TypedPropertyValue<uint>
     {
-        public VT_UI4_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_UI4_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -107,7 +111,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_UI8_Property : TypedPropertyValue<ulong>
     {
-        public VT_UI8_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_UI8_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -122,7 +127,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_I2_Property : TypedPropertyValue<short>
     {
-        public VT_I2_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_I2_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -137,7 +143,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_UI2_Property : TypedPropertyValue<ushort>
     {
-        public VT_UI2_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_UI2_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -152,7 +159,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_I4_Property : TypedPropertyValue<int>
     {
-        public VT_I4_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_I4_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -167,7 +175,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_I8_Property : TypedPropertyValue<long>
     {
-        public VT_I8_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_I8_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -182,7 +191,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_INT_Property : TypedPropertyValue<int>
     {
-        public VT_INT_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_INT_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -197,7 +207,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_UINT_Property : TypedPropertyValue<uint>
     {
-        public VT_UINT_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_UINT_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -212,7 +223,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_R4_Property : TypedPropertyValue<float>
     {
-        public VT_R4_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_R4_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -227,7 +239,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_R8_Property : TypedPropertyValue<double>
     {
-        public VT_R8_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_R8_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -242,7 +255,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_CY_Property : TypedPropertyValue<long>
     {
-        public VT_CY_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_CY_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -260,7 +274,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_DATE_Property : TypedPropertyValue<DateTime>
     {
-        public VT_DATE_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_DATE_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -278,7 +293,8 @@ internal abstract class PropertyFactory
     {
         private readonly int codePage;
 
-        public VT_LPSTR_Property(VTPropertyType vType, int codePage, bool isVariant) : base(vType, isVariant)
+        public VT_LPSTR_Property(VTPropertyType vType, int codePage, bool isVariant)
+            : base(vType, isVariant)
         {
             this.codePage = codePage;
         }
@@ -365,7 +381,8 @@ internal abstract class PropertyFactory
 
     protected sealed class VT_Unaligned_LPSTR_Property : VT_LPSTR_Property
     {
-        public VT_Unaligned_LPSTR_Property(VTPropertyType vType, int codePage, bool isVariant) : base(vType, codePage, isVariant)
+        public VT_Unaligned_LPSTR_Property(VTPropertyType vType, int codePage, bool isVariant)
+            : base(vType, codePage, isVariant)
         {
             NeedsPadding = false;
         }
@@ -373,7 +390,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_LPWSTR_Property : TypedPropertyValue<string>
     {
-        public VT_LPWSTR_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_LPWSTR_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -419,7 +437,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_FILETIME_Property : TypedPropertyValue<DateTime>
     {
-        public VT_FILETIME_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_FILETIME_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -435,7 +454,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_DECIMAL_Property : TypedPropertyValue<decimal>
     {
-        public VT_DECIMAL_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_DECIMAL_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -478,7 +498,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_BOOL_Property : TypedPropertyValue<bool>
     {
-        public VT_BOOL_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_BOOL_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -494,7 +515,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_CF_Property : TypedPropertyValue<object>
     {
-        public VT_CF_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_CF_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -522,7 +544,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_BLOB_Property : TypedPropertyValue<object>
     {
-        public VT_BLOB_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_BLOB_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -549,7 +572,8 @@ internal abstract class PropertyFactory
 
     private sealed class VT_CLSID_Property : TypedPropertyValue<object>
     {
-        public VT_CLSID_Property(VTPropertyType vType, bool isVariant) : base(vType, isVariant)
+        public VT_CLSID_Property(VTPropertyType vType, bool isVariant)
+            : base(vType, isVariant)
         {
         }
 
@@ -572,7 +596,8 @@ internal abstract class PropertyFactory
         private readonly PropertyFactory factory;
         private readonly uint propertyIdentifier;
 
-        public VT_VariantVector(VTPropertyType vType, int codePage, bool isVariant, PropertyFactory factory, uint propertyIdentifier) : base(vType, isVariant)
+        public VT_VariantVector(VTPropertyType vType, int codePage, bool isVariant, PropertyFactory factory, uint propertyIdentifier)
+            : base(vType, isVariant)
         {
             this.codePage = codePage;
             this.factory = factory;
