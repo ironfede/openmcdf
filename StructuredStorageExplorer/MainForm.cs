@@ -8,7 +8,6 @@ using System.Data;
 using FileFormatException = OpenMcdf.FileFormatException;
 
 // Author Federico Blaseotto
-
 namespace StructuredStorageExplorer;
 
 /// <summary>

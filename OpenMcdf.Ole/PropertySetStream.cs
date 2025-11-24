@@ -194,7 +194,6 @@ internal sealed class PropertySetStream
         }
 
         //-----------
-
         for (int i = 0; i < PropertySet0.PropertyIdentifierAndOffsets.Count; i++)
         {
             bw.Seek((int)oc0.PropertyIdentifierOffsets[i] + 4, SeekOrigin.Begin); // Offset of 4 to Offset value

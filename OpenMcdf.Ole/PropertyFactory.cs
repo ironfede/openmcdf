@@ -315,14 +315,12 @@ internal abstract class PropertyFactory
             // {
             //    result = result.Substring(0, result.Length - 1);
             // }
-
             return result;
         }
 
         public override void WriteScalarValue(BinaryWriter bw, string pValue)
         {
             // bool addNullTerminator = true;
-
             if (string.IsNullOrEmpty(pValue)) // || String.IsNullOrEmpty(pValue.Trim(new char[] { '\0' })))
             {
                 bw.Write(0U);
@@ -333,14 +331,12 @@ internal abstract class PropertyFactory
 
                 // if (data.Length >= 2 && data[data.Length - 2] == '\0' && data[data.Length - 1] == '\0')
                 //    addNullTerminator = false;
-
                 uint dataLength = (uint)data.Length;
 
                 // if (addNullTerminator)
                 dataLength += 2;            // null terminator \u+0000
 
                 // var mod = dataLength % 4;       // pad to multiple of 4 bytes
-
                 bw.Write(dataLength);           // data length of string + null char (unicode)
                 bw.Write(data);                 // string
 
@@ -359,7 +355,6 @@ internal abstract class PropertyFactory
 
                 // if (data.Length >= 1 && data[data.Length - 1] == '\0')
                 //    addNullTerminator = false;
-
                 uint dataLength = (uint)data.Length;
 
                 // if (addNullTerminator)
@@ -402,7 +397,6 @@ internal abstract class PropertyFactory
             br.ReadBytes(2); // Skip null terminator
             string result = Encoding.Unicode.GetString(data);
             // result = result.Trim(new char[] { '\0' });
-
             return result;
         }
 

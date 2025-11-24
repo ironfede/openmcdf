@@ -250,7 +250,6 @@ public sealed class RootStorage : Storage, IDisposable
     void Consolidate()
     {
         // TODO: Consolidate by defragmentation instead of copy
-
         Stream baseStream = Context.BaseStream;
         Stream? destinationStream = null;
 
