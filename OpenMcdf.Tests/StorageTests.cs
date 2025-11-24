@@ -21,9 +21,9 @@ public sealed class StorageTests
     {
         using var rootStorage = RootStorage.OpenRead(fileName);
         Assert.IsTrue(rootStorage.TryOpenStorage("MyStorage", out Storage? _));
-        Assert.IsFalse(rootStorage.TryOpenStorage("", out Storage? _));
+        Assert.IsFalse(rootStorage.TryOpenStorage(string.Empty, out Storage? _));
 
-        Assert.ThrowsExactly<DirectoryNotFoundException>(() => rootStorage.OpenStorage(""));
+        Assert.ThrowsExactly<DirectoryNotFoundException>(() => rootStorage.OpenStorage(string.Empty));
 
         Assert.IsTrue(rootStorage.ContainsEntry("MyStorage"));
         Assert.IsFalse(rootStorage.ContainsEntry("NonExistentStorage"));

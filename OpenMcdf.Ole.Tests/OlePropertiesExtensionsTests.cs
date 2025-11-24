@@ -61,7 +61,7 @@ public class OlePropertiesExtensionsTests
 
             // The company property should exist but be empty
             OleProperty companyProperty = co.Properties.First(prop => prop.PropertyName == "PIDDSI_COMPANY");
-            Assert.AreEqual("", companyProperty.Value);
+            Assert.AreEqual(string.Empty, companyProperty.Value);
 
             // As a sanity check, check that the value of a property that we don't change remains the same
             OleProperty formatProperty = co.Properties.First(prop => prop.PropertyName == "PIDDSI_PRESFORMAT");
@@ -181,7 +181,7 @@ public class OlePropertiesExtensionsTests
             Assert.AreEqual("abcdefghijk", keyWordsProperty.Value);
 
             authorProperty.Value = "ABC";
-            keyWordsProperty.Value = "";
+            keyWordsProperty.Value = string.Empty;
             co.Save(dsiStream);
         }
 
@@ -197,7 +197,7 @@ public class OlePropertiesExtensionsTests
 
             OleProperty keyWordsProperty = co.Properties.First(prop => prop.PropertyName == "PIDSI_KEYWORDS");
             Assert.AreEqual(VTPropertyType.VT_LPWSTR, keyWordsProperty.VTType);
-            Assert.AreEqual("", keyWordsProperty.Value);
+            Assert.AreEqual(string.Empty, keyWordsProperty.Value);
         }
     }
 
@@ -230,7 +230,7 @@ public class OlePropertiesExtensionsTests
 
         // String properties
         Assert.AreEqual("A", propArray[1].PropertyName);
-        Assert.AreEqual("", propArray[1].Value);
+        Assert.AreEqual(string.Empty, propArray[1].Value);
         Assert.AreEqual("AB", propArray[2].PropertyName);
         Assert.AreEqual("X", propArray[2].Value);
         Assert.AreEqual("ABC", propArray[3].PropertyName);

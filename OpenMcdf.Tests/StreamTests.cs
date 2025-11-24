@@ -34,9 +34,9 @@ public sealed class StreamTests
     {
         using var rootStorage = RootStorage.OpenRead(fileName);
         Assert.IsTrue(rootStorage.TryOpenStream("TestStream", out CfbStream? _));
-        Assert.IsFalse(rootStorage.TryOpenStream("", out CfbStream? _));
+        Assert.IsFalse(rootStorage.TryOpenStream(string.Empty, out CfbStream? _));
 
-        Assert.ThrowsExactly<FileNotFoundException>(() => rootStorage.OpenStream(""));
+        Assert.ThrowsExactly<FileNotFoundException>(() => rootStorage.OpenStream(string.Empty));
 
         using CfbStream stream = rootStorage.OpenStream("TestStream");
         Assert.AreEqual("TestStream", stream.EntryInfo.Name);

@@ -10,7 +10,7 @@ namespace OpenMcdf.Benchmark;
 [MarkdownExporter]
 public class FileStreamTransactedWrite : IDisposable
 {
-    private string writeFileName = "";
+    private string writeFileName = string.Empty;
     private byte[] buffer = Array.Empty<byte>();
 
     [Params(Version.V3, Version.V4)]
