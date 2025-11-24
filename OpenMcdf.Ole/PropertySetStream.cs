@@ -44,7 +44,6 @@ internal sealed class PropertySetStream
             Offset1 = br.ReadUInt32();
         }
 
-
         uint size = br.ReadUInt32();
         uint propertyCount = br.ReadUInt32();
         PropertySet0 = new PropertySet

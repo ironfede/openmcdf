@@ -1,6 +1,5 @@
 ﻿namespace OpenMcdf.Ole;
 
-
 /// <summary>
 /// Some well known property set names.
 /// </summary>
