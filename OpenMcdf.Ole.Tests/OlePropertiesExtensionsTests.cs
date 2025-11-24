@@ -449,9 +449,9 @@ public class OlePropertiesExtensionsTests
             Assert.IsNotNull(newUserDefinedProperties.PropertyNames);
             newUserDefinedProperties.PropertyNames[2] = "MyCustomProperty";
 
-            OleProperty CreateProperty = co.CreateProperty(VTPropertyType.VT_LPSTR, 2);
-            CreateProperty.Value = "Testing";
-            newUserDefinedProperties.Add(CreateProperty);
+            OleProperty createProperty = co.CreateProperty(VTPropertyType.VT_LPSTR, 2);
+            createProperty.Value = "Testing";
+            newUserDefinedProperties.Add(createProperty);
 
             co.Save(dsiStream);
         }
