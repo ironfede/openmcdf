@@ -25,7 +25,7 @@ internal static class StreamExtensions
 
 #endif
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
 
     public static int ReadByteCore(this Stream stream)
     {

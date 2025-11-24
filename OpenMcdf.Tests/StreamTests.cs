@@ -63,7 +63,7 @@ public sealed class StreamTests
         StreamAssert.AreEqual(expectedStream, actualStream);
     }
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
     [TestMethod]
     [DynamicData(nameof(TestData.ShortVersionsAndSizes), typeof(TestData))]
     public void ReadSpan(Version version, int length)
@@ -129,7 +129,7 @@ public sealed class StreamTests
     [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void WriteArray(Version version, int length) => WriteCore(version, length, WriteMode.Array);
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
     [TestMethod]
     [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void WriteSpan(Version version, int length) => WriteCore(version, length, WriteMode.Span);
@@ -330,13 +330,13 @@ public sealed class StreamTests
     [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void ModifyCommitArray(Version version, int length) => ModifyCommit(version, length, WriteMode.Array);
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
     [TestMethod]
     [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void ModifyCommitSpan(Version version, int length) => ModifyCommit(version, length, WriteMode.Span);
 #endif
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
     [TestMethod]
     [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void ModifyCommitSingleByte(Version version, int length) => ModifyCommit(version, length, WriteMode.SingleByte);

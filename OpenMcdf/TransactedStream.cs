@@ -141,7 +141,7 @@ internal class TransactedStream : Stream
         dirtySectorPositions.Clear();
     }
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
 
     public override int ReadByte() => this.ReadByteCore();
 

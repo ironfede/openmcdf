@@ -201,7 +201,7 @@ internal class FatStream : Stream
         }
     }
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
 
     public override int ReadByte() => this.ReadByteCore();
 

@@ -24,7 +24,7 @@ internal static class StreamExtensions
 
     public static void Write(this Stream stream, byte[] buffer, WriteMode mode)
     {
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
         switch (mode)
         {
             case WriteMode.Array:

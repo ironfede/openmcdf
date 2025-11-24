@@ -18,7 +18,7 @@ internal sealed class CfbBinaryWriter : BinaryWriter
         set => BaseStream.Position = value;
     }
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
 
     public override void Write(ReadOnlySpan<byte> buffer) => BaseStream.Write(buffer);
 
