@@ -325,7 +325,7 @@ internal abstract class PropertyFactory
 
             if (string.IsNullOrEmpty(pValue)) // || String.IsNullOrEmpty(pValue.Trim(new char[] { '\0' })))
             {
-                bw.Write((uint)0);
+                bw.Write(0U);
             }
             else if (codePage == CodePages.WinUnicode)
             {

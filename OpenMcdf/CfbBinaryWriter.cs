@@ -55,7 +55,7 @@ internal sealed class CfbBinaryWriter : BinaryWriter
         Write(header.DirectorySectorCount);
         Write(header.FatSectorCount);
         Write(header.FirstDirectorySectorId);
-        Write((uint)0);
+        Write(0U);
         Write(Header.MiniStreamCutoffSize);
         Write(header.FirstMiniFatSectorId);
         Write(header.MiniFatSectorCount);
