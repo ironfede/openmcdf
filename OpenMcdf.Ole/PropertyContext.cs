@@ -9,6 +9,8 @@ public enum Behavior
 public sealed class PropertyContext
 {
     public int CodePage { get; set; }
+
     public Behavior Behavior { get; set; }
+
     public uint Locale { get; set; }
 }

@@ -46,6 +46,7 @@ internal sealed class Fat : ContextBase, IEnumerable<FatEntry>, IDisposable
                 throw new FileFormatException($"FAT index not found: {key}.");
             return value;
         }
+
         set
         {
             if (!TrySetValue(key, value))

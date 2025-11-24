@@ -7,19 +7,30 @@ internal sealed class PropertySetStream
         public int OffsetPS { get; set; }
 
         public List<long> PropertyIdentifierOffsets { get; } = new();
+
         public List<long> PropertyOffsets { get; } = new();
     }
 
     public ushort ByteOrder { get; set; }
+
     public ushort Version { get; set; }
+
     public uint SystemIdentifier { get; set; }
+
     public Guid CLSID { get; set; }
+
     public uint NumPropertySets { get; set; }
+
     public Guid FMTID0 { get; set; }
+
     public uint Offset0 { get; set; }
+
     public Guid FMTID1 { get; set; }
+
     public uint Offset1 { get; set; }
+
     public PropertySet? PropertySet0 { get; set; }
+
     public PropertySet? PropertySet1 { get; set; }
 
     public PropertySetStream()

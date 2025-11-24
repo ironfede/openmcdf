@@ -53,6 +53,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
                 throw new FileFormatException($"Mini FAT index not found: {key}.");
             return value;
         }
+
         set
         {
             if (!TrySetValue(key, value))
