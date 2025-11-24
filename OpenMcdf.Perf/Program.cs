@@ -17,7 +17,7 @@ internal sealed class Program
     {
         byte[] buffer = new byte[bufferLength];
 
-        //using FileStream baseStream = File.Create(Path.GetTempFileName());
+        // using FileStream baseStream = File.Create(Path.GetTempFileName());
         using MemoryStream baseStream = new(streamLength * iterations * 2);
         for (int i = 0; i < iterations; i++)
         {

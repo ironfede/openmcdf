@@ -63,7 +63,7 @@ internal sealed class PropertySetStream
             PropertySet0.PropertyIdentifierAndOffsets.Add(pio);
         }
 
-        PropertySet0.LoadContext((int)Offset0, br);  //Read CodePage, Locale
+        PropertySet0.LoadContext((int)Offset0, br);  // Read CodePage, Locale
 
         // Read properties (P0)
         for (int i = 0; i < propertyCount; i++)
@@ -165,7 +165,7 @@ internal sealed class PropertySetStream
             // w property offsets
             for (int i = 0; i < PropertySet1.PropertyIdentifierAndOffsets.Count; i++)
             {
-                oc1.PropertyIdentifierOffsets.Add(bw.BaseStream.Position); //Offset of 4 to Offset value
+                oc1.PropertyIdentifierOffsets.Add(bw.BaseStream.Position); // Offset of 4 to Offset value
                 PropertySet1.PropertyIdentifierAndOffsets[i].Write(bw);
             }
 
@@ -184,7 +184,7 @@ internal sealed class PropertySetStream
         bw.Seek(oc0.OffsetPS, SeekOrigin.Begin);
         bw.Write(size0);
 
-        int shiftO1 = 2 + 2 + 4 + 16 + 4 + 16; //OFFSET0
+        int shiftO1 = 2 + 2 + 4 + 16 + 4 + 16; // OFFSET0
         bw.Seek(shiftO1, SeekOrigin.Begin);
         bw.Write(oc0.OffsetPS);
 
@@ -198,7 +198,7 @@ internal sealed class PropertySetStream
 
         for (int i = 0; i < PropertySet0.PropertyIdentifierAndOffsets.Count; i++)
         {
-            bw.Seek((int)oc0.PropertyIdentifierOffsets[i] + 4, SeekOrigin.Begin); //Offset of 4 to Offset value
+            bw.Seek((int)oc0.PropertyIdentifierOffsets[i] + 4, SeekOrigin.Begin); // Offset of 4 to Offset value
             bw.Write((int)(oc0.PropertyOffsets[i] - oc0.OffsetPS));
         }
 
@@ -206,7 +206,7 @@ internal sealed class PropertySetStream
         {
             for (int i = 0; i < PropertySet1.PropertyIdentifierAndOffsets.Count; i++)
             {
-                bw.Seek((int)oc1.PropertyIdentifierOffsets[i] + 4, SeekOrigin.Begin); //Offset of 4 to Offset value
+                bw.Seek((int)oc1.PropertyIdentifierOffsets[i] + 4, SeekOrigin.Begin); // Offset of 4 to Offset value
                 bw.Write((int)(oc1.PropertyOffsets[i] - oc1.OffsetPS));
             }
         }

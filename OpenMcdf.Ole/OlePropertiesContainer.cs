@@ -69,8 +69,8 @@ public class OlePropertiesContainer
         {
             PropertyIdentifierAndOffset propertyIdentifierAndOffset = pStream.PropertySet0.PropertyIdentifierAndOffsets[i];
             if (propertyIdentifierAndOffset.PropertyIdentifier == SpecialPropertyIdentifiers.Dictionary) continue;
-            //if (propertyIdentifierAndOffset.PropertyIdentifier == 1) continue;
-            //if (propertyIdentifierAndOffset.PropertyIdentifier == 0x80000000) continue;
+            // if (propertyIdentifierAndOffset.PropertyIdentifier == 1) continue;
+            // if (propertyIdentifierAndOffset.PropertyIdentifier == 0x80000000) continue;
 
             var p = (ITypedPropertyValue)pStream.PropertySet0.Properties[i];
 

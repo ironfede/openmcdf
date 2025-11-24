@@ -289,25 +289,25 @@ internal abstract class PropertyFactory
             byte[] data = br.ReadBytes((int)size);
 
             string result = Encoding.GetEncoding(codePage).GetString(data);
-            //result = result.Trim(new char[] { '\0' });
+            // result = result.Trim(new char[] { '\0' });
 
-            //if (this.codePage == CodePages.CP_WINUNICODE)
-            //{
+            // if (this.codePage == CodePages.CP_WINUNICODE)
+            // {
             //    result = result.Substring(0, result.Length - 2);
-            //}
-            //else
-            //{
+            // }
+            // else
+            // {
             //    result = result.Substring(0, result.Length - 1);
-            //}
+            // }
 
             return result;
         }
 
         public override void WriteScalarValue(BinaryWriter bw, string pValue)
         {
-            //bool addNullTerminator = true;
+            // bool addNullTerminator = true;
 
-            if (string.IsNullOrEmpty(pValue)) //|| String.IsNullOrEmpty(pValue.Trim(new char[] { '\0' })))
+            if (string.IsNullOrEmpty(pValue)) // || String.IsNullOrEmpty(pValue.Trim(new char[] { '\0' })))
             {
                 bw.Write((uint)0);
             }
@@ -315,12 +315,12 @@ internal abstract class PropertyFactory
             {
                 byte[] data = Encoding.GetEncoding(codePage).GetBytes(pValue);
 
-                //if (data.Length >= 2 && data[data.Length - 2] == '\0' && data[data.Length - 1] == '\0')
+                // if (data.Length >= 2 && data[data.Length - 2] == '\0' && data[data.Length - 1] == '\0')
                 //    addNullTerminator = false;
 
                 uint dataLength = (uint)data.Length;
 
-                //if (addNullTerminator)
+                // if (addNullTerminator)
                 dataLength += 2;            // null terminator \u+0000
 
                 // var mod = dataLength % 4;       // pad to multiple of 4 bytes
@@ -328,36 +328,36 @@ internal abstract class PropertyFactory
                 bw.Write(dataLength);           // data length of string + null char (unicode)
                 bw.Write(data);                 // string
 
-                //if (addNullTerminator)
-                //{
+                // if (addNullTerminator)
+                // {
                 bw.Write('\0');                 // first byte of null unicode char
                 bw.Write('\0');                 // second byte of null unicode char
-                //}
+                // }
 
-                //for (int i = 0; i < (4 - mod); i++)   // padding
+                // for (int i = 0; i < (4 - mod); i++)   // padding
                 //    bw.Write('\0');
             }
             else
             {
                 byte[] data = Encoding.GetEncoding(codePage).GetBytes(pValue);
 
-                //if (data.Length >= 1 && data[data.Length - 1] == '\0')
+                // if (data.Length >= 1 && data[data.Length - 1] == '\0')
                 //    addNullTerminator = false;
 
                 uint dataLength = (uint)data.Length;
 
-                //if (addNullTerminator)
+                // if (addNullTerminator)
                 dataLength += 1;            // null terminator \u+0000
 
                 bw.Write(dataLength);           // data length of string + null char (unicode)
                 bw.Write(data);                 // string
 
-                //if (addNullTerminator)
-                //{
+                // if (addNullTerminator)
+                // {
                 bw.Write('\0');                 // null terminator'\0'
-                //}
+                // }
 
-                //for (int i = 0; i < (4 - mod); i++)   // padding
+                // for (int i = 0; i < (4 - mod); i++)   // padding
                 //    bw.Write('\0');
             }
         }
@@ -380,10 +380,10 @@ internal abstract class PropertyFactory
         public override string ReadScalarValue(BinaryReader br)
         {
             uint nChars = br.ReadUInt32();
-            byte[] data = br.ReadBytes((int)((nChars - 1) * 2));  //WChar- null terminator
+            byte[] data = br.ReadBytes((int)((nChars - 1) * 2));  // WChar- null terminator
             br.ReadBytes(2); // Skip null terminator
             string result = Encoding.Unicode.GetString(data);
-            //result = result.Trim(new char[] { '\0' });
+            // result = result.Trim(new char[] { '\0' });
 
             return result;
         }
@@ -396,23 +396,23 @@ internal abstract class PropertyFactory
             // add a null terminator if there isn't one already
             int byteLength = data.Length;
 
-            //bool addNullTerminator =
+            // bool addNullTerminator =
             //    byteLength == 0 || data[byteLength - 1] != '\0' || data[byteLength - 2] != '\0';
 
-            //if (addNullTerminator)
+            // if (addNullTerminator)
             byteLength += 2;
 
             bw.Write((uint)byteLength / 2);
             bw.Write(data);
 
-            //if (addNullTerminator)
-            //{
+            // if (addNullTerminator)
+            // {
             bw.Write((byte)0);
             bw.Write((byte)0);
-            //}
+            // }
 
-            //var mod = byteLength % 4;       // pad to multiple of 4 bytes
-            //for (int i = 0; i < (4 - mod); i++)   // padding
+            // var mod = byteLength % 4;       // pad to multiple of 4 bytes
+            // for (int i = 0; i < (4 - mod); i++)   // padding
             //    bw.Write('\0');
         }
     }
@@ -486,7 +486,7 @@ internal abstract class PropertyFactory
         {
             propertyValue = br.ReadUInt16() == 0xFFFF;
             return (bool)propertyValue;
-            //br.ReadUInt16();//padding
+            // br.ReadUInt16();//padding
         }
 
         public override void WriteScalarValue(BinaryWriter bw, bool pValue) => bw.Write(pValue ? (ushort)0xFFFF : (ushort)0);
@@ -503,7 +503,7 @@ internal abstract class PropertyFactory
             uint size = br.ReadUInt32();
             byte[] data = br.ReadBytes((int)size);
             return data;
-            //br.ReadUInt16();//padding
+            // br.ReadUInt16();//padding
         }
 
         public override void WriteScalarValue(BinaryWriter bw, object pValue)

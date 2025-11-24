@@ -407,7 +407,7 @@ public class OlePropertiesExtensionsTests
         using CfbStream stream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
         OlePropertiesContainer co = new(stream);
 
-        OleProperty? docPartsProperty = co.Properties.FirstOrDefault(property => property.PropertyIdentifier == 13); //13 == PIDDSI_DOCPARTS
+        OleProperty? docPartsProperty = co.Properties.FirstOrDefault(property => property.PropertyIdentifier == 13); // 13 == PIDDSI_DOCPARTS
         Assert.IsNotNull(docPartsProperty);
 
         var docPartsValues = docPartsProperty.Value as IList<string>;
