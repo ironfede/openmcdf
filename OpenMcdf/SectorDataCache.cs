@@ -15,7 +15,7 @@ internal static class SectorDataCache
         if (!freeFatSectorData.TryGetValue(sectorSize, out byte[]? data))
         {
             data = new byte[sectorSize];
-            Span<uint> uintSpan = MemoryMarshal.Cast<byte, uint>(data);
+            Span<uint> uintSpan = MemoryMarshal.Cast<byte, uint>((Span<byte>)data);
             uintSpan.Fill(SectorType.Free);
             freeFatSectorData.TryAdd(sectorSize, data);
         }

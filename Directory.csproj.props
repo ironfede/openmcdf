@@ -1,8 +1,8 @@
 <!-- See https://docs.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props -->
 <Project>
   <PropertyGroup>
-    <!-- C# 12 is the default for dotnet 8 -->
-    <LangVersion>12</LangVersion>
+    <!-- C# 14 is the default for dotnet 10 -->
+    <LangVersion>14</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <ProduceReferenceAssembly>true</ProduceReferenceAssembly>
