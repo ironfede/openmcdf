@@ -34,7 +34,7 @@ public class OlePropertiesContainer
     private readonly List<OleProperty> properties = new();
 
     /// <summary>
-    /// Create a new instance of <see cref="OlePropertiesContainer"/> with the specified code page and container type.
+    /// Initializes a new instance of the <see cref="OlePropertiesContainer"/> class.
     /// </summary>
     /// <param name="codePage">The code page to use for the new container.</param>
     /// <param name="containerType">The type of the new container.</param>
