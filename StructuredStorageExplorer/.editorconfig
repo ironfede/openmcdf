@@ -1,0 +1,7 @@
+# C# files
+[*.cs]
+
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.DocumentationRules.severity = none
+
+# SA1204: Static members should appear before non-static members
+dotnet_diagnostic.SA1204.severity = none

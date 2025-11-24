@@ -172,7 +172,7 @@ internal sealed class DirectoryTree
             {
                 uint newRightChildParentId = entry.LeftSiblingId;
                 DirectoryEntry newRightChildParent;
-                for (; ; )
+                while (true)
                 {
                     newRightChildParent = directories.GetDictionaryEntry(newRightChildParentId);
                     newRightChildParentId = newRightChildParent.RightSiblingId;

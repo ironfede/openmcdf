@@ -3,6 +3,8 @@
 internal abstract class TypedPropertyValue<T> : ITypedPropertyValue
 {
     private readonly VTPropertyType vtType;
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:Fields should be private", Justification = "TODO")]
     protected object? propertyValue;
 
     public PropertyType PropertyType => PropertyType.TypedPropertyValue;

@@ -5,6 +5,8 @@ public static class TestData
     /// <summary>
     /// Fill with bytes equal to their position modulo 256.
     /// </summary>
+    /// <param name="length">The number of bytes to include in the array.</param>
+    /// <returns>A byte array where each element is set to its index value modulo 256.</returns>
     public static byte[] CreateByteArray(int length)
     {
         byte[] expectedBuffer = new byte[length];
