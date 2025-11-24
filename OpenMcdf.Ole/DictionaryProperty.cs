@@ -136,4 +136,3 @@ internal sealed class DictionaryProperty : IProperty
         }
     }
 }
-
