@@ -321,7 +321,7 @@ public class OlePropertiesExtensionsTests
         }
     }
 
-    /// As Test_DOCUMENT_SUMMARY_INFO_ADD_CUSTOM, but adding user defined properties with the AddUserDefinedProperty function
+    // As Test_DOCUMENT_SUMMARY_INFO_ADD_CUSTOM, but adding user defined properties with the AddUserDefinedProperty function
     [TestMethod]
     public void TestAddUserDefinedProperty()
     {
@@ -380,7 +380,7 @@ public class OlePropertiesExtensionsTests
         Assert.AreEqual(VTPropertyType.VT_R8, propArray[5].VTType);
     }
 
-    /// The names of user defined properties must be unique - adding a duplicate should throw.
+    // The names of user defined properties must be unique - adding a duplicate should throw.
     [TestMethod]
     public void TestAddUserDefinedPropertyShouldPreventDuplicates()
     {
