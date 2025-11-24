@@ -11,14 +11,14 @@ namespace OpenMcdf;
 internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
 {
     private readonly FatChainEnumerator fatChainEnumerator;
-    private readonly int ElementsPerSector;
+    private readonly int elementsPerSector;
     private readonly byte[] cachedSectorBuffer;
     private bool isDirty;
 
     public MiniFat(RootContextSite rootContextSite)
         : base(rootContextSite)
     {
-        ElementsPerSector = Context.SectorSize / sizeof(uint);
+        elementsPerSector = Context.SectorSize / sizeof(uint);
         fatChainEnumerator = new(Context.Fat, Context.Header.FirstMiniFatSectorId);
         cachedSectorBuffer = new byte[Context.SectorSize];
     }
@@ -53,6 +53,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
                 throw new FileFormatException($"Mini FAT index not found: {key}.");
             return value;
         }
+
         set
         {
             if (!TrySetValue(key, value))
@@ -62,7 +63,7 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
 
     bool TryMoveToSectorForKey(uint key, out long elementIndex)
     {
-        uint fatChain = (uint)Math.DivRem(key, ElementsPerSector, out elementIndex);
+        uint fatChain = (uint)Math.DivRem(key, elementsPerSector, out elementIndex);
         if (fatChainEnumerator.IsAt(fatChain))
             return true;
 

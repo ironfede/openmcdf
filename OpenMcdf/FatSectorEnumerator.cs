@@ -115,7 +115,7 @@ internal sealed class FatSectorEnumerator : ContextBase, IEnumerator<Sector>
     /// <summary>
     /// Extends the FAT by adding a new sector.
     /// </summary>
-    /// <returns>The ID of the new sector that was added</returns>
+    /// <returns>The ID of the new sector that was added.</returns>
     public uint Add()
     {
         Header header = Context.Header;

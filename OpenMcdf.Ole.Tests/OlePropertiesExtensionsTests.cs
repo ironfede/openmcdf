@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace OpenMcdf.Ole.Tests;
 
 /// <summary>
-/// Summary description for UnitTest1
+/// Summary description for UnitTest1.
 /// </summary>
 [TestClass]
 public class OlePropertiesExtensionsTests
@@ -61,7 +61,7 @@ public class OlePropertiesExtensionsTests
 
             // The company property should exist but be empty
             OleProperty companyProperty = co.Properties.First(prop => prop.PropertyName == "PIDDSI_COMPANY");
-            Assert.AreEqual("", companyProperty.Value);
+            Assert.AreEqual(string.Empty, companyProperty.Value);
 
             // As a sanity check, check that the value of a property that we don't change remains the same
             OleProperty formatProperty = co.Properties.First(prop => prop.PropertyName == "PIDDSI_PRESFORMAT");
@@ -181,7 +181,7 @@ public class OlePropertiesExtensionsTests
             Assert.AreEqual("abcdefghijk", keyWordsProperty.Value);
 
             authorProperty.Value = "ABC";
-            keyWordsProperty.Value = "";
+            keyWordsProperty.Value = string.Empty;
             co.Save(dsiStream);
         }
 
@@ -197,7 +197,7 @@ public class OlePropertiesExtensionsTests
 
             OleProperty keyWordsProperty = co.Properties.First(prop => prop.PropertyName == "PIDSI_KEYWORDS");
             Assert.AreEqual(VTPropertyType.VT_LPWSTR, keyWordsProperty.VTType);
-            Assert.AreEqual("", keyWordsProperty.Value);
+            Assert.AreEqual(string.Empty, keyWordsProperty.Value);
         }
     }
 
@@ -230,7 +230,7 @@ public class OlePropertiesExtensionsTests
 
         // String properties
         Assert.AreEqual("A", propArray[1].PropertyName);
-        Assert.AreEqual("", propArray[1].Value);
+        Assert.AreEqual(string.Empty, propArray[1].Value);
         Assert.AreEqual("AB", propArray[2].PropertyName);
         Assert.AreEqual("X", propArray[2].Value);
         Assert.AreEqual("ABC", propArray[3].PropertyName);
@@ -321,7 +321,7 @@ public class OlePropertiesExtensionsTests
         }
     }
 
-    /// As Test_DOCUMENT_SUMMARY_INFO_ADD_CUSTOM, but adding user defined properties with the AddUserDefinedProperty function
+    // As Test_DOCUMENT_SUMMARY_INFO_ADD_CUSTOM, but adding user defined properties with the AddUserDefinedProperty function
     [TestMethod]
     public void TestAddUserDefinedProperty()
     {
@@ -380,7 +380,7 @@ public class OlePropertiesExtensionsTests
         Assert.AreEqual(VTPropertyType.VT_R8, propArray[5].VTType);
     }
 
-    /// The names of user defined properties must be unique - adding a duplicate should throw.
+    // The names of user defined properties must be unique - adding a duplicate should throw.
     [TestMethod]
     public void TestAddUserDefinedPropertyShouldPreventDuplicates()
     {
@@ -407,7 +407,7 @@ public class OlePropertiesExtensionsTests
         using CfbStream stream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
         OlePropertiesContainer co = new(stream);
 
-        OleProperty? docPartsProperty = co.Properties.FirstOrDefault(property => property.PropertyIdentifier == 13); //13 == PIDDSI_DOCPARTS
+        OleProperty? docPartsProperty = co.Properties.FirstOrDefault(property => property.PropertyIdentifier == 13); // 13 == PIDDSI_DOCPARTS
         Assert.IsNotNull(docPartsProperty);
 
         var docPartsValues = docPartsProperty.Value as IList<string>;
@@ -449,9 +449,9 @@ public class OlePropertiesExtensionsTests
             Assert.IsNotNull(newUserDefinedProperties.PropertyNames);
             newUserDefinedProperties.PropertyNames[2] = "MyCustomProperty";
 
-            OleProperty CreateProperty = co.CreateProperty(VTPropertyType.VT_LPSTR, 2);
-            CreateProperty.Value = "Testing";
-            newUserDefinedProperties.Add(CreateProperty);
+            OleProperty createProperty = co.CreateProperty(VTPropertyType.VT_LPSTR, 2);
+            createProperty.Value = "Testing";
+            newUserDefinedProperties.Add(createProperty);
 
             co.Save(dsiStream);
         }
@@ -492,7 +492,7 @@ public class OlePropertiesExtensionsTests
         {
             [2] = "Document Number",
             [3] = "Revision",
-            [4] = "Project Name"
+            [4] = "Project Name",
         };
 
         Guid expectedFmtid0 = Guid.Parse("f0d6d0b1-a0d8-11ce-8aa2-08003601e988");

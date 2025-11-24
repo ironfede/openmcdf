@@ -2,16 +2,16 @@
 
 internal abstract class TypedPropertyValue<T> : ITypedPropertyValue
 {
-    private readonly VTPropertyType _VTType;
+    private readonly VTPropertyType vtType;
     protected object? propertyValue;
 
     public PropertyType PropertyType => PropertyType.TypedPropertyValue;
 
-    public VTPropertyType VTType => _VTType;
+    public VTPropertyType VTType => vtType;
 
     public TypedPropertyValue(VTPropertyType vtType, bool isVariant = false)
     {
-        _VTType = vtType;
+        this.vtType = vtType;
         PropertyDimensions = CheckPropertyDimensions(vtType);
         IsVariant = isVariant;
     }
@@ -103,7 +103,7 @@ internal abstract class TypedPropertyValue<T> : ITypedPropertyValue
         {
             case PropertyDimensions.IsScalar:
 
-                bw.Write((ushort)_VTType);
+                bw.Write((ushort)vtType);
                 bw.Write((ushort)0);
 
                 WriteScalarValue(bw, (T)propertyValue!);
@@ -120,7 +120,7 @@ internal abstract class TypedPropertyValue<T> : ITypedPropertyValue
 
             case PropertyDimensions.IsVector:
 
-                bw.Write((ushort)_VTType);
+                bw.Write((ushort)vtType);
                 bw.Write((ushort)0);
                 bw.Write((uint)((List<T>)propertyValue!).Count);
 

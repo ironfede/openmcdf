@@ -3,6 +3,7 @@
 internal sealed class PropertyIdentifierAndOffset : IBinarySerializable
 {
     public uint PropertyIdentifier { get; set; }
+
     public uint Offset { get; set; }
 
     public void Read(BinaryReader br)

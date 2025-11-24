@@ -12,7 +12,7 @@ enum StorageType
     Unallocated = 0,
     Storage = 1,
     Stream = 2,
-    Root = 5
+    Root = 5,
 }
 
 /// <summary>
@@ -21,7 +21,7 @@ enum StorageType
 enum NodeColor
 {
     Red = 0,
-    Black = 1
+    Black = 1,
 }
 
 /// <summary>
@@ -42,54 +42,54 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
     public ushort NameLength { get; set; }
 
     /// <summary>
-    /// The type of the storage object.
+    /// Gets or sets the type of the storage object.
     /// </summary>
     public StorageType Type { get; set; } = StorageType.Unallocated;
 
     public NodeColor Color { get; set; }
 
     /// <summary>
-    /// Stream ID of the left sibling.
+    /// Gets or sets stream ID of the left sibling.
     /// </summary>
     public uint LeftSiblingId { get; set; } = StreamId.NoStream;
 
     /// <summary>
-    /// Stream ID of the right sibling.
+    /// Gets or sets stream ID of the right sibling.
     /// </summary>
     public uint RightSiblingId { get; set; } = StreamId.NoStream;
 
     /// <summary>
-    /// Stream ID of the child.
+    /// Gets or sets stream ID of the child.
     /// </summary>
     public uint ChildId { get; set; } = StreamId.NoStream;
 
     /// <summary>
-    /// GUID for storage objects.
+    /// Gets or sets gUID for storage objects.
     /// </summary>
     public Guid CLSID { get; set; }
 
     /// <summary>
-    /// User defined flags for storage objects.
+    /// Gets or sets user defined flags for storage objects.
     /// </summary>
     public uint StateBits { get; set; }
 
     /// <summary>
-    /// The creation time of the storage object.
+    /// Gets or sets the creation time of the storage object.
     /// </summary>
     public DateTime CreationTime { get; set; }
 
     /// <summary>
-    /// The modified time of the storage object.
+    /// Gets or sets the modified time of the storage object.
     /// </summary>
     public DateTime ModifiedTime { get; set; }
 
     /// <summary>
-    /// The starting sector location for a stream or the first sector of the mini-stream for the root storage object.
+    /// Gets or sets the starting sector location for a stream or the first sector of the mini-stream for the root storage object.
     /// </summary>
     public uint StartSectorId { get; set; } = StreamId.NoStream;
 
     /// <summary>
-    /// The length of the stream.
+    /// Gets or sets the length of the stream.
     /// </summary>
     public long StreamLength { get; set; }
 
@@ -97,7 +97,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
     {
         NodeColor.Red => 'R',
         NodeColor.Black => 'B',
-        _ => '?'
+        _ => '?',
     };
 
     public ReadOnlySpan<byte> NameByteSpan
@@ -123,7 +123,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
 
     public override int GetHashCode()
     {
-        HashCode code = new();
+        HashCode code = default;
         code.Add(Id);
         code.Add(NameLength);
         foreach (byte b in Name)
@@ -190,7 +190,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
         StorageType.Stream => EntryType.Stream,
         StorageType.Storage => EntryType.Storage,
         StorageType.Root => EntryType.Storage,
-        _ => throw new FileFormatException($"Invalid storage type: {Type}.")
+        _ => throw new FileFormatException($"Invalid storage type: {Type}."),
     };
 
     public EntryInfo ToEntryInfo(string path) => new(EntryType, path, NameString, StreamLength, CLSID, CreationTime, ModifiedTime);
@@ -214,7 +214,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
             CreationTime = CreationTime,
             ModifiedTime = ModifiedTime,
             StartSectorId = StreamId.NoStream,
-            StreamLength = 0
+            StreamLength = 0,
         };
 
         Array.Copy(Name, clone.Name, Name.Length);

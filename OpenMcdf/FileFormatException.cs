@@ -9,11 +9,13 @@ public class FileFormatException : FormatException
     {
     }
 
-    public FileFormatException(string message) : base(message)
+    public FileFormatException(string message)
+        : base(message)
     {
     }
 
-    public FileFormatException(string message, Exception innerException) : base(message, innerException)
+    public FileFormatException(string message, Exception innerException)
+        : base(message, innerException)
     {
     }
 }

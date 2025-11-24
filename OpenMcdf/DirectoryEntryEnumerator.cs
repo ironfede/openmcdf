@@ -26,7 +26,7 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
     public DirectoryEntry Current => current switch
     {
         null => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
-        _ => current
+        _ => current,
     };
 
     /// <inheritdoc/>

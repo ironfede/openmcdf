@@ -10,7 +10,7 @@ public enum ContainerType
     UserDefinedProperties = 3,
     GlobalInfo = 4,
     ImageContents = 5,
-    ImageInfo = 6
+    ImageInfo = 6,
 }
 
 public class OlePropertiesContainer
@@ -34,7 +34,7 @@ public class OlePropertiesContainer
     private readonly List<OleProperty> properties = new();
 
     /// <summary>
-    /// Create a new instance of <see cref="OlePropertiesContainer"/> with the specified code page and container type.
+    /// Initializes a new instance of the <see cref="OlePropertiesContainer"/> class.
     /// </summary>
     /// <param name="codePage">The code page to use for the new container.</param>
     /// <param name="containerType">The type of the new container.</param>
@@ -43,7 +43,7 @@ public class OlePropertiesContainer
         Context = new PropertyContext
         {
             CodePage = codePage,
-            Behavior = Behavior.CaseInsensitive
+            Behavior = Behavior.CaseInsensitive,
         };
 
         ContainerType = containerType;
@@ -69,16 +69,15 @@ public class OlePropertiesContainer
         {
             PropertyIdentifierAndOffset propertyIdentifierAndOffset = pStream.PropertySet0.PropertyIdentifierAndOffsets[i];
             if (propertyIdentifierAndOffset.PropertyIdentifier == SpecialPropertyIdentifiers.Dictionary) continue;
-            //if (propertyIdentifierAndOffset.PropertyIdentifier == 1) continue;
-            //if (propertyIdentifierAndOffset.PropertyIdentifier == 0x80000000) continue;
-
+            // if (propertyIdentifierAndOffset.PropertyIdentifier == 1) continue;
+            // if (propertyIdentifierAndOffset.PropertyIdentifier == 0x80000000) continue;
             var p = (ITypedPropertyValue)pStream.PropertySet0.Properties[i];
 
             OleProperty op = new(this)
             {
                 VTType = p.VTType,
                 PropertyIdentifier = propertyIdentifierAndOffset.PropertyIdentifier,
-                Value = p.Value
+                Value = p.Value,
             };
 
             properties.Add(op);
@@ -101,7 +100,7 @@ public class OlePropertiesContainer
                 {
                     VTType = p.VTType,
                     PropertyIdentifier = propertyIdentifierAndOffset.PropertyIdentifier,
-                    Value = p.Value
+                    Value = p.Value,
                 };
 
                 UserDefinedProperties.properties.Add(op);
@@ -121,7 +120,7 @@ public class OlePropertiesContainer
         OleProperty op = new(this)
         {
             VTType = vtPropertyType,
-            PropertyIdentifier = propertyIdentifier
+            PropertyIdentifier = propertyIdentifier,
         };
 
         return op;
@@ -136,7 +135,7 @@ public class OlePropertiesContainer
     /// <param name="name">The name of the new property.</param>
     /// <returns>The new property.</returns>
     /// <exception cref="InvalidOperationException">If UserDefinedProperties aren't allowed for this container.</exception>
-    /// <exception cref="ArgumentException">If a property with the name <paramref name="name"/> already exists."/></exception>
+    /// <exception cref="ArgumentException">If a property with the name <paramref name="name"/> already exists."/>.</exception>
     public OleProperty AddUserDefinedProperty(VTPropertyType vtPropertyType, string name)
     {
         if (this.ContainerType != ContainerType.UserDefinedProperties)
@@ -166,7 +165,7 @@ public class OlePropertiesContainer
         var op = new OleProperty(this)
         {
             VTType = vtPropertyType,
-            PropertyIdentifier = identifier
+            PropertyIdentifier = identifier,
         };
 
         properties.Add(op);
@@ -200,14 +199,14 @@ public class OlePropertiesContainer
         // Create the container, and add the code page to the initial set of properties
         UserDefinedProperties = new OlePropertiesContainer(codePage, ContainerType.UserDefinedProperties)
         {
-            PropertyNames = new Dictionary<uint, string>()
+            PropertyNames = new Dictionary<uint, string>(),
         };
 
         var op = new OleProperty(UserDefinedProperties)
         {
             VTType = VTPropertyType.VT_I2,
             PropertyIdentifier = 1,
-            Value = (short)codePage
+            Value = (short)codePage,
         };
 
         UserDefinedProperties.properties.Add(op);
@@ -236,8 +235,8 @@ public class OlePropertiesContainer
 
             PropertySet0 = new PropertySet
             {
-                PropertyContext = Context
-            }
+                PropertyContext = Context,
+            },
         };
 
         // If we're writing an AppSpecific property set and have property names, then add a dictionary property
@@ -263,7 +262,7 @@ public class OlePropertiesContainer
 
             ps.PropertySet1 = new PropertySet
             {
-                PropertyContext = UserDefinedProperties.Context
+                PropertyContext = UserDefinedProperties.Context,
             };
 
             ps.FMTID1 = FormatIdentifiers.UserDefinedProperties;

@@ -7,19 +7,30 @@ internal sealed class PropertySetStream
         public int OffsetPS { get; set; }
 
         public List<long> PropertyIdentifierOffsets { get; } = new();
+
         public List<long> PropertyOffsets { get; } = new();
     }
 
     public ushort ByteOrder { get; set; }
+
     public ushort Version { get; set; }
+
     public uint SystemIdentifier { get; set; }
+
     public Guid CLSID { get; set; }
+
     public uint NumPropertySets { get; set; }
+
     public Guid FMTID0 { get; set; }
+
     public uint Offset0 { get; set; }
+
     public Guid FMTID1 { get; set; }
+
     public uint Offset1 { get; set; }
+
     public PropertySet? PropertySet0 { get; set; }
+
     public PropertySet? PropertySet1 { get; set; }
 
     public PropertySetStream()
@@ -44,7 +55,6 @@ internal sealed class PropertySetStream
             Offset1 = br.ReadUInt32();
         }
 
-
         uint size = br.ReadUInt32();
         uint propertyCount = br.ReadUInt32();
         PropertySet0 = new PropertySet
@@ -63,7 +73,7 @@ internal sealed class PropertySetStream
             PropertySet0.PropertyIdentifierAndOffsets.Add(pio);
         }
 
-        PropertySet0.LoadContext((int)Offset0, br);  //Read CodePage, Locale
+        PropertySet0.LoadContext((int)Offset0, br);  // Read CodePage, Locale
 
         // Read properties (P0)
         for (int i = 0; i < propertyCount; i++)
@@ -83,7 +93,7 @@ internal sealed class PropertySetStream
 
             PropertySet1 = new PropertySet
             {
-                Size = size
+                Size = size,
             };
 
             // Read property offsets
@@ -165,7 +175,7 @@ internal sealed class PropertySetStream
             // w property offsets
             for (int i = 0; i < PropertySet1.PropertyIdentifierAndOffsets.Count; i++)
             {
-                oc1.PropertyIdentifierOffsets.Add(bw.BaseStream.Position); //Offset of 4 to Offset value
+                oc1.PropertyIdentifierOffsets.Add(bw.BaseStream.Position); // Offset of 4 to Offset value
                 PropertySet1.PropertyIdentifierAndOffsets[i].Write(bw);
             }
 
@@ -184,7 +194,7 @@ internal sealed class PropertySetStream
         bw.Seek(oc0.OffsetPS, SeekOrigin.Begin);
         bw.Write(size0);
 
-        int shiftO1 = 2 + 2 + 4 + 16 + 4 + 16; //OFFSET0
+        int shiftO1 = 2 + 2 + 4 + 16 + 4 + 16; // OFFSET0
         bw.Seek(shiftO1, SeekOrigin.Begin);
         bw.Write(oc0.OffsetPS);
 
@@ -195,10 +205,9 @@ internal sealed class PropertySetStream
         }
 
         //-----------
-
         for (int i = 0; i < PropertySet0.PropertyIdentifierAndOffsets.Count; i++)
         {
-            bw.Seek((int)oc0.PropertyIdentifierOffsets[i] + 4, SeekOrigin.Begin); //Offset of 4 to Offset value
+            bw.Seek((int)oc0.PropertyIdentifierOffsets[i] + 4, SeekOrigin.Begin); // Offset of 4 to Offset value
             bw.Write((int)(oc0.PropertyOffsets[i] - oc0.OffsetPS));
         }
 
@@ -206,7 +215,7 @@ internal sealed class PropertySetStream
         {
             for (int i = 0; i < PropertySet1.PropertyIdentifierAndOffsets.Count; i++)
             {
-                bw.Seek((int)oc1.PropertyIdentifierOffsets[i] + 4, SeekOrigin.Begin); //Offset of 4 to Offset value
+                bw.Seek((int)oc1.PropertyIdentifierOffsets[i] + 4, SeekOrigin.Begin); // Offset of 4 to Offset value
                 bw.Write((int)(oc1.PropertyOffsets[i] - oc1.OffsetPS));
             }
         }

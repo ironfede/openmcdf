@@ -155,7 +155,7 @@ public sealed class CfbStream : Stream
         stream.Write(buffer, offset, count);
     }
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
 
     /// <inheritdoc/>
     public override int Read(Span<byte> buffer)

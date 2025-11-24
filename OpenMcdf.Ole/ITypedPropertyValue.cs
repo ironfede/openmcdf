@@ -4,7 +4,7 @@ internal enum PropertyDimensions
 {
     IsScalar,
     IsVector,
-    IsArray
+    IsArray,
 }
 
 internal interface ITypedPropertyValue : IProperty

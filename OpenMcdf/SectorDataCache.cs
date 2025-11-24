@@ -8,16 +8,16 @@ namespace OpenMcdf;
 /// </summary>
 internal static class SectorDataCache
 {
-    static readonly ConcurrentDictionary<int, byte[]> freeFatSectorData = new(1, 2);
+    static readonly ConcurrentDictionary<int, byte[]> FreeFatSectorData = new(1, 2);
 
     public static byte[] GetFatEntryData(int sectorSize)
     {
-        if (!freeFatSectorData.TryGetValue(sectorSize, out byte[]? data))
+        if (!FreeFatSectorData.TryGetValue(sectorSize, out byte[]? data))
         {
             data = new byte[sectorSize];
             Span<uint> uintSpan = MemoryMarshal.Cast<byte, uint>((Span<byte>)data);
             uintSpan.Fill(SectorType.Free);
-            freeFatSectorData.TryAdd(sectorSize, data);
+            FreeFatSectorData.TryAdd(sectorSize, data);
         }
 
         return data;

@@ -35,16 +35,15 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
     }
 
     /// <summary>
-    /// The index within the Mini FAT sector chain, or <see cref="uint.MaxValue"/> if the enumeration has not started.
+    /// Gets the index within the Mini FAT sector chain, or <see cref="uint.MaxValue"/> if the enumeration has not started.
     /// </summary>
-
     public MiniSector CurrentSector => new(Current, Context.MiniSectorSize);
 
     /// <inheritdoc/>
     public uint Current => index switch
     {
         uint.MaxValue => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
-        _ => current
+        _ => current,
     };
 
     /// <inheritdoc/>
@@ -107,7 +106,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
     /// Moves to the specified index within the mini FAT sector chain.
     /// </summary>
     /// <param name="index"></param>
-    /// <returns>true if the enumerator was successfully advanced to the given index</returns>
+    /// <returns>true if the enumerator was successfully advanced to the given index.</returns>
     public bool MoveTo(uint index)
     {
         if (index < this.index)

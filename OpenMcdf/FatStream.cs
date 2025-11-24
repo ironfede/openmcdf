@@ -3,7 +3,7 @@
 namespace OpenMcdf;
 
 /// <summary>
-/// Provides a <inheritdoc cref="Stream"/> for a stream object in a compound file./>
+/// Provides a <inheritdoc cref="Stream"/> for a stream object in a compound file./>.
 /// </summary>
 internal class FatStream : Stream
 {
@@ -22,7 +22,6 @@ internal class FatStream : Stream
         chain = new(Context.Fat, directoryEntry.StartSectorId);
     }
 
-    /// <inheritdoc/>
     internal DirectoryEntry DirectoryEntry { get; private set; }
 
     internal long ChainCapacity => ((Length + Context.SectorSize - 1) / Context.SectorSize) * Context.SectorSize;
@@ -201,7 +200,7 @@ internal class FatStream : Stream
         }
     }
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
 
     public override int ReadByte() => this.ReadByteCore();
 

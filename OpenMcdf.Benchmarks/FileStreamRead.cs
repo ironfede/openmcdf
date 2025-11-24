@@ -10,7 +10,7 @@ namespace OpenMcdf.Benchmark;
 [MarkdownExporter]
 public class FileStreamRead : IDisposable
 {
-    private string readFileName = "";
+    private string readFileName = string.Empty;
     private byte[] buffer = Array.Empty<byte>();
 
     [Params(Version.V3, Version.V4)]

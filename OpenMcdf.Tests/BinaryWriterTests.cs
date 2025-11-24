@@ -54,7 +54,7 @@ public sealed class BinaryWriterTests
             CreationTime = FileTime.UtcZero,
             ModifiedTime = FileTime.UtcZero,
             StartSectorId = 6,
-            StreamLength = 7
+            StreamLength = 7,
         };
 
         expected.NameString = "Root Entry";

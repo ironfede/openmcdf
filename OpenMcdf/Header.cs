@@ -27,17 +27,17 @@ internal sealed class Header : IEquatable<Header?>
     private ushort miniSectorShift = ExpectedMiniSectorShift;
 
     /// <summary>
-    /// Reserved and unused class ID.
+    /// Gets or sets reserved and unused class ID.
     /// </summary>
     public Guid CLSID { get; set; }
 
     /// <summary>
-    /// Version number for non-breaking changes.
+    /// Gets or sets version number for non-breaking changes.
     /// </summary>
     public ushort MinorVersion { get; set; }
 
     /// <summary>
-    /// Version number for breaking changes.
+    /// Gets or sets version number for breaking changes.
     /// </summary>
     public ushort MajorVersion
     {
@@ -50,7 +50,7 @@ internal sealed class Header : IEquatable<Header?>
     }
 
     /// <summary>
-    /// Specifies the sector size of the compound file.
+    /// Gets or sets specifies the sector size of the compound file.
     /// </summary>
     public ushort SectorShift
     {
@@ -78,47 +78,47 @@ internal sealed class Header : IEquatable<Header?>
     }
 
     /// <summary>
-    /// The number of directory sectors in the compound file (not used in V3).
+    /// Gets or sets the number of directory sectors in the compound file (not used in V3).
     /// </summary>
     public uint DirectorySectorCount { get; set; }
 
     /// <summary>
-    /// The number of FAT sectors in the compound file.
+    /// Gets or sets the number of FAT sectors in the compound file.
     /// </summary>
     public uint FatSectorCount { get; set; }
 
     /// <summary>
-    /// The starting sector ID of the directory stream.
+    /// Gets or sets the starting sector ID of the directory stream.
     /// </summary>
     public uint FirstDirectorySectorId { get; set; } = SectorType.EndOfChain;
 
     /// <summary>
-    /// A sequence number that is incremented every time the compound file is saved by an implementation that supports file transactions.
+    /// Gets or sets a sequence number that is incremented every time the compound file is saved by an implementation that supports file transactions.
     /// </summary>
     public uint TransactionSignature { get; set; }
 
     /// <summary>
-    /// This integer field contains the starting sector ID of the mini FAT.
+    /// Gets or sets this integer field contains the starting sector ID of the mini FAT.
     /// </summary>
     public uint FirstMiniFatSectorId { get; set; } = SectorType.EndOfChain;
 
     /// <summary>
-    /// The number of sectors in the mini FAT.
+    /// Gets or sets the number of sectors in the mini FAT.
     /// </summary>
     public uint MiniFatSectorCount { get; set; }
 
     /// <summary>
-    /// The starting sector ID of the DIFAT.
+    /// Gets or sets the starting sector ID of the DIFAT.
     /// </summary>
     public uint FirstDifatSectorId { get; set; } = SectorType.EndOfChain;
 
     /// <summary>
-    /// The number of DIFAT sectors in the compound file.
+    /// Gets or sets the number of DIFAT sectors in the compound file.
     /// </summary>
     public uint DifatSectorCount { get; set; }
 
     /// <summary>
-    /// An array of the first FAT sector IDs.
+    /// Gets an array of the first FAT sector IDs.
     /// </summary>
     public uint[] Difat { get; } = new uint[DifatArrayLength];
 
@@ -130,7 +130,7 @@ internal sealed class Header : IEquatable<Header?>
         {
             Version.V3 => SectorShiftV3,
             Version.V4 => SectorShiftV4,
-            _ => throw new FileFormatException($"Unsupported version: {version}.")
+            _ => throw new FileFormatException($"Unsupported version: {version}."),
         };
         FirstDirectorySectorId = SectorType.EndOfChain;
         DirectorySectorCount = 0; // Not used in v3
@@ -143,7 +143,7 @@ internal sealed class Header : IEquatable<Header?>
 
     public override int GetHashCode()
     {
-        HashCode code = new();
+        HashCode code = default;
         code.Add(CLSID);
         code.Add(MinorVersion);
         code.Add(MajorVersion);

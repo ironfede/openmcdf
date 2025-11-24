@@ -27,14 +27,14 @@ internal sealed class MiniFatEnumerator : ContextBase, IEnumerator<FatEntry>
     public MiniSector CurrentSector => index switch
     {
         uint.MaxValue => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
-        _ => new(value, Context.MiniSectorSize)
+        _ => new(value, Context.MiniSectorSize),
     };
 
     /// <inheritdoc/>
     public FatEntry Current => index switch
     {
         uint.MaxValue => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
-        _ => new(index, value)
+        _ => new(index, value),
     };
 
     /// <inheritdoc/>

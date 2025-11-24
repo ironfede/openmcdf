@@ -194,7 +194,7 @@ internal sealed class MiniFatStream : Stream
         throw new InvalidOperationException($"The end of mini FAT chain was reached.");
     }
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
 
     public override int ReadByte() => this.ReadByteCore();
 

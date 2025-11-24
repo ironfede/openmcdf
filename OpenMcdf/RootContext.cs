@@ -37,7 +37,7 @@ internal sealed class RootContext : ContextBase, IDisposable
     public CfbBinaryWriter Writer => writer switch
     {
         null => throw new InvalidOperationException("Stream is not writable"),
-        _ => writer
+        _ => writer,
     };
 
     public Fat Fat { get; }
@@ -67,7 +67,7 @@ internal sealed class RootContext : ContextBase, IDisposable
     public bool IsDisposed { get; private set; }
 
     /// <summary>
-    /// The size of a regular sector.
+    /// Gets the size of a regular sector.
     /// </summary>
     public int SectorSize { get; }
 

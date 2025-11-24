@@ -115,7 +115,7 @@ internal sealed class CfbBinaryReader : BinaryReader
             StateBits = ReadUInt32(),
             CreationTime = ReadFileTime(),
             ModifiedTime = ReadFileTime(),
-            StartSectorId = ReadUInt32()
+            StartSectorId = ReadUInt32(),
         };
 
         if (version == Version.V3)
@@ -159,7 +159,6 @@ internal sealed class CfbBinaryReader : BinaryReader
             // Only 0 is valid for storage entries. However, NoStream and EndOfChain are used incorrectly in practice.
             if (entry.StartSectorId is not 0 and not SectorType.EndOfChain and not StreamId.NoStream)
                 throw new FileFormatException($"Invalid stream ID: {entry.StartSectorId:X8}.");
-
         }
 
         if (version is Version.V3 && entry.StreamLength > DirectoryEntry.MaxV3StreamLength)

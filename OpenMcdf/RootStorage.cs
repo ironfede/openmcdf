@@ -17,7 +17,7 @@ public enum Version : ushort
     /// <summary>
     /// 4096 byte sectors.
     /// </summary>
-    V4 = 4
+    V4 = 4,
 }
 
 /// <summary>
@@ -250,7 +250,6 @@ public sealed class RootStorage : Storage, IDisposable
     void Consolidate()
     {
         // TODO: Consolidate by defragmentation instead of copy
-
         Stream baseStream = Context.BaseStream;
         Stream? destinationStream = null;
 

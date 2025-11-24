@@ -26,7 +26,7 @@ internal sealed class PropertySet
         PropertyIdentifierAndOffset? localeProperty = PropertyIdentifierAndOffsets.FirstOrDefault(pio => pio.PropertyIdentifier == SpecialPropertyIdentifiers.Locale);
         if (localeProperty is not null)
         {
-            long localeOffset = (propertySetOffset + localeProperty.Offset);
+            long localeOffset = propertySetOffset + localeProperty.Offset;
             br.BaseStream.Seek(localeOffset, SeekOrigin.Begin);
 
             vType = (VTPropertyType)br.ReadUInt16();
@@ -41,7 +41,7 @@ internal sealed class PropertySet
     {
         DictionaryProperty dictionaryProperty = new(PropertyContext.CodePage)
         {
-            Value = propertyNames
+            Value = propertyNames,
         };
         Properties.Add(dictionaryProperty);
         PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = SpecialPropertyIdentifiers.Dictionary, Offset = 0 });

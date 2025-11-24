@@ -4,7 +4,7 @@ enum WriteMode
 {
     SingleByte,
     Array,
-    Span
+    Span,
 }
 
 [TestClass]
@@ -34,9 +34,9 @@ public sealed class StreamTests
     {
         using var rootStorage = RootStorage.OpenRead(fileName);
         Assert.IsTrue(rootStorage.TryOpenStream("TestStream", out CfbStream? _));
-        Assert.IsFalse(rootStorage.TryOpenStream("", out CfbStream? _));
+        Assert.IsFalse(rootStorage.TryOpenStream(string.Empty, out CfbStream? _));
 
-        Assert.ThrowsExactly<FileNotFoundException>(() => rootStorage.OpenStream(""));
+        Assert.ThrowsExactly<FileNotFoundException>(() => rootStorage.OpenStream(string.Empty));
 
         using CfbStream stream = rootStorage.OpenStream("TestStream");
         Assert.AreEqual("TestStream", stream.EntryInfo.Name);
@@ -63,7 +63,7 @@ public sealed class StreamTests
         StreamAssert.AreEqual(expectedStream, actualStream);
     }
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
     [TestMethod]
     [DynamicData(nameof(TestData.ShortVersionsAndSizes), typeof(TestData))]
     public void ReadSpan(Version version, int length)
@@ -129,7 +129,7 @@ public sealed class StreamTests
     [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void WriteArray(Version version, int length) => WriteCore(version, length, WriteMode.Array);
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
     [TestMethod]
     [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void WriteSpan(Version version, int length) => WriteCore(version, length, WriteMode.Span);
@@ -230,7 +230,7 @@ public sealed class StreamTests
             CollectionAssert.AreEqual(expectedBuffer, actualBuffer);
         }
 
-        try { File.Delete(fileName); } catch { }
+        TestFile.TryDelete(fileName);
     }
 #endif
 
@@ -330,13 +330,13 @@ public sealed class StreamTests
     [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void ModifyCommitArray(Version version, int length) => ModifyCommit(version, length, WriteMode.Array);
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
     [TestMethod]
     [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void ModifyCommitSpan(Version version, int length) => ModifyCommit(version, length, WriteMode.Span);
 #endif
 
-#if (!NETSTANDARD2_0 && !NETFRAMEWORK)
+#if !NETSTANDARD2_0 && !NETFRAMEWORK
     [TestMethod]
     [DynamicData(nameof(TestData.VersionsAndSizes), typeof(TestData))]
     public void ModifyCommitSingleByte(Version version, int length) => ModifyCommit(version, length, WriteMode.SingleByte);
