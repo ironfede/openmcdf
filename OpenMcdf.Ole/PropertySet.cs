@@ -41,7 +41,7 @@ internal sealed class PropertySet
     {
         DictionaryProperty dictionaryProperty = new(PropertyContext.CodePage)
         {
-            Value = propertyNames
+            Value = propertyNames,
         };
         Properties.Add(dictionaryProperty);
         PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = SpecialPropertyIdentifiers.Dictionary, Offset = 0 });

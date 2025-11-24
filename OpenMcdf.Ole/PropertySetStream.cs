@@ -83,7 +83,7 @@ internal sealed class PropertySetStream
 
             PropertySet1 = new PropertySet
             {
-                Size = size
+                Size = size,
             };
 
             // Read property offsets

@@ -23,7 +23,7 @@ public static class PropertyIdentifiers
         {0x0000000F, "PIDSI_WORDCOUNT" },
         {0x00000010, "PIDSI_CHARCOUNT" },
         {0x00000012, "PIDSI_APPNAME" },
-        {0x00000013, "PIDSI_DOC_SECURITY" }
+        {0x00000013, "PIDSI_DOC_SECURITY" },
     }.ToFrozenDictionary();
 
     readonly static FrozenDictionary<uint, string> DocumentSummaryInfo = new Dictionary<uint, string>()
@@ -54,7 +54,7 @@ public static class PropertyIdentifiers
         {0x0000001A, "PIDDSI_CONTENTTYPE" },
         {0x0000001B, "PIDDSI_CONTENTSTATUS" },
         {0x0000001C, "PIDDSI_LANGUAGE" },
-        {0x0000001D, "PIDDSI_DOCVERSION" }
+        {0x0000001D, "PIDDSI_DOCVERSION" },
     }.ToFrozenDictionary();
 
     public static string GetDescription(uint identifier, ContainerType map, IDictionary<uint, string>? customDictionary = null)

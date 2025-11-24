@@ -4,7 +4,7 @@ enum WriteMode
 {
     SingleByte,
     Array,
-    Span
+    Span,
 }
 
 [TestClass]

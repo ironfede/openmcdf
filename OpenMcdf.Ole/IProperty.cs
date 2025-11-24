@@ -3,7 +3,7 @@
 internal enum PropertyType
 {
     TypedPropertyValue = 0,
-    DictionaryProperty = 1
+    DictionaryProperty = 1,
 }
 
 internal interface IProperty : IBinarySerializable

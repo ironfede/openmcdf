@@ -130,7 +130,7 @@ internal sealed class Header : IEquatable<Header?>
         {
             Version.V3 => SectorShiftV3,
             Version.V4 => SectorShiftV4,
-            _ => throw new FileFormatException($"Unsupported version: {version}.")
+            _ => throw new FileFormatException($"Unsupported version: {version}."),
         };
         FirstDirectorySectorId = SectorType.EndOfChain;
         DirectorySectorCount = 0; // Not used in v3

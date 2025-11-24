@@ -12,7 +12,7 @@ enum StorageType
     Unallocated = 0,
     Storage = 1,
     Stream = 2,
-    Root = 5
+    Root = 5,
 }
 
 /// <summary>
@@ -21,7 +21,7 @@ enum StorageType
 enum NodeColor
 {
     Red = 0,
-    Black = 1
+    Black = 1,
 }
 
 /// <summary>
@@ -97,7 +97,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
     {
         NodeColor.Red => 'R',
         NodeColor.Black => 'B',
-        _ => '?'
+        _ => '?',
     };
 
     public ReadOnlySpan<byte> NameByteSpan
@@ -190,7 +190,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
         StorageType.Stream => EntryType.Stream,
         StorageType.Storage => EntryType.Storage,
         StorageType.Root => EntryType.Storage,
-        _ => throw new FileFormatException($"Invalid storage type: {Type}.")
+        _ => throw new FileFormatException($"Invalid storage type: {Type}."),
     };
 
     public EntryInfo ToEntryInfo(string path) => new(EntryType, path, NameString, StreamLength, CLSID, CreationTime, ModifiedTime);
@@ -214,7 +214,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
             CreationTime = CreationTime,
             ModifiedTime = ModifiedTime,
             StartSectorId = StreamId.NoStream,
-            StreamLength = 0
+            StreamLength = 0,
         };
 
         Array.Copy(Name, clone.Name, Name.Length);

@@ -3,7 +3,7 @@
 public enum Behavior
 {
     CaseSensitive,
-    CaseInsensitive
+    CaseInsensitive,
 }
 
 public sealed class PropertyContext

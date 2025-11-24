@@ -37,7 +37,7 @@ internal sealed class RootContext : ContextBase, IDisposable
     public CfbBinaryWriter Writer => writer switch
     {
         null => throw new InvalidOperationException("Stream is not writable"),
-        _ => writer
+        _ => writer,
     };
 
     public Fat Fat { get; }

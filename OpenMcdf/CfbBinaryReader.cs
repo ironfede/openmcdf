@@ -115,7 +115,7 @@ internal sealed class CfbBinaryReader : BinaryReader
             StateBits = ReadUInt32(),
             CreationTime = ReadFileTime(),
             ModifiedTime = ReadFileTime(),
-            StartSectorId = ReadUInt32()
+            StartSectorId = ReadUInt32(),
         };
 
         if (version == Version.V3)

@@ -41,7 +41,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
     public uint Current => index switch
     {
         uint.MaxValue => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
-        _ => current
+        _ => current,
     };
 
     /// <inheritdoc/>
