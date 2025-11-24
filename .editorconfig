@@ -284,6 +284,8 @@ dotnet_diagnostic.S1104.severity = none
 dotnet_diagnostic.S2344.severity = none
 csharp_style_prefer_utf8_string_literals = true:suggestion
 csharp_prefer_static_anonymous_function = true:suggestion
+csharp_prefer_system_threading_lock = true:suggestion
+csharp_style_prefer_simple_property_accessors = true:suggestion
 
 [*.{config,crproj,csproj,props,pubxml,runsettings,settings,svcinfo,targets,vcxproj,wixproj,wxi,wxl,wxs,xml}]
 
@@ -342,24 +344,3 @@ dotnet_diagnostic.CA1513.severity = none
 dotnet_diagnostic.CA1510.severity = none
 dotnet_diagnostic.CA1847.severity = none
 dotnet_diagnostic.CA1512.severity = none
-
-[*.{hlsl}]
-
-# Indentation and spacing
-indent_size = 4
-indent_style = space
-tab_width = 4
-trim_trailing_whitespace = true
-
-# Specific files
-[{ort_inference.cc,ort_inference.h,pixel_classifier.h}]
-
-indent_size = 4
-indent_style = space
-tab_width = 4
-trim_trailing_whitespace = true
-cpp_indent_namespace_contents = false
-cpp_indent_multi_line_relative_to = innermost_parenthesis
-cpp_indent_within_parentheses = align_to_parenthesis
-cpp_indent_preserve_within_parentheses = true
-tab_width = 4
