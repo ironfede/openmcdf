@@ -22,7 +22,6 @@ internal class FatStream : Stream
         chain = new(Context.Fat, directoryEntry.StartSectorId);
     }
 
-    /// <inheritdoc/>
     internal DirectoryEntry DirectoryEntry { get; private set; }
 
     internal long ChainCapacity => ((Length + Context.SectorSize - 1) / Context.SectorSize) * Context.SectorSize;
