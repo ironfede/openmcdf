@@ -4,7 +4,7 @@ namespace OpenMcdf.Ole;
 
 public static class PropertyIdentifiers
 {
-    readonly static FrozenDictionary<uint, string> SummaryInfo = new Dictionary<uint, string>()
+    static readonly FrozenDictionary<uint, string> SummaryInfo = new Dictionary<uint, string>()
     {
         {0x00000001, "PIDSI_CODEPAGE" },
         {0x00000002, "PIDSI_TITLE" },
@@ -26,7 +26,7 @@ public static class PropertyIdentifiers
         {0x00000013, "PIDSI_DOC_SECURITY" },
     }.ToFrozenDictionary();
 
-    readonly static FrozenDictionary<uint, string> DocumentSummaryInfo = new Dictionary<uint, string>()
+    static readonly FrozenDictionary<uint, string> DocumentSummaryInfo = new Dictionary<uint, string>()
     {
         {0x00000001, "PIDDSI_CODEPAGE" },
         {0x00000002, "PIDDSI_CATEGORY" },
