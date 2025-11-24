@@ -17,7 +17,7 @@ static class EntryInfoExtensions
         foreach (char c in s)
         {
             if (char.IsControl(c))
-                sb.Append($"\\u{ (int)c:x4}");
+                sb.Append($"\\u{(int)c:x4}");
             else
                 sb.Append(c);
         }
