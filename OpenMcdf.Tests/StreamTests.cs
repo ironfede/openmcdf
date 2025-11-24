@@ -230,7 +230,7 @@ public sealed class StreamTests
             CollectionAssert.AreEqual(expectedBuffer, actualBuffer);
         }
 
-        try { File.Delete(fileName); } catch { }
+        TestFile.TryDelete(fileName);
     }
 #endif
 
