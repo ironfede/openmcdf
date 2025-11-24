@@ -67,7 +67,7 @@ internal sealed class RootContext : ContextBase, IDisposable
     public bool IsDisposed { get; private set; }
 
     /// <summary>
-    /// The size of a regular sector.
+    /// Gets the size of a regular sector.
     /// </summary>
     public int SectorSize { get; }
 

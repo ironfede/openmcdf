@@ -10,12 +10,12 @@ namespace OpenMcdf;
 internal record struct MiniSector(uint Id, int Length)
 {
     /// <summary>
-    /// The position of the mini sector in the mini FAT stream.
+    /// Gets the position of the mini sector in the mini FAT stream.
     /// </summary>
     public readonly long Position => Id * Length;
 
     /// <summary>
-    /// The end position of the mini sector in the mini FAT stream.
+    /// Gets the end position of the mini sector in the mini FAT stream.
     /// </summary>
     public readonly long EndPosition => (Id + 1) * Length;
 

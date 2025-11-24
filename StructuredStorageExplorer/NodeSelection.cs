@@ -6,7 +6,7 @@ namespace StructuredStorageExplorer;
 sealed record class NodeSelection(Storage? Parent, EntryInfo EntryInfo)
 {
     /// <summary>
-    /// FileName derived from the EntryInfo.Name, with invalid filename chars replaces.
+    /// Gets fileName derived from the EntryInfo.Name, with invalid filename chars replaces.
     /// </summary>
     public string SanitizedFileName
     {
