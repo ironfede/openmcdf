@@ -250,6 +250,9 @@ dotnet_diagnostic.SA1121.severity = none
 # SA1124: Do not use regions
 dotnet_diagnostic.SA1124.severity = suggestion
 
+# SA1201: Elements must appear in the correct order
+dotnet_diagnostic.SA1201.severity = suggestion
+
 # SA1202: Elements should be ordered by access
 dotnet_diagnostic.SA1202.severity = none
 
@@ -276,6 +279,9 @@ dotnet_diagnostic.SA1513.severity = none
 
 # SA1600: Elements should be documented
 dotnet_diagnostic.SA1600.severity = none
+
+# SA1633: The file header is missing or not located at the top of the file
+dotnet_diagnostic.SA1633.severity = none
 
 # S1104: Fields should not have public accessibility
 dotnet_diagnostic.S1104.severity = none

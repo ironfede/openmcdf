@@ -1,8 +1,18 @@
 ﻿namespace OpenMcdf;
 
+/// <summary>
+/// Specifies the type of entry for a <see cref="EntryInfo"/>.
+/// </summary>
 public enum EntryType
 {
+    /// <summary>
+    /// A storage entry, which may contain other entries.
+    /// </summary>
     Storage,
+
+    /// <summary>
+    /// A stream entry containing binary data.
+    /// </summary>
     Stream,
 }
 

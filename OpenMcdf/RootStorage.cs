@@ -7,6 +7,9 @@ namespace OpenMcdf;
 /// </summary>
 public enum Version : ushort
 {
+    /// <summary>
+    /// Unknown version.
+    /// </summary>
     Unknown = 0,
 
     /// <summary>

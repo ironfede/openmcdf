@@ -108,7 +108,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
     /// <summary>
     /// Moves to the specified index within the FAT sector chain.
     /// </summary>
-    /// <param name="index"></param>
+    /// <param name="index">The index to move to.</param>
     /// <returns>true if the enumerator was successfully advanced to the given index.</returns>
     public bool MoveTo(uint index)
     {

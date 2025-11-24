@@ -11,6 +11,7 @@
     <File Path="global.json" />
     <File Path="License.txt" />
     <File Path="README.md" />
+    <File Path="stylecop.json" />
   </Folder>
   <Project Path="OpenMcdf.Benchmarks/OpenMcdf.Benchmarks.csproj" />
   <Project Path="OpenMcdf.Ole.Tests/OpenMcdf.Ole.Tests.csproj" />
