@@ -5,9 +5,9 @@ namespace StructuredStorageExplorer;
 
 internal sealed class StreamByteProvider : IByteProvider, IDisposable
 {
-    CfbStream _stream;
+    CfbStream stream;
 
-    bool _hasChanges;
+    bool hasChanges;
 
     public ByteCollection Bytes { get; private set; }
 
@@ -17,12 +17,12 @@ internal sealed class StreamByteProvider : IByteProvider, IDisposable
         stream.Position = 0;
         stream.ReadExactly(data, 0, data.Length);
         Bytes = new ByteCollection(data);
-        _stream = stream;
+        this.stream = stream;
     }
 
     public void Dispose()
     {
-        _stream.Dispose();
+        stream.Dispose();
     }
 
     public void CopyFrom(Stream stream)
@@ -33,18 +33,18 @@ internal sealed class StreamByteProvider : IByteProvider, IDisposable
         Bytes = new ByteCollection(data);
         OnLengthChanged(EventArgs.Empty);
         OnChanged(EventArgs.Empty);
-        _hasChanges = false;
+        hasChanges = false;
     }
 
     public void CopyTo(Stream stream)
     {
-        _stream.Position = 0;
-        _stream.CopyTo(stream);
+        this.stream.Position = 0;
+        this.stream.CopyTo(stream);
     }
 
     void OnChanged(EventArgs e)
     {
-        _hasChanges = true;
+        hasChanges = true;
 
         Changed?.Invoke(this, e);
     }
@@ -55,14 +55,14 @@ internal sealed class StreamByteProvider : IByteProvider, IDisposable
     }
 
     #region IByteProvider Members
-    public bool HasChanges() => _hasChanges;
+    public bool HasChanges() => hasChanges;
 
     public void ApplyChanges()
     {
-        _stream.Position = 0;
-        _stream.Write(Bytes.ToArray());
+        stream.Position = 0;
+        stream.Write(Bytes.ToArray());
 
-        _hasChanges = false;
+        hasChanges = false;
     }
 
     public event EventHandler? Changed;
