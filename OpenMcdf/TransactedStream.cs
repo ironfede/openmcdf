@@ -8,6 +8,7 @@ namespace OpenMcdf;
 internal sealed class TransactedStream : Stream
 {
     readonly RootContextSite rootContextSite;
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA2213:Disposable fields should be disposed", Justification = "Non-dispose ownership")]
     readonly Stream originalStream;
     readonly Dictionary<uint, long> dirtySectorPositions = new();
     readonly byte[] buffer;

@@ -5,6 +5,7 @@ namespace OpenMcdf;
 /// <summary>
 /// Represents the major version of the compound file.
 /// </summary>
+[SuppressMessage("Design", "CA1028:Enum Storage should be Int32", Justification = "Compound file versions are defined as ushort.")]
 public enum Version : ushort
 {
     /// <summary>
