@@ -295,18 +295,23 @@ public class Storage : ContextBase
 
         foreach (DirectoryEntry entry in EnumerateDirectoryEntries())
         {
-            if (entry.Type is StorageType.Storage)
-            {
-                Storage subSource = new(ContextSite, entry, this);
-                Storage subDestination = destination.CreateStorage(entry.NameString);
-                subSource.CopyTo(subDestination);
-            }
-            else if (entry.Type is StorageType.Stream)
-            {
-                using CfbStream stream = new(ContextSite, entry, this);
-                using CfbStream destinationStream = destination.CreateStream(entry.NameString);
-                stream.CopyTo(destinationStream);
-            }
+            Copy(entry, destination);
+        }
+    }
+
+    private void Copy(DirectoryEntry entry, Storage destination)
+    {
+        if (entry.Type is StorageType.Storage)
+        {
+            Storage subSource = new(ContextSite, entry, this);
+            Storage subDestination = destination.CreateStorage(entry.NameString);
+            subSource.CopyTo(subDestination);
+        }
+        else if (entry.Type is StorageType.Stream)
+        {
+            using CfbStream stream = new(ContextSite, entry, this);
+            using CfbStream destinationStream = destination.CreateStream(entry.NameString);
+            stream.CopyTo(destinationStream);
         }
     }
 
