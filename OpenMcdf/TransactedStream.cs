@@ -5,7 +5,7 @@ namespace OpenMcdf;
 /// <summary>
 /// Stores modifications to a CFB stream that can be committed or reverted.
 /// </summary>
-internal class TransactedStream : Stream
+internal sealed class TransactedStream : Stream
 {
     readonly RootContextSite rootContextSite;
     readonly Stream originalStream;

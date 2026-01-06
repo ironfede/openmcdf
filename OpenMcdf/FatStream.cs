@@ -5,7 +5,7 @@ namespace OpenMcdf;
 /// <summary>
 /// Provides a <inheritdoc cref="Stream"/> for a stream object in a compound file./>.
 /// </summary>
-internal class FatStream : Stream
+internal sealed class FatStream : Stream
 {
     readonly RootContextSite rootContextSite;
     readonly FatChainEnumerator chain;

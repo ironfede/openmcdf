@@ -3,7 +3,7 @@
 /// <summary>
 /// Provides a <see cref="IComparer{T}"/> for <see cref="DirectoryEntry"/> objects.
 /// </summary>
-internal class DirectoryEntryComparer : IComparer<DirectoryEntry>
+internal sealed class DirectoryEntryComparer : IComparer<DirectoryEntry>
 {
     public static DirectoryEntryComparer Default { get; } = new();
 

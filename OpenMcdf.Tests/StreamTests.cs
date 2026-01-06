@@ -342,7 +342,7 @@ public sealed class StreamTests
     public void ModifyCommitSingleByte(Version version, int length) => ModifyCommit(version, length, WriteMode.SingleByte);
 #endif
 
-    void ModifyCommit(Version version, int length, WriteMode writeMode)
+    static void ModifyCommit(Version version, int length, WriteMode writeMode)
     {
         // Fill with bytes equal to their position modulo 256
         byte[] expectedBuffer = TestData.CreateByteArray(length);
