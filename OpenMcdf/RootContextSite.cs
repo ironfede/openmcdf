@@ -3,7 +3,7 @@
 /// <summary>
 /// A site for the <see cref="RootContext"/> object, to allow switching streams.
 /// </summary>
-internal class RootContextSite
+internal sealed class RootContextSite
 {
     RootContext? context;
 

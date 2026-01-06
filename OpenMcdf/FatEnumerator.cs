@@ -6,7 +6,7 @@ namespace OpenMcdf;
 /// <summary>
 /// Enumerates the <see cref="FatEntry"/> records in a <see cref="Fat"/>.
 /// </summary>
-internal class FatEnumerator : IEnumerator<FatEntry>
+internal sealed class FatEnumerator : IEnumerator<FatEntry>
 {
     readonly Fat fat;
     bool start = true;

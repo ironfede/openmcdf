@@ -5,7 +5,7 @@ namespace OpenMcdf;
 /// <summary>
 /// Enumerates the <see cref="Sector"/>s in a DIFAT chain.
 /// </summary>
-internal class DifatSectorEnumerator : ContextBase, IEnumerator<Sector>
+internal sealed class DifatSectorEnumerator : ContextBase, IEnumerator<Sector>
 {
     bool start = true;
     uint index = uint.MaxValue;
