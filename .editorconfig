@@ -293,6 +293,9 @@ csharp_prefer_static_anonymous_function = true:suggestion
 csharp_prefer_system_threading_lock = true:suggestion
 csharp_style_prefer_simple_property_accessors = true:suggestion
 
+dotnet_code_quality.CA1812.ignore_internalsvisibleto = true
+dotnet_code_quality.CA1852.ignore_internalsvisibleto = true
+
 [*.{config,crproj,csproj,props,pubxml,runsettings,settings,svcinfo,targets,vcxproj,wixproj,wxi,wxl,wxs,xml}]
 
 # Indentation and spacing
