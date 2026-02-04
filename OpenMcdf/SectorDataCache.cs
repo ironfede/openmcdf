@@ -12,14 +12,12 @@ internal static class SectorDataCache
 
     public static byte[] GetFatEntryData(int sectorSize)
     {
-        if (!FreeFatSectorData.TryGetValue(sectorSize, out byte[]? data))
+        return FreeFatSectorData.GetOrAdd(sectorSize, static size =>
         {
-            data = new byte[sectorSize];
+            byte[] data = new byte[size];
             Span<uint> uintSpan = MemoryMarshal.Cast<byte, uint>((Span<byte>)data);
             uintSpan.Fill(SectorType.Free);
-            FreeFatSectorData.TryAdd(sectorSize, data);
-        }
-
-        return data;
+            return data;
+        });
     }
 }
