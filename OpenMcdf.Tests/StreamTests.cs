@@ -118,10 +118,16 @@ public sealed class StreamTests
         using var rootStorage = RootStorage.OpenRead(fileName);
         using Stream stream = rootStorage.OpenStream("TestStream");
 
-        stream.Seek(0, SeekOrigin.Begin);
+        Assert.AreEqual(0, stream.Seek(0, SeekOrigin.Begin));
+        Assert.AreEqual(0, stream.Seek(0, SeekOrigin.Current));
+        Assert.AreEqual(length, stream.Seek(0, SeekOrigin.End));
+
+        stream.Position = 0;
+
         Assert.ThrowsExactly<IOException>(() => stream.Seek(-1, SeekOrigin.Begin));
         Assert.ThrowsExactly<IOException>(() => stream.Seek(-1, SeekOrigin.Current));
-        Assert.ThrowsExactly<IOException>(() => stream.Seek(length + 1, SeekOrigin.End));
+        Assert.ThrowsExactly<IOException>(() => stream.Seek(-1 - length, SeekOrigin.End));
+
         Assert.ThrowsExactly<ArgumentException>(() => stream.Seek(length, (SeekOrigin)3));
     }
 
