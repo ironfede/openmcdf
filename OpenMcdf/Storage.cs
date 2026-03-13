@@ -318,6 +318,9 @@ public class Storage : ContextBase
     /// <summary>
     /// Deletes the entry with the specified name from this storage.
     /// </summary>
+    /// <remarks>
+    /// If the file to be deleted does not exist, no exception is thrown.
+    /// </remarks>
     /// <param name="name">The name of the entry to delete.</param>
     public void Delete(string name)
     {
