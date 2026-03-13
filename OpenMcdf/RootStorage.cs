@@ -259,12 +259,12 @@ public sealed class RootStorage : Storage, IDisposable
 
         try
         {
-            if (baseStream is MemoryStream)
-                destinationStream = new MemoryStream((int)baseStream.Length);
-            else if (baseStream is FileStream)
-                destinationStream = File.Create(Path.GetTempFileName());
-            else
-                throw new NotSupportedException("Unsupported stream type for consolidation.");
+            destinationStream = baseStream switch
+            {
+                MemoryStream => new MemoryStream((int)baseStream.Length),
+                FileStream => File.Create(Path.GetTempFileName()),
+                _ => throw new NotSupportedException("Unsupported stream type for consolidation."),
+            };
 
             using (RootStorage destinationStorage = Create(destinationStream, Context.Version, StorageModeFlags.LeaveOpen))
                 CopyTo(destinationStorage);
@@ -274,7 +274,7 @@ public sealed class RootStorage : Storage, IDisposable
             IOContextFlags contextFlags = ToIOContextFlags(storageModeFlags);
             _ = new RootContext(ContextSite, baseStream, Version.Unknown, contextFlags);
         }
-        catch
+        finally
         {
             destinationStream?.Dispose();
 
@@ -283,8 +283,6 @@ public sealed class RootStorage : Storage, IDisposable
                 string fileName = fs.Name;
                 File.Delete(fileName);
             }
-
-            throw;
         }
     }
 
