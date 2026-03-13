@@ -393,9 +393,18 @@ internal abstract class PropertyFactory
         public override string ReadScalarValue(BinaryReader br)
         {
             uint nChars = br.ReadUInt32();
-            byte[] data = br.ReadBytes((int)((nChars - 1) * 2));  // WChar- null terminator
+            string result;
+            if (nChars > 0)
+            {
+                byte[] data = br.ReadBytes((int)((nChars - 1) * 2));  // WChar- null terminator
+                result = Encoding.Unicode.GetString(data);
+            }
+            else
+            {
+                result = string.Empty;
+            }
+
             br.ReadBytes(2); // Skip null terminator
-            string result = Encoding.Unicode.GetString(data);
             // result = result.Trim(new char[] { '\0' });
             return result;
         }
