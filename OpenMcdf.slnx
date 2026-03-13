@@ -21,4 +21,8 @@
   <Project Path="OpenMcdf/OpenMcdf.csproj" />
   <Project Path="StructuredStorage/StructuredStorage.csproj" />
   <Project Path="StructuredStorageExplorer/StructuredStorageExplorer.csproj" />
+  <Project Path="OpenMcdf.Explorer/OpenMcdf.Explorer.csproj" />
+  <Project Path="OpenMcdf.Explorer.Android/OpenMcdf.Explorer.Android.csproj" />
+  <Project Path="OpenMcdf.Explorer.Desktop/OpenMcdf.Explorer.Desktop.csproj" />
+  <Project Path="OpenMcdf.Explorer.iOS/OpenMcdf.Explorer.iOS.csproj" />
 </Solution>

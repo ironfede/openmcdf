@@ -353,3 +353,5 @@ dotnet_diagnostic.CA1513.severity = none
 dotnet_diagnostic.CA1510.severity = none
 dotnet_diagnostic.CA1847.severity = none
 dotnet_diagnostic.CA1512.severity = none
+
+csharp_style_implicit_object_creation_when_type_is_apparent = true:suggestion
