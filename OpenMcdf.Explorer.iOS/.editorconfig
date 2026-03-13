@@ -1,0 +1,5 @@
+# C# files
+[*.cs]
+
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.DocumentationRules.severity = none
+

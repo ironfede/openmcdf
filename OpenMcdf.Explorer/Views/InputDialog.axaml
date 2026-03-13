@@ -1,0 +1,29 @@
+<Window
+    x:Class="OpenMcdf.Explorer.Views.InputDialog"
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Input"
+    MinWidth="300"
+    MaxWidth="500"
+    CanResize="False"
+    SizeToContent="WidthAndHeight"
+    WindowStartupLocation="CenterOwner">
+
+    <StackPanel Margin="16" Spacing="12">
+        <TextBlock x:Name="PromptText" TextWrapping="Wrap" />
+        <TextBox x:Name="InputTextBox" />
+        <StackPanel
+            HorizontalAlignment="Right"
+            Orientation="Horizontal"
+            Spacing="8">
+            <Button
+                Width="75"
+                Click="OnOkClick"
+                Content="OK" />
+            <Button
+                Width="75"
+                Click="OnCancelClick"
+                Content="Cancel" />
+        </StackPanel>
+    </StackPanel>
+</Window>
