@@ -123,9 +123,9 @@ internal sealed class MiniFatStream : Stream
                 break;
 
             case SeekOrigin.End:
-                if (Length - offset < 0)
+                if (Length + offset < 0)
                     ThrowHelper.ThrowSeekBeforeOrigin();
-                position = Length - offset;
+                position = Length + offset;
                 break;
 
             default:
