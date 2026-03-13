@@ -564,23 +564,22 @@ internal abstract class PropertyFactory
         }
     }
 
-    private sealed class VT_CLSID_Property : TypedPropertyValue<object>
+    private sealed class VT_CLSID_Property : TypedPropertyValue<Guid>
     {
         public VT_CLSID_Property(VTPropertyType vType, bool isVariant)
             : base(vType, isVariant)
         {
         }
 
-        public override object ReadScalarValue(BinaryReader br)
+        public override Guid ReadScalarValue(BinaryReader br)
         {
             byte[] data = br.ReadBytes(16);
             return new Guid(data);
         }
 
-        public override void WriteScalarValue(BinaryWriter bw, object pValue)
+        public override void WriteScalarValue(BinaryWriter bw, Guid pValue)
         {
-            if (pValue is byte[] r)
-                bw.Write(r);
+            bw.Write(pValue.ToByteArray());
         }
     }
 
