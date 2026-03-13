@@ -216,7 +216,7 @@ public class OlePropertiesContainer
 
     public void Save(Stream cfStream)
     {
-        using BinaryWriter bw = new(cfStream);
+        using BinaryWriter bw = new(cfStream, Encoding.UTF8, leaveOpen: true);
 
         PropertySetStream ps = new()
         {

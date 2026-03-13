@@ -330,7 +330,7 @@ public class OlePropertiesExtensionsTests
         // english.presets.doc has a user defined property section, but no properties other than the codepage
         using (var cf = RootStorage.Open(modifiedStream, StorageModeFlags.LeaveOpen))
         {
-            CfbStream dsiStream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
+            using CfbStream dsiStream = cf.OpenStream(PropertySetNames.DocSummaryInformation);
             OlePropertiesContainer co = new(dsiStream);
             OlePropertiesContainer userProperties = co.UserDefinedProperties!;
             userProperties.AddUserDefinedProperty(VTPropertyType.VT_LPSTR, "StringProperty").Value = "Hello";
