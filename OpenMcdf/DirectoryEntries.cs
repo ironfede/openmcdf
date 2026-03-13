@@ -60,7 +60,7 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
         }
 
         if (streamId > StreamId.Maximum)
-            throw new FileFormatException($"Invalid directory entry stream ID: ${streamId:X8}.");
+            throw new FileFormatException($"Invalid directory entry stream ID: {streamId:X8}.");
 
         uint chainIndex = GetChainIndexAndEntryIndex(streamId, out long entryIndex);
         if (!fatChainEnumerator.MoveTo(chainIndex))
