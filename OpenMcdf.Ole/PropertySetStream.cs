@@ -219,6 +219,14 @@ internal sealed class PropertySetStream
                 bw.Write((int)(oc1.PropertyOffsets[i] - oc1.OffsetPS));
             }
         }
+
+        long padding1 = bw.BaseStream.Position % 4;
+
+        if (padding1 > 0)
+        {
+            for (int p = 0; p < 4 - padding1; p++)
+                bw.Write((byte)0);
+        }
     }
 
     private static IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br, PropertyFactory factory)

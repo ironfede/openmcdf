@@ -393,9 +393,18 @@ internal abstract class PropertyFactory
         public override string ReadScalarValue(BinaryReader br)
         {
             uint nChars = br.ReadUInt32();
-            byte[] data = br.ReadBytes((int)((nChars - 1) * 2));  // WChar- null terminator
+            string result;
+            if (nChars > 0)
+            {
+                byte[] data = br.ReadBytes((int)((nChars - 1) * 2));  // WChar- null terminator
+                result = Encoding.Unicode.GetString(data);
+            }
+            else
+            {
+                result = string.Empty;
+            }
+
             br.ReadBytes(2); // Skip null terminator
-            string result = Encoding.Unicode.GetString(data);
             // result = result.Trim(new char[] { '\0' });
             return result;
         }
@@ -467,7 +476,7 @@ internal abstract class PropertyFactory
 
             if (sign != 0)
                 d = -d;
-            d /= 10 << scale;
+            d /= (decimal)Math.Pow(10, scale);
 
             propertyValue = d;
             return d;
@@ -482,11 +491,11 @@ internal abstract class PropertyFactory
 
             bw.Write((short)0);
             bw.Write(scale);
-            bw.Write(sign ? (byte)0 : (byte)1);
+            bw.Write(sign ? (byte)0x80 : (byte)0);
 
             bw.Write(parts[2]);
-            bw.Write(parts[1]);
             bw.Write(parts[0]);
+            bw.Write(parts[1]);
         }
     }
 
