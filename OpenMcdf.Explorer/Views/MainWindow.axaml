@@ -182,7 +182,7 @@
                 </TabControl.Styles>
                 <TabItem Header="Raw Data">
                     <Border BorderBrush="{DynamicResource SystemControlForegroundBaseLowBrush}" BorderThickness="0,1,0,0">
-                        <avaloniaHex:HexEditor Document="{Binding HexDocument}" FontFamily="Cascadia Code,Consolas,Monospace,monospace">
+                        <avaloniaHex:HexEditor Document="{Binding HexDocument}" FontFamily="Menlo,Monaco,SF Mono,Cascadia Mono,Cascadia Code,Consolas,Courier New">
                             <avaloniaHex:HexEditor.Columns>
                                 <rendering:OffsetColumn />
                                 <rendering:HexColumn />
