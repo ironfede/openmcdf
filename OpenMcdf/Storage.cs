@@ -336,6 +336,11 @@ public class Storage : ContextBase
         if (entry is null)
             return;
 
+        DeleteEntry(entry);
+    }
+
+    void DeleteEntry(DirectoryEntry entry)
+    {
         if (entry.Type is StorageType.Storage && entry.ChildId is not StreamId.NoStream)
         {
             Storage storage = new(ContextSite, entry, this);
@@ -343,13 +348,7 @@ public class Storage : ContextBase
             {
             }
         }
-
-        DeleteEntry(entry);
-    }
-
-    void DeleteEntry(DirectoryEntry entry)
-    {
-        if (entry.Type is StorageType.Stream && !SectorType.IsFreeOrEndOfChain(entry.StartSectorId))
+        else if (entry.Type is StorageType.Stream && !SectorType.IsFreeOrEndOfChain(entry.StartSectorId))
         {
             if (entry.StreamLength < Header.MiniStreamCutoffSize)
             {
@@ -369,9 +368,8 @@ public class Storage : ContextBase
     bool TryDeleteFirstChildEntry()
     {
         bool found = Context.DirectoryEntries.TryGetDictionaryEntry(directoryEntry.ChildId, out DirectoryEntry? childEntry);
-        if (!found)
-            return false;
-        directoryTree.Remove(childEntry!);
+        if (childEntry is not null)
+            DeleteEntry(childEntry);
         return found;
     }
 
