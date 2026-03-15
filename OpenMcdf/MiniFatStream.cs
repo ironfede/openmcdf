@@ -9,7 +9,7 @@ internal sealed class MiniFatStream : Stream
     readonly MiniFatChainEnumerator miniChain;
     long position;
     bool isDisposed;
-    bool isDirty;
+    bool isDirectoryEntryDirty;
 
     internal MiniFatStream(RootContextSite rootContextSite, DirectoryEntry directoryEntry)
     {
@@ -55,13 +55,50 @@ internal sealed class MiniFatStream : Stream
     {
         this.ThrowIfDisposed(isDisposed);
 
-        if (isDirty)
+        if (isDirectoryEntryDirty)
         {
             Context.DirectoryEntries.Write(DirectoryEntry);
-            isDirty = false;
+            isDirectoryEntryDirty = false;
         }
 
         Context.MiniStream.Flush();
+    }
+
+    internal FatStream SwitchToFatStream(long length)
+    {
+        long originalPosition = Position;
+
+        FatStream? fatStream = null;
+
+        try
+        {
+            DirectoryEntry newDirectoryEntry = DirectoryEntry.Clone();
+            fatStream = new(rootContextSite, newDirectoryEntry);
+            fatStream.SetLength(length);
+
+            Position = 0;
+            CopyTo(fatStream);
+            fatStream.Position = originalPosition;
+
+            SetLength(0);
+            isDirectoryEntryDirty = false; // Ownership of the directory entry is transferred to the new fat stream
+
+            return fatStream;
+        }
+        catch
+        {
+            try
+            {
+                fatStream?.SetLength(0);
+            }
+            finally
+            {
+                Position = originalPosition;
+                fatStream?.Dispose();
+            }
+
+            throw;
+        }
     }
 
     uint GetMiniFatChainIndexAndSectorOffset(long offset, out long sectorOffset) => (uint)Math.DivRem(offset, Context.MiniSectorSize, out sectorOffset);
@@ -149,7 +186,7 @@ internal sealed class MiniFatStream : Stream
             DirectoryEntry.StartSectorId = miniChain.Shrink(requiredChainLength);
 
         DirectoryEntry.StreamLength = value;
-        isDirty = true;
+        isDirectoryEntryDirty = true;
     }
 
     public override void Write(byte[] buffer, int offset, int count)
@@ -183,7 +220,7 @@ internal sealed class MiniFatStream : Stream
             if (position > Length)
             {
                 DirectoryEntry.StreamLength = position;
-                isDirty = true;
+                isDirectoryEntryDirty = true;
             }
             sectorOffset = 0;
             if (writeCount >= count)

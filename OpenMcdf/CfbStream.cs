@@ -108,32 +108,12 @@ public sealed class CfbStream : Stream
 
         if (value >= Header.MiniStreamCutoffSize && stream is MiniFatStream miniStream)
         {
-            long position = miniStream.Position;
-            miniStream.Position = 0;
-
-            DirectoryEntry newDirectoryEntry = directoryEntry.Clone();
-            FatStream fatStream = new(rootContextSite, newDirectoryEntry);
-            fatStream.SetLength(value); // Reserve enough space up front
-            miniStream.CopyTo(fatStream);
-            fatStream.Position = position;
-            stream = fatStream;
-
-            miniStream.SetLength(0);
+            stream = miniStream.SwitchToFatStream(value);
             miniStream.Dispose();
         }
         else if (value < Header.MiniStreamCutoffSize && stream is FatStream fatStream)
         {
-            long position = fatStream.Position;
-            fatStream.Position = 0;
-
-            DirectoryEntry newDirectoryEntry = directoryEntry.Clone();
-            MiniFatStream miniFatStream = new(rootContextSite, newDirectoryEntry);
-            fatStream.SetLength(value); // Truncate the stream
-            fatStream.CopyTo(miniFatStream);
-            miniFatStream.Position = position;
-            stream = miniFatStream;
-
-            fatStream.SetLength(0);
+            stream = fatStream.SwitchToMiniFatStream(value);
             fatStream.Dispose();
         }
         else

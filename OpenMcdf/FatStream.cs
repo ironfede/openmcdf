@@ -10,7 +10,7 @@ internal sealed class FatStream : Stream
     readonly RootContextSite rootContextSite;
     readonly FatChainEnumerator chain;
     long position;
-    bool isDirty;
+    bool isDirectoryEntryDirty;
     bool isDisposed;
 
     private RootContext Context => rootContextSite.Context;
@@ -64,14 +64,53 @@ internal sealed class FatStream : Stream
     {
         this.ThrowIfDisposed(isDisposed);
 
-        if (isDirty)
+        if (isDirectoryEntryDirty)
         {
             Context.DirectoryEntries.Write(DirectoryEntry);
-            isDirty = false;
+            isDirectoryEntryDirty = false;
         }
 
         if (CanWrite)
             Context.Writer.Flush();
+    }
+
+    internal MiniFatStream SwitchToMiniFatStream(long length)
+    {
+        MiniFatStream? miniFatStream = null;
+
+        long originalPosition = Position;
+
+        try
+        {
+            DirectoryEntry newDirectoryEntry = DirectoryEntry.Clone();
+            miniFatStream = new(rootContextSite, newDirectoryEntry);
+            miniFatStream.SetLength(length);
+
+            SetLength(length); // Truncate the stream
+
+            Position = 0;
+            CopyTo(miniFatStream);
+            miniFatStream.Position = originalPosition;
+
+            SetLength(0);
+            isDirectoryEntryDirty = false; // Ownership of the directory entry is transferred to the mini FAT stream.
+
+            return miniFatStream;
+        }
+        catch
+        {
+            try
+            {
+                miniFatStream?.SetLength(0);
+            }
+            finally
+            {
+                Position = originalPosition;
+                miniFatStream?.Dispose();
+            }
+
+            throw;
+        }
     }
 
     uint GetFatChainIndexAndSectorOffset(long offset, out long sectorOffset) => (uint)Math.DivRem(offset, Context.SectorSize, out sectorOffset);
@@ -158,7 +197,7 @@ internal sealed class FatStream : Stream
             DirectoryEntry.StartSectorId = chain.Shrink(requiredChainLength);
 
         DirectoryEntry.StreamLength = value;
-        isDirty = true;
+        isDirectoryEntryDirty = true;
     }
 
     /// <inheritdoc/>
@@ -196,7 +235,7 @@ internal sealed class FatStream : Stream
         if (position > Length)
         {
             DirectoryEntry.StreamLength = position;
-            isDirty = true;
+            isDirectoryEntryDirty = true;
         }
     }
 
@@ -278,7 +317,7 @@ internal sealed class FatStream : Stream
         if (position > Length)
         {
             DirectoryEntry.StreamLength = position;
-            isDirty = true;
+            isDirectoryEntryDirty = true;
         }
     }
 
