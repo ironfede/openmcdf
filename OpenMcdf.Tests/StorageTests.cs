@@ -306,6 +306,37 @@ public sealed class StorageTests
     [TestMethod]
     [DataRow(Version.V3)]
     [DataRow(Version.V4)]
+    public void DeleteStorageWithStreamChildReusesFreedSectors(Version version)
+    {
+        using MemoryStream memoryStream = new();
+        byte[] data = TestData.CreateByteArray(16 * 1024);
+
+        using var rootStorage = RootStorage.Create(memoryStream, version, StorageModeFlags.LeaveOpen);
+        Storage storage = rootStorage.CreateStorage("Storage");
+        using (CfbStream subStream = storage.CreateStream("SubStream"))
+        {
+            subStream.Write(data, 0, data.Length);
+        }
+
+        rootStorage.Flush();
+        long initialLength = rootStorage.BaseStream.Length;
+
+        rootStorage.Delete("Storage");
+        rootStorage.Flush();
+
+        using (CfbStream replacement = rootStorage.CreateStream("Replacement"))
+        {
+            replacement.Write(data, 0, data.Length);
+        }
+
+        rootStorage.Flush();
+
+        Assert.AreEqual(initialLength, rootStorage.BaseStream.Length);
+    }
+
+    [TestMethod]
+    [DataRow(Version.V3)]
+    [DataRow(Version.V4)]
     public void DeleteStream(Version version)
     {
         using MemoryStream memoryStream = new();
