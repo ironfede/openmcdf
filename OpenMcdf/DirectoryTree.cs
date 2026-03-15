@@ -186,6 +186,9 @@ internal sealed class DirectoryTree
                 directories.Write(newRightChildParent);
             }
         }
+
+        entry.Recycle();
+        directories.Write(entry);
     }
 
     [ExcludeFromCodeCoverage]

@@ -121,7 +121,7 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
         while (directoryEntryEnumerator.MoveNext())
         {
             DirectoryEntry current = directoryEntryEnumerator.Current;
-            if (directoryEntryEnumerator.Current.Type is StorageType.Unallocated)
+            if (current.Type is StorageType.Unallocated)
                 return current;
         }
 
