@@ -429,3 +429,6 @@ FodyWeavers.xsd
 
 # Claude
 .claude/settings.local.json
+
+# Project specific files
+.DS_Store
