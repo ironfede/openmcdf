@@ -50,10 +50,15 @@ internal sealed class FatStream : Stream
     {
         if (!isDisposed)
         {
-            Flush();
-
-            chain.Dispose();
-            isDisposed = true;
+            try
+            {
+                Flush();
+            }
+            finally
+            {
+                chain.Dispose();
+                isDisposed = true;
+            }
         }
 
         base.Dispose(disposing);

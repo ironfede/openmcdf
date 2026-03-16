@@ -42,10 +42,15 @@ internal sealed class MiniFatStream : Stream
     {
         if (!isDisposed)
         {
-            Flush();
-
-            miniChain.Dispose();
-            isDisposed = true;
+            try
+            {
+                Flush();
+            }
+            finally
+            {
+                miniChain.Dispose();
+                isDisposed = true;
+            }
         }
 
         base.Dispose(disposing);
