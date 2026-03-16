@@ -301,20 +301,11 @@ internal abstract class PropertyFactory
 
         public override string ReadScalarValue(BinaryReader br)
         {
-            uint size = br.ReadUInt32();
-            byte[] data = br.ReadBytes((int)size);
-
-            string result = Encoding.GetEncoding(codePage).GetString(data);
-            // result = result.Trim(new char[] { '\0' });
-
-            // if (this.codePage == CodePages.CP_WINUNICODE)
-            // {
-            //    result = result.Substring(0, result.Length - 2);
-            // }
-            // else
-            // {
-            //    result = result.Substring(0, result.Length - 1);
-            // }
+            int size = (int)br.ReadUInt32();
+            byte[] data = br.ReadBytes(size);
+            int nullByteCount = this.codePage == CodePages.WinUnicode ? 2 : 1;
+            int nonNullSize = Math.Max(0, size - nullByteCount);
+            string result = Encoding.GetEncoding(codePage).GetString(data, 0, nonNullSize);
             return result;
         }
 
