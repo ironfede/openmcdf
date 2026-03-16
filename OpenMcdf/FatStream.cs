@@ -82,7 +82,7 @@ internal sealed class FatStream : Stream
 
         try
         {
-            DirectoryEntry newDirectoryEntry = DirectoryEntry.Clone();
+            DirectoryEntry newDirectoryEntry = DirectoryEntry.CloneWithNoStream();
             miniFatStream = new(rootContextSite, newDirectoryEntry);
             miniFatStream.SetLength(length);
 

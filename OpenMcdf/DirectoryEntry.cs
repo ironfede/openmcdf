@@ -198,7 +198,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
     [ExcludeFromCodeCoverage]
     public override string ToString() => $"{Id}: \"{NameString}\"";
 
-    public DirectoryEntry Clone()
+    public DirectoryEntry CloneWithNoStream()
     {
         DirectoryEntry clone = new()
         {
