@@ -32,7 +32,7 @@ trim_trailing_whitespace = true
 
 # New line preferences
 end_of_line = crlf
-insert_final_newline =true
+insert_final_newline = true
 
 #### .NET Coding Conventions ####
 
@@ -340,6 +340,7 @@ dotnet_style_require_accessibility_modifiers = for_non_interface_members:none
 dotnet_style_allow_multiple_blank_lines_experimental = true:none
 dotnet_style_allow_statement_immediately_after_block_experimental = true:none
 dotnet_code_quality_unused_parameters = all:suggestion
+dotnet_code_quality.CA1711.allowed_suffixes = Flag|Flags
 dotnet_style_parentheses_in_arithmetic_binary_operators = never_if_unnecessary:none
 dotnet_style_parentheses_in_other_binary_operators = never_if_unnecessary:none
 dotnet_style_parentheses_in_relational_binary_operators = never_if_unnecessary:none
