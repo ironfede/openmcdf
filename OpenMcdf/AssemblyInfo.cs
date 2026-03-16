@@ -19,3 +19,7 @@ using System.Runtime.InteropServices;
 #else
 [assembly: InternalsVisibleTo("OpenMcdf.Tests")]
 #endif
+
+#if NET8_0_OR_GREATER
+[module: SkipLocalsInit]
+#endif
