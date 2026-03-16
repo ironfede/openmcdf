@@ -152,7 +152,6 @@ internal sealed class Header : IEquatable<Header?>
         code.Add(FatSectorCount);
         code.Add(FirstDirectorySectorId);
         code.Add(TransactionSignature);
-        code.Add(FatSectorCount);
         code.Add(FirstMiniFatSectorId);
         code.Add(MiniFatSectorCount);
         code.Add(FirstDifatSectorId);
