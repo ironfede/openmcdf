@@ -264,7 +264,7 @@ internal abstract class PropertyFactory
         {
             long temp = br.ReadInt64();
 
-            long tmp = temp /= 10000;
+            long tmp = temp / 10000;
 
             return tmp;
         }
