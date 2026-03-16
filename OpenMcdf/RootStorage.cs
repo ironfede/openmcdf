@@ -349,8 +349,57 @@ public sealed class RootStorage : Storage, IDisposable
     {
         // Validate will throw on error, return a bool for test purposes
         Context.Validate();
+
+#if NET10_0_OR_GREATER
+        ValidateOrphans();
+#endif
+
         return true;
     }
+
+#if NET10_0_OR_GREATER
+    [ExcludeFromCodeCoverage]
+    IEnumerable<DirectoryEntry> EnumerateDirectoryEntriesRecursively()
+    {
+        this.ThrowIfDisposed(Context.IsDisposed);
+
+        var stack = new Stack<Storage>();
+        stack.Push(this);
+
+        while (stack.Count > 0)
+        {
+            Storage storage = stack.Pop();
+
+            foreach (DirectoryEntry entry in storage.EnumerateDirectoryEntries())
+            {
+                yield return entry;
+
+                if (entry.EntryType is EntryType.Storage)
+                {
+                    Storage childStorage = storage.OpenStorage(entry.NameString);
+                    stack.Push(childStorage);
+                }
+            }
+        }
+    }
+
+    [ExcludeFromCodeCoverage]
+    Dictionary<StorageType, int> GetRecursiveStorageTypeCounts() => EnumerateDirectoryEntriesRecursively()
+        .CountBy(e => e.Type)
+        .ToDictionary();
+
+    [ExcludeFromCodeCoverage]
+    void ValidateOrphans()
+    {
+        Dictionary<StorageType, int> directoryEntryCounts = Context.DirectoryEntries.GetStorageTypeCounts();
+        Dictionary<StorageType, int> entryInfoCounts = GetRecursiveStorageTypeCounts();
+
+        if (directoryEntryCounts.GetValueOrDefault(StorageType.Stream) != entryInfoCounts.GetValueOrDefault(StorageType.Stream))
+            throw new FileFormatException("Orphaned streams.");
+        if (directoryEntryCounts.GetValueOrDefault(StorageType.Storage) != entryInfoCounts.GetValueOrDefault(StorageType.Storage))
+            throw new FileFormatException("Orphaned storages.");
+    }
+#endif
 
     [ExcludeFromCodeCoverage]
     internal void WriteTrace(TextWriter writer) => Context.WriteTrace(writer);

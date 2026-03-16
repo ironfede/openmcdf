@@ -111,7 +111,7 @@ public class Storage : ContextBase
             .Select(e => e.ToEntryInfo(path));
     }
 
-    IEnumerable<DirectoryEntry> EnumerateDirectoryEntries()
+    internal IEnumerable<DirectoryEntry> EnumerateDirectoryEntries()
     {
         using DirectoryTreeEnumerator treeEnumerator = new(Context.DirectoryEntries, directoryEntry);
         while (treeEnumerator.MoveNext())
