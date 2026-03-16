@@ -118,7 +118,7 @@ public sealed class RootStorage : Storage, IDisposable
         if (stream is null)
             throw new ArgumentNullException(nameof(stream));
 
-        stream.ThrowIfNotSeekable();
+        stream.ThrowIfSeekingNotSupported();
         ThrowIfInvalid(version);
 
         stream.SetLength(0);
@@ -195,7 +195,7 @@ public sealed class RootStorage : Storage, IDisposable
         if (stream is null)
             throw new ArgumentNullException(nameof(stream));
 
-        stream.ThrowIfNotSeekable();
+        stream.ThrowIfSeekingNotSupported();
         stream.Position = 0;
 
         IOContextFlags contextFlags = ToIOContextFlags(flags);
