@@ -295,11 +295,13 @@ public sealed class StorageTests
         {
             rootStorage.Delete("Storage");
             Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
+            rootStorage.Validate();
         }
 
         using (var rootStorage = RootStorage.Open(memoryStream))
         {
             Assert.AreEqual(0, rootStorage.EnumerateEntries().Count());
+            rootStorage.Validate();
         }
     }
 

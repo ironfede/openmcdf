@@ -140,12 +140,30 @@ internal sealed class DirectoryEntries : ContextBase, IDisposable
     }
 
     [ExcludeFromCodeCoverage]
+    public IEnumerable<DirectoryEntry> Enumerate()
+    {
+        using DirectoryEntryEnumerator enumerator = new(this);
+        while (enumerator.MoveNext())
+        {
+            yield return enumerator.Current;
+        }
+    }
+
+#if NET10_0_OR_GREATER
+    [ExcludeFromCodeCoverage]
+    public Dictionary<StorageType, int> GetStorageTypeCounts() => Enumerate()
+        .CountBy(e => e.Type)
+        .ToDictionary();
+#endif
+
+    [ExcludeFromCodeCoverage]
     public void Validate()
     {
         DirectoryTree tree = new(this, RootEntry);
         tree.Validate();
     }
 
+    [ExcludeFromCodeCoverage]
     public void WriteTrace(TextWriter writer)
     {
         DirectoryTree tree = new(this, RootEntry);
