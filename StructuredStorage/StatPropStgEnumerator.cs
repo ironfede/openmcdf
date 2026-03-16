@@ -16,12 +16,12 @@ internal sealed class StatPropStgEnumerator : IEnumerator<STATPROPSTG>
 
     object IEnumerator.Current => propStat;
 
-    public unsafe StatPropStgEnumerator(IPropertyStorage propertyStorage)
+    public StatPropStgEnumerator(IPropertyStorage propertyStorage)
     {
         propertyStorage.Enum(out enumerator);
     }
 
-    public unsafe void Dispose()
+    public void Dispose()
     {
         FreeName();
 

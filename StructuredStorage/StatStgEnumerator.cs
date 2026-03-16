@@ -22,7 +22,7 @@ internal sealed class StatStgEnumerator : IEnumerator<STATSTG>
         storage.EnumElements(0, null, 0, out enumerator);
     }
 
-    public unsafe void Dispose()
+    public void Dispose()
     {
         FreeName();
 
