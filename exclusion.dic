@@ -5,6 +5,7 @@ CFB
 changelog
 CLSID
 codepage
+CY
 defragmentation
 depersist
 DIFAT
@@ -13,11 +14,14 @@ endian
 enqueuing
 enum
 enums
+FILETIME
 foreach
 Java
 Jeremy
 ironfede
 LINQ
+LPSTR
+LPWSTR
 MCDF
 metadata
 namespace
@@ -31,6 +35,7 @@ sublicense
 toolbar
 typelib
 Unicode
+UTF
 usings
 versioned
 virtualization
