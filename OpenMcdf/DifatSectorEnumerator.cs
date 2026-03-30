@@ -41,20 +41,28 @@ internal sealed class DifatSectorEnumerator : ContextBase, IEnumerator<Sector>
             index = uint.MaxValue;
             difatSectorId = Context.Header.FirstDifatSectorId;
         }
+        else if (difatSectorId != SectorType.EndOfChain)
+        {
+            CfbBinaryReader reader = Context.Reader;
+            reader.Position = current.EndPosition - sizeof(uint);
+            difatSectorId = reader.ReadUInt32();
+            if (difatSectorId != SectorType.EndOfChain)
+                ThrowHelper.ThrowIfSectorIdIsInvalid(difatSectorId);
+        }
 
-        uint nextIndex = index + 1;
         if (difatSectorId == SectorType.EndOfChain)
         {
             index = uint.MaxValue;
             current = Sector.EndOfChain;
-            difatSectorId = SectorType.EndOfChain;
             return false;
         }
 
+        uint nextIndex = index + 1;
+        if (nextIndex >= Context.Header.DifatSectorCount)
+            throw new FileFormatException("DIFAT chain index is greater than the sector count.");
+
         current = new(difatSectorId, Context.SectorSize);
         index = nextIndex;
-        Context.Reader.Position = current.EndPosition - sizeof(uint);
-        difatSectorId = Context.Reader.ReadUInt32();
         return true;
     }
 
