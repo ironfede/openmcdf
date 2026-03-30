@@ -1,5 +1,29 @@
 # OpenMcdf Changelog
 
+## 3.1.2
+
+* Validate directory tree is sorted
+* Avoid inexact reads of mini FAT sectors
+* Validate DIFAT sector chain enumeration
+
+## 3.1.1
+
+* Use ConcurrentDictionary.GetOrAdd for FAT sector cache
+* Fix invalid directory exception message
+* Fix temporary consolidation stream disposal
+* Fix recursive deletion logic
+* Fix SeekOrigin.End behavior
+* Leave stream open when saving OlePropertiesContainer
+* Add Initial Avalonia Structured Storage Explorer
+* OLE API fixes
+* OLE serialization fixes
+* Fix HexEditor rendering on macOS
+* Clear removed directory entries
+* Improve switching to and from mini FAT stream
+* Improve stream disposal robustness
+* Improve stream argument exception message
+* Enable SkipLocalsInit
+
 ## 3.1.0
 
 * Add net10.0 TFM
