@@ -73,9 +73,9 @@ internal sealed class MiniFat : ContextBase, IEnumerable<FatEntry>, IDisposable
         if (!ok)
             return false;
 
-        CfbBinaryReader reader = Context.Reader;
-        reader.Position = fatChainEnumerator.CurrentSector.Position;
-        reader.Read(cachedSectorBuffer, 0, cachedSectorBuffer.Length);
+        Stream stream = Context.Stream;
+        stream.Position = fatChainEnumerator.CurrentSector.Position;
+        stream.ReadExactly(cachedSectorBuffer, 0, cachedSectorBuffer.Length);
         return true;
     }
 
