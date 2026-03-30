@@ -44,7 +44,8 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         }
 
         current = stack.Pop();
-        if (directories.TryGetDictionaryEntry(current.RightSiblingId, out DirectoryEntry? rightSibling))
+        DirectoryEntry? rightSibling = directories.TryGetSibling(current, SiblingType.Right, false);
+        if (rightSibling is not null)
             PushLeft(rightSibling);
 
         return true;
@@ -67,7 +68,7 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         while (node is not null)
         {
             stack.Push(node);
-            directories.TryGetDictionaryEntry(node.LeftSiblingId, out node);
+            node = directories.TryGetSibling(node, SiblingType.Left, false);
         }
     }
 }
