@@ -87,7 +87,7 @@
             // openFileDialog
             // 
             openFileDialog.Filter = resources.GetString("openFileDialog.Filter");
-            openFileDialog.FilterIndex = 8;
+            openFileDialog.FilterIndex = 9;
             openFileDialog.Title = "Open Structured Storage file";
             // 
             // treeView
