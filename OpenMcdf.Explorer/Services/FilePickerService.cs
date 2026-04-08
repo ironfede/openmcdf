@@ -27,6 +27,10 @@ internal sealed class FilePickerService : IFilePickerService
                 {
                     Patterns = new[] { "*.msi" },
                 },
+                new("Hancom Office files (*.hwp)")
+                {
+                    Patterns = new[] { "*.hwp" },
+                },
                 new("Office files (*.doc;*.ppt;*.pub;*.xls)")
                 {
                     Patterns = new[] { "*.xls", "*.doc", "*.ppt", "*.pub" },
@@ -49,7 +53,7 @@ internal sealed class FilePickerService : IFilePickerService
                 },
                 new("All Structured Storage files")
                 {
-                    Patterns = new[] { "Thumbs.db", "*.aaf", "*.cfs", "*.doc", "*.msg", "*.msi", "*.ppt", "*.pub", "*.suo", "*.xls" },
+                    Patterns = new[] { "Thumbs.db", "*.aaf", "*.cfs", "*.doc", "*.hwp", "*.msg", "*.msi", "*.ppt", "*.pub", "*.suo", "*.xls" },
                 },
                 new("All files (*.*)")
                 {
