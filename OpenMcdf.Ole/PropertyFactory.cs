@@ -34,6 +34,7 @@ internal abstract class PropertyFactory
             VTPropertyType.VT_DECIMAL => new VT_DECIMAL_Property(vType, isVariant),
             VTPropertyType.VT_BOOL => new VT_BOOL_Property(vType, isVariant),
             VTPropertyType.VT_EMPTY => new VT_EMPTY_Property(vType, isVariant),
+            VTPropertyType.VT_NULL => new VT_NULL_Property(vType, isVariant),
             VTPropertyType.VT_VARIANT_VECTOR => new VT_VariantVector(vType, codePage, isVariant, this, propertyIdentifier),
             VTPropertyType.VT_CF => new VT_CF_Property(vType, isVariant),
             VTPropertyType.VT_BLOB_OBJECT or VTPropertyType.VT_BLOB => new VT_BLOB_Property(vType, isVariant),
@@ -54,6 +55,15 @@ internal abstract class PropertyFactory
         {
         }
 
+        public override object? ReadScalarValue(BinaryReader br) => null;
+
+        public override void WriteScalarValue(BinaryWriter bw, object pValue)
+        {
+        }
+    }
+
+    private sealed class VT_NULL_Property(VTPropertyType vType, bool isVariant) : TypedPropertyValue<object>(vType, isVariant)
+    {
         public override object? ReadScalarValue(BinaryReader br) => null;
 
         public override void WriteScalarValue(BinaryWriter bw, object pValue)
