@@ -11,6 +11,7 @@ public class PropertyFactoryTests
     public static IEnumerable<object[]> SupportedScalarRoundTripCases()
     {
         yield return new object[] { VTPropertyType.VT_EMPTY, null! };
+        yield return new object[] { VTPropertyType.VT_NULL, null! };
         yield return new object[] { VTPropertyType.VT_I1, (sbyte)-12 };
         yield return new object[] { VTPropertyType.VT_I2, (short)-1234 };
         yield return new object[] { VTPropertyType.VT_I4, -1234567 };
