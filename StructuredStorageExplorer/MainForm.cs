@@ -53,7 +53,7 @@ public partial class MainForm : Form
         {
             rootStorage?.Dispose();
         }
-        catch (IOException ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
             MessageBox.Show($"Error closing file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
@@ -91,7 +91,7 @@ public partial class MainForm : Form
 
             RefreshTree();
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
             MessageBox.Show($"Error creating file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -189,7 +189,7 @@ public partial class MainForm : Form
                 using FileStream fs = new(exportFileDialog.FileName, FileMode.CreateNew, FileAccess.ReadWrite);
                 provider.CopyTo(fs);
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
             {
                 MessageBox.Show($"Error saving file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -208,7 +208,7 @@ public partial class MainForm : Form
             parent.Delete(selection.EntryInfo.Name);
             RefreshTree();
         }
-        catch (IOException ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
             MessageBox.Show($"Error removing entry: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
@@ -235,7 +235,7 @@ public partial class MainForm : Form
         {
             rootStorage.Commit();
         }
-        catch (IOException ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
             MessageBox.Show($"Error saving file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
@@ -255,7 +255,7 @@ public partial class MainForm : Form
             Storage storage = selection.Parent?.OpenStorage(selection.EntryInfo.Name) ?? rootStorage;
             storage.CreateStream(addEntryDialog.Text);
         }
-        catch (IOException ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
             MessageBox.Show($"Error creating stream: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
@@ -277,7 +277,7 @@ public partial class MainForm : Form
             Storage storage = selection.Parent?.OpenStorage(selection.EntryInfo.Name) ?? rootStorage;
             storage.CreateStorage(addEntryDialog.Text);
         }
-        catch (IOException ex)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
             MessageBox.Show($"Error creating storage: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
@@ -298,7 +298,7 @@ public partial class MainForm : Form
             using FileStream stream = File.OpenRead(importFileDialog.FileName);
             provider.CopyFrom(stream);
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
         {
             MessageBox.Show($"Error creating storage: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
@@ -324,7 +324,7 @@ public partial class MainForm : Form
             {
                 LoadFile(openFileDialog.FileName);
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or FileFormatException)
             {
                 MessageBox.Show($"Cannot open file: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

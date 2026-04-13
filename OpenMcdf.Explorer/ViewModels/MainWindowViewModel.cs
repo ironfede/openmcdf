@@ -191,7 +191,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
             Storage childStorage = selectedNode.Storage!.CreateStorage(name);
             selectedNode.AddChildStorage(childStorage);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileFormatException or IOException or UnauthorizedAccessException)
         {
             await dialogService.ShowErrorDialogAsync($"Error adding storage: {ex.Message}");
         }
@@ -212,7 +212,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
             using CfbStream stream = selectedNode.Storage!.CreateStream(name);
             selectedNode.AddChildStream(stream.EntryInfo);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileFormatException or IOException or UnauthorizedAccessException)
         {
             await dialogService.ShowErrorDialogAsync($"Error adding stream: {ex.Message}");
         }
@@ -250,7 +250,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
             node.Parent!.RemoveChild(entryName);
             await SetSelectedNodeAsync(node.Parent);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileFormatException or IOException or UnauthorizedAccessException)
         {
             await dialogService.ShowErrorDialogAsync($"Error removing entry: {ex.Message}");
         }
@@ -282,7 +282,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
             // Reload the hex view
             OpenStreamForNode(selectedNode);
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is FileFormatException or IOException or UnauthorizedAccessException)
         {
             await dialogService.ShowErrorDialogAsync($"Error importing data: {ex.Message}");
         }
