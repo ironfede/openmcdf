@@ -11,7 +11,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
 {
     private readonly MiniFatEnumerator miniFatEnumerator;
     private uint startId;
-    private bool start = true;
+    private bool started = false;
     uint index = uint.MaxValue;
     private uint current = uint.MaxValue;
     private long length = -1;
@@ -40,11 +40,14 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
     public MiniSector CurrentSector => new(Current, Context.MiniSectorSize);
 
     /// <inheritdoc/>
-    public uint Current => index switch
+    public uint Current
     {
-        uint.MaxValue => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
-        _ => current,
-    };
+        get
+        {
+            ThrowHelper.ThrowIfEnumerationNotStarted(started);
+            return current;
+        }
+    }
 
     /// <inheritdoc/>
     object IEnumerator.Current => Current;
@@ -52,9 +55,9 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
     /// <inheritdoc/>
     public bool MoveNext()
     {
-        if (start)
+        if (!started)
         {
-            start = false;
+            started = true;
             index = 0;
             current = startId;
         }
@@ -112,7 +115,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
         if (index < this.index)
             Reset();
 
-        while (start || this.index < index)
+        while (!started || this.index < index)
         {
             if (!MoveNext())
                 return false;
@@ -222,7 +225,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
     /// <inheritdoc/>
     public void Reset()
     {
-        start = true;
+        started = false;
         index = uint.MaxValue;
         current = uint.MaxValue;
         slow = uint.MaxValue;

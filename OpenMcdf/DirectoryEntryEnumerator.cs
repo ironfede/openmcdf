@@ -8,7 +8,7 @@ namespace OpenMcdf;
 internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
 {
     private readonly DirectoryEntries directories;
-    private bool start = true;
+    private bool started = false;
     private uint index = uint.MaxValue;
     private DirectoryEntry? current;
 
@@ -23,11 +23,14 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
     }
 
     /// <inheritdoc/>
-    public DirectoryEntry Current => current switch
+    public DirectoryEntry Current
     {
-        null => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
-        _ => current,
-    };
+        get
+        {
+            ThrowHelper.ThrowIfEnumerationNotStarted(started);
+            return current!;
+        }
+    }
 
     /// <inheritdoc/>
     object IEnumerator.Current => Current;
@@ -35,9 +38,9 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
     /// <inheritdoc/>
     public bool MoveNext()
     {
-        if (start)
+        if (!started)
         {
-            start = false;
+            started = true;
             index = uint.MaxValue;
         }
 
@@ -55,7 +58,7 @@ internal sealed class DirectoryEntryEnumerator : IEnumerator<DirectoryEntry>
     /// <inheritdoc/>
     public void Reset()
     {
-        start = true;
+        started = false;
         current = null;
         index = uint.MaxValue;
     }

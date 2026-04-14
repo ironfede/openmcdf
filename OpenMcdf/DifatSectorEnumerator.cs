@@ -7,7 +7,7 @@ namespace OpenMcdf;
 /// </summary>
 internal sealed class DifatSectorEnumerator : ContextBase, IEnumerator<Sector>
 {
-    bool start = true;
+    bool started = false;
     uint index = uint.MaxValue;
     Sector current = Sector.EndOfChain;
     private uint difatSectorId = SectorType.EndOfChain;
@@ -23,11 +23,14 @@ internal sealed class DifatSectorEnumerator : ContextBase, IEnumerator<Sector>
     }
 
     /// <inheritdoc/>
-    public Sector Current => current.Id switch
+    public Sector Current
     {
-        SectorType.EndOfChain => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
-        _ => current,
-    };
+        get
+        {
+            ThrowHelper.ThrowIfEnumerationNotStarted(started);
+            return current;
+        }
+    }
 
     /// <inheritdoc/>
     object IEnumerator.Current => Current;
@@ -35,9 +38,9 @@ internal sealed class DifatSectorEnumerator : ContextBase, IEnumerator<Sector>
     /// <inheritdoc/>
     public bool MoveNext()
     {
-        if (start)
+        if (!started)
         {
-            start = false;
+            started = true;
             index = uint.MaxValue;
             difatSectorId = Context.Header.FirstDifatSectorId;
         }
@@ -71,13 +74,13 @@ internal sealed class DifatSectorEnumerator : ContextBase, IEnumerator<Sector>
         if (index >= Context.Header.DifatSectorCount)
             return false;
 
-        if (start && !MoveNext())
+        if (!started && !MoveNext())
             return false;
 
         if (index < this.index)
             Reset();
 
-        while (start || this.index < index)
+        while (!started || this.index < index)
         {
             if (!MoveNext())
                 return false;
@@ -89,7 +92,7 @@ internal sealed class DifatSectorEnumerator : ContextBase, IEnumerator<Sector>
     /// <inheritdoc/>
     public void Reset()
     {
-        start = true;
+        started = false;
         index = uint.MaxValue;
         current = Sector.EndOfChain;
         difatSectorId = SectorType.EndOfChain;
@@ -125,7 +128,7 @@ internal sealed class DifatSectorEnumerator : ContextBase, IEnumerator<Sector>
 
         Context.Fat[newDifatSector.Id] = SectorType.Difat;
 
-        start = false;
+        started = true;
         index = header.DifatSectorCount - 1;
         current = newDifatSector;
         difatSectorId = SectorType.EndOfChain;

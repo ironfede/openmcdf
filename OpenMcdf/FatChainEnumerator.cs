@@ -12,7 +12,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
     private readonly Fat fat;
     private readonly FatEnumerator fatEnumerator;
     private uint startId;
-    private bool start = true;
+    private bool started = false;
     private uint index = uint.MaxValue;
     private uint current = uint.MaxValue;
     private long length = -1;
@@ -38,21 +38,24 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
     public Sector CurrentSector => new(current, fat.Context.SectorSize);
 
     /// <inheritdoc/>
-    public uint Current => index switch
+    public uint Current
     {
-        uint.MaxValue => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
-        _ => current,
-    };
+        get
+        {
+            ThrowHelper.ThrowIfEnumerationNotStarted(started);
+            return current;
+        }
+    }
 
     /// <inheritdoc/>
     object IEnumerator.Current => Current;
 
-    public bool IsAt(uint index) => !start && index == this.index;
+    public bool IsAt(uint index) => started && index == this.index;
 
     /// <inheritdoc/>
     public bool MoveNext()
     {
-        if (start)
+        if (!started)
         {
             if (startId is SectorType.EndOfChain or SectorType.Free)
             {
@@ -63,7 +66,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
 
             index = 0;
             current = startId;
-            start = false;
+            started = true;
             slow = uint.MaxValue;
             return true;
         }
@@ -115,7 +118,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
         if (index < this.index)
             Reset();
 
-        while (start || this.index < index)
+        while (!started || this.index < index)
         {
             if (!MoveNext())
                 return false;
@@ -251,7 +254,7 @@ internal sealed class FatChainEnumerator : IEnumerator<uint>
     public void Reset(uint startSectorId)
     {
         startId = startSectorId;
-        start = true;
+        started = false;
         index = uint.MaxValue;
         current = uint.MaxValue;
         slow = uint.MaxValue;
