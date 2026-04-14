@@ -15,7 +15,13 @@ internal sealed class PropertySet
         long currPos = br.BaseStream.Position;
 
         // Read the code page - this should always be present
-        int codePageOffset = (int)(propertySetOffset + PropertyIdentifierAndOffsets.First(pio => pio.PropertyIdentifier == SpecialPropertyIdentifiers.CodePage).Offset);
+        PropertyIdentifierAndOffset? codePageProperty = PropertyIdentifierAndOffsets.FirstOrDefault(pio => pio.PropertyIdentifier == SpecialPropertyIdentifiers.CodePage);
+        if (codePageProperty is null)
+        {
+            throw new FileFormatException("Required CodePage property not present");
+        }
+
+        int codePageOffset = (int)(propertySetOffset + codePageProperty.Offset);
         br.BaseStream.Seek(codePageOffset, SeekOrigin.Begin);
 
         var vType = (VTPropertyType)br.ReadUInt16();
