@@ -12,6 +12,11 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
     private readonly Stack<DirectoryEntry> stack = new();
     DirectoryEntry? current;
 
+    // Brent's cycle detection algorithm
+    uint cycleLength = 1;
+    uint power = 1;
+    uint slowId = StreamId.NoStream;
+
     internal DirectoryTreeEnumerator(DirectoryEntries directories, DirectoryEntry root)
     {
         this.directories = directories;
@@ -44,6 +49,19 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
         }
 
         current = stack.Pop();
+
+        if (current.Id == slowId && slowId != StreamId.NoStream)
+            throw new FileFormatException("Directory tree contains a loop.");
+
+        if (cycleLength == power)
+        {
+            cycleLength = 0;
+            power *= 2;
+            slowId = current.Id;
+        }
+
+        cycleLength++;
+
         DirectoryEntry? rightSibling = directories.TryGetSibling(current, SiblingType.Right, false);
         if (rightSibling is not null)
             PushLeft(rightSibling);
@@ -56,6 +74,9 @@ internal sealed class DirectoryTreeEnumerator : IEnumerator<DirectoryEntry>
     {
         current = null;
         stack.Clear();
+        cycleLength = 1;
+        power = 1;
+        slowId = StreamId.NoStream;
         if (root.ChildId != StreamId.NoStream)
         {
             DirectoryEntry child = directories.GetDictionaryEntry(root.ChildId);
