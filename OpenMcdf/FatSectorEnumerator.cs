@@ -8,7 +8,7 @@ namespace OpenMcdf;
 internal sealed class FatSectorEnumerator : ContextBase, IEnumerator<Sector>
 {
     private readonly DifatSectorEnumerator difatSectorEnumerator;
-    private bool start = true;
+    private bool started = false;
     private uint index = uint.MaxValue;
     private Sector current = Sector.EndOfChain;
 
@@ -30,8 +30,7 @@ internal sealed class FatSectorEnumerator : ContextBase, IEnumerator<Sector>
     {
         get
         {
-            if (current.Id == SectorType.EndOfChain)
-                throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
+            ThrowHelper.ThrowIfEnumerationNotStarted(started);
             return current;
         }
     }
@@ -42,9 +41,9 @@ internal sealed class FatSectorEnumerator : ContextBase, IEnumerator<Sector>
     /// <inheritdoc/>
     public bool MoveNext()
     {
-        if (start)
+        if (!started)
         {
-            start = false;
+            started = true;
             index = uint.MaxValue;
         }
 
@@ -59,7 +58,7 @@ internal sealed class FatSectorEnumerator : ContextBase, IEnumerator<Sector>
     {
         ThrowHelper.ThrowIfSectorIdIsInvalid(index);
 
-        start = false;
+        started = true;
 
         if (index == this.index)
             return true;
@@ -106,7 +105,7 @@ internal sealed class FatSectorEnumerator : ContextBase, IEnumerator<Sector>
     /// <inheritdoc/>
     public void Reset()
     {
-        start = true;
+        started = false;
         index = uint.MaxValue;
         current = Sector.EndOfChain;
         difatSectorEnumerator.Reset();

@@ -8,7 +8,7 @@ namespace OpenMcdf;
 internal sealed class MiniFatEnumerator : ContextBase, IEnumerator<FatEntry>
 {
     private readonly FatChainEnumerator fatChainEnumerator;
-    private bool start = true;
+    private bool started = false;
     private uint index = uint.MaxValue;
     private uint value = uint.MaxValue;
 
@@ -24,18 +24,24 @@ internal sealed class MiniFatEnumerator : ContextBase, IEnumerator<FatEntry>
         fatChainEnumerator.Dispose();
     }
 
-    public MiniSector CurrentSector => index switch
+    public MiniSector CurrentSector
     {
-        uint.MaxValue => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
-        _ => new(value, Context.MiniSectorSize),
-    };
+        get
+        {
+            ThrowHelper.ThrowIfEnumerationNotStarted(started);
+            return new(value, Context.MiniSectorSize);
+        }
+    }
 
     /// <inheritdoc/>
-    public FatEntry Current => index switch
+    public FatEntry Current
     {
-        uint.MaxValue => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
-        _ => new(index, value),
-    };
+        get
+        {
+            ThrowHelper.ThrowIfEnumerationNotStarted(started);
+            return new(index, value);
+        }
+    }
 
     /// <inheritdoc/>
     object IEnumerator.Current => Current;
@@ -43,9 +49,9 @@ internal sealed class MiniFatEnumerator : ContextBase, IEnumerator<FatEntry>
     /// <inheritdoc/>
     public bool MoveNext()
     {
-        if (start)
+        if (!started)
         {
-            start = false;
+            started = true;
             return MoveTo(0);
         }
 
@@ -90,7 +96,7 @@ internal sealed class MiniFatEnumerator : ContextBase, IEnumerator<FatEntry>
     public void Reset()
     {
         fatChainEnumerator.Reset(Context.Header.FirstMiniFatSectorId);
-        start = true;
+        started = false;
         index = uint.MaxValue;
         value = uint.MaxValue;
     }

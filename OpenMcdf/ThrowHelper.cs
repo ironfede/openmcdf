@@ -70,4 +70,10 @@ internal static class ThrowHelper
         if (!StreamId.IsValidInPractice(value))
             throw new FileFormatException($"Invalid stream ID: {value:X8}.");
     }
+
+    public static void ThrowIfEnumerationNotStarted(bool started)
+    {
+        if (!started)
+            throw new InvalidOperationException("Enumeration has not started. Call MoveNext.");
+    }
 }

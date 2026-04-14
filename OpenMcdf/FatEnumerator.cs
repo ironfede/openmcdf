@@ -9,7 +9,7 @@ namespace OpenMcdf;
 internal sealed class FatEnumerator : IEnumerator<FatEntry>
 {
     readonly Fat fat;
-    bool start = true;
+    bool started = false;
     uint index = uint.MaxValue;
     uint value = uint.MaxValue;
 
@@ -24,11 +24,14 @@ internal sealed class FatEnumerator : IEnumerator<FatEntry>
     }
 
     /// <inheritdoc/>
-    public FatEntry Current => index switch
+    public FatEntry Current
     {
-        uint.MaxValue => throw new InvalidOperationException("Enumeration has not started. Call MoveNext."),
-        _ => new(index, value),
-    };
+        get
+        {
+            ThrowHelper.ThrowIfEnumerationNotStarted(started);
+            return new(index, value);
+        }
+    }
 
     /// <inheritdoc/>
     object IEnumerator.Current => Current;
@@ -36,9 +39,9 @@ internal sealed class FatEnumerator : IEnumerator<FatEntry>
     /// <inheritdoc/>
     public bool MoveNext()
     {
-        if (start)
+        if (!started)
         {
-            start = false;
+            started = true;
             return MoveTo(0);
         }
 
@@ -53,7 +56,7 @@ internal sealed class FatEnumerator : IEnumerator<FatEntry>
     {
         ThrowHelper.ThrowIfSectorIdIsInvalid(index);
 
-        start = false;
+        started = true;
         if (this.index == index)
             return true;
 
@@ -83,7 +86,7 @@ internal sealed class FatEnumerator : IEnumerator<FatEntry>
     /// <inheritdoc/>
     public void Reset()
     {
-        start = true;
+        started = false;
         index = uint.MaxValue;
         value = uint.MaxValue;
     }
