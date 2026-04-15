@@ -370,8 +370,8 @@ public sealed class StorageTests
             Storage storage = rootStorage.CreateStorage("Storage");
 
             Assert.AreEqual(Guid.Empty, storage.CLSID);
-            Assert.AreNotEqual(FileTime.UtcZero, storage.CreationTime);
-            Assert.AreNotEqual(FileTime.UtcZero, storage.ModifiedTime);
+            Assert.AreNotEqual(FileTime.ZeroUtc, storage.CreationTime);
+            Assert.AreNotEqual(FileTime.ZeroUtc, storage.ModifiedTime);
             Assert.AreEqual(0U, storage.StateBits);
 
             storage.CLSID = guid;
