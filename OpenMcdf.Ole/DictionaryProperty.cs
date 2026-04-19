@@ -63,7 +63,10 @@ internal sealed class DictionaryProperty : IProperty
             nameBytes = br.ReadBytes(length);
         }
 
-        string entryName = Encoding.GetEncoding(codePage).GetString(nameBytes).Trim('\0');
+        int nullByteCount = this.codePage == CodePages.WinUnicode ? 2 : 1;
+        int nonNullSize = Math.Max(0, nameBytes.Length - nullByteCount);
+
+        string entryName = Encoding.GetEncoding(codePage).GetString(nameBytes, 0, nonNullSize);
         entries!.Add(propertyIdentifier, entryName);
     }
 
