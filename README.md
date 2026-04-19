@@ -1,16 +1,21 @@
+---
+title: OpenMcdf
+description: OpenMcdf is a free, MPL licensed, Structured Storage library for .NET.
+tags: [ "Structured Storage", "Compound Document", "Compound File Binary Format", ".NET", "COM", "OLE", "CFB" ]
+---
+
 ![GitHub Actions](https://github.com/ironfede/openmcdf/actions/workflows/dotnet-desktop.yml/badge.svg)
-![CodeQL](https://github.com/ironfede/openmcdf/actions/workflows/codeql.yml/badge.svg)
+[![CodeQL](https://github.com/openmcdf/openmcdf/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/openmcdf/openmcdf/actions/workflows/github-code-scanning/codeql)
 [![OpenMcdf NuGet](https://img.shields.io/nuget/v/OpenMcdf?label=OpenMcdf%20NuGet)](https://www.nuget.org/packages/OpenMcdf)
 [![OpenMcdf.Ole NuGet](https://img.shields.io/nuget/vpre/OpenMcdf.Ole?label=OpenMcdf.Ole%20NuGet)](https://www.nuget.org/packages/OpenMcdf.Ole)
 [![NuGet Downloads](https://img.shields.io/nuget/dt/OpenMcdf)](https://www.nuget.org/packages/OpenMcdf)
-
-# OpenMcdf
 
 OpenMcdf is a fully .NET / C# library to manipulate [Compound File Binary File Format](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-cfb/53989ce4-7b05-4f8d-829b-d08d6148375b)
 files, also known as [Structured Storage](https://learn.microsoft.com/en-us/windows/win32/stg/structured-storage-start-page).
 
 Compound files include multiple streams of information (document summary, user data) in a single container, and is used
 as the bases for many different file formats:
+
 - Advanced Authoring Format (.aaf)
 - Microsoft Office (.doc, .xls, .ppt)
 - Outlook messages (.msg)
@@ -18,6 +23,7 @@ as the bases for many different file formats:
 - Windows thumbnails cache files (Thumbs.db)
 
 OpenMcdf v3 has a rewritten API and supports:
+
 - An idiomatic dotnet API and exception hierarchy
 - Fast and efficient enumeration and manipulation of storages and streams
 - File sizes up to 16 TB (using major format version 4 with 4096 byte sectors)
