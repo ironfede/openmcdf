@@ -20,6 +20,9 @@
     <Content Include="..\OpenMcdf.Ole.Tests\2custom.doc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\OpenMcdf.Ole.Tests\winUnicodeDictionary.doc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

@@ -10,23 +10,28 @@ namespace OpenMcdf.Benchmarks;
 [MarkdownExporter]
 public class OpenMcdfOleBenchmarks : IDisposable
 {
-    private RootStorage? rootStorage;
+    private RootStorage? rootStorageLpstr;
+    private RootStorage? rootStorageLWpstr;
     private CfbStream? summaryInformationStream;
     private CfbStream? documentSummaryInformationStream;
+    private CfbStream? winUnicodeDocumentSummaryInformationStream;
 
     public void Dispose()
     {
         summaryInformationStream?.Dispose();
         documentSummaryInformationStream?.Dispose();
-        rootStorage?.Dispose();
+        rootStorageLpstr?.Dispose();
+        rootStorageLWpstr?.Dispose();
     }
 
     [GlobalSetup]
     public void GlobalSetup()
     {
-        rootStorage = RootStorage.OpenRead("2custom.doc");
-        summaryInformationStream = rootStorage.OpenStream(PropertySetNames.SummaryInformation);
-        documentSummaryInformationStream = rootStorage.OpenStream(PropertySetNames.DocSummaryInformation);
+        rootStorageLpstr = RootStorage.OpenRead("2custom.doc");
+        rootStorageLWpstr = RootStorage.OpenRead("winUnicodeDictionary.doc");
+        summaryInformationStream = rootStorageLpstr.OpenStream(PropertySetNames.SummaryInformation);
+        documentSummaryInformationStream = rootStorageLpstr.OpenStream(PropertySetNames.DocSummaryInformation);
+        winUnicodeDocumentSummaryInformationStream = rootStorageLWpstr.OpenStream(PropertySetNames.DocSummaryInformation);
     }
 
     [GlobalCleanup]
@@ -37,4 +42,7 @@ public class OpenMcdfOleBenchmarks : IDisposable
 
     [Benchmark]
     public OlePropertiesContainer ReadDocumentSummaryInformation() => new(documentSummaryInformationStream!);
+
+    [Benchmark]
+    public OlePropertiesContainer ReadWinUnicodeDocumentSummaryInformation() => new(winUnicodeDocumentSummaryInformationStream!);
 }
