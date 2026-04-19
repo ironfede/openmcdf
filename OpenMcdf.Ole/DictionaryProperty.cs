@@ -35,10 +35,7 @@ internal sealed class DictionaryProperty : IProperty
 
         if (m > 0)
         {
-            for (int i = 0; i < m; i++)
-            {
-                br.ReadByte();
-            }
+            SkipPadding(br, m);
         }
     }
 
@@ -56,7 +53,7 @@ internal sealed class DictionaryProperty : IProperty
 
             int m = length * 2 % 4;
             if (m > 0)
-                br.ReadBytes(m);
+                SkipPadding(br, m);
         }
         else
         {
@@ -134,5 +131,16 @@ internal sealed class DictionaryProperty : IProperty
             for (int i = 0; i < 4 - m; i++) // padding
                 bw.Write((byte)0);
         }
+    }
+
+    // Read the specified number of passing bytes. Keep this so that we know it's only doing a stack alloc of 1-3 bytes
+    static void SkipPadding(BinaryReader br, int count)
+    {
+#if NETSTANDARD2_0
+        br.ReadBytes(count);
+#else
+        Span<byte> localBuffer = stackalloc byte[count];
+        br.Read(localBuffer);
+#endif
     }
 }
