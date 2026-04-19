@@ -1,0 +1,3 @@
+remote_theme: PrimerPages/jekyll-theme-profile@2.0.0
+plugins:
+  - jekyll-remote-theme
