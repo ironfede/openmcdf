@@ -15,6 +15,7 @@
     <File Path="stylecop.json" />
   </Folder>
   <Project Path="OpenMcdf.Benchmarks/OpenMcdf.Benchmarks.csproj" />
+  <Project Path="OpenMcdf.Ole.Benchmarks/OpenMcdf.Ole.Benchmarks.csproj" />
   <Project Path="OpenMcdf.Ole.Tests/OpenMcdf.Ole.Tests.csproj" />
   <Project Path="OpenMcdf.Ole/OpenMcdf.Ole.csproj" />
   <Project Path="OpenMcdf.Perf/OpenMcdf.Perf.csproj" />
