@@ -135,10 +135,7 @@ internal sealed class Header : IEquatable<Header?>
         FirstDirectorySectorId = SectorType.EndOfChain;
         DirectorySectorCount = 0; // Not used in v3
         FatSectorCount = 0;
-        for (int i = 0; i < Difat.Length; i++)
-        {
-            Difat[i] = SectorType.Free;
-        }
+        Difat.AsSpan().Fill(SectorType.Free);
     }
 
     public override int GetHashCode()
