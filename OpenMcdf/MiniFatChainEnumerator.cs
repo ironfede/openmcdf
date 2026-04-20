@@ -35,7 +35,7 @@ internal sealed class MiniFatChainEnumerator : ContextBase, IEnumerator<uint>
     }
 
     /// <summary>
-    /// Gets the index within the Mini FAT sector chain, or <see cref="uint.MaxValue"/> if the enumeration has not started.
+    /// Gets the current <see cref="MiniSector"/> in the Mini FAT chain, or throws if the enumeration has not started.
     /// </summary>
     public MiniSector CurrentSector => new(Current, Context.MiniSectorSize);
 

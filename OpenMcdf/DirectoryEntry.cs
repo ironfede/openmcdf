@@ -64,7 +64,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
     public uint ChildId { get; set; } = StreamId.NoStream;
 
     /// <summary>
-    /// Gets or sets gUID for storage objects.
+    /// Gets or sets GUID for storage objects.
     /// </summary>
     public Guid CLSID { get; set; }
 
