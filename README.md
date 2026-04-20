@@ -1,10 +1,4 @@
----
-layout: default
-title: OpenMcdf
-description: OpenMcdf is a free, MPL licensed, Structured Storage library for .NET.
-tags: [ "Structured Storage", "Compound Document", "Compound File Binary Format", ".NET", "COM", "OLE", "CFB" ]
-permalink: /
----
+# OpenMcdf
 
 ![GitHub Actions](https://github.com/ironfede/openmcdf/actions/workflows/dotnet-desktop.yml/badge.svg)
 [![CodeQL](https://github.com/openmcdf/openmcdf/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/openmcdf/openmcdf/actions/workflows/github-code-scanning/codeql)
