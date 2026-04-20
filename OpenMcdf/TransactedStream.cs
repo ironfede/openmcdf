@@ -85,7 +85,7 @@ internal sealed class TransactedStream : Stream
 
     public override long Seek(long offset, SeekOrigin origin) => originalStream.Seek(offset, origin);
 
-    public override void SetLength(long value) => throw new NotImplementedException();
+    public override void SetLength(long value) => throw new NotSupportedException();
 
     public override void Write(byte[] buffer, int offset, int count)
     {
