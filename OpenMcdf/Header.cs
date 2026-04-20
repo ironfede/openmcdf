@@ -95,7 +95,7 @@ internal sealed class Header : IEquatable<Header?>
     /// <summary>
     /// Gets or sets a sequence number that is incremented every time the compound file is saved by an implementation that supports file transactions.
     /// </summary>
-    public uint TransactionSignature { get; set; }
+    public uint TransactionSignatureNumber { get; set; }
 
     /// <summary>
     /// Gets or sets this integer field contains the starting sector ID of the mini FAT.
@@ -151,7 +151,7 @@ internal sealed class Header : IEquatable<Header?>
         code.Add(DirectorySectorCount);
         code.Add(FatSectorCount);
         code.Add(FirstDirectorySectorId);
-        code.Add(TransactionSignature);
+        code.Add(TransactionSignatureNumber);
         code.Add(FirstMiniFatSectorId);
         code.Add(MiniFatSectorCount);
         code.Add(FirstDifatSectorId);
@@ -173,7 +173,7 @@ internal sealed class Header : IEquatable<Header?>
             && DirectorySectorCount == other.DirectorySectorCount
             && FatSectorCount == other.FatSectorCount
             && FirstDirectorySectorId == other.FirstDirectorySectorId
-            && TransactionSignature == other.TransactionSignature
+            && TransactionSignatureNumber == other.TransactionSignatureNumber
             && FirstMiniFatSectorId == other.FirstMiniFatSectorId
             && MiniFatSectorCount == other.MiniFatSectorCount
             && FirstDifatSectorId == other.FirstDifatSectorId
