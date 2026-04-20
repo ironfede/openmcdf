@@ -14,11 +14,11 @@
   <PropertyGroup>
     <Version>3.1.2.0</Version>
     <Authors>ironfede,jeremy-visionaid</Authors>
-    <Copyright>Copyright © 2010-2025, Federico Blaseotto, Jeremy Powell</Copyright>
-    <PackageProjectUrl>https://github.com/ironfede/openmcdf</PackageProjectUrl>
+    <Copyright>Copyright © 2010-2026, Federico Blaseotto, Jeremy Powell</Copyright>
+    <PackageProjectUrl>https://openmcdf.github.io/openmcdf/</PackageProjectUrl>
     <PackageIcon>icon.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/ironfede/openmcdf</RepositoryUrl>
+    <RepositoryUrl>https://github.com/openmcdf/openmcdf</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
 
     <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
