@@ -62,7 +62,7 @@ internal sealed class CfbBinaryReader : BinaryReader
         header.DirectorySectorCount = ReadUInt32();
         header.FatSectorCount = ReadUInt32();
         header.FirstDirectorySectorId = ReadUInt32();
-        FillBuffer(4);
+        header.TransactionSignatureNumber = ReadUInt32();
         uint miniStreamCutoffSize = ReadUInt32();
         if (miniStreamCutoffSize != Header.MiniStreamCutoffSize)
             throw new FileFormatException($"Mini stream cutoff size must be {Header.MiniStreamCutoffSize} bytes.");
