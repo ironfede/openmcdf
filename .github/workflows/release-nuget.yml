@@ -1,5 +1,8 @@
 name: Create a (Pre)release on NuGet
 
+permissions:
+  contents: read
+
 on:
   push:
     tags:
