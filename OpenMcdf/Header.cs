@@ -50,7 +50,7 @@ internal sealed class Header : IEquatable<Header?>
     }
 
     /// <summary>
-    /// Gets or sets specifies the sector size of the compound file.
+    /// Gets or sets the sector shift specifying the sector size of the compound file.
     /// </summary>
     public ushort SectorShift
     {
