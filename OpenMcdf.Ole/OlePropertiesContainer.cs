@@ -11,6 +11,7 @@ public enum ContainerType
     GlobalInfo = 4,
     ImageContents = 5,
     ImageInfo = 6,
+    HwpSummaryInfo = 7,
 }
 
 public class OlePropertiesContainer
@@ -297,6 +298,8 @@ public class OlePropertiesContainer
             return ContainerType.ImageInfo;
         else if (fmtId0 == FormatIdentifiers.ImageContents)
             return ContainerType.ImageContents;
+        else if (fmtId0 == FormatIdentifiers.HwpSummaryInformation)
+            return ContainerType.HwpSummaryInfo;
 
         return ContainerType.AppSpecific;
     }
@@ -311,6 +314,7 @@ public class OlePropertiesContainer
             ContainerType.GlobalInfo => FormatIdentifiers.GlobalInfo,
             ContainerType.ImageContents => FormatIdentifiers.ImageContents,
             ContainerType.ImageInfo => FormatIdentifiers.ImageInfo,
+            ContainerType.HwpSummaryInfo => FormatIdentifiers.HwpSummaryInformation,
             _ => FormatIdentifiers.DocSummaryInformation,
         };
     }
