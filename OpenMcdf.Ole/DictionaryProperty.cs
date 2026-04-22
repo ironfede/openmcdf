@@ -26,9 +26,12 @@ internal sealed class DictionaryProperty : IProperty
 
         uint numEntries = br.ReadUInt32();
 
+        // Encoding.GetEncoding can actually be quite slow, so as all strings are in the same codepage, get the encoding once and then use it for each property.
+        Encoding encoding = Encoding.GetEncoding(codePage);
+
         for (uint i = 0; i < numEntries; i++)
         {
-            ReadEntry(br);
+            ReadEntry(br, encoding);
         }
 
         int m = (int)(br.BaseStream.Position - curPos) % 4;
@@ -43,7 +46,7 @@ internal sealed class DictionaryProperty : IProperty
     }
 
     // Read a single dictionary entry
-    private void ReadEntry(BinaryReader br)
+    private void ReadEntry(BinaryReader br, Encoding encoding)
     {
         uint propertyIdentifier = br.ReadUInt32();
         int length = br.ReadInt32();
@@ -66,7 +69,7 @@ internal sealed class DictionaryProperty : IProperty
         int nullByteCount = this.codePage == CodePages.WinUnicode ? 2 : 1;
         int nonNullSize = Math.Max(0, nameBytes.Length - nullByteCount);
 
-        string entryName = Encoding.GetEncoding(codePage).GetString(nameBytes, 0, nonNullSize);
+        string entryName = encoding.GetString(nameBytes, 0, nonNullSize);
         entries!.Add(propertyIdentifier, entryName);
     }
 
@@ -83,9 +86,12 @@ internal sealed class DictionaryProperty : IProperty
 
         bw.Write(entries!.Count);
 
+        // Encoding.GetEncoding can actually be quite slow, so as all strings are in the same codepage, get the encoding once and then use it for each property.
+        Encoding encoding = Encoding.GetEncoding(codePage);
+
         foreach (KeyValuePair<uint, string> kv in entries)
         {
-            WriteEntry(bw, kv.Key, kv.Value);
+            WriteEntry(bw, kv.Key, kv.Value, encoding);
         }
 
         int size = (int)(bw.BaseStream.Position - curPos);
@@ -93,13 +99,13 @@ internal sealed class DictionaryProperty : IProperty
     }
 
     // Write a single entry to the dictionary, and handle and required null termination and padding.
-    private void WriteEntry(BinaryWriter bw, uint propertyIdentifier, string name)
+    private void WriteEntry(BinaryWriter bw, uint propertyIdentifier, string name, Encoding encoding)
     {
         // Write the PropertyIdentifier
         bw.Write(propertyIdentifier);
 
         // Encode string data with the current code page
-        byte[] nameBytes = Encoding.GetEncoding(codePage).GetBytes(name);
+        byte[] nameBytes = encoding.GetBytes(name);
         uint byteLength = (uint)nameBytes.Length;
 
         // If the code page is WINUNICODE, write the length as the number of characters and pad the length to a multiple of 4 bytes
