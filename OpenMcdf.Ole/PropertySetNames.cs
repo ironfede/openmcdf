@@ -13,4 +13,5 @@ public static class PropertySetNames
     public const string GlobalInfo = "\u0005GlobalInfo";
     public const string ImageContents = "\u000505ImageContents";
     public const string ImageInfo = "\u0005ImageInfo";
+    public const string HwpSummaryInformation = "\u0005HwpSummaryInformation";
 }

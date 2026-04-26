@@ -73,7 +73,7 @@ internal sealed class PropertySetStream
             PropertySet0.PropertyIdentifierAndOffsets.Add(pio);
         }
 
-        PropertySet0.LoadContext((int)Offset0, br);  // Read CodePage, Locale
+        PropertySet0.LoadContext((int)Offset0, br, FMTID0);  // Read CodePage, Locale
 
         // Read properties (P0)
         for (int i = 0; i < propertyCount; i++)
@@ -104,7 +104,7 @@ internal sealed class PropertySetStream
                 PropertySet1.PropertyIdentifierAndOffsets.Add(pio);
             }
 
-            PropertySet1.LoadContext((int)Offset1, br);
+            PropertySet1.LoadContext((int)Offset1, br, FMTID1);
 
             // Read properties
             for (int i = 0; i < propertyCount; i++)

@@ -8,4 +8,5 @@ public static class FormatIdentifiers
     public static readonly Guid GlobalInfo = new("{56616F00-C154-11CE-8553-00AA00A1F95B}");
     public static readonly Guid ImageContents = new("{56616400-C154-11CE-8553-00AA00A1F95B}");
     public static readonly Guid ImageInfo = new("{56616500-C154-11CE-8553-00AA00A1F95B}");
+    public static readonly Guid HwpSummaryInformation = new("{9FA2B660-1061-11D4-B4C6-006097C09D8C}");
 }
