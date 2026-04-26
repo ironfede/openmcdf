@@ -169,7 +169,7 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
 
         if (storageType is StorageType.Root)
         {
-            CreationTime = FileTime.UtcZero;
+            CreationTime = FileTime.ZeroUtc;
             ModifiedTime = DateTime.UtcNow;
         }
         else if (storageType is StorageType.Storage)
@@ -180,8 +180,8 @@ internal sealed class DirectoryEntry : IEquatable<DirectoryEntry?>
         }
         else
         {
-            CreationTime = FileTime.UtcZero;
-            ModifiedTime = FileTime.UtcZero;
+            CreationTime = FileTime.ZeroUtc;
+            ModifiedTime = FileTime.ZeroUtc;
         }
     }
 

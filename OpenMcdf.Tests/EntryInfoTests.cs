@@ -21,13 +21,13 @@ public sealed class EntryInfoTests
         Assert.AreEqual(0, entry.Length);
         if (type is EntryType.Storage)
         {
-            Assert.AreNotEqual(FileTime.UtcZero, entry.CreationTime);
-            Assert.AreNotEqual(FileTime.UtcZero, entry.ModifiedTime);
+            Assert.AreNotEqual(FileTime.ZeroUtc, entry.CreationTime);
+            Assert.AreNotEqual(FileTime.ZeroUtc, entry.ModifiedTime);
         }
         else
         {
-            Assert.AreEqual(FileTime.UtcZero, entry.CreationTime);
-            Assert.AreEqual(FileTime.UtcZero, entry.ModifiedTime);
+            Assert.AreEqual(FileTime.ZeroUtc, entry.CreationTime);
+            Assert.AreEqual(FileTime.ZeroUtc, entry.ModifiedTime);
         }
     }
 }
