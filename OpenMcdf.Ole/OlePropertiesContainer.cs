@@ -253,7 +253,7 @@ public class OlePropertiesContainer
             ITypedPropertyValue p = factory.CreateProperty(op.VTType, Context.CodePage, op.PropertyIdentifier);
             p.Value = op.Value;
             ps.PropertySet0.Properties.Add(p);
-            ps.PropertySet0.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = op.PropertyIdentifier, Offset = 0 });
+            ps.PropertySet0.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset(op.PropertyIdentifier, 0));
         }
 
         if (UserDefinedProperties is not null)
@@ -277,7 +277,7 @@ public class OlePropertiesContainer
                 ITypedPropertyValue p = DefaultPropertyFactory.Default.CreateProperty(op.VTType, ps.PropertySet1.PropertyContext.CodePage, op.PropertyIdentifier);
                 p.Value = op.Value;
                 ps.PropertySet1.Properties.Add(p);
-                ps.PropertySet1.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = op.PropertyIdentifier, Offset = 0 });
+                ps.PropertySet1.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset(op.PropertyIdentifier, 0));
             }
         }
 

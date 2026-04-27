@@ -1,15 +1,12 @@
 ﻿namespace OpenMcdf.Ole;
 
-internal sealed class PropertyIdentifierAndOffset : IBinarySerializable
+internal readonly record struct PropertyIdentifierAndOffset(uint PropertyIdentifier, uint Offset)
 {
-    public uint PropertyIdentifier { get; set; }
-
-    public uint Offset { get; set; }
-
-    public void Read(BinaryReader br)
+    public static PropertyIdentifierAndOffset Read(BinaryReader br)
     {
-        PropertyIdentifier = br.ReadUInt32();
-        Offset = br.ReadUInt32();
+        uint propertyIdentifier = br.ReadUInt32();
+        uint offset = br.ReadUInt32();
+        return new(propertyIdentifier, offset);
     }
 
     public void Write(BinaryWriter bw)
