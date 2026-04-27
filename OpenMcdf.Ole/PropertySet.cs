@@ -21,7 +21,7 @@ internal sealed class PropertySet
             throw new FileFormatException("Required CodePage property not present");
         }
 
-        int codePageOffset = (int)(propertySetOffset + codePageProperty.Offset);
+        int codePageOffset = (int)(propertySetOffset + codePageProperty.Value.Offset);
         br.BaseStream.Seek(codePageOffset, SeekOrigin.Begin);
 
         var vType = (VTPropertyType)br.ReadUInt16();
@@ -32,7 +32,7 @@ internal sealed class PropertySet
         PropertyIdentifierAndOffset? localeProperty = PropertyIdentifierAndOffsets.FirstOrDefault(pio => pio.PropertyIdentifier == SpecialPropertyIdentifiers.Locale);
         if (localeProperty is not null)
         {
-            long localeOffset = propertySetOffset + localeProperty.Offset;
+            long localeOffset = propertySetOffset + localeProperty.Value.Offset;
             br.BaseStream.Seek(localeOffset, SeekOrigin.Begin);
 
             vType = (VTPropertyType)br.ReadUInt16();
@@ -50,6 +50,6 @@ internal sealed class PropertySet
             Value = propertyNames,
         };
         Properties.Add(dictionaryProperty);
-        PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset() { PropertyIdentifier = SpecialPropertyIdentifiers.Dictionary, Offset = 0 });
+        PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset(SpecialPropertyIdentifiers.Dictionary, 0));
     }
 }

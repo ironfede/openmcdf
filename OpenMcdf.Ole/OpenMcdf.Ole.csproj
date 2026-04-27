@@ -28,6 +28,8 @@
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <PackageReference Include="System.Collections.Immutable" />
     <PackageReference Include="System.Text.Encoding.CodePages" />
+
+    <Compile Include="../OpenMcdf/System/IsExternalInit.cs" />
   </ItemGroup>
 
   <ItemGroup>
