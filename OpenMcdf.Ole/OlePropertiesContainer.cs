@@ -31,7 +31,7 @@ public class OlePropertiesContainer
 
     public PropertyContext Context { get; }
 
-    private readonly List<OleProperty> properties = new();
+    private readonly List<OleProperty> properties;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="OlePropertiesContainer"/> class.
@@ -48,6 +48,7 @@ public class OlePropertiesContainer
 
         ContainerType = containerType;
         FMTID0 = FmtIdFromContainerType(containerType);
+        properties = [];
     }
 
     public OlePropertiesContainer(CfbStream cfStream)
@@ -64,6 +65,7 @@ public class OlePropertiesContainer
             .FirstOrDefault(p => p.PropertyType == PropertyType.DictionaryProperty)?.Value;
 
         Context = pStream.PropertySet0.PropertyContext;
+        properties = new(pStream.PropertySet0.Properties.Count);
 
         for (int i = 0; i < pStream.PropertySet0.Properties.Count; i++)
         {
@@ -83,34 +85,43 @@ public class OlePropertiesContainer
             properties.Add(op);
         }
 
+        // Build the User Defined properties container, if the property set is present.
         if (pStream.NumPropertySets == 2)
         {
-            PropertySet propertySet1 = pStream.PropertySet1!;
-            UserDefinedProperties = new OlePropertiesContainer(propertySet1.PropertyContext.CodePage, ContainerType.UserDefinedProperties);
-
-            for (int i = 0; i < propertySet1.Properties.Count; i++)
-            {
-                PropertyIdentifierAndOffset propertyIdentifierAndOffset = propertySet1.PropertyIdentifierAndOffsets[i];
-                if (propertyIdentifierAndOffset.PropertyIdentifier is SpecialPropertyIdentifiers.Dictionary or SpecialPropertyIdentifiers.Locale)
-                    continue;
-
-                var p = (ITypedPropertyValue)propertySet1.Properties[i];
-
-                OleProperty op = new(UserDefinedProperties)
-                {
-                    VTType = p.VTType,
-                    PropertyIdentifier = propertyIdentifierAndOffset.PropertyIdentifier,
-                    Value = p.Value,
-                };
-
-                UserDefinedProperties.properties.Add(op);
-            }
-
-            var existingPropertyNames = (Dictionary<uint, string>?)propertySet1.Properties
-                .FirstOrDefault(p => p.PropertyType == PropertyType.DictionaryProperty)?.Value;
-
-            UserDefinedProperties.PropertyNames = existingPropertyNames ?? new Dictionary<uint, string>();
+            UserDefinedProperties = new OlePropertiesContainer(pStream.PropertySet1!);
         }
+    }
+
+    // An extra private constructor used to build the UserDefinedProperties property set, if one is present in the file.
+    private OlePropertiesContainer(PropertySet propertySet)
+    {
+        ContainerType = ContainerType.UserDefinedProperties;
+        Context = propertySet.PropertyContext;
+        FMTID0 = FormatIdentifiers.UserDefinedProperties;
+        properties = new(propertySet.Properties.Count);
+
+        for (int i = 0; i < propertySet.Properties.Count; i++)
+        {
+            PropertyIdentifierAndOffset propertyIdentifierAndOffset = propertySet.PropertyIdentifierAndOffsets[i];
+            if (propertyIdentifierAndOffset.PropertyIdentifier is SpecialPropertyIdentifiers.Dictionary or SpecialPropertyIdentifiers.Locale)
+                continue;
+
+            var p = (ITypedPropertyValue)propertySet.Properties[i];
+
+            OleProperty op = new(this)
+            {
+                VTType = p.VTType,
+                PropertyIdentifier = propertyIdentifierAndOffset.PropertyIdentifier,
+                Value = p.Value,
+            };
+
+            properties.Add(op);
+        }
+
+        var existingPropertyNames = (Dictionary<uint, string>?)propertySet.Properties
+            .FirstOrDefault(p => p.PropertyType == PropertyType.DictionaryProperty)?.Value;
+
+        PropertyNames = existingPropertyNames ?? [];
     }
 
     public IList<OleProperty> Properties => properties;
