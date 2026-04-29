@@ -297,6 +297,8 @@ public class OlePropertiesContainer
             return ContainerType.ImageInfo;
         else if (fmtId0 == FormatIdentifiers.ImageContents)
             return ContainerType.ImageContents;
+        else if (fmtId0 == FormatIdentifiers.UserDefinedProperties)
+            return ContainerType.UserDefinedProperties;
 
         return ContainerType.AppSpecific;
     }
@@ -311,6 +313,7 @@ public class OlePropertiesContainer
             ContainerType.GlobalInfo => FormatIdentifiers.GlobalInfo,
             ContainerType.ImageContents => FormatIdentifiers.ImageContents,
             ContainerType.ImageInfo => FormatIdentifiers.ImageInfo,
+            ContainerType.UserDefinedProperties => FormatIdentifiers.UserDefinedProperties,
             _ => FormatIdentifiers.DocSummaryInformation,
         };
     }
