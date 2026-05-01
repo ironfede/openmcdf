@@ -10,23 +10,35 @@ internal sealed class PropertySet
 
     public List<IProperty> Properties { get; } = new();
 
-    public void LoadContext(int propertySetOffset, BinaryReader br)
+    public void LoadContext(int propertySetOffset, BinaryReader br, Guid fmtID)
     {
         long currPos = br.BaseStream.Position;
 
-        // Read the code page - this should always be present
+        // Read the code page
+        // The 'HwpSummaryInformation' stream doesn't contain a codepage, but we treat it as mandatory for all other streams
         PropertyIdentifierAndOffset? codePageProperty = PropertyIdentifierAndOffsets.FirstOrDefault(pio => pio.PropertyIdentifier == SpecialPropertyIdentifiers.CodePage);
         if (codePageProperty is null)
         {
-            throw new FileFormatException("Required CodePage property not present");
+            // For HWP streams, treat the default codpage as UTF-8
+            // NOTE: This is what various other HWP readers do, but I don't presently have a test file for that - all the files I#ve seen only use VT_LPWSTR properties which are always CP_WINUNICODE
+            if (fmtID == FormatIdentifiers.HwpSummaryInformation)
+            {
+                PropertyContext.CodePage = 65001;
+            }
+            else
+            {
+                throw new FileFormatException("Required CodePage property not present");
+            }
         }
+        else
+        {
+            int codePageOffset = (int)(propertySetOffset + codePageProperty.Value.Offset);
+            br.BaseStream.Seek(codePageOffset, SeekOrigin.Begin);
 
-        int codePageOffset = (int)(propertySetOffset + codePageProperty.Value.Offset);
-        br.BaseStream.Seek(codePageOffset, SeekOrigin.Begin);
-
-        var vType = (VTPropertyType)br.ReadUInt16();
-        br.ReadUInt16(); // Ushort Padding
-        PropertyContext.CodePage = (ushort)br.ReadInt16();
+            var vType = (VTPropertyType)br.ReadUInt16();
+            br.ReadUInt16(); // Ushort Padding
+            PropertyContext.CodePage = (ushort)br.ReadInt16();
+        }
 
         // Read the Locale, if present
         PropertyIdentifierAndOffset? localeProperty = PropertyIdentifierAndOffsets.FirstOrDefault(pio => pio.PropertyIdentifier == SpecialPropertyIdentifiers.Locale);
@@ -35,7 +47,7 @@ internal sealed class PropertySet
             long localeOffset = propertySetOffset + localeProperty.Value.Offset;
             br.BaseStream.Seek(localeOffset, SeekOrigin.Begin);
 
-            vType = (VTPropertyType)br.ReadUInt16();
+            var vType = (VTPropertyType)br.ReadUInt16();
             br.ReadUInt16(); // Ushort Padding
             PropertyContext.Locale = br.ReadUInt32();
         }
