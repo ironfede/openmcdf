@@ -15,13 +15,14 @@ internal sealed class PropertySet
         long currPos = br.BaseStream.Position;
 
         // Read the code page - this should always be present
-        PropertyIdentifierAndOffset? codePageProperty = PropertyIdentifierAndOffsets.FirstOrDefault(pio => pio.PropertyIdentifier == SpecialPropertyIdentifiers.CodePage);
-        if (codePageProperty is null)
+        int codePagePropertyIndex = PropertyIdentifierAndOffsets.FindIndex(static pio => pio.PropertyIdentifier == SpecialPropertyIdentifiers.CodePage);
+        if (codePagePropertyIndex == -1)
         {
             throw new FileFormatException("Required CodePage property not present");
         }
 
-        int codePageOffset = (int)(propertySetOffset + codePageProperty.Value.Offset);
+        PropertyIdentifierAndOffset codePageProperty = PropertyIdentifierAndOffsets[codePagePropertyIndex];
+        long codePageOffset = propertySetOffset + codePageProperty.Offset;
         br.BaseStream.Seek(codePageOffset, SeekOrigin.Begin);
 
         var vType = (VTPropertyType)br.ReadUInt16();
@@ -29,10 +30,11 @@ internal sealed class PropertySet
         PropertyContext.CodePage = (ushort)br.ReadInt16();
 
         // Read the Locale, if present
-        PropertyIdentifierAndOffset? localeProperty = PropertyIdentifierAndOffsets.FirstOrDefault(pio => pio.PropertyIdentifier == SpecialPropertyIdentifiers.Locale);
-        if (localeProperty is not null)
+        int localePropertyIndex = PropertyIdentifierAndOffsets.FindIndex(static pio => pio.PropertyIdentifier == SpecialPropertyIdentifiers.Locale);
+        if (localePropertyIndex != -1)
         {
-            long localeOffset = propertySetOffset + localeProperty.Value.Offset;
+            PropertyIdentifierAndOffset localeProperty = PropertyIdentifierAndOffsets[localePropertyIndex];
+            long localeOffset = propertySetOffset + localeProperty.Offset;
             br.BaseStream.Seek(localeOffset, SeekOrigin.Begin);
 
             vType = (VTPropertyType)br.ReadUInt16();
