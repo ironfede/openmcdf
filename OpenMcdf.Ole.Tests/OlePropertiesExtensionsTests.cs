@@ -519,4 +519,16 @@ public class OlePropertiesExtensionsTests
             CollectionAssert.AreEqual(expectedPropertyNames, co.PropertyNames);
         }
     }
+
+    // The CodePage property is mandatory in the SummaryInformation set - see https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-oshared/87667163-ea1e-4d67-9eec-47cad74e8030
+    //   so we should get an error if it's not present
+    [TestMethod]
+    public void ShouldThrowWhenNoCodePageInSummaryInformation()
+    {
+        using var cf = RootStorage.Open("no_codepage.doc", FileMode.Open, StorageModeFlags.Transacted);
+        using CfbStream stream = cf.OpenStream(PropertySetNames.SummaryInformation);
+
+        FileFormatException ex = Assert.Throws<FileFormatException>(() => new OlePropertiesContainer(stream));
+        Assert.AreEqual("Required CodePage property not present", ex.Message);
+    }
 }
