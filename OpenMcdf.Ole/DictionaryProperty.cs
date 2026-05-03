@@ -2,17 +2,16 @@
 
 namespace OpenMcdf.Ole;
 
-internal sealed class DictionaryProperty : IProperty
+internal sealed class DictionaryProperty(int codePage, Dictionary<uint, string>? entries) : IProperty
 {
-    private readonly int codePage;
-    private Dictionary<uint, string>? entries = new();
-
     public DictionaryProperty(int codePage)
+        : this(codePage, [])
     {
-        this.codePage = codePage;
     }
 
     public PropertyType PropertyType => PropertyType.DictionaryProperty;
+
+    public Dictionary<uint, string>? Entries => entries;
 
     public object? Value
     {
@@ -66,7 +65,7 @@ internal sealed class DictionaryProperty : IProperty
             nameBytes = br.ReadBytes(length);
         }
 
-        int nullByteCount = this.codePage == CodePages.WinUnicode ? 2 : 1;
+        int nullByteCount = codePage == CodePages.WinUnicode ? 2 : 1;
         int nonNullSize = Math.Max(0, nameBytes.Length - nullByteCount);
 
         string entryName = encoding.GetString(nameBytes, 0, nonNullSize);

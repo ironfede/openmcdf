@@ -16,6 +16,7 @@ public enum ContainerType
 
 public class OlePropertiesContainer
 {
+    // @@TBD@@ Would anyone mind if this was an IDictionary?
     public Dictionary<uint, string>? PropertyNames { get; private set; }
 
     public OlePropertiesContainer? UserDefinedProperties { get; private set; }
@@ -61,9 +62,7 @@ public class OlePropertiesContainer
 
         FMTID0 = pStream.FMTID0;
         ContainerType = ContainerTypeFromFmtId(pStream.FMTID0);
-
-        PropertyNames = (Dictionary<uint, string>?)pStream.PropertySet0!.Properties
-            .FirstOrDefault(p => p.PropertyType == PropertyType.DictionaryProperty)?.Value;
+        PropertyNames = pStream.PropertySet0!.DictionaryProperty?.Entries;
 
         Context = pStream.PropertySet0.PropertyContext;
         properties = new(pStream.PropertySet0.Properties.Count);
@@ -119,9 +118,7 @@ public class OlePropertiesContainer
             properties.Add(op);
         }
 
-        var existingPropertyNames = (Dictionary<uint, string>?)propertySet.Properties
-            .FirstOrDefault(p => p.PropertyType == PropertyType.DictionaryProperty)?.Value;
-
+        var existingPropertyNames = propertySet.DictionaryProperty?.Entries;
         PropertyNames = existingPropertyNames ?? [];
     }
 
@@ -245,10 +242,7 @@ public class OlePropertiesContainer
             FMTID1 = Guid.Empty,
             Offset1 = 0,
 
-            PropertySet0 = new PropertySet
-            {
-                PropertyContext = Context,
-            },
+            PropertySet0 = CreatePropertySet(this.FMTID0, Context, Properties.Count),
         };
 
         // If we're writing an AppSpecific property set and have property names, then add a dictionary property
@@ -257,27 +251,18 @@ public class OlePropertiesContainer
             ps.PropertySet0.Add(PropertyNames);
         }
 
-        PropertyFactory factory =
-            ContainerType == ContainerType.DocumentSummaryInfo ? DocumentSummaryInfoPropertyFactory.Default : DefaultPropertyFactory.Default;
+        PropertyFactory factory = ps.PropertySet0.PropertyFactory;
 
         foreach (OleProperty op in Properties)
         {
-            ITypedPropertyValue p = factory.CreateProperty(op.VTType, Context.CodePage, op.PropertyIdentifier);
-            p.Value = op.Value;
-            ps.PropertySet0.Properties.Add(p);
-            ps.PropertySet0.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset(op.PropertyIdentifier, 0));
+            ps.PropertySet0.AddProperty(op.VTType, op.PropertyIdentifier, op.Value);
         }
 
         if (UserDefinedProperties is not null)
         {
             ps.NumPropertySets = 2;
-
-            ps.PropertySet1 = new PropertySet
-            {
-                PropertyContext = UserDefinedProperties.Context,
-            };
-
             ps.FMTID1 = FormatIdentifiers.UserDefinedProperties;
+            ps.PropertySet1 = CreatePropertySet(ps.FMTID1, UserDefinedProperties.Context, UserDefinedProperties.Properties.Count);
             ps.Offset1 = 0;
 
             // Add the dictionary containing the property names
@@ -286,14 +271,21 @@ public class OlePropertiesContainer
             // Add the properties themselves
             foreach (OleProperty op in UserDefinedProperties.Properties)
             {
-                ITypedPropertyValue p = DefaultPropertyFactory.Default.CreateProperty(op.VTType, ps.PropertySet1.PropertyContext.CodePage, op.PropertyIdentifier);
-                p.Value = op.Value;
-                ps.PropertySet1.Properties.Add(p);
-                ps.PropertySet1.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset(op.PropertyIdentifier, 0));
+                ps.PropertySet1.AddProperty(op.VTType, op.PropertyIdentifier, op.Value);
             }
         }
 
         ps.Write(bw);
+    }
+
+    private static PropertySet CreatePropertySet(Guid fmtId, PropertyContext propertyContext, int initialPropertyCount)
+    {
+        if (fmtId == FormatIdentifiers.DocSummaryInformation)
+        {
+            return new DocumentSummaryInformationPropertySet(propertyContext, initialPropertyCount);
+        }
+
+        return new PropertySet(propertyContext, initialPropertyCount);
     }
 
     // Determine the type of the container from the FMTID0 property.
