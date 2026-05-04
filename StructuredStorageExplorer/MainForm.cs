@@ -401,7 +401,7 @@ public partial class MainForm : Form
         dgvUserDefinedProperties.DataSource = null;
         dgvOLEProps.DataSource = null;
 
-        if (stream.EntryInfo.Name is PropertySetNames.SummaryInformation or PropertySetNames.DocSummaryInformation)
+        if (stream.EntryInfo.Name is PropertySetNames.SummaryInformation or PropertySetNames.DocSummaryInformation or PropertySetNames.HwpSummaryInformation)
         {
             OlePropertiesContainer c = new(stream);
 
