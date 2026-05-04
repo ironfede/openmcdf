@@ -60,7 +60,7 @@ internal sealed class DictionaryProperty : IProperty
         }
         else
         {
-            entryName = br.ReadNullTerminatedStringWithEncoding(length, this.codePage, this.encoding);
+            entryName = br.ReadNullTerminatedStringWithEncoding(length, this.encoding);
         }
 
         entries!.Add(propertyIdentifier, entryName);

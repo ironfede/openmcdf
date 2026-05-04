@@ -27,8 +27,8 @@ internal abstract class PropertyFactory
             VTPropertyType.VT_UI2 => new VT_UI2_Property(vType, isVariant),
             VTPropertyType.VT_UI4 => new VT_UI4_Property(vType, isVariant),
             VTPropertyType.VT_UI8 => new VT_UI8_Property(vType, isVariant),
-            VTPropertyType.VT_BSTR => new VT_LPSTR_Property(vType, codePage, encoding, isVariant),
-            VTPropertyType.VT_LPSTR => CreateLpstrProperty(vType, codePage, encoding, propertyIdentifier, isVariant),
+            VTPropertyType.VT_BSTR => new VT_LPSTR_Property(vType, encoding, isVariant),
+            VTPropertyType.VT_LPSTR => CreateLpstrProperty(vType, encoding, propertyIdentifier, isVariant),
             VTPropertyType.VT_LPWSTR => new VT_LPWSTR_Property(vType, isVariant),
             VTPropertyType.VT_FILETIME => new VT_FILETIME_Property(vType, isVariant),
             VTPropertyType.VT_DECIMAL => new VT_DECIMAL_Property(vType, isVariant),
@@ -44,7 +44,7 @@ internal abstract class PropertyFactory
         return pr;
     }
 
-    protected virtual ITypedPropertyValue CreateLpstrProperty(VTPropertyType vType, int codePage, Encoding encoding, uint propertyIdentifier, bool isVariant) => new VT_LPSTR_Property(vType, codePage, encoding, isVariant);
+    protected virtual ITypedPropertyValue CreateLpstrProperty(VTPropertyType vType, Encoding encoding, uint propertyIdentifier, bool isVariant) => new VT_LPSTR_Property(vType, encoding, isVariant);
 
     #region Property implementations
 
@@ -301,20 +301,18 @@ internal abstract class PropertyFactory
 
     protected class VT_LPSTR_Property : TypedPropertyValue<string>
     {
-        private readonly int codePage;
         private readonly Encoding encoding;
 
-        public VT_LPSTR_Property(VTPropertyType vType, int codePage, Encoding encoding, bool isVariant)
+        public VT_LPSTR_Property(VTPropertyType vType, Encoding encoding, bool isVariant)
             : base(vType, isVariant)
         {
-            this.codePage = codePage;
             this.encoding = encoding;
         }
 
         public override string ReadScalarValue(BinaryReader br)
         {
             int size = (int)br.ReadUInt32();
-            return br.ReadNullTerminatedStringWithEncoding(size, codePage, encoding);
+            return br.ReadNullTerminatedStringWithEncoding(size, encoding);
         }
 
         public override void WriteScalarValue(BinaryWriter bw, string pValue)
@@ -324,7 +322,7 @@ internal abstract class PropertyFactory
             {
                 bw.Write(0U);
             }
-            else if (codePage == CodePages.WinUnicode)
+            else if (encoding.CodePage == CodePages.WinUnicode)
             {
                 byte[] data = Encoding.Unicode.GetBytes(pValue);
 
@@ -375,8 +373,8 @@ internal abstract class PropertyFactory
 
     protected sealed class VT_Unaligned_LPSTR_Property : VT_LPSTR_Property
     {
-        public VT_Unaligned_LPSTR_Property(VTPropertyType vType, int codePage, Encoding encoding, bool isVariant)
-            : base(vType, codePage, encoding, isVariant)
+        public VT_Unaligned_LPSTR_Property(VTPropertyType vType, Encoding encoding, bool isVariant)
+            : base(vType, encoding, isVariant)
         {
             NeedsPadding = false;
         }
