@@ -32,7 +32,7 @@ internal static class BinaryReaderExtensions
             return string.Empty;
         }
 
-         // Read the data
+        // Read the data
         byte[] stringBytes = target.ReadBytes(byteLength);
 
         // Skip the null terminator and convert the rest of the data
