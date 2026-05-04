@@ -2,7 +2,7 @@
 
 internal class PropertySet
 {
-    public PropertyContext PropertyContext { get; set; } = new();
+    public PropertyContext PropertyContext { get; } = new();
 
     public uint Size { get; set; }
 
@@ -21,7 +21,7 @@ internal class PropertySet
         uint propertyCount = br.ReadUInt32();
 
         // Read property offsets
-        // @@TODO@@ Clamp propertyCount when reservice space in the collection in case it's a bad value? (e.g. corrupt so it's a massive number)
+        // @@TODO@@ Clamp propertyCount when reserve space in the collection in case it's a bad value? (e.g. corrupt so it's a massive number)
         this.PropertyIdentifierAndOffsets = new((int)propertyCount);
         for (int i = 0; i < propertyCount; i++)
         {
