@@ -69,7 +69,7 @@ internal class PropertySet
             return null;
         }
 
-        int codePageOffset = (int)(propertySetOffset + PropertyIdentifierAndOffsets[codePagePropertyIndex].Offset);
+        long codePageOffset = propertySetOffset + PropertyIdentifierAndOffsets[codePagePropertyIndex].Offset;
         br.BaseStream.Seek(codePageOffset, SeekOrigin.Begin);
 
         var vType = (VTPropertyType)br.ReadUInt16();
