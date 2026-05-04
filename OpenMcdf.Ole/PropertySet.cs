@@ -39,7 +39,7 @@ internal class PropertySet
         {
             PropertyIdentifierAndOffset propertyIdentifierAndOffset = this.PropertyIdentifierAndOffsets[i];
             br.BaseStream.Seek(propertySetOffset + propertyIdentifierAndOffset.Offset, SeekOrigin.Begin);
-            IProperty property = ReadProperty(propertyIdentifierAndOffset.PropertyIdentifier, this.PropertyContext.CodePage, br, this.PropertyFactory);
+            IProperty property = ReadProperty(propertyIdentifierAndOffset.PropertyIdentifier, this.PropertyContext.CodePage, br);
             this.Properties.Add(property);
         }
 
@@ -108,7 +108,7 @@ internal class PropertySet
         this.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset(propertyIdentifier, 0));
     }
 
-    private IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br, PropertyFactory factory)
+    private IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br)
     {
         if (propertyIdentifier == SpecialPropertyIdentifiers.Dictionary)
         {
@@ -120,7 +120,7 @@ internal class PropertySet
         var vType = (VTPropertyType)br.ReadUInt16();
         br.ReadUInt16(); // Ushort Padding
 
-        ITypedPropertyValue pr = factory.CreateProperty(vType, codePage, propertyIdentifier);
+        ITypedPropertyValue pr = this.PropertyFactory.CreateProperty(vType, codePage, propertyIdentifier);
         pr.Read(br);
 
         return pr;
