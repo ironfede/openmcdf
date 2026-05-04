@@ -108,7 +108,11 @@ internal class PropertySet
         this.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset(propertyIdentifier, 0));
     }
 
-    private IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br)
+    // Read a given property, special casing the dictionary property.
+    // Note: This is virtual so that the behavior can be overridden in specific property sets
+    // @@TODO@@ The DocumentSummaryInformation spec at https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-oshared/3ef02e83-afef-4b6c-9585-c109edd24e07 explicitly
+    //   states that it 'MUST NOT contain a Dictionary property' but that has always been allowed by openmcdf.... should this spec be enforced, at least in none-lenient mode?
+    protected virtual IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br)
     {
         if (propertyIdentifier == SpecialPropertyIdentifiers.Dictionary)
         {
@@ -117,6 +121,11 @@ internal class PropertySet
             return this.DictionaryProperty;
         }
 
+        return ReadTypedProperty(propertyIdentifier, codePage, br);
+    }
+
+    protected ITypedPropertyValue ReadTypedProperty(uint propertyIdentifier, int codePage, BinaryReader br)
+    {
         var vType = (VTPropertyType)br.ReadUInt16();
         br.ReadUInt16(); // Ushort Padding
 
@@ -161,4 +170,7 @@ internal sealed class HwpSummaryInformationPropertySet : PropertySet
         int? propertySetCodePage = TryReadCodePage(br, propertySetOffset);
         return propertySetCodePage ?? 65001;
     }
+
+    // Only support typed properties here, don't try to handle dictionary properties.
+    protected override IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br) => ReadTypedProperty(propertyIdentifier, codePage, br);
 }
