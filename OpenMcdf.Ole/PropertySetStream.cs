@@ -167,9 +167,9 @@ internal sealed class PropertySetStream
     private static PropertySet CreatePropertySet(Guid fmtId, BinaryReader br, uint propertySetOffset)
     {
         if (fmtId == FormatIdentifiers.DocSummaryInformation)
-        {
             return new DocumentSummaryInformationPropertySet(br, propertySetOffset);
-        }
+        else if (fmtId == FormatIdentifiers.HwpSummaryInformation)
+            return new HwpSummaryInformationPropertySet(br, propertySetOffset);
 
         return new PropertySet(br, propertySetOffset);
     }

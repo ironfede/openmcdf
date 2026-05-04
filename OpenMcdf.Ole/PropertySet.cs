@@ -10,7 +10,7 @@ internal class PropertySet
 
     public List<IProperty> Properties { get; }
 
-    public virtual PropertyFactory PropertyFactory { get; } = DefaultPropertyFactory.Default;
+    protected virtual PropertyFactory PropertyFactory { get; } = DefaultPropertyFactory.Default;
 
     public DictionaryProperty? DictionaryProperty { get; private set; }
 
@@ -54,27 +54,28 @@ internal class PropertySet
         this.Properties = new(initialPropertyCount);
     }
 
+    // ReadCodePage is virtual to allow PropertySet specific handling of missing/default values
     protected virtual int ReadCodePage(BinaryReader br, uint propertySetOffset)
+    {
+        int? propertySetCodePage = TryReadCodePage(br, propertySetOffset);
+        return propertySetCodePage ?? throw new FileFormatException("Required CodePage property not present");
+    }
+
+    protected int? TryReadCodePage(BinaryReader br, uint propertySetOffset)
     {
         int codePagePropertyIndex = PropertyIdentifierAndOffsets.FindIndex(static pio => pio.PropertyIdentifier == SpecialPropertyIdentifiers.CodePage);
         if (codePagePropertyIndex == -1)
         {
-            throw new FileFormatException("Required CodePage property not present");
+            return null;
         }
 
-        long currPos = br.BaseStream.Position;
         int codePageOffset = (int)(propertySetOffset + PropertyIdentifierAndOffsets[codePagePropertyIndex].Offset);
-
         br.BaseStream.Seek(codePageOffset, SeekOrigin.Begin);
 
         var vType = (VTPropertyType)br.ReadUInt16();
         br.ReadUInt16(); // Ushort Padding
 
-        var codePage = (ushort)br.ReadInt16();
-
-        br.BaseStream.Position = currPos;
-
-        return codePage;
+        return (ushort)br.ReadInt16();
     }
 
     // Populate additional context properties, if present
@@ -138,5 +139,26 @@ internal sealed class DocumentSummaryInformationPropertySet : PropertySet
     {
     }
 
-    public override PropertyFactory PropertyFactory { get; } = DocumentSummaryInfoPropertyFactory.Default;
+    protected override PropertyFactory PropertyFactory { get; } = DocumentSummaryInfoPropertyFactory.Default;
+}
+
+internal sealed class HwpSummaryInformationPropertySet : PropertySet
+{
+    public HwpSummaryInformationPropertySet(BinaryReader br, uint propertySetOffset)
+        : base(br, propertySetOffset)
+    {
+    }
+
+    public HwpSummaryInformationPropertySet(PropertyContext propertyContext, int initialPropertyCount)
+        : base(propertyContext, initialPropertyCount)
+    {
+    }
+
+    // For HWP streams, treat the default codepage as UTF-8
+    // NOTE: This is what various other HWP readers do, but I don't presently have a test file for that - all the files I#ve seen only use VT_LPWSTR properties which are always CP_WINUNICODE
+    protected override int ReadCodePage(BinaryReader br, uint propertySetOffset)
+    {
+        int? propertySetCodePage = TryReadCodePage(br, propertySetOffset);
+        return propertySetCodePage ?? 65001;
+    }
 }

@@ -251,8 +251,6 @@ public class OlePropertiesContainer
             ps.PropertySet0.Add(PropertyNames);
         }
 
-        PropertyFactory factory = ps.PropertySet0.PropertyFactory;
-
         foreach (OleProperty op in Properties)
         {
             ps.PropertySet0.AddProperty(op.VTType, op.PropertyIdentifier, op.Value);
@@ -281,9 +279,9 @@ public class OlePropertiesContainer
     private static PropertySet CreatePropertySet(Guid fmtId, PropertyContext propertyContext, int initialPropertyCount)
     {
         if (fmtId == FormatIdentifiers.DocSummaryInformation)
-        {
             return new DocumentSummaryInformationPropertySet(propertyContext, initialPropertyCount);
-        }
+        else if (fmtId == FormatIdentifiers.HwpSummaryInformation)
+            return new HwpSummaryInformationPropertySet(propertyContext, initialPropertyCount);
 
         return new PropertySet(propertyContext, initialPropertyCount);
     }
