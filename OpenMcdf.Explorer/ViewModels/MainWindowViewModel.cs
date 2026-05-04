@@ -420,7 +420,7 @@ public sealed partial class MainWindowViewModel : ObservableObject, IDisposable
         UserDefinedProperties.Clear();
 
         string name = stream.EntryInfo.Name;
-        if (name is not PropertySetNames.SummaryInformation and not PropertySetNames.DocSummaryInformation)
+        if (name is not PropertySetNames.SummaryInformation and not PropertySetNames.DocSummaryInformation and not PropertySetNames.HwpSummaryInformation)
             return;
 
         try
