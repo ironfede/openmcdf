@@ -1,57 +1,176 @@
 ﻿namespace OpenMcdf.Ole;
 
-internal sealed class PropertySet
+internal class PropertySet
 {
-    public PropertyContext PropertyContext { get; set; } = new();
+    public PropertyContext PropertyContext { get; } = new();
 
     public uint Size { get; set; }
 
-    public List<PropertyIdentifierAndOffset> PropertyIdentifierAndOffsets { get; } = new();
+    public List<PropertyIdentifierAndOffset> PropertyIdentifierAndOffsets { get; }
 
-    public List<IProperty> Properties { get; } = new();
+    public List<IProperty> Properties { get; }
 
-    public void LoadContext(int propertySetOffset, BinaryReader br)
+    protected virtual PropertyFactory PropertyFactory { get; } = DefaultPropertyFactory.Default;
+
+    public DictionaryProperty? DictionaryProperty { get; private set; }
+
+    public PropertySet(BinaryReader br, uint propertySetOffset)
     {
-        long currPos = br.BaseStream.Position;
+        this.Size = br.ReadUInt32();
 
-        // Read the code page - this should always be present
+        uint propertyCount = br.ReadUInt32();
+
+        // Read property offsets
+        // @@TODO@@ Clamp propertyCount when reserve space in the collection in case it's a bad value? (e.g. corrupt so it's a massive number)
+        this.PropertyIdentifierAndOffsets = new((int)propertyCount);
+        for (int i = 0; i < propertyCount; i++)
+        {
+            PropertyIdentifierAndOffset pio = PropertyIdentifierAndOffset.Read(br);
+            PropertyIdentifierAndOffsets.Add(pio);
+        }
+
+        // Treat the code page property specially - we need it to read all the code page specific properties.
+        // @@TODO@@ It would be nice to not read the property twice (the general property loop does it again)
+        this.PropertyContext.CodePage = ReadCodePage(br, propertySetOffset);
+
+        // Read properties
+        this.Properties = new(this.PropertyIdentifierAndOffsets.Count);
+        for (int i = 0; i < propertyCount; i++)
+        {
+            PropertyIdentifierAndOffset propertyIdentifierAndOffset = this.PropertyIdentifierAndOffsets[i];
+            br.BaseStream.Seek(propertySetOffset + propertyIdentifierAndOffset.Offset, SeekOrigin.Begin);
+            IProperty property = ReadProperty(propertyIdentifierAndOffset.PropertyIdentifier, this.PropertyContext.CodePage, br);
+            this.Properties.Add(property);
+        }
+
+        // Load additional context properties
+        LoadContext();
+    }
+
+    public PropertySet(PropertyContext propertyContext, int initialPropertyCount)
+    {
+        this.PropertyContext = propertyContext;
+        this.PropertyIdentifierAndOffsets = new(initialPropertyCount);
+        this.Properties = new(initialPropertyCount);
+    }
+
+    // ReadCodePage is virtual to allow PropertySet specific handling of missing/default values
+    protected virtual int ReadCodePage(BinaryReader br, uint propertySetOffset)
+    {
+        int? propertySetCodePage = TryReadCodePage(br, propertySetOffset);
+        return propertySetCodePage ?? throw new FileFormatException("Required CodePage property not present");
+    }
+
+    protected int? TryReadCodePage(BinaryReader br, uint propertySetOffset)
+    {
         int codePagePropertyIndex = PropertyIdentifierAndOffsets.FindIndex(static pio => pio.PropertyIdentifier == SpecialPropertyIdentifiers.CodePage);
         if (codePagePropertyIndex == -1)
         {
-            throw new FileFormatException("Required CodePage property not present");
+            return null;
         }
 
-        PropertyIdentifierAndOffset codePageProperty = PropertyIdentifierAndOffsets[codePagePropertyIndex];
-        long codePageOffset = propertySetOffset + codePageProperty.Offset;
+        long codePageOffset = propertySetOffset + PropertyIdentifierAndOffsets[codePagePropertyIndex].Offset;
         br.BaseStream.Seek(codePageOffset, SeekOrigin.Begin);
 
         var vType = (VTPropertyType)br.ReadUInt16();
         br.ReadUInt16(); // Ushort Padding
-        PropertyContext.CodePage = (ushort)br.ReadInt16();
 
+        return (ushort)br.ReadInt16();
+    }
+
+    // Populate additional context properties, if present
+    private void LoadContext()
+    {
         // Read the Locale, if present
         int localePropertyIndex = PropertyIdentifierAndOffsets.FindIndex(static pio => pio.PropertyIdentifier == SpecialPropertyIdentifiers.Locale);
         if (localePropertyIndex != -1)
         {
-            PropertyIdentifierAndOffset localeProperty = PropertyIdentifierAndOffsets[localePropertyIndex];
-            long localeOffset = propertySetOffset + localeProperty.Offset;
-            br.BaseStream.Seek(localeOffset, SeekOrigin.Begin);
-
-            vType = (VTPropertyType)br.ReadUInt16();
-            br.ReadUInt16(); // Ushort Padding
-            PropertyContext.Locale = br.ReadUInt32();
+            IProperty localeProperty = Properties[localePropertyIndex];
+            if (localeProperty is ITypedPropertyValue { VTType: VTPropertyType.VT_UI4, Value: not null } typedValue)
+            {
+                this.PropertyContext.Locale = (uint)typedValue.Value!;
+            }
         }
-
-        br.BaseStream.Position = currPos;
     }
 
-    public void Add(IDictionary<uint, string> propertyNames)
+    public void Add(Dictionary<uint, string> propertyNames)
     {
-        DictionaryProperty dictionaryProperty = new(PropertyContext.CodePage)
-        {
-            Value = propertyNames,
-        };
-        Properties.Add(dictionaryProperty);
+        this.DictionaryProperty = new(PropertyContext.CodePage, propertyNames);
+        Properties.Add(this.DictionaryProperty);
         PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset(SpecialPropertyIdentifiers.Dictionary, 0));
     }
+
+    public void AddProperty(VTPropertyType vType, uint propertyIdentifier, object? value)
+    {
+        ITypedPropertyValue p = this.PropertyFactory.CreateProperty(vType, PropertyContext.CodePage, propertyIdentifier);
+        p.Value = value;
+        this.Properties.Add(p);
+        this.PropertyIdentifierAndOffsets.Add(new PropertyIdentifierAndOffset(propertyIdentifier, 0));
+    }
+
+    // Read a given property, special casing the dictionary property.
+    // Note: This is virtual so that the behavior can be overridden in specific property sets
+    // @@TODO@@ The DocumentSummaryInformation spec at https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-oshared/3ef02e83-afef-4b6c-9585-c109edd24e07 explicitly
+    //   states that it 'MUST NOT contain a Dictionary property' but that has always been allowed by openmcdf.... should this spec be enforced, at least in none-lenient mode?
+    protected virtual IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br)
+    {
+        if (propertyIdentifier == SpecialPropertyIdentifiers.Dictionary)
+        {
+            this.DictionaryProperty = new(codePage);
+            this.DictionaryProperty.Read(br);
+            return this.DictionaryProperty;
+        }
+
+        return ReadTypedProperty(propertyIdentifier, codePage, br);
+    }
+
+    protected ITypedPropertyValue ReadTypedProperty(uint propertyIdentifier, int codePage, BinaryReader br)
+    {
+        var vType = (VTPropertyType)br.ReadUInt16();
+        br.ReadUInt16(); // Ushort Padding
+
+        ITypedPropertyValue pr = this.PropertyFactory.CreateProperty(vType, codePage, propertyIdentifier);
+        pr.Read(br);
+
+        return pr;
+    }
+}
+
+internal sealed class DocumentSummaryInformationPropertySet : PropertySet
+{
+    public DocumentSummaryInformationPropertySet(BinaryReader br, uint propertySetOffset)
+        : base(br, propertySetOffset)
+    {
+    }
+
+    public DocumentSummaryInformationPropertySet(PropertyContext propertyContext, int initialPropertyCount)
+        : base(propertyContext, initialPropertyCount)
+    {
+    }
+
+    protected override PropertyFactory PropertyFactory { get; } = DocumentSummaryInfoPropertyFactory.Default;
+}
+
+internal sealed class HwpSummaryInformationPropertySet : PropertySet
+{
+    public HwpSummaryInformationPropertySet(BinaryReader br, uint propertySetOffset)
+        : base(br, propertySetOffset)
+    {
+    }
+
+    public HwpSummaryInformationPropertySet(PropertyContext propertyContext, int initialPropertyCount)
+        : base(propertyContext, initialPropertyCount)
+    {
+    }
+
+    // For HWP streams, treat the default codepage as UTF-8
+    // NOTE: This is what various other HWP readers do, but I don't presently have a test file for that - all the files I#ve seen only use VT_LPWSTR properties which are always CP_WINUNICODE
+    protected override int ReadCodePage(BinaryReader br, uint propertySetOffset)
+    {
+        int? propertySetCodePage = TryReadCodePage(br, propertySetOffset);
+        return propertySetCodePage ?? 65001;
+    }
+
+    // Only support typed properties here, don't try to handle dictionary properties.
+    protected override IProperty ReadProperty(uint propertyIdentifier, int codePage, BinaryReader br) => ReadTypedProperty(propertyIdentifier, codePage, br);
 }
