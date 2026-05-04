@@ -30,9 +30,9 @@ internal static class BinaryReaderExtensions
 #endif
     }
 
-    // Read a null terminated string from the specified BinaryReader, using the specified length and codepage
+    // Read a null terminated string from the specified BinaryReader, using the specified length Encoding
     // Note: Encoding.GetEncoding seems to actually be quite slow, so allow callers that already have the Encoding to provide it directly.
-    public static string ReadNullTerminatedStringWithEncoding(this BinaryReader target, int byteLength, Encoding encoding)
+    public static string ReadCodePageString(this BinaryReader target, int byteLength, Encoding encoding)
     {
 #if NETSTANDARD2_0
         byte[] nameBytes = new byte[byteLength];
@@ -55,5 +55,5 @@ internal static class BinaryReaderExtensions
 #endif
     }
 
-    public static string ReadNullTerminatedWideString(this BinaryReader target, int characterLength) => target.ReadNullTerminatedStringWithEncoding(byteLength: characterLength * 2, Encoding.Unicode);
+    public static string ReadUnicodeString(this BinaryReader target, int characterLength) => target.ReadCodePageString(byteLength: characterLength * 2, Encoding.Unicode);
 }

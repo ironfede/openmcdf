@@ -312,7 +312,7 @@ internal abstract class PropertyFactory
         public override string ReadScalarValue(BinaryReader br)
         {
             int size = (int)br.ReadUInt32();
-            return br.ReadNullTerminatedStringWithEncoding(size, encoding);
+            return br.ReadCodePageString(size, encoding);
         }
 
         public override void WriteScalarValue(BinaryWriter bw, string pValue)
@@ -390,7 +390,7 @@ internal abstract class PropertyFactory
         public override string ReadScalarValue(BinaryReader br)
         {
             uint nChars = br.ReadUInt32();
-            string result = nChars > 0 ? br.ReadNullTerminatedWideString((int)nChars) : string.Empty;
+            string result = nChars > 0 ? br.ReadUnicodeString((int)nChars) : string.Empty;
 
             // result = result.Trim(new char[] { '\0' });
             return result;

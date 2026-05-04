@@ -52,7 +52,7 @@ internal sealed class DictionaryProperty : IProperty
         // WinUnicode properties are padded so the length is a multiple of 4 bytes. We need to skip that padding.
         if (codePage == CodePages.WinUnicode)
         {
-            entryName = br.ReadNullTerminatedWideString(length);
+            entryName = br.ReadUnicodeString(length);
 
             int paddingLength = length * 2 % 4;
             if (paddingLength > 0)
@@ -60,7 +60,7 @@ internal sealed class DictionaryProperty : IProperty
         }
         else
         {
-            entryName = br.ReadNullTerminatedStringWithEncoding(length, this.encoding);
+            entryName = br.ReadCodePageString(length, this.encoding);
         }
 
         entries!.Add(propertyIdentifier, entryName);
